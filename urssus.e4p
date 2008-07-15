@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE Project SYSTEM "Project-4.2.dtd">
 <!-- eric4 project file for project urssus -->
-<!-- Saved: 2008-07-15, 11:17:15 -->
+<!-- Saved: 2008-07-15, 11:41:23 -->
 <!-- Copyright (C) 2008 Roberto Alsina, ralsina@netmanagers.com.ar -->
 <Project version="4.2">
   <ProgLanguage mixed="0">Python</ProgLanguage>
@@ -11,8 +11,20 @@
   <Author>Roberto Alsina</Author>
   <Email>ralsina@netmanagers.com.ar</Email>
   <Sources>
+    <Source>
+      <Name>Ui_main.py</Name>
+    </Source>
+    <Source>
+      <Name>OPML.py</Name>
+    </Source>
+    <Source>
+      <Name>urssus.py</Name>
+    </Source>
   </Sources>
   <Forms>
+    <Form>
+      <Name>main.ui</Name>
+    </Form>
   </Forms>
   <Translations>
   </Translations>
