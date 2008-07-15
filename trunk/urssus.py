@@ -14,6 +14,8 @@ class Feed(Entity):
   description = Field(Text)
   children    = OneToMany('Feed')
   parent      = ManyToOne('Feed')
+  def __repr__(self):
+    return self.text
 
 # This is just temporary
 setup_all()
@@ -30,11 +32,29 @@ class MainWindow(QtGui.QMainWindow):
     # Set up the UI from designer
     self.ui=Ui_MainWindow()
     self.ui.setupUi(self)
-
-
-class FeedTreeModel():
-  "A Qt model to display categories/feeds/posts"
   
+    # Initialize the tree from the Feeds
+    self.model=QtGui.QStandardItemModel()
+    
+    # Internal function
+    def addSubTree(parent, node):
+      nn=QtGui.QStandardItem(unicode(node))
+      parent.appendRow(nn)
+      parent.feed=node
+      if not node.children:
+        return
+      else:
+        for child in node.children:
+          addSubTree(nn, child)
+          
+    roots=Feed.query.filter(Feed.parent==None)
+    iroot=self.model.invisibleRootItem()
+    iroot.feed=None
+    for root in roots:
+      addSubTree(iroot, root)
+      
+    self.ui.feeds.setModel(self.model)
+          
 
 if __name__ == "__main__":
   import sys
@@ -57,3 +77,8 @@ if __name__ == "__main__":
     else:
       current=Feed(text=outline.get('text'))
     session.flush()
+  app=QtGui.QApplication(sys.argv)
+  window=MainWindow()
+  window.show()
+  sys.exit(app.exec_())
+
