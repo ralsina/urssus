@@ -163,7 +163,21 @@ class MainWindow(QtGui.QMainWindow):
     p.setDaemon(True)
     p.start()
     processes.append(p)
-      
+    
+  def on_actionAbort_Fetches(self):
+    # stop all processes and restart the background timed fetcher
+    global processes
+    # FIXME this is buggy
+    for proc in processes:
+      proc.terminate()
+    processes=[]
+    
+    p = processing.Process(target=feedUpdater)
+    p.setDaemon(True)
+    p.start()
+    processes.append(p)
+    
+   
 def importOPML(fname):
   from xml.etree import ElementTree
   tree = ElementTree.parse(fname)
@@ -205,21 +219,17 @@ def feedUpdater(full=False):
       time.sleep(3)
 
 if __name__ == "__main__":
-  p = processing.Process(target=feedUpdater)
-  p.setDaemon(True)
-  p.start()
-  processes.append(p)
-  
   initDB()
-  
-  if not p.isAlive(): #Sometimes we get a little contention here, no big deal I hope
-    p.start()
-  
+    
   if len(sys.argv)>1:
       # Import a OPML file into the DB so we have some data to work with
       importOPML(sys.argv[1])
   app=QtGui.QApplication(sys.argv)
   window=MainWindow()
+  
+  # This will start the background fetcher as a side effect
+  window.on_actionAbort_Fetches()
+  
   window.show()
   sys.exit(app.exec_())
 

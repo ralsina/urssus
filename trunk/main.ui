@@ -75,6 +75,7 @@
    </attribute>
    <addaction name="actionFetch_Feed" />
    <addaction name="actionFetch_All_Feeds" />
+   <addaction name="actionAbort_Fetches" />
   </widget>
   <widget class="QMenuBar" name="menuBar" >
    <property name="geometry" >
@@ -112,6 +113,15 @@
    </property>
    <property name="text" >
     <string>Fetch All Feeds</string>
+   </property>
+  </action>
+  <action name="actionAbort_Fetches" >
+   <property name="icon" >
+    <iconset resource="icons/icons.qrc" >
+     <normaloff>:/stop.svg</normaloff>:/stop.svg</iconset>
+   </property>
+   <property name="text" >
+    <string>Abort Fetches</string>
    </property>
   </action>
  </widget>
