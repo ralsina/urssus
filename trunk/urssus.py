@@ -11,15 +11,15 @@ from elixir import *
 
 # Patch from http://elixir.ematia.de/trac/wiki/Recipes/GetByOrAddPattern
 def get_by_or_init(cls, if_new_set={}, **params):
-	"""Call get_by; if no object is returned, initialize an
-	object with the same parameters.  If a new object was
-	created, set any initial values."""
-	
-	result = cls.get_by(**params)
-	if not result:
-		result = cls(**params)
-		result.set(**if_new_set)
-	return result
+  """Call get_by; if no object is returned, initialize an
+  object with the same parameters.  If a new object was
+  created, set any initial values."""
+  
+  result = cls.get_by(**params)
+  if not result:
+    result = cls(**params)
+    result.set(**if_new_set)
+  return result
 
 Entity.get_by_or_init = classmethod(get_by_or_init)
 
@@ -37,6 +37,9 @@ class Feed(Entity):
     return self.text
     
   def update(self):
+    print "Updating: ", self.title
+    if not self.xmlUrl: # Not a real feed
+      return
     d=fp.parse(self.xmlUrl)
     posts=[]
     for post in d['entries']:
@@ -123,10 +126,7 @@ class MainWindow(QtGui.QMainWindow):
       
     self.ui.feeds.expandAll()
     
-    QtCore.QObject.connect(self.ui.feeds, QtCore.SIGNAL("clicked(QModelIndex)"), self.openFeed)
-    QtCore.QObject.connect(self.ui.posts, QtCore.SIGNAL("clicked(QModelIndex)"), self.openPost)
-
-  def openFeed(self, index):
+  def on_feeds_clicked(self, index):
     item=self.model.itemFromIndex(index)
     feed=item.feed
     
@@ -140,11 +140,25 @@ class MainWindow(QtGui.QMainWindow):
       self.ui.posts.__model.appendRow(item)
     self.ui.posts.setModel(self.ui.posts.__model)
       
-  def openPost(self, index):
+  def on_posts_clicked(self, index):
     item=self.ui.posts.__model.itemFromIndex(index)
     post=item.post
     self.ui.view.setHtml(post.content)
 
+  def on_actionFetch_Feed_activated(self):
+    # Start an immediate update for the current feed
+    item=self.model.itemFromIndex(self.ui.feeds.currentIndex())
+    if item and item.feed:
+      # FIXME move to out-of-process
+      item.feed.update()
+
+  def on_actionFetch_All_Feeds_activated(self):
+    # Start an immediate update for all feeds
+    print "fetching all feeds"
+    # FIXME move to out-of-process
+    for feed in Feed.query.all():
+      feed.update()
+      
 def importOPML(fname):
   from xml.etree import ElementTree
   tree = ElementTree.parse(fname)
@@ -177,7 +191,6 @@ def feedUpdater():
     now=datetime.now()
     for feed in Feed.query.filter(Feed.xmlUrl<>None):
       if (now-feed.lastUpdated).seconds>1800:
-        print "Updating: ", feed.title
         feed.update()
     print "---------------------"
     time.sleep(3)
