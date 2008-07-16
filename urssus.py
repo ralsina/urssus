@@ -69,6 +69,7 @@ class MainWindow(QtGui.QMainWindow):
     self.ui.feeds.setModel(self.model)
     
     QtCore.QObject.connect(self.ui.feeds, QtCore.SIGNAL("clicked(QModelIndex)"), self.openFeed)
+    QtCore.QObject.connect(self.ui.posts, QtCore.SIGNAL("clicked(QModelIndex)"), self.openPost)
 
   def openFeed(self, index):
     item=self.model.itemFromIndex(index)
@@ -97,6 +98,10 @@ class MainWindow(QtGui.QMainWindow):
       self.ui.posts.__model.appendRow(item)
     self.ui.posts.setModel(self.ui.posts.__model)
       
+  def openPost(self, index):
+    item=self.ui.posts.__model.itemFromIndex(index)
+    post=item.post
+    self.ui.view.setHtml(post.content)
 
 if __name__ == "__main__":
   import sys
