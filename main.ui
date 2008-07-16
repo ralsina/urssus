@@ -16,9 +16,9 @@
    <property name="geometry" >
     <rect>
      <x>0</x>
-     <y>46</y>
+     <y>70</y>
      <width>800</width>
-     <height>554</height>
+     <height>530</height>
     </rect>
    </property>
    <layout class="QHBoxLayout" name="horizontalLayout" >
@@ -61,7 +61,7 @@
      <x>0</x>
      <y>31</y>
      <width>800</width>
-     <height>15</height>
+     <height>39</height>
     </rect>
    </property>
    <property name="windowTitle" >
@@ -73,6 +73,8 @@
    <attribute name="toolBarBreak" >
     <bool>false</bool>
    </attribute>
+   <addaction name="actionFetch_Feed" />
+   <addaction name="actionFetch_All_Feeds" />
   </widget>
   <widget class="QMenuBar" name="menuBar" >
    <property name="geometry" >
@@ -84,6 +86,24 @@
     </rect>
    </property>
   </widget>
+  <action name="actionFetch_Feed" >
+   <property name="icon" >
+    <iconset resource="icons/icons.qrc" >
+     <normaloff>:/1downarrow.svg</normaloff>:/1downarrow.svg</iconset>
+   </property>
+   <property name="text" >
+    <string>Fetch Feed</string>
+   </property>
+  </action>
+  <action name="actionFetch_All_Feeds" >
+   <property name="icon" >
+    <iconset resource="icons/icons.qrc" >
+     <normaloff>:/2downarrow.svg</normaloff>:/2downarrow.svg</iconset>
+   </property>
+   <property name="text" >
+    <string>Fetch All Feeds</string>
+   </property>
+  </action>
  </widget>
  <customwidgets>
   <customwidget>
@@ -92,6 +112,8 @@
    <header>QtWebKit/QWebView</header>
   </customwidget>
  </customwidgets>
- <resources/>
+ <resources>
+  <include location="icons/icons.qrc" />
+ </resources>
  <connections/>
 </ui>
