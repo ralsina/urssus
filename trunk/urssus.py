@@ -40,21 +40,35 @@ class Feed(Entity):
     d=fp.parse(self.xmlUrl)
     posts=[]
     for post in d['entries']:
-      if 'created_parsed' in post:
-        dkey='created_parsed'
-      elif 'published_parsed' in post:
-        dkey='published_parsed'
-      elif 'modified_parsed' in post:
-        dkey='modified_parsed'
+      try:
         
-      date=datetime.fromtimestamp(time.mktime(post[dkey]))
-                                                       
-      if 'content' in post:
-        posts.append(Post.get_by_or_init(feed=self, date=date, title=post['title'], post_id=post['id'], content='<hr>'.join([ c.value for c in post['content']])))
-      elif 'summary' in post:
-        posts.append(Post.get_by_or_init(feed=self, date=date, title=post['title'], post_id=post['id'], content=post['summary']))
-      elif 'value' in post:
-        posts.append(Post.get_by_or_init(feed=self, date=date, title=post['title'], post_id=post['id'], content=post['value']))
+        # Date can be one of several fields
+        if 'created_parsed' in post:
+          dkey='created_parsed'
+        elif 'published_parsed' in post:
+          dkey='published_parsed'
+        elif 'modified_parsed' in post:
+          dkey='modified_parsed'
+        date=datetime.fromtimestamp(time.mktime(post[dkey]))
+                                
+        # So can the "unique ID for this entry"
+        if 'id' in post:
+          idkey='id'
+        elif 'link' in post:
+          idkey='link'
+       
+        # So can the content
+       
+        if 'content' in post:
+          content='<hr>'.join([ c.value for c in post['content']])
+        elif 'summary' in post:
+          content=post['summary']
+        elif 'value' in post:
+          content=post['value']
+        posts.append(Post.get_by_or_init(feed=self, date=date, title=post['title'], post_id=post[idkey], content=content))
+      except KeyError:
+        print post
+    self.lastUpdated=datetime.now()
     session.flush()
     
 class Post(Entity):
@@ -158,7 +172,7 @@ def feedUpdater():
     print "updater loop"
     now=datetime.now()
     for feed in Feed.query.filter(Feed.xmlUrl<>None):
-      if (feed.lastUpdated-now).seconds>300:
+      if (now-feed.lastUpdated).seconds>1800:
         print "Updating: ", feed.title
         feed.update()
     print "---------------------"
@@ -170,6 +184,10 @@ if __name__ == "__main__":
   p.start()
   
   initDB()
+  
+  if not p.isAlive(): #Sometimes we get a little contention here, no big deal I hope
+    p.start()
+  
   if len(sys.argv)>1:
       # Import a OPML file into the DB so we have some data to work with
       importOPML(sys.argv[1])
