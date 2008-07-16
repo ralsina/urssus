@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '/home/ralsina/Desktop/proyectos/urssus/main.ui'
 #
-# Created: Wed Jul 16 15:41:47 2008
+# Created: Wed Jul 16 15:57:44 2008
 #      by: PyQt4 UI code generator 4.4.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -14,7 +14,7 @@ class Ui_MainWindow(object):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(800,600)
         self.centralWidget = QtGui.QWidget(MainWindow)
-        self.centralWidget.setGeometry(QtCore.QRect(0,70,800,530))
+        self.centralWidget.setGeometry(QtCore.QRect(0,70,800,506))
         self.centralWidget.setObjectName("centralWidget")
         self.horizontalLayout = QtGui.QHBoxLayout(self.centralWidget)
         self.horizontalLayout.setObjectName("horizontalLayout")
@@ -44,6 +44,10 @@ class Ui_MainWindow(object):
         self.menuBar.setGeometry(QtCore.QRect(0,0,800,31))
         self.menuBar.setObjectName("menuBar")
         MainWindow.setMenuBar(self.menuBar)
+        self.statusBar = QtGui.QStatusBar(MainWindow)
+        self.statusBar.setGeometry(QtCore.QRect(0,576,800,24))
+        self.statusBar.setObjectName("statusBar")
+        MainWindow.setStatusBar(self.statusBar)
         self.actionFetch_Feed = QtGui.QAction(MainWindow)
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap(":/1downarrow.svg"),QtGui.QIcon.Normal,QtGui.QIcon.Off)
