@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '/home/ralsina/Desktop/proyectos/urssus/main.ui'
 #
-# Created: Wed Jul 16 15:28:56 2008
+# Created: Wed Jul 16 15:41:47 2008
 #      by: PyQt4 UI code generator 4.4.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -14,7 +14,7 @@ class Ui_MainWindow(object):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(800,600)
         self.centralWidget = QtGui.QWidget(MainWindow)
-        self.centralWidget.setGeometry(QtCore.QRect(0,46,800,554))
+        self.centralWidget.setGeometry(QtCore.QRect(0,70,800,530))
         self.centralWidget.setObjectName("centralWidget")
         self.horizontalLayout = QtGui.QHBoxLayout(self.centralWidget)
         self.horizontalLayout.setObjectName("horizontalLayout")
@@ -37,13 +37,25 @@ class Ui_MainWindow(object):
         self.horizontalLayout.addWidget(self.splitter_2)
         MainWindow.setCentralWidget(self.centralWidget)
         self.toolBar = QtGui.QToolBar(MainWindow)
-        self.toolBar.setGeometry(QtCore.QRect(0,31,800,15))
+        self.toolBar.setGeometry(QtCore.QRect(0,31,800,39))
         self.toolBar.setObjectName("toolBar")
         MainWindow.addToolBar(QtCore.Qt.TopToolBarArea,self.toolBar)
         self.menuBar = QtGui.QMenuBar(MainWindow)
         self.menuBar.setGeometry(QtCore.QRect(0,0,800,31))
         self.menuBar.setObjectName("menuBar")
         MainWindow.setMenuBar(self.menuBar)
+        self.actionFetch_Feed = QtGui.QAction(MainWindow)
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap(":/1downarrow.svg"),QtGui.QIcon.Normal,QtGui.QIcon.Off)
+        self.actionFetch_Feed.setIcon(icon)
+        self.actionFetch_Feed.setObjectName("actionFetch_Feed")
+        self.actionFetch_All_Feeds = QtGui.QAction(MainWindow)
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap(":/2downarrow.svg"),QtGui.QIcon.Normal,QtGui.QIcon.Off)
+        self.actionFetch_All_Feeds.setIcon(icon)
+        self.actionFetch_All_Feeds.setObjectName("actionFetch_All_Feeds")
+        self.toolBar.addAction(self.actionFetch_Feed)
+        self.toolBar.addAction(self.actionFetch_All_Feeds)
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
@@ -51,8 +63,11 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(QtGui.QApplication.translate("MainWindow", "uRSSus", None, QtGui.QApplication.UnicodeUTF8))
         self.toolBar.setWindowTitle(QtGui.QApplication.translate("MainWindow", "toolBar", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionFetch_Feed.setText(QtGui.QApplication.translate("MainWindow", "Fetch Feed", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionFetch_All_Feeds.setText(QtGui.QApplication.translate("MainWindow", "Fetch All Feeds", None, QtGui.QApplication.UnicodeUTF8))
 
 from PyQt4 import QtWebKit
+import icons_rc
 
 if __name__ == "__main__":
     import sys
