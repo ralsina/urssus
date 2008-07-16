@@ -41,7 +41,6 @@ class Feed(Entity):
     posts=[]
     for post in d['entries']:
       try:
-        
         # Date can be one of several fields
         if 'created_parsed' in post:
           dkey='created_parsed'
@@ -49,8 +48,13 @@ class Feed(Entity):
           dkey='published_parsed'
         elif 'modified_parsed' in post:
           dkey='modified_parsed'
-        date=datetime.fromtimestamp(time.mktime(post[dkey]))
-                                
+        else:
+          dkey=None
+        if dkey and post[dkey]:
+          date=datetime.fromtimestamp(time.mktime(post[dkey]))
+        else:
+          date=datetime.now()
+        
         # So can the "unique ID for this entry"
         if 'id' in post:
           idkey='id'
@@ -128,7 +132,7 @@ class MainWindow(QtGui.QMainWindow):
     
     if not feed.xmlUrl:
       return
-    posts=Post.query.filter(Post.feed==feed).order_by(Post.date)
+    posts=Post.query.filter(Post.feed==feed).order_by("-date")
     self.ui.posts.__model=QtGui.QStandardItemModel()
     for post in posts:
       item=QtGui.QStandardItem(post.title)
