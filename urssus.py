@@ -3,6 +3,9 @@
 import sys, os, time, processing
 from datetime import datetime, timedelta
 
+# References to background processes
+processes=[]
+
 # Mark Pilgrim's feed parser
 import feedparser as fp
 
@@ -154,10 +157,12 @@ class MainWindow(QtGui.QMainWindow):
 
   def on_actionFetch_All_Feeds_activated(self):
     # Start an immediate update for all feeds
+    # FIXME this thriggers twice?
     print "fetching all feeds"
-    # FIXME move to out-of-process
-    for feed in Feed.query.all():
-      feed.update()
+    p = processing.Process(target=feedUpdater, args=(True, ))
+    p.setDaemon(True)
+    p.start()
+    processes.append(p)
       
 def importOPML(fname):
   from xml.etree import ElementTree
@@ -184,21 +189,26 @@ def importOPML(fname):
     session.flush()
 
 # The feed updater (runs out-of-process)
-def feedUpdater():
+def feedUpdater(full=False):
   initDB()
-  while True:
-    print "updater loop"
-    now=datetime.now()
-    for feed in Feed.query.filter(Feed.xmlUrl<>None):
-      if (now-feed.lastUpdated).seconds>1800:
+  if full:
+      for feed in Feed.query.filter(Feed.xmlUrl<>None):
         feed.update()
-    print "---------------------"
-    time.sleep(3)
+  else:
+    while True:
+      print "updater loop"
+      now=datetime.now()
+      for feed in Feed.query.filter(Feed.xmlUrl<>None):
+        if (now-feed.lastUpdated).seconds>1800:
+          feed.update()
+      print "---------------------"
+      time.sleep(3)
 
 if __name__ == "__main__":
   p = processing.Process(target=feedUpdater)
   p.setDaemon(True)
   p.start()
+  processes.append(p)
   
   initDB()
   
