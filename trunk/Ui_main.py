@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '/home/ralsina/Desktop/proyectos/urssus/main.ui'
 #
-# Created: Tue Jul 15 23:37:47 2008
+# Created: Wed Jul 16 15:22:53 2008
 #      by: PyQt4 UI code generator 4.4.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -22,6 +22,9 @@ class Ui_MainWindow(object):
         self.splitter_2.setOrientation(QtCore.Qt.Horizontal)
         self.splitter_2.setObjectName("splitter_2")
         self.feeds = QtGui.QTreeView(self.splitter_2)
+        self.feeds.setAlternatingRowColors(True)
+        self.feeds.setAnimated(True)
+        self.feeds.setHeaderHidden(True)
         self.feeds.setObjectName("feeds")
         self.splitter = QtGui.QSplitter(self.splitter_2)
         self.splitter.setOrientation(QtCore.Qt.Vertical)
