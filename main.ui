@@ -16,24 +16,46 @@
    <property name="geometry" >
     <rect>
      <x>0</x>
-     <y>38</y>
+     <y>46</y>
      <width>800</width>
-     <height>562</height>
+     <height>554</height>
     </rect>
    </property>
-   <layout class="QHBoxLayout" name="horizontalLayout" >
-    <item>
-     <widget class="QTreeView" name="feeds" />
-    </item>
-   </layout>
+   <widget class="QSplitter" name="splitter_2" >
+    <property name="geometry" >
+     <rect>
+      <x>9</x>
+      <y>9</y>
+      <width>1062</width>
+      <height>798</height>
+     </rect>
+    </property>
+    <property name="orientation" >
+     <enum>Qt::Horizontal</enum>
+    </property>
+    <widget class="QTreeView" name="feeds" />
+    <widget class="QSplitter" name="splitter" >
+     <property name="orientation" >
+      <enum>Qt::Vertical</enum>
+     </property>
+     <widget class="QListView" name="posts" />
+     <widget class="QWebView" name="view" >
+      <property name="url" >
+       <url>
+        <string>about:blank</string>
+       </url>
+      </property>
+     </widget>
+    </widget>
+   </widget>
   </widget>
   <widget class="QToolBar" name="toolBar" >
    <property name="geometry" >
     <rect>
      <x>0</x>
-     <y>27</y>
+     <y>31</y>
      <width>800</width>
-     <height>11</height>
+     <height>15</height>
     </rect>
    </property>
    <property name="windowTitle" >
@@ -52,11 +74,18 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>27</height>
+     <height>31</height>
     </rect>
    </property>
   </widget>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QWebView</class>
+   <extends>QWidget</extends>
+   <header>QtWebKit/QWebView</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>
