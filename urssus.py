@@ -156,6 +156,7 @@ class MainWindow(QtGui.QMainWindow):
       item.feed.update()
 
   def on_actionFetch_All_Feeds_activated(self):
+    global processes
     # Start an immediate update for all feeds
     # FIXME this thriggers twice?
     print "fetching all feeds"
@@ -164,18 +165,20 @@ class MainWindow(QtGui.QMainWindow):
     p.start()
     processes.append(p)
     
-  def on_actionAbort_Fetches(self):
-    # stop all processes and restart the background timed fetcher
+  def on_actionAbort_Fetches_activated(self):
     global processes
-    # FIXME this is buggy
+    print "Aborting all fetches ", processes
+    # stop all processes and restart the background timed fetcher
     for proc in processes:
       proc.terminate()
+      print "Terminated: ", proc.isAlive(), proc.getExitCode()
     processes=[]
     
     p = processing.Process(target=feedUpdater)
     p.setDaemon(True)
     p.start()
     processes.append(p)
+    print "processes ", processes
     
    
 def importOPML(fname):
@@ -211,12 +214,13 @@ def feedUpdater(full=False):
   else:
     while True:
       print "updater loop"
+      time.sleep(60)
       now=datetime.now()
       for feed in Feed.query.filter(Feed.xmlUrl<>None):
         if (now-feed.lastUpdated).seconds>1800:
+          print "updating because of timeout"
           feed.update()
       print "---------------------"
-      time.sleep(3)
 
 if __name__ == "__main__":
   initDB()
@@ -228,7 +232,7 @@ if __name__ == "__main__":
   window=MainWindow()
   
   # This will start the background fetcher as a side effect
-  window.on_actionAbort_Fetches()
+  window.on_actionAbort_Fetches_activated()
   
   window.show()
   sys.exit(app.exec_())
