@@ -1,5 +1,6 @@
 <RCC>
   <qresource prefix="/" >
+    <file>exit.svg</file>
     <file>urssus.jpg</file>
     <file>apply.svg</file>
     <file>stop.svg</file>

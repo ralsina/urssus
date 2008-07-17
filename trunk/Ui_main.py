@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '/home/ralsina/Desktop/proyectos/urssus/main.ui'
 #
-# Created: Thu Jul 17 11:04:24 2008
+# Created: Thu Jul 17 11:37:45 2008
 #      by: PyQt4 UI code generator 4.4.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -45,6 +45,8 @@ class Ui_MainWindow(object):
         self.menuBar.setObjectName("menuBar")
         self.menuFeed = QtGui.QMenu(self.menuBar)
         self.menuFeed.setObjectName("menuFeed")
+        self.menu_File = QtGui.QMenu(self.menuBar)
+        self.menu_File.setObjectName("menu_File")
         MainWindow.setMenuBar(self.menuBar)
         self.statusBar = QtGui.QStatusBar(MainWindow)
         self.statusBar.setGeometry(QtCore.QRect(0,576,800,24))
@@ -70,6 +72,15 @@ class Ui_MainWindow(object):
         icon.addPixmap(QtGui.QPixmap(":/apply.svg"),QtGui.QIcon.Normal,QtGui.QIcon.Off)
         self.actionMark_Feed_as_Read.setIcon(icon)
         self.actionMark_Feed_as_Read.setObjectName("actionMark_Feed_as_Read")
+        self.actionImport_Feeds = QtGui.QAction(MainWindow)
+        self.actionImport_Feeds.setObjectName("actionImport_Feeds")
+        self.actionExport_Feeds = QtGui.QAction(MainWindow)
+        self.actionExport_Feeds.setObjectName("actionExport_Feeds")
+        self.actionQuit = QtGui.QAction(MainWindow)
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap(":/exit.svg"),QtGui.QIcon.Normal,QtGui.QIcon.Off)
+        self.actionQuit.setIcon(icon)
+        self.actionQuit.setObjectName("actionQuit")
         self.toolBar.addAction(self.actionFetch_Feed)
         self.toolBar.addAction(self.actionFetch_All_Feeds)
         self.toolBar.addAction(self.actionAbort_Fetches)
@@ -80,6 +91,11 @@ class Ui_MainWindow(object):
         self.menuFeed.addAction(self.actionFetch_Feed)
         self.menuFeed.addAction(self.actionFetch_All_Feeds)
         self.menuFeed.addAction(self.actionAbort_Fetches)
+        self.menu_File.addAction(self.actionImport_Feeds)
+        self.menu_File.addAction(self.actionExport_Feeds)
+        self.menu_File.addSeparator()
+        self.menu_File.addAction(self.actionQuit)
+        self.menuBar.addAction(self.menu_File.menuAction())
         self.menuBar.addAction(self.menuFeed.menuAction())
 
         self.retranslateUi(MainWindow)
@@ -89,6 +105,7 @@ class Ui_MainWindow(object):
         MainWindow.setWindowTitle(QtGui.QApplication.translate("MainWindow", "uRSSus", None, QtGui.QApplication.UnicodeUTF8))
         self.toolBar.setWindowTitle(QtGui.QApplication.translate("MainWindow", "toolBar", None, QtGui.QApplication.UnicodeUTF8))
         self.menuFeed.setTitle(QtGui.QApplication.translate("MainWindow", "Fee&d", None, QtGui.QApplication.UnicodeUTF8))
+        self.menu_File.setTitle(QtGui.QApplication.translate("MainWindow", "&File", None, QtGui.QApplication.UnicodeUTF8))
         self.actionFetch_Feed.setText(QtGui.QApplication.translate("MainWindow", "Fetch Feed", None, QtGui.QApplication.UnicodeUTF8))
         self.actionFetch_Feed.setShortcut(QtGui.QApplication.translate("MainWindow", "F5", None, QtGui.QApplication.UnicodeUTF8))
         self.actionFetch_All_Feeds.setText(QtGui.QApplication.translate("MainWindow", "Fetch All Feeds", None, QtGui.QApplication.UnicodeUTF8))
@@ -97,6 +114,10 @@ class Ui_MainWindow(object):
         self.actionAbort_Fetches.setShortcut(QtGui.QApplication.translate("MainWindow", "Esc", None, QtGui.QApplication.UnicodeUTF8))
         self.actionMark_Feed_as_Read.setText(QtGui.QApplication.translate("MainWindow", "Mark Feed as Read", None, QtGui.QApplication.UnicodeUTF8))
         self.actionMark_Feed_as_Read.setShortcut(QtGui.QApplication.translate("MainWindow", "Ctrl+R", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionImport_Feeds.setText(QtGui.QApplication.translate("MainWindow", "&Import Feeds...", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionExport_Feeds.setText(QtGui.QApplication.translate("MainWindow", "&Export Feeds...", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionQuit.setText(QtGui.QApplication.translate("MainWindow", "&Quit", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionQuit.setShortcut(QtGui.QApplication.translate("MainWindow", "Ctrl+Q", None, QtGui.QApplication.UnicodeUTF8))
 
 from PyQt4 import QtWebKit
 import icons_rc

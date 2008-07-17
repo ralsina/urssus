@@ -98,6 +98,16 @@
     <addaction name="actionFetch_All_Feeds" />
     <addaction name="actionAbort_Fetches" />
    </widget>
+   <widget class="QMenu" name="menu_File" >
+    <property name="title" >
+     <string>&amp;File</string>
+    </property>
+    <addaction name="actionImport_Feeds" />
+    <addaction name="actionExport_Feeds" />
+    <addaction name="separator" />
+    <addaction name="actionQuit" />
+   </widget>
+   <addaction name="menu_File" />
    <addaction name="menuFeed" />
   </widget>
   <widget class="QStatusBar" name="statusBar" >
@@ -156,6 +166,28 @@
    </property>
    <property name="shortcut" >
     <string>Ctrl+R</string>
+   </property>
+  </action>
+  <action name="actionImport_Feeds" >
+   <property name="text" >
+    <string>&amp;Import Feeds...</string>
+   </property>
+  </action>
+  <action name="actionExport_Feeds" >
+   <property name="text" >
+    <string>&amp;Export Feeds...</string>
+   </property>
+  </action>
+  <action name="actionQuit" >
+   <property name="icon" >
+    <iconset resource="images/icons.qrc" >
+     <normaloff>:/exit.svg</normaloff>:/exit.svg</iconset>
+   </property>
+   <property name="text" >
+    <string>&amp;Quit</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+Q</string>
    </property>
   </action>
  </widget>
