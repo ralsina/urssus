@@ -76,6 +76,7 @@
    <addaction name="actionFetch_Feed" />
    <addaction name="actionFetch_All_Feeds" />
    <addaction name="actionAbort_Fetches" />
+   <addaction name="actionMark_Feed_as_Read" />
   </widget>
   <widget class="QMenuBar" name="menuBar" >
    <property name="geometry" >
@@ -122,6 +123,15 @@
    </property>
    <property name="text" >
     <string>Abort Fetches</string>
+   </property>
+  </action>
+  <action name="actionMark_Feed_as_Read" >
+   <property name="icon" >
+    <iconset resource="icons/icons.qrc" >
+     <normaloff>:/apply.svg</normaloff>:/apply.svg</iconset>
+   </property>
+   <property name="text" >
+    <string>Mark Feed as Read</string>
    </property>
   </action>
  </widget>

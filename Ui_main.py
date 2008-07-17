@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '/home/ralsina/Desktop/proyectos/urssus/main.ui'
 #
-# Created: Wed Jul 16 16:42:55 2008
+# Created: Wed Jul 16 22:08:46 2008
 #      by: PyQt4 UI code generator 4.4.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -63,9 +63,15 @@ class Ui_MainWindow(object):
         icon.addPixmap(QtGui.QPixmap(":/stop.svg"),QtGui.QIcon.Normal,QtGui.QIcon.Off)
         self.actionAbort_Fetches.setIcon(icon)
         self.actionAbort_Fetches.setObjectName("actionAbort_Fetches")
+        self.actionMark_Feed_as_Read = QtGui.QAction(MainWindow)
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap(":/apply.svg"),QtGui.QIcon.Normal,QtGui.QIcon.Off)
+        self.actionMark_Feed_as_Read.setIcon(icon)
+        self.actionMark_Feed_as_Read.setObjectName("actionMark_Feed_as_Read")
         self.toolBar.addAction(self.actionFetch_Feed)
         self.toolBar.addAction(self.actionFetch_All_Feeds)
         self.toolBar.addAction(self.actionAbort_Fetches)
+        self.toolBar.addAction(self.actionMark_Feed_as_Read)
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
@@ -76,6 +82,7 @@ class Ui_MainWindow(object):
         self.actionFetch_Feed.setText(QtGui.QApplication.translate("MainWindow", "Fetch Feed", None, QtGui.QApplication.UnicodeUTF8))
         self.actionFetch_All_Feeds.setText(QtGui.QApplication.translate("MainWindow", "Fetch All Feeds", None, QtGui.QApplication.UnicodeUTF8))
         self.actionAbort_Fetches.setText(QtGui.QApplication.translate("MainWindow", "Abort Fetches", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionMark_Feed_as_Read.setText(QtGui.QApplication.translate("MainWindow", "Mark Feed as Read", None, QtGui.QApplication.UnicodeUTF8))
 
 from PyQt4 import QtWebKit
 import icons_rc
