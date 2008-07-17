@@ -1,9 +1,16 @@
 # -*- coding: utf-8 -*-
 
-import sys, os, time, processing
+import sys, os, time
 from datetime import datetime, timedelta
 
+# Templates
+from mako.template import Template
+from mako.lookup import TemplateLookup
+# FIXME: when deploying make this work
+tmplLookup=TemplateLookup(directories='templates')
+
 # References to background processes
+import processing
 processes=[]
 
 # Mark Pilgrim's feed parser
@@ -109,9 +116,12 @@ class Feed(Entity):
         if not author:
           author=None
           
+        # The link should be simple ;-)
+        link=post['link']
+          
         posts.append(Post.get_by_or_init(feed=self, date=date, title=post['title'], 
                                          post_id=post[idkey], content=content, 
-                                         author=author))
+                                         author=author, link=link))
       except KeyError:
         print post
     self.lastUpdated=datetime.now()
@@ -125,6 +135,7 @@ class Post(Entity):
   date        = Field(DateTime)
   unread      = Field(Boolean, default=True)
   author      = Field(Text)
+  link        = Field(Text)
 
 def initDB():
   # This is just temporary
@@ -187,14 +198,14 @@ class MainWindow(QtGui.QMainWindow):
     post=item.post
     post.unread=False
     session.flush()
-    self.ui.view.setHtml(post.content)
+    self.ui.view.setHtml(tmplLookup.get_template('post.tmpl').render_unicode(post=post))
 
   def on_actionImport_Feeds_triggered(self, i=None):
     if i==None: return
-    fname = QtGui.QFileDialog.getOpenFileName(self, "Open OPML file", os.getcwd(), 
-                                              "OPML files (*.opml *.xml)")
+    fname = unicode(QtGui.QFileDialog.getOpenFileName(self, "Open OPML file", os.getcwd(), 
+                                              "OPML files (*.opml *.xml)"))
     if fname:
-      self.importOPML(fname)
+      importOPML(fname)
       
   def on_actionQuit_triggered(self, i=None):
     if i==None: return
