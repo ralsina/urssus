@@ -297,14 +297,16 @@ class MainWindow(QtGui.QMainWindow):
         self.ui.posts.setCurrentIndex(nextIndex)
       else: # This was the last item here, need to go somewhere else
         print "At last post"
-        #FIXME: need to go to the next feed and open the first post
+        self.on_actionNext_Feed_triggered(True)
+        self.on_actionNext_Article_triggered(True)
     else:
       # Is there any item in this model?
       if self.ui.posts.model() and self.ui.posts.__model.rowCount()>0:
         self.ui.posts.setCurrentIndex(self.ui.posts.__model.indexFromItem(self.ui.posts.__model.item(0)))
       else: # No items here, we need to go somewhere else
         print "No posts"
-        #FIXME: needs to go to the next feed and open the frst post
+        self.on_actionNext_Feed_triggered(True)
+        self.on_actionNext_Article_triggered(True)
     self.on_posts_clicked(self.ui.posts.currentIndex())
 
   def on_actionNext_Feed_triggered(self, i=None):
