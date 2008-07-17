@@ -237,6 +237,10 @@
    </property>
   </action>
   <action name="actionNext_Feed" >
+   <property name="icon" >
+    <iconset resource="images/icons.qrc" >
+     <normaloff>:/folder.svg</normaloff>:/folder.svg</iconset>
+   </property>
    <property name="text" >
     <string>Next &amp;Feed</string>
    </property>

@@ -193,8 +193,12 @@ class MainWindow(QtGui.QMainWindow):
       nn=QtGui.QStandardItem(unicode(node))
       parent.appendRow(nn)
       nn.feed=node
-      for child in node.children:
-        addSubTree(nn, child)
+      if node.children:
+        nn.setIcon(QtGui.QIcon(":/folder.svg"))
+        for child in node.children:
+          addSubTree(nn, child)
+      else:
+        nn.setIcon(QtGui.QIcon(":/urssus.svg"))
       return nn
           
     roots=Feed.query.filter(Feed.parent==None)
