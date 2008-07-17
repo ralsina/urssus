@@ -154,24 +154,35 @@ class MainWindow(QtGui.QMainWindow):
     session.flush()
     self.ui.view.setHtml(post.content)
 
-  def on_actionQuit_activated(self):
+  def on_actionImport_Feeds_triggered(self, i=None):
+    if i==None: return
+    fname = QtGui.QFileDialog.getOpenFileName(self, "Open OPML file", os.getcwd(), 
+                                              "OPML files (*.opml *.xml)")
+    if fname:
+      self.importOPML(fname)
+      
+  def on_actionQuit_triggered(self, i=None):
+    if i==None: return
     QtGui.QApplication.instance().quit()
 
-  def on_actionMark_Feed_as_Read_activated(self):
+  def on_actionMark_Feed_as_Read_triggered(self, i=None):
+    if i==None: return
     item=self.model.itemFromIndex(self.ui.feeds.currentIndex())
     if item and item.feed:
       for post in item.feed.posts:
         post.unread=False
       session.flush()
 
-  def on_actionFetch_Feed_activated(self):
+  def on_actionFetch_Feed_triggered(self, i=None):
+    if i==None: return
     # Start an immediate update for the current feed
     item=self.model.itemFromIndex(self.ui.feeds.currentIndex())
     if item and item.feed:
       # FIXME move to out-of-process
       item.feed.update()
 
-  def on_actionFetch_All_Feeds_activated(self):
+  def on_actionFetch_All_Feeds_triggered(self, i=None):
+    if i==None: return
     global processes
     # Start an immediate update for all feeds
     # FIXME this thriggers twice?
@@ -181,7 +192,8 @@ class MainWindow(QtGui.QMainWindow):
     p.start()
     processes.append(p)
     
-  def on_actionAbort_Fetches_activated(self):
+  def on_actionAbort_Fetches_triggered(self, i=None):
+    if i==None: return
     global processes
     print "Aborting all fetches ", processes
     # stop all processes and restart the background timed fetcher
@@ -230,13 +242,13 @@ def feedUpdater(full=False):
   else:
     while True:
       print "updater loop"
-      time.sleep(60)
       now=datetime.now()
       for feed in Feed.query.filter(Feed.xmlUrl<>None):
         if (now-feed.lastUpdated).seconds>1800:
           print "updating because of timeout"
           feed.update()
       print "---------------------"
+      time.sleep(60)
 
 if __name__ == "__main__":
   initDB()
@@ -248,7 +260,7 @@ if __name__ == "__main__":
   window=MainWindow()
   
   # This will start the background fetcher as a side effect
-  window.on_actionAbort_Fetches_activated()
+  window.on_actionAbort_Fetches_triggered(True)
   
   window.show()
   sys.exit(app.exec_())
