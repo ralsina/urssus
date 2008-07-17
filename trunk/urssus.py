@@ -242,7 +242,10 @@ class MainWindow(QtGui.QMainWindow):
     feed=item.feed
     
     if not feed or not feed.xmlUrl:
+      # FIXME: implement "aggregated feeds" when the user clicks on a folder
       return
+    self.setWindowTitle("%s - uRSSus"%feed.title)
+      
     posts=Post.query.filter(Post.feed==feed).order_by("-date")
     self.ui.posts.__model=QtGui.QStandardItemModel()
     for post in posts:
