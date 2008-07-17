@@ -89,7 +89,6 @@ class Feed(Entity):
         elif 'value' in post:
           content=post['value']
          
-        # FIXME: doesn'twork right with DanShanoff.com 
         # Author if available, else None
         author=''
         # First, we may have author_detail, which is the nicer one
@@ -105,7 +104,7 @@ class Feed(Entity):
           # Which may have the same detail as the author's
           author+=' - '.join([ detailToAuthor(contrib) for contrib in post[contributors]])
         if not author:
-          # Ok, how about using the feed's author, or 
+          #FIXME: how about using the feed's author, or something like that
           author=None
           
         # The link should be simple ;-)
