@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '/home/ralsina/Desktop/proyectos/urssus/main.ui'
 #
-# Created: Thu Jul 17 14:40:45 2008
+# Created: Thu Jul 17 15:13:28 2008
 #      by: PyQt4 UI code generator 4.4.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -97,6 +97,10 @@ class Ui_MainWindow(object):
         self.actionNext_Article.setObjectName("actionNext_Article")
         self.actionNext_Unread_Article = QtGui.QAction(MainWindow)
         self.actionNext_Unread_Article.setObjectName("actionNext_Unread_Article")
+        self.actionNext_Feed = QtGui.QAction(MainWindow)
+        self.actionNext_Feed.setObjectName("actionNext_Feed")
+        self.actionNext_Unread_Feed = QtGui.QAction(MainWindow)
+        self.actionNext_Unread_Feed.setObjectName("actionNext_Unread_Feed")
         self.toolBar.addAction(self.actionFetch_Feed)
         self.toolBar.addAction(self.actionFetch_All_Feeds)
         self.toolBar.addAction(self.actionAbort_Fetches)
@@ -114,6 +118,9 @@ class Ui_MainWindow(object):
         self.menu_Go.addSeparator()
         self.menu_Go.addAction(self.actionNext_Article)
         self.menu_Go.addAction(self.actionNext_Unread_Article)
+        self.menu_Go.addSeparator()
+        self.menu_Go.addAction(self.actionNext_Feed)
+        self.menu_Go.addAction(self.actionNext_Unread_Feed)
         self.menuBar.addAction(self.menu_File.menuAction())
         self.menuBar.addAction(self.menu_Go.menuAction())
         self.menuBar.addAction(self.menuFeed.menuAction())
@@ -142,6 +149,9 @@ class Ui_MainWindow(object):
         self.actionNext_Article.setText(QtGui.QApplication.translate("MainWindow", "&Next Article", None, QtGui.QApplication.UnicodeUTF8))
         self.actionNext_Unread_Article.setText(QtGui.QApplication.translate("MainWindow", "Ne&xt Unread Article", None, QtGui.QApplication.UnicodeUTF8))
         self.actionNext_Unread_Article.setShortcut(QtGui.QApplication.translate("MainWindow", "+", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionNext_Feed.setText(QtGui.QApplication.translate("MainWindow", "Next &Feed", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionNext_Feed.setShortcut(QtGui.QApplication.translate("MainWindow", "N", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionNext_Unread_Feed.setText(QtGui.QApplication.translate("MainWindow", "N&ext Unread Feed", None, QtGui.QApplication.UnicodeUTF8))
 
 from PyQt4 import QtWebKit
 import icons_rc
