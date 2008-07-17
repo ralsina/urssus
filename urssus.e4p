@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE Project SYSTEM "Project-4.2.dtd">
 <!-- eric4 project file for project urssus -->
-<!-- Saved: 2008-07-17, 11:26:33 -->
+<!-- Saved: 2008-07-17, 12:46:41 -->
 <!-- Copyright (C) 2008 Roberto Alsina, ralsina@netmanagers.com.ar -->
 <Project version="4.2">
   <ProgLanguage mixed="0">Python</ProgLanguage>
@@ -42,6 +42,10 @@
   <Interfaces>
   </Interfaces>
   <Others>
+    <Other>
+      <Dir>templates</Dir>
+      <Name>post.tmpl</Name>
+    </Other>
   </Others>
   <MainScript>
     <Name>urssus.py</Name>
