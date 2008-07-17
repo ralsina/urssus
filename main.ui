@@ -112,7 +112,7 @@
   </widget>
   <action name="actionFetch_Feed" >
    <property name="icon" >
-    <iconset resource="icons/icons.qrc" >
+    <iconset resource="images/icons.qrc" >
      <normaloff>:/1downarrow.svg</normaloff>:/1downarrow.svg</iconset>
    </property>
    <property name="text" >
@@ -124,7 +124,7 @@
   </action>
   <action name="actionFetch_All_Feeds" >
    <property name="icon" >
-    <iconset resource="icons/icons.qrc" >
+    <iconset resource="images/icons.qrc" >
      <normaloff>:/2downarrow.svg</normaloff>:/2downarrow.svg</iconset>
    </property>
    <property name="text" >
@@ -136,7 +136,7 @@
   </action>
   <action name="actionAbort_Fetches" >
    <property name="icon" >
-    <iconset resource="icons/icons.qrc" >
+    <iconset resource="images/icons.qrc" >
      <normaloff>:/stop.svg</normaloff>:/stop.svg</iconset>
    </property>
    <property name="text" >
@@ -148,7 +148,7 @@
   </action>
   <action name="actionMark_Feed_as_Read" >
    <property name="icon" >
-    <iconset resource="icons/icons.qrc" >
+    <iconset resource="images/icons.qrc" >
      <normaloff>:/apply.svg</normaloff>:/apply.svg</iconset>
    </property>
    <property name="text" >
@@ -167,7 +167,7 @@
   </customwidget>
  </customwidgets>
  <resources>
-  <include location="icons/icons.qrc" />
+  <include location="images/icons.qrc" />
  </resources>
  <connections/>
 </ui>
