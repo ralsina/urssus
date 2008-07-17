@@ -154,6 +154,9 @@ class MainWindow(QtGui.QMainWindow):
     session.flush()
     self.ui.view.setHtml(post.content)
 
+  def on_actionQuit_activated(self):
+    QtGui.QApplication.instance().quit()
+
   def on_actionMark_Feed_as_Read_activated(self):
     item=self.model.itemFromIndex(self.ui.feeds.currentIndex())
     if item and item.feed:
