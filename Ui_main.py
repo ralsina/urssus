@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '/home/ralsina/Desktop/proyectos/urssus/main.ui'
 #
-# Created: Thu Jul 17 14:34:22 2008
+# Created: Thu Jul 17 14:40:45 2008
 #      by: PyQt4 UI code generator 4.4.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -13,6 +13,9 @@ class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(800,600)
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap(":/urssus.svg"),QtGui.QIcon.Normal,QtGui.QIcon.Off)
+        MainWindow.setWindowIcon(icon)
         self.centralWidget = QtGui.QWidget(MainWindow)
         self.centralWidget.setGeometry(QtCore.QRect(0,70,800,506))
         self.centralWidget.setObjectName("centralWidget")
@@ -42,6 +45,9 @@ class Ui_MainWindow(object):
         MainWindow.setCentralWidget(self.centralWidget)
         self.toolBar = QtGui.QToolBar(MainWindow)
         self.toolBar.setGeometry(QtCore.QRect(0,31,800,39))
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap(":/urssus.svg"),QtGui.QIcon.Normal,QtGui.QIcon.Off)
+        self.toolBar.setWindowIcon(icon)
         self.toolBar.setObjectName("toolBar")
         MainWindow.addToolBar(QtCore.Qt.TopToolBarArea,self.toolBar)
         self.menuBar = QtGui.QMenuBar(MainWindow)
