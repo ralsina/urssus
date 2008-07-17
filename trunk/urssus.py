@@ -125,8 +125,9 @@ class MainWindow(QtGui.QMainWindow):
       return nn
           
     roots=Feed.query.filter(Feed.parent==None)
-    iroot=self.model.invisibleRootItem()
+    iroot=QtGui.QStandardItem("All Feeds")
     iroot.feed=None
+    self.model.appendRow(iroot)
     for root in roots:
       nn=addSubTree(iroot, root)
       
@@ -136,7 +137,7 @@ class MainWindow(QtGui.QMainWindow):
     item=self.model.itemFromIndex(index)
     feed=item.feed
     
-    if not feed.xmlUrl:
+    if not feed or not feed.xmlUrl:
       return
     posts=Post.query.filter(Post.feed==feed).order_by("-date")
     self.ui.posts.__model=QtGui.QStandardItemModel()
