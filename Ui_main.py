@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '/home/ralsina/Desktop/proyectos/urssus/main.ui'
 #
-# Created: Wed Jul 16 22:08:46 2008
+# Created: Wed Jul 16 22:14:40 2008
 #      by: PyQt4 UI code generator 4.4.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -80,9 +80,13 @@ class Ui_MainWindow(object):
         MainWindow.setWindowTitle(QtGui.QApplication.translate("MainWindow", "uRSSus", None, QtGui.QApplication.UnicodeUTF8))
         self.toolBar.setWindowTitle(QtGui.QApplication.translate("MainWindow", "toolBar", None, QtGui.QApplication.UnicodeUTF8))
         self.actionFetch_Feed.setText(QtGui.QApplication.translate("MainWindow", "Fetch Feed", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionFetch_Feed.setShortcut(QtGui.QApplication.translate("MainWindow", "F5", None, QtGui.QApplication.UnicodeUTF8))
         self.actionFetch_All_Feeds.setText(QtGui.QApplication.translate("MainWindow", "Fetch All Feeds", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionFetch_All_Feeds.setShortcut(QtGui.QApplication.translate("MainWindow", "Ctrl+L", None, QtGui.QApplication.UnicodeUTF8))
         self.actionAbort_Fetches.setText(QtGui.QApplication.translate("MainWindow", "Abort Fetches", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionAbort_Fetches.setShortcut(QtGui.QApplication.translate("MainWindow", "Esc", None, QtGui.QApplication.UnicodeUTF8))
         self.actionMark_Feed_as_Read.setText(QtGui.QApplication.translate("MainWindow", "Mark Feed as Read", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionMark_Feed_as_Read.setShortcut(QtGui.QApplication.translate("MainWindow", "Ctrl+R", None, QtGui.QApplication.UnicodeUTF8))
 
 from PyQt4 import QtWebKit
 import icons_rc

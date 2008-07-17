@@ -106,6 +106,9 @@
    <property name="text" >
     <string>Fetch Feed</string>
    </property>
+   <property name="shortcut" >
+    <string>F5</string>
+   </property>
   </action>
   <action name="actionFetch_All_Feeds" >
    <property name="icon" >
@@ -114,6 +117,9 @@
    </property>
    <property name="text" >
     <string>Fetch All Feeds</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+L</string>
    </property>
   </action>
   <action name="actionAbort_Fetches" >
@@ -124,6 +130,9 @@
    <property name="text" >
     <string>Abort Fetches</string>
    </property>
+   <property name="shortcut" >
+    <string>Esc</string>
+   </property>
   </action>
   <action name="actionMark_Feed_as_Read" >
    <property name="icon" >
@@ -132,6 +141,9 @@
    </property>
    <property name="text" >
     <string>Mark Feed as Read</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+R</string>
    </property>
   </action>
  </widget>
