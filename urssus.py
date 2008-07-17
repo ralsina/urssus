@@ -122,8 +122,10 @@ class Feed(Entity):
           author=None
           
         # The link should be simple ;-)
-        link=post['link']
-          
+        if 'link' in post:
+          link=post['link']
+        else:
+            link=None
         posts.append(Post.get_by_or_init(feed=self, date=date, title=post['title'], 
                                          post_id=post[idkey], content=content, 
                                          author=author, link=link))
@@ -308,6 +310,40 @@ class MainWindow(QtGui.QMainWindow):
   def on_actionNext_Feed_triggered(self, i=None):
     if i==None: return
     print "Next Feed"
+    nextIndex=None
+    # First see if we are on a specific feed
+    curIndex=self.ui.feeds.currentIndex()
+    if curIndex.isValid():
+      # If there is a child, go there
+      if self.model.hasChildren(curIndex):
+        nextIndex=curIndex.child(0, 0)
+      else:
+        # No childs, see if there is a next sibling
+        nextIndex=curIndex.sibling(curIndex.row()+1, 0)
+        while not nextIndex.isValid(): #If invalid, go parent and next
+          nextIndex=curIndex.parent().sibling(curIndex.parent().row()+1, 0)
+        
+    else: # Just go to the first feed there is
+      i=self.ui.feeds.model().index(0, 0) # This one always exists, it's the "all feeds"
+      it=self.model.itemFromIndex(i)
+      # dig until there is something
+      while (it.feed==None or it.feed.xmlUrl==None) and self.ui.feeds.model().hasChildren(i):
+        i=self.model.index(0, 0, i)
+        it=self.model.itemFromIndex(i)
+      nextIndex=i
+      
+      
+    # And go there
+    if nextIndex and nextIndex.isValid():
+      self.ui.feeds.setCurrentIndex(nextIndex)
+      # If nextIndex is not a real feed, we need to do one more step forward
+      it=self.model.itemFromIndex(nextIndex)  
+      if it.feed==None or it.feed.xmlUrl==None:
+        self.on_actionNext_Feed_triggered(True)
+      else: # Finally!
+        self.on_feeds_clicked(nextIndex)
+        
+      
 
 
 def importOPML(fname):
