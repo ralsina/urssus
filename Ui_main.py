@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '/home/ralsina/Desktop/proyectos/urssus/main.ui'
 #
-# Created: Thu Jul 17 13:13:15 2008
+# Created: Thu Jul 17 14:34:22 2008
 #      by: PyQt4 UI code generator 4.4.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -17,6 +17,7 @@ class Ui_MainWindow(object):
         self.centralWidget.setGeometry(QtCore.QRect(0,70,800,506))
         self.centralWidget.setObjectName("centralWidget")
         self.horizontalLayout = QtGui.QHBoxLayout(self.centralWidget)
+        self.horizontalLayout.setMargin(0)
         self.horizontalLayout.setObjectName("horizontalLayout")
         self.splitter_2 = QtGui.QSplitter(self.centralWidget)
         self.splitter_2.setOrientation(QtCore.Qt.Horizontal)
