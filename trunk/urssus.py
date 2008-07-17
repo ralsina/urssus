@@ -265,8 +265,22 @@ class MainWindow(QtGui.QMainWindow):
   def on_actionNext_Article_triggered(self, i=None):
     if i==None: return
     print "Next"
-    
-   
+    # First see if we have a next item here
+    curIndex=self.ui.posts.currentIndex()
+    if curIndex.isValid():
+      nextIndex=curIndex.sibling(curIndex.row()+1, 0)
+      if nextIndex.isValid():
+        self.ui.posts.setCurrentIndex(nextIndex)
+      else: # This was the last item here, need to go somewhere else
+        print "At last post"
+        #FIXME: need to go to the next feed and open the first post
+    else:
+      # Is there any item in this model?
+      if self.ui.posts.model() and self.ui.posts.__model.rowCount()>0:
+        self.ui.posts.setCurrentIndex(self.ui.posts.__model.indexFromItem(self.ui.posts.__model.item(0)))
+      else: # No items here, we need to go somewhere else
+        print "No posts"
+        # Fixme needs to go to the next feed and open the frst post
 def importOPML(fname):
   from xml.etree import ElementTree
   tree = ElementTree.parse(fname)
