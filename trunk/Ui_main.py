@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '/home/ralsina/Desktop/proyectos/urssus/main.ui'
 #
-# Created: Thu Jul 17 15:13:28 2008
+# Created: Thu Jul 17 20:20:19 2008
 #      by: PyQt4 UI code generator 4.4.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -59,6 +59,8 @@ class Ui_MainWindow(object):
         self.menu_File.setObjectName("menu_File")
         self.menu_Go = QtGui.QMenu(self.menuBar)
         self.menu_Go.setObjectName("menu_Go")
+        self.menuHelp = QtGui.QMenu(self.menuBar)
+        self.menuHelp.setObjectName("menuHelp")
         MainWindow.setMenuBar(self.menuBar)
         self.statusBar = QtGui.QStatusBar(MainWindow)
         self.statusBar.setGeometry(QtCore.QRect(0,576,800,24))
@@ -98,9 +100,17 @@ class Ui_MainWindow(object):
         self.actionNext_Unread_Article = QtGui.QAction(MainWindow)
         self.actionNext_Unread_Article.setObjectName("actionNext_Unread_Article")
         self.actionNext_Feed = QtGui.QAction(MainWindow)
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap(":/folder.svg"),QtGui.QIcon.Normal,QtGui.QIcon.Off)
+        self.actionNext_Feed.setIcon(icon)
         self.actionNext_Feed.setObjectName("actionNext_Feed")
         self.actionNext_Unread_Feed = QtGui.QAction(MainWindow)
         self.actionNext_Unread_Feed.setObjectName("actionNext_Unread_Feed")
+        self.action_About_uRSSus = QtGui.QAction(MainWindow)
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap(":/urssus.svg"),QtGui.QIcon.Normal,QtGui.QIcon.Off)
+        self.action_About_uRSSus.setIcon(icon)
+        self.action_About_uRSSus.setObjectName("action_About_uRSSus")
         self.toolBar.addAction(self.actionFetch_Feed)
         self.toolBar.addAction(self.actionFetch_All_Feeds)
         self.toolBar.addAction(self.actionAbort_Fetches)
@@ -121,9 +131,11 @@ class Ui_MainWindow(object):
         self.menu_Go.addSeparator()
         self.menu_Go.addAction(self.actionNext_Feed)
         self.menu_Go.addAction(self.actionNext_Unread_Feed)
+        self.menuHelp.addAction(self.action_About_uRSSus)
         self.menuBar.addAction(self.menu_File.menuAction())
         self.menuBar.addAction(self.menu_Go.menuAction())
         self.menuBar.addAction(self.menuFeed.menuAction())
+        self.menuBar.addAction(self.menuHelp.menuAction())
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
@@ -134,6 +146,7 @@ class Ui_MainWindow(object):
         self.menuFeed.setTitle(QtGui.QApplication.translate("MainWindow", "Fee&d", None, QtGui.QApplication.UnicodeUTF8))
         self.menu_File.setTitle(QtGui.QApplication.translate("MainWindow", "&File", None, QtGui.QApplication.UnicodeUTF8))
         self.menu_Go.setTitle(QtGui.QApplication.translate("MainWindow", "&Go", None, QtGui.QApplication.UnicodeUTF8))
+        self.menuHelp.setTitle(QtGui.QApplication.translate("MainWindow", "&Help", None, QtGui.QApplication.UnicodeUTF8))
         self.actionFetch_Feed.setText(QtGui.QApplication.translate("MainWindow", "Fetch Feed", None, QtGui.QApplication.UnicodeUTF8))
         self.actionFetch_Feed.setShortcut(QtGui.QApplication.translate("MainWindow", "F5", None, QtGui.QApplication.UnicodeUTF8))
         self.actionFetch_All_Feeds.setText(QtGui.QApplication.translate("MainWindow", "Fetch All Feeds", None, QtGui.QApplication.UnicodeUTF8))
@@ -152,6 +165,7 @@ class Ui_MainWindow(object):
         self.actionNext_Feed.setText(QtGui.QApplication.translate("MainWindow", "Next &Feed", None, QtGui.QApplication.UnicodeUTF8))
         self.actionNext_Feed.setShortcut(QtGui.QApplication.translate("MainWindow", "N", None, QtGui.QApplication.UnicodeUTF8))
         self.actionNext_Unread_Feed.setText(QtGui.QApplication.translate("MainWindow", "N&ext Unread Feed", None, QtGui.QApplication.UnicodeUTF8))
+        self.action_About_uRSSus.setText(QtGui.QApplication.translate("MainWindow", "&About uRSSus", None, QtGui.QApplication.UnicodeUTF8))
 
 from PyQt4 import QtWebKit
 import icons_rc
