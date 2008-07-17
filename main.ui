@@ -139,9 +139,16 @@
     <addaction name="actionNext_Feed" />
     <addaction name="actionNext_Unread_Feed" />
    </widget>
+   <widget class="QMenu" name="menuHelp" >
+    <property name="title" >
+     <string>&amp;Help</string>
+    </property>
+    <addaction name="action_About_uRSSus" />
+   </widget>
    <addaction name="menu_File" />
    <addaction name="menu_Go" />
    <addaction name="menuFeed" />
+   <addaction name="menuHelp" />
   </widget>
   <widget class="QStatusBar" name="statusBar" >
    <property name="geometry" >
@@ -251,6 +258,15 @@
   <action name="actionNext_Unread_Feed" >
    <property name="text" >
     <string>N&amp;ext Unread Feed</string>
+   </property>
+  </action>
+  <action name="action_About_uRSSus" >
+   <property name="icon" >
+    <iconset resource="images/icons.qrc" >
+     <normaloff>:/urssus.svg</normaloff>:/urssus.svg</iconset>
+   </property>
+   <property name="text" >
+    <string>&amp;About uRSSus</string>
    </property>
   </action>
  </widget>

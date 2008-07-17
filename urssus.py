@@ -160,6 +160,15 @@ def initDB():
 # UI Classes
 from PyQt4 import QtGui, QtCore
 from Ui_main import Ui_MainWindow
+from Ui_about import Ui_Dialog as UI_AboutDialog
+
+class AboutDialog(QtGui.QDialog):
+  def __init__(self):
+    QtGui.QDialog.__init__(self)
+    # Set up the UI from designer
+    self.ui=UI_AboutDialog()
+    self.ui.setupUi(self)
+
 
 class MainWindow(QtGui.QMainWindow):
   def __init__(self):
@@ -181,6 +190,10 @@ class MainWindow(QtGui.QMainWindow):
     self.statusTimer.setSingleShot(True)
     QtCore.QObject.connect(self.statusTimer, QtCore.SIGNAL("timeout()"), self.updateStatusBar)
     self.statusTimer.start(0)
+    
+  def on_action_About_uRSSus_triggered(self, i=None):
+    if i==None: return
+    AboutDialog().exec_()
     
   def updateStatusBar(self):
     if not statusQueue.empty():
