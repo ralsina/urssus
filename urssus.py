@@ -290,10 +290,11 @@ class MainWindow(QtGui.QMainWindow):
         self.on_actionNext_Feed_triggered(True)
         self.on_actionNext_Article_triggered(True)
     else:
-      # Is there any item in this model?
+      # Are there any item in this model?
       if self.ui.posts.model() and self.ui.posts.model().rowCount()>0:
+        # Then go to the first one
         self.ui.posts.setCurrentIndex(self.ui.posts.model().index(0, 0))
-      else: # No items here, we need to go somewhere else
+      else: # No items here, we need to go to the next feed
         print "No posts"
         self.on_actionNext_Feed_triggered(True)
         self.on_actionNext_Article_triggered(True)
@@ -323,8 +324,7 @@ class MainWindow(QtGui.QMainWindow):
         i=self.model.index(0, 0, i)
         it=self.model.itemFromIndex(i)
       nextIndex=i
-      
-      
+
     # And go there
     if nextIndex and nextIndex.isValid():
       self.ui.feeds.setCurrentIndex(nextIndex)
@@ -334,9 +334,6 @@ class MainWindow(QtGui.QMainWindow):
         self.on_actionNext_Feed_triggered(True)
       else: # Finally!
         self.on_feeds_clicked(nextIndex)
-        
-      
-
 
 def importOPML(fname):
   from xml.etree import ElementTree
