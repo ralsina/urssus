@@ -291,8 +291,8 @@ class MainWindow(QtGui.QMainWindow):
         self.on_actionNext_Article_triggered(True)
     else:
       # Is there any item in this model?
-      if self.ui.posts.model() and self.ui.posts.__model.rowCount()>0:
-        self.ui.posts.setCurrentIndex(self.ui.posts.__model.indexFromItem(self.ui.posts.__model.item(0)))
+      if self.ui.posts.model() and self.ui.posts.model().rowCount()>0:
+        self.ui.posts.setCurrentIndex(self.ui.posts.model().index(0, 0))
       else: # No items here, we need to go somewhere else
         print "No posts"
         self.on_actionNext_Feed_triggered(True)
