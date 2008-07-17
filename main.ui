@@ -266,7 +266,7 @@
      <normaloff>:/urssus.svg</normaloff>:/urssus.svg</iconset>
    </property>
    <property name="text" >
-    <string>&amp;About uRSSus</string>
+    <string>&amp;About uRSSus...</string>
    </property>
   </action>
  </widget>
