@@ -258,6 +258,14 @@ class MainWindow(QtGui.QMainWindow):
     processes.append(p)
     print "processes ", processes
     
+  def on_actionNext_Unread_Article_triggered(self, i=None):
+    if i==None: return
+    print "Next Unread"
+    
+  def on_actionNext_Article_triggered(self, i=None):
+    if i==None: return
+    print "Next"
+    
    
 def importOPML(fname):
   from xml.etree import ElementTree

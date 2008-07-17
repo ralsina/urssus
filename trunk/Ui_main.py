@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '/home/ralsina/Desktop/proyectos/urssus/main.ui'
 #
-# Created: Thu Jul 17 11:37:45 2008
+# Created: Thu Jul 17 13:13:15 2008
 #      by: PyQt4 UI code generator 4.4.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -22,6 +22,7 @@ class Ui_MainWindow(object):
         self.splitter_2.setOrientation(QtCore.Qt.Horizontal)
         self.splitter_2.setObjectName("splitter_2")
         self.feeds = QtGui.QTreeView(self.splitter_2)
+        self.feeds.setFocusPolicy(QtCore.Qt.NoFocus)
         self.feeds.setAlternatingRowColors(True)
         self.feeds.setAnimated(True)
         self.feeds.setHeaderHidden(True)
@@ -30,8 +31,10 @@ class Ui_MainWindow(object):
         self.splitter.setOrientation(QtCore.Qt.Vertical)
         self.splitter.setObjectName("splitter")
         self.posts = QtGui.QListView(self.splitter)
+        self.posts.setFocusPolicy(QtCore.Qt.NoFocus)
         self.posts.setObjectName("posts")
         self.view = QtWebKit.QWebView(self.splitter)
+        self.view.setFocusPolicy(QtCore.Qt.NoFocus)
         self.view.setUrl(QtCore.QUrl("about:blank"))
         self.view.setObjectName("view")
         self.horizontalLayout.addWidget(self.splitter_2)
@@ -47,6 +50,8 @@ class Ui_MainWindow(object):
         self.menuFeed.setObjectName("menuFeed")
         self.menu_File = QtGui.QMenu(self.menuBar)
         self.menu_File.setObjectName("menu_File")
+        self.menu_Go = QtGui.QMenu(self.menuBar)
+        self.menu_Go.setObjectName("menu_Go")
         MainWindow.setMenuBar(self.menuBar)
         self.statusBar = QtGui.QStatusBar(MainWindow)
         self.statusBar.setGeometry(QtCore.QRect(0,576,800,24))
@@ -81,6 +86,10 @@ class Ui_MainWindow(object):
         icon.addPixmap(QtGui.QPixmap(":/exit.svg"),QtGui.QIcon.Normal,QtGui.QIcon.Off)
         self.actionQuit.setIcon(icon)
         self.actionQuit.setObjectName("actionQuit")
+        self.actionNext_Article = QtGui.QAction(MainWindow)
+        self.actionNext_Article.setObjectName("actionNext_Article")
+        self.actionNext_Unread_Article = QtGui.QAction(MainWindow)
+        self.actionNext_Unread_Article.setObjectName("actionNext_Unread_Article")
         self.toolBar.addAction(self.actionFetch_Feed)
         self.toolBar.addAction(self.actionFetch_All_Feeds)
         self.toolBar.addAction(self.actionAbort_Fetches)
@@ -95,7 +104,11 @@ class Ui_MainWindow(object):
         self.menu_File.addAction(self.actionExport_Feeds)
         self.menu_File.addSeparator()
         self.menu_File.addAction(self.actionQuit)
+        self.menu_Go.addSeparator()
+        self.menu_Go.addAction(self.actionNext_Article)
+        self.menu_Go.addAction(self.actionNext_Unread_Article)
         self.menuBar.addAction(self.menu_File.menuAction())
+        self.menuBar.addAction(self.menu_Go.menuAction())
         self.menuBar.addAction(self.menuFeed.menuAction())
 
         self.retranslateUi(MainWindow)
@@ -106,6 +119,7 @@ class Ui_MainWindow(object):
         self.toolBar.setWindowTitle(QtGui.QApplication.translate("MainWindow", "toolBar", None, QtGui.QApplication.UnicodeUTF8))
         self.menuFeed.setTitle(QtGui.QApplication.translate("MainWindow", "Fee&d", None, QtGui.QApplication.UnicodeUTF8))
         self.menu_File.setTitle(QtGui.QApplication.translate("MainWindow", "&File", None, QtGui.QApplication.UnicodeUTF8))
+        self.menu_Go.setTitle(QtGui.QApplication.translate("MainWindow", "&Go", None, QtGui.QApplication.UnicodeUTF8))
         self.actionFetch_Feed.setText(QtGui.QApplication.translate("MainWindow", "Fetch Feed", None, QtGui.QApplication.UnicodeUTF8))
         self.actionFetch_Feed.setShortcut(QtGui.QApplication.translate("MainWindow", "F5", None, QtGui.QApplication.UnicodeUTF8))
         self.actionFetch_All_Feeds.setText(QtGui.QApplication.translate("MainWindow", "Fetch All Feeds", None, QtGui.QApplication.UnicodeUTF8))
@@ -118,6 +132,9 @@ class Ui_MainWindow(object):
         self.actionExport_Feeds.setText(QtGui.QApplication.translate("MainWindow", "&Export Feeds...", None, QtGui.QApplication.UnicodeUTF8))
         self.actionQuit.setText(QtGui.QApplication.translate("MainWindow", "&Quit", None, QtGui.QApplication.UnicodeUTF8))
         self.actionQuit.setShortcut(QtGui.QApplication.translate("MainWindow", "Ctrl+Q", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionNext_Article.setText(QtGui.QApplication.translate("MainWindow", "&Next Article", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionNext_Unread_Article.setText(QtGui.QApplication.translate("MainWindow", "Ne&xt Unread Article", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionNext_Unread_Article.setShortcut(QtGui.QApplication.translate("MainWindow", "+", None, QtGui.QApplication.UnicodeUTF8))
 
 from PyQt4 import QtWebKit
 import icons_rc
