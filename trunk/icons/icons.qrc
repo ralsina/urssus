@@ -1,5 +1,6 @@
 <RCC>
   <qresource prefix="/" >
+    <file>apply.svg</file>
     <file>stop.svg</file>
     <file>2downarrow.svg</file>
     <file>1downarrow.svg</file>

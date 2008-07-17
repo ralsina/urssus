@@ -37,6 +37,8 @@ class Feed(Entity):
   posts       = OneToMany('Post')
   lastUpdated = Field(DateTime, default=datetime(1970,1,1))
   def __repr__(self):
+    if self.xmlUrl:
+      return self.text+'(%d)'%Post.query.filter(Post.feed==self).filter(Post.unread==True).count()
     return self.text
     
   def update(self):
@@ -87,6 +89,7 @@ class Post(Entity):
   post_id     = Field(Text)
   content     = Field(Text)
   date        = Field(DateTime)
+  unread      = Field(Boolean, default=True)
 
 def initDB():
   # This is just temporary
@@ -146,7 +149,16 @@ class MainWindow(QtGui.QMainWindow):
   def on_posts_clicked(self, index):
     item=self.ui.posts.__model.itemFromIndex(index)
     post=item.post
+    post.unread=False
+    session.flush()
     self.ui.view.setHtml(post.content)
+
+  def on_actionMark_Feed_as_Read_activated(self):
+    item=self.model.itemFromIndex(self.ui.feeds.currentIndex())
+    if item and item.feed:
+      for post in item.feed.posts:
+        post.unread=False
+      session.flush()
 
   def on_actionFetch_Feed_activated(self):
     # Start an immediate update for the current feed
