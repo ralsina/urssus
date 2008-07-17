@@ -85,7 +85,7 @@ class Feed(Entity):
         elif 'value' in post:
           content=post['value']
          
-        # FIXME doesn'twork right with DanShanoff.com 
+        # FIXME: doesn'twork right with DanShanoff.com 
         # Author if available, else None
         author=''
         # First, we may have author_detail, which is the nicer one
@@ -228,14 +228,13 @@ class MainWindow(QtGui.QMainWindow):
     # Start an immediate update for the current feed
     item=self.model.itemFromIndex(self.ui.feeds.currentIndex())
     if item and item.feed:
-      # FIXME move to out-of-process
+      # FIXME: move to out-of-process
       item.feed.update()
 
   def on_actionFetch_All_Feeds_triggered(self, i=None):
     if i==None: return
     global processes
     # Start an immediate update for all feeds
-    # FIXME this thriggers twice?
     print "fetching all feeds"
     p = processing.Process(target=feedUpdater, args=(True, ))
     p.setDaemon(True)
@@ -280,7 +279,7 @@ class MainWindow(QtGui.QMainWindow):
         self.ui.posts.setCurrentIndex(self.ui.posts.__model.indexFromItem(self.ui.posts.__model.item(0)))
       else: # No items here, we need to go somewhere else
         print "No posts"
-        # Fixme needs to go to the next feed and open the frst post
+        #FIXME: needs to go to the next feed and open the frst post
 def importOPML(fname):
   from xml.etree import ElementTree
   tree = ElementTree.parse(fname)
