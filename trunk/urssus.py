@@ -77,7 +77,41 @@ class Feed(Entity):
           content=post['summary']
         elif 'value' in post:
           content=post['value']
-        posts.append(Post.get_by_or_init(feed=self, date=date, title=post['title'], post_id=post[idkey], content=content))
+          
+        # Author if available, else None
+        author=''
+        # First, we may have author_detail, which is the nicer one
+        if 'author_detail' in post:
+          ad=post['author_detail']
+          # How much detail?
+          if 'name' in ad:
+            author=ad['name']
+            if 'href' in ad:
+              author='<a href="%s">%s</a>'%(ad['href'], author)
+          if 'author_email' in ad:
+            author+=' - <a href="mailto:%s">%s</a>'%(ad['email'], ad['email'])
+        # Or maybe just an author
+        elif 'author' in post:
+          author=post['author']
+          
+        # But we may have a list of contributors
+        if 'contributors' in post:
+          # Which may have the same detail as the author's
+          for contrib in post['contributors']:
+            cont=''
+            if 'name' in contrib:
+              cont=contrib['name']
+              if 'href' in contrib:
+                cont='<a href="%s">%s</a>'%(contrib['href'], cont)
+            if 'email' in contrib:
+              cont+=' - <a href="mailto:%s">%s</a>'%(contrib['email'], contrib['email'])
+            author+=' - '+cont
+        if not author:
+          author=None
+          
+        posts.append(Post.get_by_or_init(feed=self, date=date, title=post['title'], 
+                                         post_id=post[idkey], content=content, 
+                                         author=author))
       except KeyError:
         print post
     self.lastUpdated=datetime.now()
@@ -90,6 +124,7 @@ class Post(Entity):
   content     = Field(Text)
   date        = Field(DateTime)
   unread      = Field(Boolean, default=True)
+  author      = Field(Text)
 
 def initDB():
   # This is just temporary
