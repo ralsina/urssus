@@ -304,6 +304,12 @@ class MainWindow(QtGui.QMainWindow):
         print "No posts"
         #FIXME: needs to go to the next feed and open the frst post
     self.on_posts_clicked(self.ui.posts.currentIndex())
+
+  def on_actionNext_Feed_triggered(self, i=None):
+    if i==None: return
+    print "Next Feed"
+
+
 def importOPML(fname):
   from xml.etree import ElementTree
   tree = ElementTree.parse(fname)
