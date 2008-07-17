@@ -169,8 +169,9 @@ class MainWindow(QtGui.QMainWindow):
     self.ui=Ui_MainWindow()
     self.ui.setupUi(self)
     
-    # Use custom delegate to paint feed items
+    # Use custom delegate to paint feed and post items
     self.ui.feeds.setItemDelegate(FeedDelegate(self))
+    self.ui.posts.setItemDelegate(PostDelegate(self))
     
     # Fill with feed data
     self.initTree()
@@ -372,6 +373,11 @@ class MainWindow(QtGui.QMainWindow):
 class FeedDelegate(QtGui.QItemDelegate):
   def __init__(self, parent=None):
     print "Creating FeedDelegate"
+    QtGui.QItemDelegate.__init__(self, parent)
+    
+class PostDelegate(QtGui.QItemDelegate):
+  def __init__(self, parent=None):
+    print "Creating PostDelegate"
     QtGui.QItemDelegate.__init__(self, parent)
   
 
