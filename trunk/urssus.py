@@ -302,8 +302,10 @@ class MainWindow(QtGui.QMainWindow):
   def on_actionNext_Unread_Article_triggered(self, i=None):
     if i==None: return
     print "Next Unread"
+    # FIXME: This should not be **soooooo** recursive ;-)
+    self.on_actionNext_Article_triggered(True, True)
     
-  def on_actionNext_Article_triggered(self, i=None):
+  def on_actionNext_Article_triggered(self, i=None, unread=False):
     if i==None: return
     print "Next"
     # First see if we have a next item here
@@ -325,6 +327,11 @@ class MainWindow(QtGui.QMainWindow):
         print "No posts"
         self.on_actionNext_Feed_triggered(True)
         self.on_actionNext_Article_triggered(True)
+    if unread:
+      it=self.ui.posts.model().itemFromIndex(self.ui.posts.currentIndex())
+      if not it.post.unread:
+        self.on_actionNext_Article_triggered(True, True)
+        
     self.on_posts_clicked(self.ui.posts.currentIndex())
 
   def on_actionNext_Feed_triggered(self, i=None):
