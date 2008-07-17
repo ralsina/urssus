@@ -95,13 +95,7 @@ class Feed(Entity):
         # First, we may have author_detail, which is the nicer one
         if 'author_detail' in post:
           ad=post['author_detail']
-          # How much detail?
-          if 'name' in ad:
-            author=ad['name']
-            if 'href' in ad:
-              author='<a href="%s">%s</a>'%(ad['href'], author)
-          if 'author_email' in ad:
-            author+=' - <a href="mailto:%s">%s</a>'%(ad['email'], ad['email'])
+          author=detailToAuthor(ad)
         # Or maybe just an author
         elif 'author' in post:
           author=post['author']
@@ -109,16 +103,9 @@ class Feed(Entity):
         # But we may have a list of contributors
         if 'contributors' in post:
           # Which may have the same detail as the author's
-          for contrib in post['contributors']:
-            cont=''
-            if 'name' in contrib:
-              cont=contrib['name']
-              if 'href' in contrib:
-                cont='<a href="%s">%s</a>'%(contrib['href'], cont)
-            if 'email' in contrib:
-              cont+=' - <a href="mailto:%s">%s</a>'%(contrib['email'], contrib['email'])
-            author+=' - '+cont
+          author+=' - '.join([ detailToAuthor(contrib) for contrib in post[contributors]])
         if not author:
+          # Ok, how about using the feed's author, or 
           author=None
           
         # The link should be simple ;-)
@@ -408,3 +395,21 @@ if __name__ == "__main__":
   window.show()
   sys.exit(app.exec_())
 
+def detailToAuthor(ad):
+  '''Converts something like feedparser's author_detail into a 
+  nice string describing the author'''
+
+  if 'name' in ad:
+    author=ad['name']
+    if 'href' in ad:
+      author='<a href="%s">%s</a>'%(ad['href'], author)
+  if 'email' in ad:
+    email ='<a href="mailto:%s">%s</a>'%(ad['email'], ad['email'])
+  else:
+    email = ''
+
+  if email and author:
+    return '%s - %s'%(author, email)
+  elif email:
+    return email
+  return author

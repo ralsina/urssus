@@ -1,6 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE Tasks SYSTEM "Tasks-4.1.dtd">
 <!-- eric4 tasks file for project urssus -->
-<!-- Saved: 2008-07-16, 15:57:48 -->
+<!-- Saved: 2008-07-17, 16:31:50 -->
 <Tasks version="4.1">
+  <Task priority="1" completed="False" bugfix="True">
+    <Summary>FIXME: when deploying make this work</Summary>
+    <Description></Description>
+    <Created>2008-07-17, 16:18:01</Created>
+    <Resource>
+      <Filename>
+        <Name>urssus.py</Name>
+      </Filename>
+      <Linenumber>9</Linenumber>
+    </Resource>
+  </Task>
+  <Task priority="1" completed="False" bugfix="True">
+    <Summary>FIXME: doesn'twork right with DanShanoff.com</Summary>
+    <Description></Description>
+    <Created>2008-07-17, 16:18:01</Created>
+    <Resource>
+      <Filename>
+        <Name>urssus.py</Name>
+      </Filename>
+      <Linenumber>92</Linenumber>
+    </Resource>
+  </Task>
+  <Task priority="1" completed="False" bugfix="True">
+    <Summary>FIXME: move to out-of-process</Summary>
+    <Description></Description>
+    <Created>2008-07-17, 16:18:01</Created>
+    <Resource>
+      <Filename>
+        <Name>urssus.py</Name>
+      </Filename>
+      <Linenumber>259</Linenumber>
+    </Resource>
+  </Task>
 </Tasks>
