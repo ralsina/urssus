@@ -87,6 +87,18 @@
      <height>31</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menuFeed" >
+    <property name="title" >
+     <string>Fee&amp;d</string>
+    </property>
+    <addaction name="separator" />
+    <addaction name="actionMark_Feed_as_Read" />
+    <addaction name="separator" />
+    <addaction name="actionFetch_Feed" />
+    <addaction name="actionFetch_All_Feeds" />
+    <addaction name="actionAbort_Fetches" />
+   </widget>
+   <addaction name="menuFeed" />
   </widget>
   <widget class="QStatusBar" name="statusBar" >
    <property name="geometry" >

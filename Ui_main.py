@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '/home/ralsina/Desktop/proyectos/urssus/main.ui'
 #
-# Created: Wed Jul 16 22:14:40 2008
+# Created: Wed Jul 16 22:17:35 2008
 #      by: PyQt4 UI code generator 4.4.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -43,6 +43,8 @@ class Ui_MainWindow(object):
         self.menuBar = QtGui.QMenuBar(MainWindow)
         self.menuBar.setGeometry(QtCore.QRect(0,0,800,31))
         self.menuBar.setObjectName("menuBar")
+        self.menuFeed = QtGui.QMenu(self.menuBar)
+        self.menuFeed.setObjectName("menuFeed")
         MainWindow.setMenuBar(self.menuBar)
         self.statusBar = QtGui.QStatusBar(MainWindow)
         self.statusBar.setGeometry(QtCore.QRect(0,576,800,24))
@@ -72,6 +74,13 @@ class Ui_MainWindow(object):
         self.toolBar.addAction(self.actionFetch_All_Feeds)
         self.toolBar.addAction(self.actionAbort_Fetches)
         self.toolBar.addAction(self.actionMark_Feed_as_Read)
+        self.menuFeed.addSeparator()
+        self.menuFeed.addAction(self.actionMark_Feed_as_Read)
+        self.menuFeed.addSeparator()
+        self.menuFeed.addAction(self.actionFetch_Feed)
+        self.menuFeed.addAction(self.actionFetch_All_Feeds)
+        self.menuFeed.addAction(self.actionAbort_Fetches)
+        self.menuBar.addAction(self.menuFeed.menuAction())
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
@@ -79,6 +88,7 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(QtGui.QApplication.translate("MainWindow", "uRSSus", None, QtGui.QApplication.UnicodeUTF8))
         self.toolBar.setWindowTitle(QtGui.QApplication.translate("MainWindow", "toolBar", None, QtGui.QApplication.UnicodeUTF8))
+        self.menuFeed.setTitle(QtGui.QApplication.translate("MainWindow", "Fee&d", None, QtGui.QApplication.UnicodeUTF8))
         self.actionFetch_Feed.setText(QtGui.QApplication.translate("MainWindow", "Fetch Feed", None, QtGui.QApplication.UnicodeUTF8))
         self.actionFetch_Feed.setShortcut(QtGui.QApplication.translate("MainWindow", "F5", None, QtGui.QApplication.UnicodeUTF8))
         self.actionFetch_All_Feeds.setText(QtGui.QApplication.translate("MainWindow", "Fetch All Feeds", None, QtGui.QApplication.UnicodeUTF8))
