@@ -168,6 +168,11 @@ class MainWindow(QtGui.QMainWindow):
     # Set up the UI from designer
     self.ui=Ui_MainWindow()
     self.ui.setupUi(self)
+    
+    # Use custom delegate to paint feed items
+    self.ui.feeds.setItemDelegate(FeedDelegate(self))
+    
+    # Fill with feed data
     self.initTree()
     
     # Timer to trigger status bar updates
@@ -356,6 +361,12 @@ class MainWindow(QtGui.QMainWindow):
         self.on_actionNext_Feed_triggered(True)
       else: # Finally!
         self.on_feeds_clicked(nextIndex)
+
+class FeedDelegate(QtGui.QItemDelegate):
+  def __init__(self, parent=None):
+    print "Creating FeedDelegate"
+    QtGui.QItemDelegate.__init__(self, parent)
+  
 
 def importOPML(fname):
   from xml.etree import ElementTree
