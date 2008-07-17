@@ -13,6 +13,10 @@ tmplLookup=TemplateLookup(directories='templates')
 import processing
 processes=[]
 
+# A queue where subprocesses can put status messages, so 
+# they appear in the window's statusbar. For example "updating NiceFeed".
+statusQueue=processing.Queue()
+
 # Mark Pilgrim's feed parser
 import feedparser as fp
 
@@ -49,7 +53,7 @@ class Feed(Entity):
     return self.text
     
   def update(self):
-    print "Updating: ", self.title
+    statusQueue.put(u"Updating: "+ self.title)
     if not self.xmlUrl: # Not a real feed
       return
     d=fp.parse(self.xmlUrl)
@@ -158,6 +162,24 @@ class MainWindow(QtGui.QMainWindow):
     self.ui=Ui_MainWindow()
     self.ui.setupUi(self)
     self.initTree()
+    
+    # Timer to trigger status bar updates
+    self.statusTimer=QtCore.QTimer()
+    self.statusTimer.setSingleShot(True)
+    QtCore.QObject.connect(self.statusTimer, QtCore.SIGNAL("timeout()"), self.updateStatusBar)
+    self.statusTimer.start(0)
+    
+  def updateStatusBar(self):
+    if not statusQueue.empty():
+      msg=statusQueue.get()
+      self.statusBar().showMessage(msg)
+    else:
+      self.statusBar().showMessage("")      
+    if statusQueue.empty():
+      self.statusTimer.start(1000)
+    else:
+      self.statusTimer.start(150)
+
 
   def initTree(self):
     # Initialize the tree from the Feeds
@@ -235,7 +257,7 @@ class MainWindow(QtGui.QMainWindow):
     if i==None: return
     global processes
     # Start an immediate update for all feeds
-    print "fetching all feeds"
+    statusQueue.put("fetching all feeds")
     p = processing.Process(target=feedUpdater, args=(True, ))
     p.setDaemon(True)
     p.start()
@@ -243,19 +265,20 @@ class MainWindow(QtGui.QMainWindow):
     
   def on_actionAbort_Fetches_triggered(self, i=None):
     if i==None: return
-    global processes
-    print "Aborting all fetches ", processes
+    global processes, statusQueue
+    statusQueue.put("Aborting all fetches")
     # stop all processes and restart the background timed fetcher
     for proc in processes:
       proc.terminate()
-      print "Terminated: ", proc.isAlive(), proc.getExitCode()
     processes=[]
+    # Since we terminate forcefully, the contents of the
+    # queue are probably corrupted. So throw them away.
+    statusQueue=processing.Queue()
     
     p = processing.Process(target=feedUpdater)
     p.setDaemon(True)
     p.start()
     processes.append(p)
-    print "processes ", processes
     
   def on_actionNext_Unread_Article_triggered(self, i=None):
     if i==None: return
@@ -280,6 +303,7 @@ class MainWindow(QtGui.QMainWindow):
       else: # No items here, we need to go somewhere else
         print "No posts"
         #FIXME: needs to go to the next feed and open the frst post
+    self.on_posts_clicked(self.ui.posts.currentIndex())
 def importOPML(fname):
   from xml.etree import ElementTree
   tree = ElementTree.parse(fname)
