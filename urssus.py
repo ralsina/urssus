@@ -20,6 +20,25 @@ statusQueue=processing.Queue()
 # Mark Pilgrim's feed parser
 import feedparser as fp
 
+def detailToAuthor(ad):
+  '''Converts something like feedparser's author_detail into a 
+  nice string describing the author'''
+
+  if 'name' in ad:
+    author=ad['name']
+    if 'href' in ad:
+      author='<a href="%s">%s</a>'%(ad['href'], author)
+  if 'email' in ad:
+    email ='<a href="mailto:%s">%s</a>'%(ad['email'], ad['email'])
+  else:
+    email = ''
+
+  if email and author:
+    return '%s - %s'%(author, email)
+  elif email:
+    return email
+  return author
+
 # DB Classes
 from elixir import * 
 
@@ -195,6 +214,9 @@ class MainWindow(QtGui.QMainWindow):
       nn=addSubTree(iroot, root)
       
     self.ui.feeds.expandAll()
+    
+  def on_view_loadProgress(self, p):
+    self.statusBar().showMessage("Page loaded %d%%"%p)
     
   def on_feeds_clicked(self, index):
     item=self.model.itemFromIndex(index)
@@ -391,21 +413,3 @@ if __name__ == "__main__":
   window.show()
   sys.exit(app.exec_())
 
-def detailToAuthor(ad):
-  '''Converts something like feedparser's author_detail into a 
-  nice string describing the author'''
-
-  if 'name' in ad:
-    author=ad['name']
-    if 'href' in ad:
-      author='<a href="%s">%s</a>'%(ad['href'], author)
-  if 'email' in ad:
-    email ='<a href="mailto:%s">%s</a>'%(ad['email'], ad['email'])
-  else:
-    email = ''
-
-  if email and author:
-    return '%s - %s'%(author, email)
-  elif email:
-    return email
-  return author
