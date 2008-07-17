@@ -28,6 +28,9 @@
        <enum>Qt::Horizontal</enum>
       </property>
       <widget class="QTreeView" name="feeds" >
+       <property name="focusPolicy" >
+        <enum>Qt::NoFocus</enum>
+       </property>
        <property name="alternatingRowColors" >
         <bool>true</bool>
        </property>
@@ -42,8 +45,15 @@
        <property name="orientation" >
         <enum>Qt::Vertical</enum>
        </property>
-       <widget class="QListView" name="posts" />
+       <widget class="QListView" name="posts" >
+        <property name="focusPolicy" >
+         <enum>Qt::NoFocus</enum>
+        </property>
+       </widget>
        <widget class="QWebView" name="view" >
+        <property name="focusPolicy" >
+         <enum>Qt::NoFocus</enum>
+        </property>
         <property name="url" >
          <url>
           <string>about:blank</string>
@@ -107,7 +117,16 @@
     <addaction name="separator" />
     <addaction name="actionQuit" />
    </widget>
+   <widget class="QMenu" name="menu_Go" >
+    <property name="title" >
+     <string>&amp;Go</string>
+    </property>
+    <addaction name="separator" />
+    <addaction name="actionNext_Article" />
+    <addaction name="actionNext_Unread_Article" />
+   </widget>
    <addaction name="menu_File" />
+   <addaction name="menu_Go" />
    <addaction name="menuFeed" />
   </widget>
   <widget class="QStatusBar" name="statusBar" >
@@ -188,6 +207,19 @@
    </property>
    <property name="shortcut" >
     <string>Ctrl+Q</string>
+   </property>
+  </action>
+  <action name="actionNext_Article" >
+   <property name="text" >
+    <string>&amp;Next Article</string>
+   </property>
+  </action>
+  <action name="actionNext_Unread_Article" >
+   <property name="text" >
+    <string>Ne&amp;xt Unread Article</string>
+   </property>
+   <property name="shortcut" >
+    <string>+</string>
    </property>
   </action>
  </widget>
