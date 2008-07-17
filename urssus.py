@@ -84,7 +84,8 @@ class Feed(Entity):
           content=post['summary']
         elif 'value' in post:
           content=post['value']
-          
+         
+        # FIXME doesn'twork right with DanShanoff.com 
         # Author if available, else None
         author=''
         # First, we may have author_detail, which is the nicer one
@@ -156,7 +157,9 @@ class MainWindow(QtGui.QMainWindow):
     # Set up the UI from designer
     self.ui=Ui_MainWindow()
     self.ui.setupUi(self)
-  
+    self.initTree()
+
+  def initTree(self):
     # Initialize the tree from the Feeds
     self.model=QtGui.QStandardItemModel()
     self.ui.feeds.setModel(self.model)
@@ -206,6 +209,7 @@ class MainWindow(QtGui.QMainWindow):
                                               "OPML files (*.opml *.xml)"))
     if fname:
       importOPML(fname)
+      self.initTree()
       
   def on_actionQuit_triggered(self, i=None):
     if i==None: return
