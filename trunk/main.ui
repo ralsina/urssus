@@ -287,6 +287,9 @@
    <property name="text" >
     <string>N&amp;ext Unread Feed</string>
    </property>
+   <property name="shortcut" >
+    <string>Alt++</string>
+   </property>
   </action>
   <action name="actionAbout_uRSSus" >
    <property name="icon" >
