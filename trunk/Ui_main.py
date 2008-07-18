@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '/home/ralsina/Desktop/proyectos/urssus/main.ui'
 #
-# Created: Fri Jul 18 13:56:52 2008
+# Created: Fri Jul 18 14:09:24 2008
 #      by: PyQt4 UI code generator 4.4.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -137,6 +137,10 @@ class Ui_MainWindow(object):
         self.actionPrevious_Feed.setObjectName("actionPrevious_Feed")
         self.actionPrevious_Unread_Feed = QtGui.QAction(MainWindow)
         self.actionPrevious_Unread_Feed.setObjectName("actionPrevious_Unread_Feed")
+        self.actionPrevious_Article = QtGui.QAction(MainWindow)
+        self.actionPrevious_Article.setObjectName("actionPrevious_Article")
+        self.actionPrevious_Unread_Article = QtGui.QAction(MainWindow)
+        self.actionPrevious_Unread_Article.setObjectName("actionPrevious_Unread_Article")
         self.toolBar.addAction(self.actionFetch_Feed)
         self.toolBar.addAction(self.actionFetch_All_Feeds)
         self.toolBar.addAction(self.actionAbort_Fetches)
@@ -152,6 +156,8 @@ class Ui_MainWindow(object):
         self.menu_File.addSeparator()
         self.menu_File.addAction(self.actionQuit)
         self.menu_Go.addSeparator()
+        self.menu_Go.addAction(self.actionPrevious_Article)
+        self.menu_Go.addAction(self.actionPrevious_Unread_Article)
         self.menu_Go.addAction(self.actionNext_Article)
         self.menu_Go.addAction(self.actionNext_Unread_Article)
         self.menu_Go.addSeparator()
@@ -212,6 +218,10 @@ class Ui_MainWindow(object):
         self.actionPrevious_Feed.setShortcut(QtGui.QApplication.translate("MainWindow", "P", None, QtGui.QApplication.UnicodeUTF8))
         self.actionPrevious_Unread_Feed.setText(QtGui.QApplication.translate("MainWindow", "Prev&ious Unread Feed", None, QtGui.QApplication.UnicodeUTF8))
         self.actionPrevious_Unread_Feed.setShortcut(QtGui.QApplication.translate("MainWindow", "Alt+-", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionPrevious_Article.setText(QtGui.QApplication.translate("MainWindow", "&Previous Article", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionPrevious_Article.setShortcut(QtGui.QApplication.translate("MainWindow", "Left", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionPrevious_Unread_Article.setText(QtGui.QApplication.translate("MainWindow", "Pre&vious Unread Article", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionPrevious_Unread_Article.setShortcut(QtGui.QApplication.translate("MainWindow", "-", None, QtGui.QApplication.UnicodeUTF8))
 
 from PyQt4 import QtWebKit
 import icons_rc
