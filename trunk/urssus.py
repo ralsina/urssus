@@ -203,6 +203,10 @@ class MainWindow(QtGui.QMainWindow):
     self.swidget=SearchWidget()
     self.ui.filterBar.addWidget(self.swidget)
     
+    # Set some properties of the Web view
+    page=self.ui.view.page()
+    page.setLinkDelegationPolicy(page.DelegateAllLinks)
+    
     # Fill with feed data
     self.initTree()
     
@@ -217,6 +221,9 @@ class MainWindow(QtGui.QMainWindow):
     # TODO
     # I can't think of a clever way to do this, so it's brute force: iterate over the
     # model, see who has feed in it.
+    
+  def on_view_linkClicked(self, url):
+    QtGui.QDesktopServices.openUrl(url)
     
   def on_actionStatus_Bar_triggered(self, i=None):
     if i==None: return
