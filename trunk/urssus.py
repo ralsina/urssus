@@ -356,7 +356,6 @@ class MainWindow(QtGui.QMainWindow):
       else: # This was the last item here, need to go somewhere else
         print "At last post"
         self.on_actionNext_Feed_triggered(True)
-        #self.on_actionNext_Article_triggered(True)
     else:
       # Are there any item in this model?
       if self.ui.posts.model() and self.ui.posts.model().rowCount()>0:
@@ -365,13 +364,12 @@ class MainWindow(QtGui.QMainWindow):
       else: # No items here, we need to go to the next feed
         print "No posts"
         self.on_actionNext_Feed_triggered(True)
-        self.on_actionNext_Article_triggered(True)
-    if unread:
-      it=self.ui.posts.model().itemFromIndex(self.ui.posts.currentIndex())
-      if not it.post or not it.post.unread:
+    it=self.ui.posts.model().itemFromIndex(self.ui.posts.currentIndex())
+    if not it or (unread and not it.post.unread):
+      if not it or not it.post.unread:
         self.on_actionNext_Article_triggered(True, True)
-        
-    self.on_posts_clicked(self.ui.posts.currentIndex())
+    else:    
+      self.on_posts_clicked(self.ui.posts.currentIndex())
 
   def on_actionNext_Feed_triggered(self, i=None):
     if i==None: return
@@ -390,7 +388,7 @@ class MainWindow(QtGui.QMainWindow):
           nextIndex=curIndex.parent().sibling(curIndex.parent().row()+1, 0)
         
     else: # Just go to the first feed there is
-      i=self.ui.feeds.model().index(0, 0) # This one always exists, it's the "all feeds"
+      i=self.ui.feeds.model().index(0, 0) # This one always exists, unless you have no feeds, in which case, who cares?
       it=self.model.itemFromIndex(i)
       # dig until there is something
       while (it.feed==None or it.feed.xmlUrl==None) and self.ui.feeds.model().hasChildren(i):
