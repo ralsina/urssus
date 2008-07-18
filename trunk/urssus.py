@@ -197,6 +197,14 @@ class MainWindow(QtGui.QMainWindow):
     QtCore.QObject.connect(self.statusTimer, QtCore.SIGNAL("timeout()"), self.updateStatusBar)
     self.statusTimer.start(0)
     
+  def feedIndexFromFeed(self, feed):
+    '''Given a feed, find the index in the feeds model that matches'''
+    
+    # I can't think of a cleverway to do this, so it's brute force: iterate over the
+    # model, see who has feed in it.
+    
+    
+    
   def on_actionStatus_Bar_triggered(self, i=None):
     if i==None: return
     if self.ui.actionStatus_Bar.isChecked():
@@ -348,7 +356,7 @@ class MainWindow(QtGui.QMainWindow):
       else: # This was the last item here, need to go somewhere else
         print "At last post"
         self.on_actionNext_Feed_triggered(True)
-        self.on_actionNext_Article_triggered(True)
+        #self.on_actionNext_Article_triggered(True)
     else:
       # Are there any item in this model?
       if self.ui.posts.model() and self.ui.posts.model().rowCount()>0:
@@ -360,7 +368,7 @@ class MainWindow(QtGui.QMainWindow):
         self.on_actionNext_Article_triggered(True)
     if unread:
       it=self.ui.posts.model().itemFromIndex(self.ui.posts.currentIndex())
-      if not it.post.unread:
+      if not it.post or not it.post.unread:
         self.on_actionNext_Article_triggered(True, True)
         
     self.on_posts_clicked(self.ui.posts.currentIndex())
