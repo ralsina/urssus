@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '/home/ralsina/Desktop/proyectos/urssus/main.ui'
 #
-# Created: Fri Jul 18 12:18:22 2008
+# Created: Fri Jul 18 12:46:56 2008
 #      by: PyQt4 UI code generator 4.4.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -49,7 +49,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout.addWidget(self.splitter_2)
         MainWindow.setCentralWidget(self.centralWidget)
         self.toolBar = QtGui.QToolBar(MainWindow)
-        self.toolBar.setGeometry(QtCore.QRect(0,31,800,39))
+        self.toolBar.setGeometry(QtCore.QRect(0,31,228,39))
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap(":/urssus.svg"),QtGui.QIcon.Normal,QtGui.QIcon.Off)
         self.toolBar.setWindowIcon(icon)
@@ -73,6 +73,10 @@ class Ui_MainWindow(object):
         self.statusBar.setGeometry(QtCore.QRect(0,576,800,24))
         self.statusBar.setObjectName("statusBar")
         MainWindow.setStatusBar(self.statusBar)
+        self.filterBar = QtGui.QToolBar(MainWindow)
+        self.filterBar.setGeometry(QtCore.QRect(228,31,572,39))
+        self.filterBar.setObjectName("filterBar")
+        MainWindow.addToolBar(QtCore.Qt.TopToolBarArea,self.filterBar)
         self.actionFetch_Feed = QtGui.QAction(MainWindow)
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap(":/1downarrow.svg"),QtGui.QIcon.Normal,QtGui.QIcon.Off)
@@ -174,6 +178,7 @@ class Ui_MainWindow(object):
         self.menu_Go.setTitle(QtGui.QApplication.translate("MainWindow", "&Go", None, QtGui.QApplication.UnicodeUTF8))
         self.menuHelp.setTitle(QtGui.QApplication.translate("MainWindow", "&Help", None, QtGui.QApplication.UnicodeUTF8))
         self.menu_View.setTitle(QtGui.QApplication.translate("MainWindow", "&View", None, QtGui.QApplication.UnicodeUTF8))
+        self.filterBar.setWindowTitle(QtGui.QApplication.translate("MainWindow", "toolBar_2", None, QtGui.QApplication.UnicodeUTF8))
         self.actionFetch_Feed.setText(QtGui.QApplication.translate("MainWindow", "Fetch Feed", None, QtGui.QApplication.UnicodeUTF8))
         self.actionFetch_Feed.setShortcut(QtGui.QApplication.translate("MainWindow", "F5", None, QtGui.QApplication.UnicodeUTF8))
         self.actionFetch_All_Feeds.setText(QtGui.QApplication.translate("MainWindow", "Fetch All Feeds", None, QtGui.QApplication.UnicodeUTF8))

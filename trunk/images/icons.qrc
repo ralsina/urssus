@@ -1,5 +1,6 @@
 <RCC>
   <qresource prefix="/" >
+    <file>editclear.svg</file>
     <file>viewmag+.svg</file>
     <file>viewmag-.svg</file>
     <file>folder.svg</file>
