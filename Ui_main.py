@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '/home/ralsina/Desktop/proyectos/urssus/main.ui'
 #
-# Created: Thu Jul 17 21:36:47 2008
+# Created: Thu Jul 17 21:50:11 2008
 #      by: PyQt4 UI code generator 4.4.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -29,6 +29,8 @@ class Ui_MainWindow(object):
         self.feeds.setFocusPolicy(QtCore.Qt.NoFocus)
         self.feeds.setAlternatingRowColors(True)
         self.feeds.setTextElideMode(QtCore.Qt.ElideMiddle)
+        self.feeds.setIndentation(20)
+        self.feeds.setRootIsDecorated(True)
         self.feeds.setUniformRowHeights(True)
         self.feeds.setAnimated(True)
         self.feeds.setHeaderHidden(True)
