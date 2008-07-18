@@ -17,6 +17,16 @@ processes=[]
 # they appear in the window's statusbar. For example "updating NiceFeed".
 statusQueue=processing.Queue()
 
+# A queue with a list of queues to be refreshed in the feed tree
+# for example when it's updated by a subprocess
+# 
+# [0,id] means "mark this feed as updating"
+# [1,id] means "finished updating"
+# [2,id] means "refresh the text" (for example if you read an article, 
+#                                  to update the unread count)
+
+feedStatusQueue=processing.Queue()
+
 # Mark Pilgrim's feed parser
 import feedparser as fp
 
@@ -186,7 +196,6 @@ class AboutDialog(QtGui.QDialog):
     self.ui=UI_AboutDialog()
     self.ui.setupUi(self)
 
-
 class MainWindow(QtGui.QMainWindow):
   def __init__(self):
     QtGui.QMainWindow.__init__(self)
@@ -216,11 +225,17 @@ class MainWindow(QtGui.QMainWindow):
     QtCore.QObject.connect(self.statusTimer, QtCore.SIGNAL("timeout()"), self.updateStatusBar)
     self.statusTimer.start(0)
     
+    # Timer to mark feeds as busy/updated/whatever
+    self.feedStatusTimer=QtCore.QTimer()
+    self.feedStatusTimer.setSingleShot(True)
+    QtCore.QObject.connect(self.feedStatusTimer, QtCore.SIGNAL("timeout()"), self.updateFeedStatus)
+    self.feedStatusTimer.start(0)
+  
   def feedIndexFromFeed(self, feed):
     '''Given a feed, find the index in the feeds model that matches'''
-    # TODO
-    # I can't think of a clever way to do this, so it's brute force: iterate over the
-    # model, see who has feed in it.
+    if feed.id in self.feedItems:
+      return self.feedItems[feed.id]
+    return None
     
   def on_view_linkClicked(self, url):
     QtGui.QDesktopServices.openUrl(url)
@@ -236,6 +251,33 @@ class MainWindow(QtGui.QMainWindow):
     if i==None: return
     AboutDialog().exec_()
     
+  def updateFeedStatus(self):
+    if not feedStatusQueue.empty():
+      [action, id] = feedStatusQueue.get()
+      print "feedStatusChange: ", [action, id]
+      if not id in self.feedItems:
+        # This shouldn't happen, it means there is a 
+        # feed that is not in the tree
+        print "id %s not in the tree"%id
+        print Feed.get_by(id=id)
+        sys.exit(1)
+      item=self.feedItems[id]
+
+      #FIXME: use the palette to find the correct colors
+      if action==0: # Mark as updating
+        item.setForeground(QtGui.QBrush(QtGui.QColor("lightgrey")))
+      if action==1: # Mark as finished updating
+        item.setForeground(QtGui.QBrush(QtGui.QColor("black")))
+      
+      item.setText(unicode(item.feed))
+
+    else:
+      pass
+    if feedStatusQueue.empty():
+      self.feedStatusTimer.start(1000)
+    else:
+      self.feedStatusTimer.start(100)
+
   def updateStatusBar(self):
     if not statusQueue.empty():
       msg=statusQueue.get()
@@ -251,12 +293,14 @@ class MainWindow(QtGui.QMainWindow):
     # Initialize the tree from the Feeds
     self.model=QtGui.QStandardItemModel()
     self.ui.feeds.setModel(self.model)
+    self.feedItems={}
     
     # Internal function
     def addSubTree(parent, node):
       nn=QtGui.QStandardItem(unicode(node))
       parent.appendRow(nn)
       nn.feed=node
+      self.feedItems[node.id]=nn
       if node.children:
         nn.setIcon(QtGui.QIcon(":/folder.svg"))
         for child in node.children:
@@ -269,7 +313,7 @@ class MainWindow(QtGui.QMainWindow):
     iroot=self.model.invisibleRootItem()
     iroot.feed=None
     for root in roots:
-      nn=addSubTree(iroot, root)
+      addSubTree(iroot, root)
       
     self.ui.feeds.expandAll()
     
@@ -299,6 +343,7 @@ class MainWindow(QtGui.QMainWindow):
     post=item.post
     post.unread=False
     session.flush()
+    self.feedItems[post.feed.id].setText(unicode(post.feed))
     self.ui.view.setHtml(tmplLookup.get_template('post.tmpl').render_unicode(post=post))
 
   def on_actionImport_Feeds_triggered(self, i=None):
@@ -327,7 +372,9 @@ class MainWindow(QtGui.QMainWindow):
     item=self.model.itemFromIndex(self.ui.feeds.currentIndex())
     if item and item.feed:
       # FIXME: move to out-of-process
+      feedStatusQueue.put([0, item.feed.id])
       item.feed.update()
+      feedStatusQueue.put([1, item.feed.id])
       self.on_feeds_clicked(self.ui.feeds.currentIndex())
 
   def on_actionFetch_All_Feeds_triggered(self, i=None):
@@ -578,7 +625,12 @@ def feedUpdater(full=False):
   initDB()
   if full:
       for feed in Feed.query.filter(Feed.xmlUrl<>None):
-        feed.update()
+        feedStatusQueue.put([0, feed.id])
+        try: # we can't let this fail or it will stay yellow forever;-)
+          feed.update()
+        except:
+          pass
+        feedStatusQueue.put([1, feed.id])
   else:
     while True:
       print "updater loop"
@@ -586,7 +638,12 @@ def feedUpdater(full=False):
       for feed in Feed.query.filter(Feed.xmlUrl<>None):
         if (now-feed.lastUpdated).seconds>1800:
           print "updating because of timeout"
-          feed.update()
+          feedStatusQueue.put([0, feed.id])
+          try: # we can't let this fail or it will stay yellow forever;-)
+            feed.update()
+          except:
+            pass
+          feedStatusQueue.put([1, feed.id])
       print "---------------------"
       time.sleep(60)
 
