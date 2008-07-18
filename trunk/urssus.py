@@ -41,6 +41,7 @@ def detailToAuthor(ad):
 
 # DB Classes
 from elixir import * 
+import sqlalchemy as sql
 
 # Patch from http://elixir.ematia.de/trac/wiki/Recipes/GetByOrAddPattern
 def get_by_or_init(cls, if_new_set={}, **params):
@@ -246,10 +247,10 @@ class MainWindow(QtGui.QMainWindow):
       return
     self.setWindowTitle("%s - uRSSus"%feed.title)
       
-    posts=Post.query.filter(Post.feed==feed).order_by("-date")
+    posts=Post.query.filter(Post.feed==feed).order_by(sql.desc("date"))
     self.ui.posts.__model=QtGui.QStandardItemModel()
     for post in posts:
-      item=QtGui.QStandardItem(post.title)
+      item=QtGui.QStandardItem('%s - %s'%(post.title, post.date))
       item.post=post
       self.ui.posts.__model.appendRow(item)
     self.ui.posts.setModel(self.ui.posts.__model)
@@ -288,6 +289,7 @@ class MainWindow(QtGui.QMainWindow):
     if item and item.feed:
       # FIXME: move to out-of-process
       item.feed.update()
+      self.on_feeds_clicked(self.ui.feeds.currentIndex())
 
   def on_actionFetch_All_Feeds_triggered(self, i=None):
     if i==None: return
