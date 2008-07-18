@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '/home/ralsina/Desktop/proyectos/urssus/main.ui'
 #
-# Created: Thu Jul 17 20:41:14 2008
+# Created: Thu Jul 17 20:59:22 2008
 #      by: PyQt4 UI code generator 4.4.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -63,6 +63,8 @@ class Ui_MainWindow(object):
         self.menu_Go.setObjectName("menu_Go")
         self.menuHelp = QtGui.QMenu(self.menuBar)
         self.menuHelp.setObjectName("menuHelp")
+        self.menu_View = QtGui.QMenu(self.menuBar)
+        self.menu_View.setObjectName("menu_View")
         MainWindow.setMenuBar(self.menuBar)
         self.statusBar = QtGui.QStatusBar(MainWindow)
         self.statusBar.setGeometry(QtCore.QRect(0,576,800,24))
@@ -113,6 +115,16 @@ class Ui_MainWindow(object):
         icon.addPixmap(QtGui.QPixmap(":/urssus.svg"),QtGui.QIcon.Normal,QtGui.QIcon.Off)
         self.action_About_uRSSus.setIcon(icon)
         self.action_About_uRSSus.setObjectName("action_About_uRSSus")
+        self.actionIncrease_Font_Sizes = QtGui.QAction(MainWindow)
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap(":/viewmag+.svg"),QtGui.QIcon.Normal,QtGui.QIcon.Off)
+        self.actionIncrease_Font_Sizes.setIcon(icon)
+        self.actionIncrease_Font_Sizes.setObjectName("actionIncrease_Font_Sizes")
+        self.actionDecrease_Font_Sizes = QtGui.QAction(MainWindow)
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap(":/viewmag-.svg"),QtGui.QIcon.Normal,QtGui.QIcon.Off)
+        self.actionDecrease_Font_Sizes.setIcon(icon)
+        self.actionDecrease_Font_Sizes.setObjectName("actionDecrease_Font_Sizes")
         self.toolBar.addAction(self.actionFetch_Feed)
         self.toolBar.addAction(self.actionFetch_All_Feeds)
         self.toolBar.addAction(self.actionAbort_Fetches)
@@ -134,7 +146,10 @@ class Ui_MainWindow(object):
         self.menu_Go.addAction(self.actionNext_Feed)
         self.menu_Go.addAction(self.actionNext_Unread_Feed)
         self.menuHelp.addAction(self.action_About_uRSSus)
+        self.menu_View.addAction(self.actionIncrease_Font_Sizes)
+        self.menu_View.addAction(self.actionDecrease_Font_Sizes)
         self.menuBar.addAction(self.menu_File.menuAction())
+        self.menuBar.addAction(self.menu_View.menuAction())
         self.menuBar.addAction(self.menu_Go.menuAction())
         self.menuBar.addAction(self.menuFeed.menuAction())
         self.menuBar.addAction(self.menuHelp.menuAction())
@@ -149,6 +164,7 @@ class Ui_MainWindow(object):
         self.menu_File.setTitle(QtGui.QApplication.translate("MainWindow", "&File", None, QtGui.QApplication.UnicodeUTF8))
         self.menu_Go.setTitle(QtGui.QApplication.translate("MainWindow", "&Go", None, QtGui.QApplication.UnicodeUTF8))
         self.menuHelp.setTitle(QtGui.QApplication.translate("MainWindow", "&Help", None, QtGui.QApplication.UnicodeUTF8))
+        self.menu_View.setTitle(QtGui.QApplication.translate("MainWindow", "&View", None, QtGui.QApplication.UnicodeUTF8))
         self.actionFetch_Feed.setText(QtGui.QApplication.translate("MainWindow", "Fetch Feed", None, QtGui.QApplication.UnicodeUTF8))
         self.actionFetch_Feed.setShortcut(QtGui.QApplication.translate("MainWindow", "F5", None, QtGui.QApplication.UnicodeUTF8))
         self.actionFetch_All_Feeds.setText(QtGui.QApplication.translate("MainWindow", "Fetch All Feeds", None, QtGui.QApplication.UnicodeUTF8))
@@ -168,6 +184,10 @@ class Ui_MainWindow(object):
         self.actionNext_Feed.setShortcut(QtGui.QApplication.translate("MainWindow", "N", None, QtGui.QApplication.UnicodeUTF8))
         self.actionNext_Unread_Feed.setText(QtGui.QApplication.translate("MainWindow", "N&ext Unread Feed", None, QtGui.QApplication.UnicodeUTF8))
         self.action_About_uRSSus.setText(QtGui.QApplication.translate("MainWindow", "&About uRSSus...", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionIncrease_Font_Sizes.setText(QtGui.QApplication.translate("MainWindow", "Increase Font Sizes", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionIncrease_Font_Sizes.setShortcut(QtGui.QApplication.translate("MainWindow", "Ctrl++", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionDecrease_Font_Sizes.setText(QtGui.QApplication.translate("MainWindow", "Decrease Font Sizes", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionDecrease_Font_Sizes.setShortcut(QtGui.QApplication.translate("MainWindow", "Ctrl+-", None, QtGui.QApplication.UnicodeUTF8))
 
 from PyQt4 import QtWebKit
 import icons_rc

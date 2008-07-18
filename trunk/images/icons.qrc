@@ -1,5 +1,7 @@
 <RCC>
   <qresource prefix="/" >
+    <file>viewmag+.svg</file>
+    <file>viewmag-.svg</file>
     <file>folder.svg</file>
     <file>urssus.svg</file>
     <file>exit.svg</file>

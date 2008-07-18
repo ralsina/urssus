@@ -388,6 +388,14 @@ class MainWindow(QtGui.QMainWindow):
       else: # Finally!
         self.on_feeds_clicked(nextIndex)
 
+  def on_actionIncrease_Font_Sizes_triggered(self, i=None):
+    if i==None: return
+    self.ui.view.setTextSizeMultiplier(self.ui.view.textSizeMultiplier()+.2)
+    
+  def on_actionDecrease_Font_Sizes_triggered(self, i=None):
+    if i==None: return
+    self.ui.view.setTextSizeMultiplier(self.ui.view.textSizeMultiplier()-.2)
+
 class FeedDelegate(QtGui.QItemDelegate):
   def __init__(self, parent=None):
     print "Creating FeedDelegate"

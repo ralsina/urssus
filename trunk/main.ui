@@ -151,7 +151,15 @@
     </property>
     <addaction name="action_About_uRSSus" />
    </widget>
+   <widget class="QMenu" name="menu_View" >
+    <property name="title" >
+     <string>&amp;View</string>
+    </property>
+    <addaction name="actionIncrease_Font_Sizes" />
+    <addaction name="actionDecrease_Font_Sizes" />
+   </widget>
    <addaction name="menu_File" />
+   <addaction name="menu_View" />
    <addaction name="menu_Go" />
    <addaction name="menuFeed" />
    <addaction name="menuHelp" />
@@ -273,6 +281,30 @@
    </property>
    <property name="text" >
     <string>&amp;About uRSSus...</string>
+   </property>
+  </action>
+  <action name="actionIncrease_Font_Sizes" >
+   <property name="icon" >
+    <iconset resource="images/icons.qrc" >
+     <normaloff>:/viewmag+.svg</normaloff>:/viewmag+.svg</iconset>
+   </property>
+   <property name="text" >
+    <string>Increase Font Sizes</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl++</string>
+   </property>
+  </action>
+  <action name="actionDecrease_Font_Sizes" >
+   <property name="icon" >
+    <iconset resource="images/icons.qrc" >
+     <normaloff>:/viewmag-.svg</normaloff>:/viewmag-.svg</iconset>
+   </property>
+   <property name="text" >
+    <string>Decrease Font Sizes</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+-</string>
    </property>
   </action>
  </widget>
