@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '/home/ralsina/Desktop/proyectos/urssus/main.ui'
 #
-# Created: Thu Jul 17 21:50:11 2008
+# Created: Fri Jul 18 12:18:22 2008
 #      by: PyQt4 UI code generator 4.4.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -193,6 +193,7 @@ class Ui_MainWindow(object):
         self.actionNext_Feed.setText(QtGui.QApplication.translate("MainWindow", "Next &Feed", None, QtGui.QApplication.UnicodeUTF8))
         self.actionNext_Feed.setShortcut(QtGui.QApplication.translate("MainWindow", "N", None, QtGui.QApplication.UnicodeUTF8))
         self.actionNext_Unread_Feed.setText(QtGui.QApplication.translate("MainWindow", "N&ext Unread Feed", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionNext_Unread_Feed.setShortcut(QtGui.QApplication.translate("MainWindow", "Alt++", None, QtGui.QApplication.UnicodeUTF8))
         self.actionAbout_uRSSus.setText(QtGui.QApplication.translate("MainWindow", "&About uRSSus...", None, QtGui.QApplication.UnicodeUTF8))
         self.actionIncrease_Font_Sizes.setText(QtGui.QApplication.translate("MainWindow", "Increase Font Sizes", None, QtGui.QApplication.UnicodeUTF8))
         self.actionIncrease_Font_Sizes.setShortcut(QtGui.QApplication.translate("MainWindow", "Ctrl++", None, QtGui.QApplication.UnicodeUTF8))
