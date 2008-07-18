@@ -92,7 +92,7 @@
     <rect>
      <x>0</x>
      <y>31</y>
-     <width>228</width>
+     <width>155</width>
      <height>39</height>
     </rect>
    </property>
@@ -188,9 +188,9 @@
   <widget class="QToolBar" name="filterBar" >
    <property name="geometry" >
     <rect>
-     <x>228</x>
+     <x>155</x>
      <y>31</y>
-     <width>572</width>
+     <width>645</width>
      <height>39</height>
     </rect>
    </property>
@@ -291,10 +291,6 @@
    </property>
   </action>
   <action name="actionNext_Feed" >
-   <property name="icon" >
-    <iconset resource="images/icons.qrc" >
-     <normaloff>:/folder.svg</normaloff>:/folder.svg</iconset>
-   </property>
    <property name="text" >
     <string>Next &amp;Feed</string>
    </property>

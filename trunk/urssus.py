@@ -214,11 +214,9 @@ class MainWindow(QtGui.QMainWindow):
     
   def feedIndexFromFeed(self, feed):
     '''Given a feed, find the index in the feeds model that matches'''
-    
-    # I can't think of a cleverway to do this, so it's brute force: iterate over the
+    # TODO
+    # I can't think of a clever way to do this, so it's brute force: iterate over the
     # model, see who has feed in it.
-    
-    
     
   def on_actionStatus_Bar_triggered(self, i=None):
     if i==None: return
@@ -226,8 +224,7 @@ class MainWindow(QtGui.QMainWindow):
       self.statusBar().show()
     else:
       self.statusBar().hide()
-      
-    
+
   def on_actionAbout_uRSSus_triggered(self, i=None):
     if i==None: return
     AboutDialog().exec_()
@@ -242,7 +239,6 @@ class MainWindow(QtGui.QMainWindow):
       self.statusTimer.start(1000)
     else:
       self.statusTimer.start(100)
-
 
   def initTree(self):
     # Initialize the tree from the Feeds

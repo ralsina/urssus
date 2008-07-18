@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '/home/ralsina/Desktop/proyectos/urssus/main.ui'
 #
-# Created: Fri Jul 18 12:46:56 2008
+# Created: Fri Jul 18 13:33:54 2008
 #      by: PyQt4 UI code generator 4.4.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -49,7 +49,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout.addWidget(self.splitter_2)
         MainWindow.setCentralWidget(self.centralWidget)
         self.toolBar = QtGui.QToolBar(MainWindow)
-        self.toolBar.setGeometry(QtCore.QRect(0,31,228,39))
+        self.toolBar.setGeometry(QtCore.QRect(0,31,155,39))
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap(":/urssus.svg"),QtGui.QIcon.Normal,QtGui.QIcon.Off)
         self.toolBar.setWindowIcon(icon)
@@ -74,7 +74,7 @@ class Ui_MainWindow(object):
         self.statusBar.setObjectName("statusBar")
         MainWindow.setStatusBar(self.statusBar)
         self.filterBar = QtGui.QToolBar(MainWindow)
-        self.filterBar.setGeometry(QtCore.QRect(228,31,572,39))
+        self.filterBar.setGeometry(QtCore.QRect(155,31,645,39))
         self.filterBar.setObjectName("filterBar")
         MainWindow.addToolBar(QtCore.Qt.TopToolBarArea,self.filterBar)
         self.actionFetch_Feed = QtGui.QAction(MainWindow)
@@ -111,9 +111,6 @@ class Ui_MainWindow(object):
         self.actionNext_Unread_Article = QtGui.QAction(MainWindow)
         self.actionNext_Unread_Article.setObjectName("actionNext_Unread_Article")
         self.actionNext_Feed = QtGui.QAction(MainWindow)
-        icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap(":/folder.svg"),QtGui.QIcon.Normal,QtGui.QIcon.Off)
-        self.actionNext_Feed.setIcon(icon)
         self.actionNext_Feed.setObjectName("actionNext_Feed")
         self.actionNext_Unread_Feed = QtGui.QAction(MainWindow)
         self.actionNext_Unread_Feed.setObjectName("actionNext_Unread_Feed")
