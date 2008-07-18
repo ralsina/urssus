@@ -149,12 +149,14 @@
     <property name="title" >
      <string>&amp;Help</string>
     </property>
-    <addaction name="action_About_uRSSus" />
+    <addaction name="actionAbout_uRSSus" />
    </widget>
    <widget class="QMenu" name="menu_View" >
     <property name="title" >
      <string>&amp;View</string>
     </property>
+    <addaction name="actionStatus_Bar" />
+    <addaction name="separator" />
     <addaction name="actionIncrease_Font_Sizes" />
     <addaction name="actionDecrease_Font_Sizes" />
    </widget>
@@ -274,7 +276,7 @@
     <string>N&amp;ext Unread Feed</string>
    </property>
   </action>
-  <action name="action_About_uRSSus" >
+  <action name="actionAbout_uRSSus" >
    <property name="icon" >
     <iconset resource="images/icons.qrc" >
      <normaloff>:/urssus.svg</normaloff>:/urssus.svg</iconset>
@@ -305,6 +307,17 @@
    </property>
    <property name="shortcut" >
     <string>Ctrl+-</string>
+   </property>
+  </action>
+  <action name="actionStatus_Bar" >
+   <property name="checkable" >
+    <bool>true</bool>
+   </property>
+   <property name="checked" >
+    <bool>true</bool>
+   </property>
+   <property name="text" >
+    <string>Status Bar</string>
    </property>
   </action>
  </widget>

@@ -195,7 +195,15 @@ class MainWindow(QtGui.QMainWindow):
     QtCore.QObject.connect(self.statusTimer, QtCore.SIGNAL("timeout()"), self.updateStatusBar)
     self.statusTimer.start(0)
     
-  def on_action_About_uRSSus_triggered(self, i=None):
+  def on_actionStatus_Bar_triggered(self, i=None):
+    if i==None: return
+    if self.ui.actionStatus_Bar.isChecked():
+      self.statusBar().show()
+    else:
+      self.statusBar().hide()
+      
+    
+  def on_actionAbout_uRSSus_triggered(self, i=None):
     if i==None: return
     AboutDialog().exec_()
     
