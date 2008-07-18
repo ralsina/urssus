@@ -148,6 +148,8 @@
      <string>&amp;Go</string>
     </property>
     <addaction name="separator" />
+    <addaction name="actionPrevious_Article" />
+    <addaction name="actionPrevious_Unread_Article" />
     <addaction name="actionNext_Article" />
     <addaction name="actionNext_Unread_Article" />
     <addaction name="separator" />
@@ -366,6 +368,22 @@
    </property>
    <property name="shortcut" >
     <string>Alt+-</string>
+   </property>
+  </action>
+  <action name="actionPrevious_Article" >
+   <property name="text" >
+    <string>&amp;Previous Article</string>
+   </property>
+   <property name="shortcut" >
+    <string>Left</string>
+   </property>
+  </action>
+  <action name="actionPrevious_Unread_Article" >
+   <property name="text" >
+    <string>Pre&amp;vious Unread Article</string>
+   </property>
+   <property name="shortcut" >
+    <string>-</string>
    </property>
   </action>
  </widget>
