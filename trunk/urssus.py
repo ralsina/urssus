@@ -433,6 +433,42 @@ class MainWindow(QtGui.QMainWindow):
       else: # Finally!
         self.on_feeds_clicked(nextIndex)
 
+  def on_actionPrevious_Feed_triggered(self, i=None):
+    if i==None: return
+    print "Previous Feed"
+    nextIndex=None
+    # First see if we are on a specific feed
+    curIndex=self.ui.feeds.currentIndex()
+    if curIndex.isValid():
+      # If there is a previous sibling, go there
+      if curIndex.row()>0:
+        nextIndex=curIndex.sibling(curIndex.row()-1, 0)
+        # And then dig to the last leaf
+        while self.ui.feeds.model().hasChildren(nextIndex):
+          nextIndex=nextIndex.child(self.ui.feeds.model().rowCount(nextIndex)-1, 0)
+      # No previous sibling, go to the parent
+      else:
+          nextIndex=curIndex.parent()
+        
+    else: # Just go to the first feed there is
+      i=self.ui.feeds.model().index(0, 0) # This one always exists, unless you have no feeds, in which case, who cares?
+      it=self.model.itemFromIndex(i)
+      # dig until there is something
+      while (it.feed==None or it.feed.xmlUrl==None) and self.ui.feeds.model().hasChildren(i):
+        i=self.model.index(0, 0, i)
+        it=self.model.itemFromIndex(i)
+      nextIndex=i
+
+    # And go there
+    if nextIndex and nextIndex.isValid():
+      self.ui.feeds.setCurrentIndex(nextIndex)
+      # If nextIndex is not a real feed, we need to do one more step forward
+      it=self.model.itemFromIndex(nextIndex)  
+      if it.feed==None or it.feed.xmlUrl==None:
+        self.on_actionPrevious_Feed_triggered(True)
+      else: # Finally!
+        self.on_feeds_clicked(nextIndex)
+
   def on_actionIncrease_Font_Sizes_triggered(self, i=None):
     if i==None: return
     self.ui.view.setTextSizeMultiplier(self.ui.view.textSizeMultiplier()+.2)
