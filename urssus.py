@@ -593,7 +593,6 @@ from BeautifulSoup import BeautifulStoneSoup
 def decodeString(s):
   '''Decode HTML strings so you don't get &lt; and all those things.'''
   u=unicode(BeautifulStoneSoup(s,convertEntities=BeautifulStoneSoup.HTML_ENTITIES ))
-  print u
   return u
   
 if __name__ == "__main__":
