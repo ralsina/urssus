@@ -469,6 +469,18 @@ class MainWindow(QtGui.QMainWindow):
       else: # Finally!
         self.on_feeds_clicked(nextIndex)
 
+  def on_actionPrevious_Unread_Feed_triggered(self, i=None):
+    if i==None: return
+    if Post.query.filter(Post.unread==True).count()==0:
+      return #No unread articles, so don't bother
+    # Go to previous feed
+    while True:
+      self.on_actionPrevious_Feed_triggered(True)
+      curIndex=self.ui.feeds.currentIndex()
+      curItem=self.ui.feeds.model().itemFromIndex(curIndex)
+      if curItem and curItem.feed and curItem.feed.unreadCount()<>0:
+        break
+
   def on_actionIncrease_Font_Sizes_triggered(self, i=None):
     if i==None: return
     self.ui.view.setTextSizeMultiplier(self.ui.view.textSizeMultiplier()+.2)

@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '/home/ralsina/Desktop/proyectos/urssus/main.ui'
 #
-# Created: Fri Jul 18 13:36:49 2008
+# Created: Fri Jul 18 13:56:52 2008
 #      by: PyQt4 UI code generator 4.4.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -135,6 +135,8 @@ class Ui_MainWindow(object):
         self.actionStatus_Bar.setObjectName("actionStatus_Bar")
         self.actionPrevious_Feed = QtGui.QAction(MainWindow)
         self.actionPrevious_Feed.setObjectName("actionPrevious_Feed")
+        self.actionPrevious_Unread_Feed = QtGui.QAction(MainWindow)
+        self.actionPrevious_Unread_Feed.setObjectName("actionPrevious_Unread_Feed")
         self.toolBar.addAction(self.actionFetch_Feed)
         self.toolBar.addAction(self.actionFetch_All_Feeds)
         self.toolBar.addAction(self.actionAbort_Fetches)
@@ -154,6 +156,7 @@ class Ui_MainWindow(object):
         self.menu_Go.addAction(self.actionNext_Unread_Article)
         self.menu_Go.addSeparator()
         self.menu_Go.addAction(self.actionPrevious_Feed)
+        self.menu_Go.addAction(self.actionPrevious_Unread_Feed)
         self.menu_Go.addAction(self.actionNext_Feed)
         self.menu_Go.addAction(self.actionNext_Unread_Feed)
         self.menuHelp.addAction(self.actionAbout_uRSSus)
@@ -207,6 +210,8 @@ class Ui_MainWindow(object):
         self.actionStatus_Bar.setText(QtGui.QApplication.translate("MainWindow", "Status Bar", None, QtGui.QApplication.UnicodeUTF8))
         self.actionPrevious_Feed.setText(QtGui.QApplication.translate("MainWindow", "P&revious Feed", None, QtGui.QApplication.UnicodeUTF8))
         self.actionPrevious_Feed.setShortcut(QtGui.QApplication.translate("MainWindow", "P", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionPrevious_Unread_Feed.setText(QtGui.QApplication.translate("MainWindow", "Prev&ious Unread Feed", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionPrevious_Unread_Feed.setShortcut(QtGui.QApplication.translate("MainWindow", "Alt+-", None, QtGui.QApplication.UnicodeUTF8))
 
 from PyQt4 import QtWebKit
 import icons_rc

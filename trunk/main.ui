@@ -152,6 +152,7 @@
     <addaction name="actionNext_Unread_Article" />
     <addaction name="separator" />
     <addaction name="actionPrevious_Feed" />
+    <addaction name="actionPrevious_Unread_Feed" />
     <addaction name="actionNext_Feed" />
     <addaction name="actionNext_Unread_Feed" />
    </widget>
@@ -357,6 +358,14 @@
    </property>
    <property name="shortcut" >
     <string>P</string>
+   </property>
+  </action>
+  <action name="actionPrevious_Unread_Feed" >
+   <property name="text" >
+    <string>Prev&amp;ious Unread Feed</string>
+   </property>
+   <property name="shortcut" >
+    <string>Alt+-</string>
    </property>
   </action>
  </widget>
