@@ -216,7 +216,7 @@ class MainWindow(QtGui.QMainWindow):
     if statusQueue.empty():
       self.statusTimer.start(1000)
     else:
-      self.statusTimer.start(150)
+      self.statusTimer.start(100)
 
 
   def initTree(self):
