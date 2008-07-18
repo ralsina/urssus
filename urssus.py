@@ -69,7 +69,9 @@ class Feed(Entity):
   lastUpdated = Field(DateTime, default=datetime(1970,1,1))
   def __repr__(self):
     if self.xmlUrl:
-      return self.text+'(%d)'%Post.query.filter(Post.feed==self).filter(Post.unread==True).count()
+      c=Post.query.filter(Post.feed==self).filter(Post.unread==True).count()
+      if c:
+        return self.text+'(%d)'%c
     return self.text
     
   def update(self):
@@ -238,9 +240,8 @@ class MainWindow(QtGui.QMainWindow):
       return nn
           
     roots=Feed.query.filter(Feed.parent==None)
-    iroot=QtGui.QStandardItem("All Feeds")
+    iroot=self.model.invisibleRootItem()
     iroot.feed=None
-    self.model.appendRow(iroot)
     for root in roots:
       nn=addSubTree(iroot, root)
       
