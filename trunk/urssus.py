@@ -132,9 +132,12 @@ class Feed(Entity):
           link=post['link']
         else:
             link=None
-        posts.append(Post.get_by_or_init(feed=self, date=date, title=post['title'], 
-                                         post_id=post[idkey], content=content, 
-                                         author=author, link=link))
+        p = Post.get_by(feed=self, date=date, title=post['title'],post_id=post[idkey])
+        if not p:
+          p=Post(feed=self, date=date, title=post['title'], 
+                 post_id=post[idkey], content=content, 
+                 author=author, link=link)
+        posts.append(p)
       except KeyError:
         print post
     self.lastUpdated=datetime.now()
