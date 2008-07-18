@@ -344,10 +344,17 @@ class MainWindow(QtGui.QMainWindow):
   def on_actionNext_Unread_Article_triggered(self, i=None):
     if i==None: return
     print "Next Unread"
-    # FIXME: This should not be **soooooo** recursive ;-)
-    self.on_actionNext_Article_triggered(True, True)
-    
-  def on_actionNext_Article_triggered(self, i=None, unread=False):
+    if Post.query.filter(Post.unread==True).count()==0:
+      return #No unread articles, so don't bother
+    # Go to next article
+    while True:
+      self.on_actionNext_Article_triggered(True, do_open=False)
+      curIndex=self.ui.posts.currentIndex()
+      curItem=self.ui.posts.model().itemFromIndex(curIndex)
+      if curItem and curItem.post.unread:
+        break
+
+  def on_actionNext_Article_triggered(self, i=None, do_open=True):
     if i==None: return
     print "Next"
     # First see if we have a next item here
@@ -368,10 +375,7 @@ class MainWindow(QtGui.QMainWindow):
         print "No posts"
         self.on_actionNext_Feed_triggered(True)
     it=self.ui.posts.model().itemFromIndex(self.ui.posts.currentIndex())
-    if not it or (unread and not it.post.unread):
-      if not it or not it.post.unread:
-        self.on_actionNext_Article_triggered(True, True)
-    else:    
+    if do_open:
       self.on_posts_clicked(self.ui.posts.currentIndex())
 
   def on_actionNext_Unread_Feed_triggered(self, i=None):
