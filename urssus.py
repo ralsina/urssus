@@ -69,10 +69,13 @@ class Feed(Entity):
   lastUpdated = Field(DateTime, default=datetime(1970,1,1))
   def __repr__(self):
     if self.xmlUrl:
-      c=Post.query.filter(Post.feed==self).filter(Post.unread==True).count()
+      c=self.unreadCount()
       if c:
         return self.text+'(%d)'%c
     return self.text
+    
+  def unreadCount(self):
+    return Post.query.filter(Post.feed==self).filter(Post.unread==True).count()
     
   def update(self):
     statusQueue.put(u"Updating: "+ self.title)
@@ -370,6 +373,18 @@ class MainWindow(QtGui.QMainWindow):
         self.on_actionNext_Article_triggered(True, True)
     else:    
       self.on_posts_clicked(self.ui.posts.currentIndex())
+
+  def on_actionNext_Unread_Feed_triggered(self, i=None):
+    if i==None: return
+    if Post.query.filter(Post.unread==True).count()==0:
+      return #No unread articles, so don't bother
+    # Go to next feed
+    while True:
+      self.on_actionNext_Feed_triggered(True)
+      curIndex=self.ui.feeds.currentIndex()
+      curItem=self.ui.feeds.model().itemFromIndex(curIndex)
+      if curItem and curItem.feed and curItem.feed.unreadCount()<>0:
+        break
 
   def on_actionNext_Feed_triggered(self, i=None):
     if i==None: return
