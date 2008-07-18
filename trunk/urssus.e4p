@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE Project SYSTEM "Project-4.2.dtd">
 <!-- eric4 project file for project urssus -->
-<!-- Saved: 2008-07-17, 12:46:41 -->
+<!-- Saved: 2008-07-18, 15:10:40 -->
 <!-- Copyright (C) 2008 Roberto Alsina, ralsina@netmanagers.com.ar -->
 <Project version="4.2">
   <ProgLanguage mixed="0">Python</ProgLanguage>
@@ -26,6 +26,12 @@
     <Source>
       <Name>Ui_about.py</Name>
     </Source>
+    <Source>
+      <Name>Ui_searchwidget.py</Name>
+    </Source>
+    <Source>
+      <Name>Ui_feed_properties.py</Name>
+    </Source>
   </Sources>
   <Forms>
     <Form>
@@ -33,6 +39,12 @@
     </Form>
     <Form>
       <Name>about.ui</Name>
+    </Form>
+    <Form>
+      <Name>searchwidget.ui</Name>
+    </Form>
+    <Form>
+      <Name>feed_properties.ui</Name>
     </Form>
   </Forms>
   <Translations>
