@@ -288,7 +288,7 @@ class MainWindow(QtGui.QMainWindow):
     posts=Post.query.filter(Post.feed==feed).order_by(sql.desc("date"))
     self.ui.posts.__model=QtGui.QStandardItemModel()
     for post in posts:
-      item=QtGui.QStandardItem('%s - %s'%(post.title, post.date))
+      item=QtGui.QStandardItem('%s - %s'%(decodeString(post.title), post.date))
       item.post=post
       self.ui.posts.__model.appendRow(item)
     self.ui.posts.setModel(self.ui.posts.__model)
@@ -589,6 +589,13 @@ def feedUpdater(full=False):
       print "---------------------"
       time.sleep(60)
 
+from BeautifulSoup import BeautifulStoneSoup 
+def decodeString(s):
+  '''Decode HTML strings so you don't get &lt; and all those things.'''
+  u=unicode(BeautifulStoneSoup(s,convertEntities=BeautifulStoneSoup.HTML_ENTITIES ))
+  print u
+  return u
+  
 if __name__ == "__main__":
   initDB()
     
