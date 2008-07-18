@@ -361,6 +361,7 @@ class MainWindow(QtGui.QMainWindow):
       curItem=self.ui.posts.model().itemFromIndex(curIndex)
       if curItem and curItem.post.unread:
         break
+    self.on_posts_clicked(self.ui.posts.currentIndex())
 
   def on_actionNext_Article_triggered(self, i=None, do_open=True):
     if i==None: return
@@ -374,7 +375,7 @@ class MainWindow(QtGui.QMainWindow):
       else: # This was the last item here, need to go somewhere else
         print "At last post"
         self.on_actionNext_Feed_triggered(True)
-    else:
+    else: # At no post in particular
       # Are there any item in this model?
       if self.ui.posts.model() and self.ui.posts.model().rowCount()>0:
         # Then go to the first one
@@ -382,6 +383,47 @@ class MainWindow(QtGui.QMainWindow):
       else: # No items here, we need to go to the next feed
         print "No posts"
         self.on_actionNext_Feed_triggered(True)
+    it=self.ui.posts.model().itemFromIndex(self.ui.posts.currentIndex())
+    if do_open:
+      self.on_posts_clicked(self.ui.posts.currentIndex())
+
+  def on_actionPrevious_Unread_Article_triggered(self, i=None):
+    if i==None: return
+    print "Previous Unread"
+    if Post.query.filter(Post.unread==True).count()==0:
+      return #No unread articles, so don't bother
+    # Go to next article
+    while True:
+      self.on_actionPrevious_Article_triggered(True, do_open=False)
+      curIndex=self.ui.posts.currentIndex()
+      curItem=self.ui.posts.model().itemFromIndex(curIndex)
+      if (curItem and curItem.post.unread):
+        break
+      if not (self.ui.feeds.currentIndex().parent().isValid() and self.ui.feeds.currentIndex().isValid()):
+        break
+    self.on_posts_clicked(self.ui.posts.currentIndex())
+
+  def on_actionPrevious_Article_triggered(self, i=None, do_open=True):
+    if i==None: return
+    print "Previous"
+    # First see if we have a previous item here
+    curIndex=self.ui.posts.currentIndex()
+    if curIndex.isValid(): 
+      if curIndex.row()>0:
+        nextIndex=curIndex.sibling(curIndex.row()-1, 0)
+        self.ui.posts.setCurrentIndex(nextIndex)
+      else: # This was the first item here, need to go to previous feed
+        print "At first post"
+        self.on_actionPrevious_Feed_triggered(True)
+    else: # At no post in particular
+      # Are there any item in this model?
+      if self.ui.posts.model() and self.ui.posts.model().rowCount()>0:
+        # Then go to the last one
+        i=self.ui.posts.model().index(self.ui.posts.model().rowCount()-1, 0)
+        self.ui.posts.setCurrentIndex(i)
+      else: # No items here, we need to go to the previous feed
+        print "No posts"
+        self.on_actionPrevious_Feed_triggered(True)
     it=self.ui.posts.model().itemFromIndex(self.ui.posts.currentIndex())
     if do_open:
       self.on_posts_clicked(self.ui.posts.currentIndex())
