@@ -250,6 +250,9 @@
    <property name="text" >
     <string>&amp;Next Article</string>
    </property>
+   <property name="shortcut" >
+    <string>Right</string>
+   </property>
   </action>
   <action name="actionNext_Unread_Article" >
    <property name="text" >

@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '/home/ralsina/Desktop/proyectos/urssus/main.ui'
 #
-# Created: Thu Jul 17 21:16:09 2008
+# Created: Thu Jul 17 21:22:12 2008
 #      by: PyQt4 UI code generator 4.4.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -184,6 +184,7 @@ class Ui_MainWindow(object):
         self.actionQuit.setText(QtGui.QApplication.translate("MainWindow", "&Quit", None, QtGui.QApplication.UnicodeUTF8))
         self.actionQuit.setShortcut(QtGui.QApplication.translate("MainWindow", "Ctrl+Q", None, QtGui.QApplication.UnicodeUTF8))
         self.actionNext_Article.setText(QtGui.QApplication.translate("MainWindow", "&Next Article", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionNext_Article.setShortcut(QtGui.QApplication.translate("MainWindow", "Right", None, QtGui.QApplication.UnicodeUTF8))
         self.actionNext_Unread_Article.setText(QtGui.QApplication.translate("MainWindow", "Ne&xt Unread Article", None, QtGui.QApplication.UnicodeUTF8))
         self.actionNext_Unread_Article.setShortcut(QtGui.QApplication.translate("MainWindow", "+", None, QtGui.QApplication.UnicodeUTF8))
         self.actionNext_Feed.setText(QtGui.QApplication.translate("MainWindow", "Next &Feed", None, QtGui.QApplication.UnicodeUTF8))
