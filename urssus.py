@@ -170,7 +170,15 @@ def initDB():
 from PyQt4 import QtGui, QtCore
 from Ui_main import Ui_MainWindow
 from Ui_about import Ui_Dialog as UI_AboutDialog
+from Ui_searchwidget import Ui_Form as UI_SearchWidget
 
+class SearchWidget(QtGui.QWidget):
+  def __init__(self):
+    QtGui.QWidget.__init__(self)
+    # Set up the UI from designer
+    self.ui=UI_SearchWidget()
+    self.ui.setupUi(self)
+    
 class AboutDialog(QtGui.QDialog):
   def __init__(self):
     QtGui.QDialog.__init__(self)
@@ -190,6 +198,10 @@ class MainWindow(QtGui.QMainWindow):
     # Use custom delegate to paint feed and post items
     self.ui.feeds.setItemDelegate(FeedDelegate(self))
     self.ui.posts.setItemDelegate(PostDelegate(self))
+    
+    # Article filter fields
+    self.swidget=SearchWidget()
+    self.ui.filterBar.addWidget(self.swidget)
     
     # Fill with feed data
     self.initTree()
@@ -443,7 +455,6 @@ class PostDelegate(QtGui.QItemDelegate):
     print "Creating PostDelegate"
     QtGui.QItemDelegate.__init__(self, parent)
   
-
 def importOPML(fname):
   from xml.etree import ElementTree
   tree = ElementTree.parse(fname)
