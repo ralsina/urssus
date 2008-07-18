@@ -337,7 +337,7 @@ class MainWindow(QtGui.QMainWindow):
       item.post=post
       self.ui.posts.__model.appendRow(item)
     self.ui.posts.setModel(self.ui.posts.__model)
-      
+
   def on_posts_clicked(self, index):
     item=self.ui.posts.__model.itemFromIndex(index)
     post=item.post
@@ -365,6 +365,7 @@ class MainWindow(QtGui.QMainWindow):
       for post in item.feed.posts:
         post.unread=False
       session.flush()
+      self.feedItems[item.feed.id].setText(unicode(item.feed))
 
   def on_actionFetch_Feed_triggered(self, i=None):
     if i==None: return
