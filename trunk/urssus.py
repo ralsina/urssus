@@ -279,6 +279,7 @@ class MainWindow(QtGui.QMainWindow):
   def on_feeds_clicked(self, index):
     item=self.model.itemFromIndex(index)
     feed=item.feed
+    self.ui.view.setHtml(tmplLookup.get_template('feed.tmpl').render_unicode(feed=feed))
     
     if not feed or not feed.xmlUrl:
       # FIXME: implement "aggregated feeds" when the user clicks on a folder
