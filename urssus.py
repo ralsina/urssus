@@ -248,10 +248,10 @@ class MainWindow(QtGui.QMainWindow):
     self.updatesCounter=0
 
   def unFilterPosts(self):
-    self.on_feeds_clicked(self.ui.feeds.currentIndex())
+    self.open_feed(self.ui.feeds.currentIndex())
 
   def filterPosts(self):
-    self.on_feeds_clicked(self.ui.feeds.currentIndex(), filter=self.filterWidget.ui.filter.text())
+    self.open_feed(self.ui.feeds.currentIndex(), filter=self.filterWidget.ui.filter.text())
 
   def feedIndexFromFeed(self, feed):
     '''Given a feed, find the index in the feeds model that matches'''
@@ -345,12 +345,15 @@ class MainWindow(QtGui.QMainWindow):
     
   def on_view_loadProgress(self, p):
     self.statusBar().showMessage("Page loaded %d%%"%p)
-    
+
   def on_feeds_clicked(self, index, filter=None):
+    self.open_feed(index, filter)
+    self.ui.view.setHtml(tmplLookup.get_template('feed.tmpl').render_unicode(feed=feed))
+
+  def open_feed(self, index, filter=None):
     item=self.model.itemFromIndex(index)
     if not item: return
     feed=item.feed
-    self.ui.view.setHtml(tmplLookup.get_template('feed.tmpl').render_unicode(feed=feed))
     
     if not feed or not feed.xmlUrl:
       # FIXME: implement "aggregated feeds" when the user clicks on a folder
@@ -406,7 +409,7 @@ class MainWindow(QtGui.QMainWindow):
       feedStatusQueue.put([0, item.feed.id])
       item.feed.update()
       feedStatusQueue.put([1, item.feed.id])
-      self.on_feeds_clicked(self.ui.feeds.currentIndex())
+      self.open_feed(self.ui.feeds.currentIndex())
 
   def on_actionFetch_All_Feeds_triggered(self, i=None):
     if i==None: return
@@ -567,7 +570,7 @@ class MainWindow(QtGui.QMainWindow):
       if it.feed==None or it.feed.xmlUrl==None:
         self.on_actionNext_Feed_triggered(True)
       else: # Finally!
-        self.on_feeds_clicked(nextIndex)
+        self.open_feed(nextIndex)
 
   def on_actionPrevious_Feed_triggered(self, i=None):
     if i==None: return
@@ -603,7 +606,7 @@ class MainWindow(QtGui.QMainWindow):
       if it.feed==None or it.feed.xmlUrl==None:
         self.on_actionPrevious_Feed_triggered(True)
       else: # Finally!
-        self.on_feeds_clicked(nextIndex)
+        self.open_feed(nextIndex)
 
   def on_actionPrevious_Unread_Feed_triggered(self, i=None):
     if i==None: return
