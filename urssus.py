@@ -230,7 +230,8 @@ class MainWindow(QtGui.QMainWindow):
     self.feedStatusTimer.setSingleShot(True)
     QtCore.QObject.connect(self.feedStatusTimer, QtCore.SIGNAL("timeout()"), self.updateFeedStatus)
     self.feedStatusTimer.start(0)
-  
+    self.updatesCounter=0
+
   def feedIndexFromFeed(self, feed):
     '''Given a feed, find the index in the feeds model that matches'''
     if feed.id in self.feedItems:
@@ -252,7 +253,7 @@ class MainWindow(QtGui.QMainWindow):
     AboutDialog().exec_()
     
   def updateFeedStatus(self):
-    if not feedStatusQueue.empty():
+    while not feedStatusQueue.empty():
       [action, id] = feedStatusQueue.get()
       print "feedStatusChange: ", [action, id]
       if not id in self.feedItems:
@@ -266,17 +267,18 @@ class MainWindow(QtGui.QMainWindow):
       #FIXME: use the palette to find the correct colors
       if action==0: # Mark as updating
         item.setForeground(QtGui.QBrush(QtGui.QColor("lightgrey")))
+        self.updatesCounter+=1
       if action==1: # Mark as finished updating
         item.setForeground(QtGui.QBrush(QtGui.QColor("black")))
-      
+        self.updatesCounter-=1
+        
       item.setText(unicode(item.feed))
+      if self.updatesCounter>0:
+        self.ui.actionAbort_Fetches.setEnabled(True)
+      else:
+        self.ui.actionAbort_Fetches.setEnabled(False)
 
-    else:
-      pass
-    if feedStatusQueue.empty():
-      self.feedStatusTimer.start(1000)
-    else:
-      self.feedStatusTimer.start(100)
+    self.feedStatusTimer.start(1000)
 
   def updateStatusBar(self):
     if not statusQueue.empty():
@@ -390,15 +392,23 @@ class MainWindow(QtGui.QMainWindow):
     
   def on_actionAbort_Fetches_triggered(self, i=None):
     if i==None: return
-    global processes, statusQueue
+    global processes, statusQueue, feedStatusQueue
     statusQueue.put("Aborting all fetches")
     # stop all processes and restart the background timed fetcher
     for proc in processes:
       proc.terminate()
     processes=[]
+    
+    # Mark all feeds as not updating
+    for id in self.feedItems:
+      feedStatusQueue.put([1, id])
+    self.updateFeedStatus()
+    self.updatesCounter=0
+    
     # Since we terminate forcefully, the contents of the
-    # queue are probably corrupted. So throw them away.
+    # queues are probably corrupted. So throw them away.
     statusQueue=processing.Queue()
+    feedStatusQueue=processing.Queue()
     
     p = processing.Process(target=feedUpdater)
     p.setDaemon(True)
@@ -635,6 +645,7 @@ def feedUpdater(full=False):
   else:
     while True:
       print "updater loop"
+      time.sleep(60)
       now=datetime.now()
       for feed in Feed.query.filter(Feed.xmlUrl<>None):
         if (now-feed.lastUpdated).seconds>1800:
@@ -646,7 +657,6 @@ def feedUpdater(full=False):
             pass
           feedStatusQueue.put([1, feed.id])
       print "---------------------"
-      time.sleep(60)
 
 from BeautifulSoup import BeautifulStoneSoup 
 def decodeString(s):

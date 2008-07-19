@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '/home/ralsina/Desktop/proyectos/urssus/main.ui'
 #
-# Created: Fri Jul 18 15:09:54 2008
+# Created: Fri Jul 18 20:50:57 2008
 #      by: PyQt4 UI code generator 4.4.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -88,6 +88,7 @@ class Ui_MainWindow(object):
         self.actionFetch_All_Feeds.setIcon(icon)
         self.actionFetch_All_Feeds.setObjectName("actionFetch_All_Feeds")
         self.actionAbort_Fetches = QtGui.QAction(MainWindow)
+        self.actionAbort_Fetches.setEnabled(False)
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap(":/stop.svg"),QtGui.QIcon.Normal,QtGui.QIcon.Off)
         self.actionAbort_Fetches.setIcon(icon)
