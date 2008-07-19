@@ -203,6 +203,7 @@ class MainWindow(QtGui.QMainWindow):
     # Set up the UI from designer
     self.ui=Ui_MainWindow()
     self.ui.setupUi(self)
+    self.ui.searchFrame.hide()
     
     # Use custom delegate to paint feed and post items
     self.ui.feeds.setItemDelegate(FeedDelegate(self))

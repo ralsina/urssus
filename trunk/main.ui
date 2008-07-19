@@ -25,10 +25,7 @@
      <height>506</height>
     </rect>
    </property>
-   <layout class="QHBoxLayout" name="horizontalLayout" >
-    <property name="margin" >
-     <number>0</number>
-    </property>
+   <layout class="QVBoxLayout" name="verticalLayout" >
     <item>
      <widget class="QSplitter" name="splitter_2" >
       <property name="orientation" >
@@ -82,10 +79,33 @@
          </url>
         </property>
        </widget>
+       <widget class="QFrame" name="searchFrame" >
+        <property name="sizePolicy" >
+         <sizepolicy vsizetype="Ignored" hsizetype="Preferred" >
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="maximumSize" >
+         <size>
+          <width>16777215</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="frameShape" >
+         <enum>QFrame::StyledPanel</enum>
+        </property>
+        <property name="frameShadow" >
+         <enum>QFrame::Raised</enum>
+        </property>
+       </widget>
       </widget>
      </widget>
     </item>
    </layout>
+   <zorder>splitter_2</zorder>
+   <zorder>searchFrame</zorder>
+   <zorder>splitter_2</zorder>
   </widget>
   <widget class="QToolBar" name="toolBar" >
    <property name="geometry" >
@@ -173,7 +193,14 @@
     <addaction name="actionIncrease_Font_Sizes" />
     <addaction name="actionDecrease_Font_Sizes" />
    </widget>
+   <widget class="QMenu" name="menu_Edit" >
+    <property name="title" >
+     <string>&amp;Edit</string>
+    </property>
+    <addaction name="actionFind" />
+   </widget>
    <addaction name="menu_File" />
+   <addaction name="menu_Edit" />
    <addaction name="menu_View" />
    <addaction name="menu_Go" />
    <addaction name="menuFeed" />
@@ -387,6 +414,15 @@
    </property>
    <property name="shortcut" >
     <string>-</string>
+   </property>
+  </action>
+  <action name="actionFind" >
+   <property name="icon" >
+    <iconset resource="images/icons.qrc" >
+     <normaloff>:/find.svg</normaloff>:/find.svg</iconset>
+   </property>
+   <property name="text" >
+    <string>&amp;Find</string>
    </property>
   </action>
  </widget>

@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '/home/ralsina/Desktop/proyectos/urssus/main.ui'
 #
-# Created: Fri Jul 18 21:46:59 2008
+# Created: Fri Jul 18 21:58:43 2008
 #      by: PyQt4 UI code generator 4.4.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -19,9 +19,8 @@ class Ui_MainWindow(object):
         self.centralWidget = QtGui.QWidget(MainWindow)
         self.centralWidget.setGeometry(QtCore.QRect(0,70,800,506))
         self.centralWidget.setObjectName("centralWidget")
-        self.horizontalLayout = QtGui.QHBoxLayout(self.centralWidget)
-        self.horizontalLayout.setMargin(0)
-        self.horizontalLayout.setObjectName("horizontalLayout")
+        self.verticalLayout = QtGui.QVBoxLayout(self.centralWidget)
+        self.verticalLayout.setObjectName("verticalLayout")
         self.splitter_2 = QtGui.QSplitter(self.centralWidget)
         self.splitter_2.setOrientation(QtCore.Qt.Horizontal)
         self.splitter_2.setObjectName("splitter_2")
@@ -46,7 +45,17 @@ class Ui_MainWindow(object):
         self.view.setFocusPolicy(QtCore.Qt.NoFocus)
         self.view.setUrl(QtCore.QUrl("about:blank"))
         self.view.setObjectName("view")
-        self.horizontalLayout.addWidget(self.splitter_2)
+        self.searchFrame = QtGui.QFrame(self.splitter)
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Preferred,QtGui.QSizePolicy.Ignored)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.searchFrame.sizePolicy().hasHeightForWidth())
+        self.searchFrame.setSizePolicy(sizePolicy)
+        self.searchFrame.setMaximumSize(QtCore.QSize(16777215,16777215))
+        self.searchFrame.setFrameShape(QtGui.QFrame.StyledPanel)
+        self.searchFrame.setFrameShadow(QtGui.QFrame.Raised)
+        self.searchFrame.setObjectName("searchFrame")
+        self.verticalLayout.addWidget(self.splitter_2)
         MainWindow.setCentralWidget(self.centralWidget)
         self.toolBar = QtGui.QToolBar(MainWindow)
         self.toolBar.setGeometry(QtCore.QRect(0,31,155,39))
@@ -68,6 +77,8 @@ class Ui_MainWindow(object):
         self.menuHelp.setObjectName("menuHelp")
         self.menu_View = QtGui.QMenu(self.menuBar)
         self.menu_View.setObjectName("menu_View")
+        self.menu_Edit = QtGui.QMenu(self.menuBar)
+        self.menu_Edit.setObjectName("menu_Edit")
         MainWindow.setMenuBar(self.menuBar)
         self.statusBar = QtGui.QStatusBar(MainWindow)
         self.statusBar.setGeometry(QtCore.QRect(0,576,800,24))
@@ -142,6 +153,11 @@ class Ui_MainWindow(object):
         self.actionPrevious_Article.setObjectName("actionPrevious_Article")
         self.actionPrevious_Unread_Article = QtGui.QAction(MainWindow)
         self.actionPrevious_Unread_Article.setObjectName("actionPrevious_Unread_Article")
+        self.actionFind = QtGui.QAction(MainWindow)
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap(":/find.svg"),QtGui.QIcon.Normal,QtGui.QIcon.Off)
+        self.actionFind.setIcon(icon)
+        self.actionFind.setObjectName("actionFind")
         self.toolBar.addAction(self.actionFetch_Feed)
         self.toolBar.addAction(self.actionFetch_All_Feeds)
         self.toolBar.addAction(self.actionAbort_Fetches)
@@ -171,7 +187,9 @@ class Ui_MainWindow(object):
         self.menu_View.addSeparator()
         self.menu_View.addAction(self.actionIncrease_Font_Sizes)
         self.menu_View.addAction(self.actionDecrease_Font_Sizes)
+        self.menu_Edit.addAction(self.actionFind)
         self.menuBar.addAction(self.menu_File.menuAction())
+        self.menuBar.addAction(self.menu_Edit.menuAction())
         self.menuBar.addAction(self.menu_View.menuAction())
         self.menuBar.addAction(self.menu_Go.menuAction())
         self.menuBar.addAction(self.menuFeed.menuAction())
@@ -188,6 +206,7 @@ class Ui_MainWindow(object):
         self.menu_Go.setTitle(QtGui.QApplication.translate("MainWindow", "&Go", None, QtGui.QApplication.UnicodeUTF8))
         self.menuHelp.setTitle(QtGui.QApplication.translate("MainWindow", "&Help", None, QtGui.QApplication.UnicodeUTF8))
         self.menu_View.setTitle(QtGui.QApplication.translate("MainWindow", "&View", None, QtGui.QApplication.UnicodeUTF8))
+        self.menu_Edit.setTitle(QtGui.QApplication.translate("MainWindow", "&Edit", None, QtGui.QApplication.UnicodeUTF8))
         self.filterBar.setWindowTitle(QtGui.QApplication.translate("MainWindow", "toolBar_2", None, QtGui.QApplication.UnicodeUTF8))
         self.actionFetch_Feed.setText(QtGui.QApplication.translate("MainWindow", "Fetch Feed", None, QtGui.QApplication.UnicodeUTF8))
         self.actionFetch_Feed.setShortcut(QtGui.QApplication.translate("MainWindow", "F5", None, QtGui.QApplication.UnicodeUTF8))
@@ -223,6 +242,7 @@ class Ui_MainWindow(object):
         self.actionPrevious_Article.setShortcut(QtGui.QApplication.translate("MainWindow", "Left", None, QtGui.QApplication.UnicodeUTF8))
         self.actionPrevious_Unread_Article.setText(QtGui.QApplication.translate("MainWindow", "Pre&vious Unread Article", None, QtGui.QApplication.UnicodeUTF8))
         self.actionPrevious_Unread_Article.setShortcut(QtGui.QApplication.translate("MainWindow", "-", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionFind.setText(QtGui.QApplication.translate("MainWindow", "&Find", None, QtGui.QApplication.UnicodeUTF8))
 
 from PyQt4 import QtWebKit
 import icons_rc

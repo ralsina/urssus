@@ -1,5 +1,6 @@
 <RCC>
   <qresource prefix="/" >
+    <file>find.svg</file>
     <file>1rightarrow.svg</file>
     <file>1leftarrow.svg</file>
     <file>editdelete.svg</file>
