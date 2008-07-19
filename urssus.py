@@ -347,12 +347,14 @@ class MainWindow(QtGui.QMainWindow):
     self.statusBar().showMessage("Page loaded %d%%"%p)
 
   def on_feeds_clicked(self, index, filter=None):
+    item=self.model.itemFromIndex(index)
+    if not item: return
     self.open_feed(index, filter)
-    self.ui.view.setHtml(tmplLookup.get_template('feed.tmpl').render_unicode(feed=feed))
-    if feed.title:
-      self.setWindowTitle("%s - uRSSus"%feed.title)
+    self.ui.view.setHtml(tmplLookup.get_template('feed.tmpl').render_unicode(feed=item.feed))
+    if item.feed.title:
+      self.setWindowTitle("%s - uRSSus"%item.feed.title)
     else:
-      self.setWindowTitle("%s - uRSSus"%feed.text)
+      self.setWindowTitle("uRSSus")
       
  
   def open_feed(self, index, filter=None):
