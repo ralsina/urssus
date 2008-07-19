@@ -211,6 +211,8 @@ class MainWindow(QtGui.QMainWindow):
     # Article filter fields
     self.swidget=SearchWidget()
     self.ui.filterBar.addWidget(self.swidget)
+    QtCore.QObject.connect(self.swidget.ui.filter, QtCore.SIGNAL("returnPressed()"), self.filterPosts)
+    
     
     # Set some properties of the Web view
     page=self.ui.view.page()
@@ -231,6 +233,9 @@ class MainWindow(QtGui.QMainWindow):
     QtCore.QObject.connect(self.feedStatusTimer, QtCore.SIGNAL("timeout()"), self.updateFeedStatus)
     self.feedStatusTimer.start(0)
     self.updatesCounter=0
+
+  def filterPosts(self):
+    self.on_feeds_clicked(self.ui.feeds.currentIndex(), filter=self.swidget.ui.filter.text())
 
   def feedIndexFromFeed(self, feed):
     '''Given a feed, find the index in the feeds model that matches'''
@@ -255,7 +260,6 @@ class MainWindow(QtGui.QMainWindow):
   def updateFeedStatus(self):
     while not feedStatusQueue.empty():
       [action, id] = feedStatusQueue.get()
-      print "feedStatusChange: ", [action, id]
       if not id in self.feedItems:
         # This shouldn't happen, it means there is a 
         # feed that is not in the tree
@@ -322,8 +326,9 @@ class MainWindow(QtGui.QMainWindow):
   def on_view_loadProgress(self, p):
     self.statusBar().showMessage("Page loaded %d%%"%p)
     
-  def on_feeds_clicked(self, index):
+  def on_feeds_clicked(self, index, filter=None):
     item=self.model.itemFromIndex(index)
+    if not item: return
     feed=item.feed
     self.ui.view.setHtml(tmplLookup.get_template('feed.tmpl').render_unicode(feed=feed))
     
@@ -331,8 +336,11 @@ class MainWindow(QtGui.QMainWindow):
       # FIXME: implement "aggregated feeds" when the user clicks on a folder
       return
     self.setWindowTitle("%s - uRSSus"%feed.title)
-      
-    posts=Post.query.filter(Post.feed==feed).order_by(sql.desc("date"))
+    
+    if not filter:
+      posts=Post.query.filter(Post.feed==feed).order_by(sql.desc("date"))
+    else:
+      posts=Post.query.filter(Post.feed==feed).filter(sql.or_(Post.title.like('%%%s%%'%filter), Post.content.like('%%%s%%'%filter))).order_by(sql.desc("date"))
     self.ui.posts.__model=QtGui.QStandardItemModel()
     for post in posts:
       item=QtGui.QStandardItem('%s - %s'%(decodeString(post.title), post.date))
