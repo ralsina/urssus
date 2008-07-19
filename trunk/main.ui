@@ -233,6 +233,9 @@
    </property>
   </action>
   <action name="actionAbort_Fetches" >
+   <property name="enabled" >
+    <bool>false</bool>
+   </property>
    <property name="icon" >
     <iconset resource="images/icons.qrc" >
      <normaloff>:/stop.svg</normaloff>:/stop.svg</iconset>

@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '/home/ralsina/Desktop/proyectos/urssus/feed_properties.ui'
 #
-# Created: Fri Jul 18 15:09:55 2008
+# Created: Fri Jul 18 20:50:58 2008
 #      by: PyQt4 UI code generator 4.4.2
 #
 # WARNING! All changes made in this file will be lost!
