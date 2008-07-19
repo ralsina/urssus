@@ -217,15 +217,15 @@ class MainWindow(QtGui.QMainWindow):
     self.ui.posts.setItemDelegate(PostDelegate(self))
     
     # Article filter fields
-    self.swidget=FilterWidget()
-    self.ui.filterBar.addWidget(self.swidget)
-    QtCore.QObject.connect(self.swidget.ui.filter, QtCore.SIGNAL("returnPressed()"), self.filterPosts)
-    QtCore.QObject.connect(self.swidget.ui.clear, QtCore.SIGNAL("clicked()"), self.unFilterPosts)
+    self.filterWidget=FilterWidget()
+    self.ui.filterBar.addWidget(self.filterWidget)
+    QtCore.QObject.connect(self.filterWidget.ui.filter, QtCore.SIGNAL("returnPressed()"), self.filterPosts)
+    QtCore.QObject.connect(self.filterWidget.ui.clear, QtCore.SIGNAL("clicked()"), self.unFilterPosts)
     
     # Search widget
-    self.sw=SearchWidget()
-    self.sw.hide()
-    self.ui.splitter.addWidget(self.sw)
+    self.searchWidget=SearchWidget()
+    self.searchWidget.hide()
+    self.ui.splitter.addWidget(self.searchWidget)
     
     # Set some properties of the Web view
     page=self.ui.view.page()
@@ -251,7 +251,7 @@ class MainWindow(QtGui.QMainWindow):
     self.on_feeds_clicked(self.ui.feeds.currentIndex())
 
   def filterPosts(self):
-    self.on_feeds_clicked(self.ui.feeds.currentIndex(), filter=self.swidget.ui.filter.text())
+    self.on_feeds_clicked(self.ui.feeds.currentIndex(), filter=self.filterWidget.ui.filter.text())
 
   def feedIndexFromFeed(self, feed):
     '''Given a feed, find the index in the feeds model that matches'''
@@ -264,7 +264,7 @@ class MainWindow(QtGui.QMainWindow):
     
   def on_actionFind_triggered(self, i=None):
     if i==None: return
-    self.sw.show()
+    self.searchWidget.show()
     
   def on_actionStatus_Bar_triggered(self, i=None):
     if i==None: return
