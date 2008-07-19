@@ -26,6 +26,9 @@
     </rect>
    </property>
    <layout class="QVBoxLayout" name="verticalLayout" >
+    <property name="margin" >
+     <number>2</number>
+    </property>
     <item>
      <widget class="QSplitter" name="splitter_2" >
       <property name="orientation" >
@@ -79,33 +82,10 @@
          </url>
         </property>
        </widget>
-       <widget class="QFrame" name="searchFrame" >
-        <property name="sizePolicy" >
-         <sizepolicy vsizetype="Ignored" hsizetype="Preferred" >
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="maximumSize" >
-         <size>
-          <width>16777215</width>
-          <height>16777215</height>
-         </size>
-        </property>
-        <property name="frameShape" >
-         <enum>QFrame::StyledPanel</enum>
-        </property>
-        <property name="frameShadow" >
-         <enum>QFrame::Raised</enum>
-        </property>
-       </widget>
       </widget>
      </widget>
     </item>
    </layout>
-   <zorder>splitter_2</zorder>
-   <zorder>searchFrame</zorder>
-   <zorder>splitter_2</zorder>
   </widget>
   <widget class="QToolBar" name="toolBar" >
    <property name="geometry" >
@@ -423,6 +403,9 @@
    </property>
    <property name="text" >
     <string>&amp;Find</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+F</string>
    </property>
   </action>
  </widget>

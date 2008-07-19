@@ -181,6 +181,7 @@ from PyQt4 import QtGui, QtCore
 from Ui_main import Ui_MainWindow
 from Ui_about import Ui_Dialog as UI_AboutDialog
 from Ui_filterwidget import Ui_Form as UI_FilterWidget
+from Ui_searchwidget import Ui_Form as UI_SearchWidget
 
 class FilterWidget(QtGui.QWidget):
   def __init__(self):
@@ -189,6 +190,13 @@ class FilterWidget(QtGui.QWidget):
     self.ui=UI_FilterWidget()
     self.ui.setupUi(self)
     
+class SearchWidget(QtGui.QWidget):
+  def __init__(self):
+    QtGui.QWidget.__init__(self)
+    # Set up the UI from designer
+    self.ui=UI_SearchWidget()
+    self.ui.setupUi(self)
+
 class AboutDialog(QtGui.QDialog):
   def __init__(self):
     QtGui.QDialog.__init__(self)
@@ -203,7 +211,6 @@ class MainWindow(QtGui.QMainWindow):
     # Set up the UI from designer
     self.ui=Ui_MainWindow()
     self.ui.setupUi(self)
-    self.ui.searchFrame.hide()
     
     # Use custom delegate to paint feed and post items
     self.ui.feeds.setItemDelegate(FeedDelegate(self))
@@ -215,6 +222,10 @@ class MainWindow(QtGui.QMainWindow):
     QtCore.QObject.connect(self.swidget.ui.filter, QtCore.SIGNAL("returnPressed()"), self.filterPosts)
     QtCore.QObject.connect(self.swidget.ui.clear, QtCore.SIGNAL("clicked()"), self.unFilterPosts)
     
+    # Search widget
+    self.sw=SearchWidget()
+    self.sw.hide()
+    self.ui.splitter.addWidget(self.sw)
     
     # Set some properties of the Web view
     page=self.ui.view.page()
@@ -250,6 +261,10 @@ class MainWindow(QtGui.QMainWindow):
     
   def on_view_linkClicked(self, url):
     QtGui.QDesktopServices.openUrl(url)
+    
+  def on_actionFind_triggered(self, i=None):
+    if i==None: return
+    self.sw.show()
     
   def on_actionStatus_Bar_triggered(self, i=None):
     if i==None: return

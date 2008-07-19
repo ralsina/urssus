@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '/home/ralsina/Desktop/proyectos/urssus/main.ui'
 #
-# Created: Fri Jul 18 21:58:43 2008
+# Created: Fri Jul 18 22:16:10 2008
 #      by: PyQt4 UI code generator 4.4.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -20,6 +20,7 @@ class Ui_MainWindow(object):
         self.centralWidget.setGeometry(QtCore.QRect(0,70,800,506))
         self.centralWidget.setObjectName("centralWidget")
         self.verticalLayout = QtGui.QVBoxLayout(self.centralWidget)
+        self.verticalLayout.setMargin(2)
         self.verticalLayout.setObjectName("verticalLayout")
         self.splitter_2 = QtGui.QSplitter(self.centralWidget)
         self.splitter_2.setOrientation(QtCore.Qt.Horizontal)
@@ -45,16 +46,6 @@ class Ui_MainWindow(object):
         self.view.setFocusPolicy(QtCore.Qt.NoFocus)
         self.view.setUrl(QtCore.QUrl("about:blank"))
         self.view.setObjectName("view")
-        self.searchFrame = QtGui.QFrame(self.splitter)
-        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Preferred,QtGui.QSizePolicy.Ignored)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.searchFrame.sizePolicy().hasHeightForWidth())
-        self.searchFrame.setSizePolicy(sizePolicy)
-        self.searchFrame.setMaximumSize(QtCore.QSize(16777215,16777215))
-        self.searchFrame.setFrameShape(QtGui.QFrame.StyledPanel)
-        self.searchFrame.setFrameShadow(QtGui.QFrame.Raised)
-        self.searchFrame.setObjectName("searchFrame")
         self.verticalLayout.addWidget(self.splitter_2)
         MainWindow.setCentralWidget(self.centralWidget)
         self.toolBar = QtGui.QToolBar(MainWindow)
@@ -243,6 +234,7 @@ class Ui_MainWindow(object):
         self.actionPrevious_Unread_Article.setText(QtGui.QApplication.translate("MainWindow", "Pre&vious Unread Article", None, QtGui.QApplication.UnicodeUTF8))
         self.actionPrevious_Unread_Article.setShortcut(QtGui.QApplication.translate("MainWindow", "-", None, QtGui.QApplication.UnicodeUTF8))
         self.actionFind.setText(QtGui.QApplication.translate("MainWindow", "&Find", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionFind.setShortcut(QtGui.QApplication.translate("MainWindow", "Ctrl+F", None, QtGui.QApplication.UnicodeUTF8))
 
 from PyQt4 import QtWebKit
 import icons_rc
