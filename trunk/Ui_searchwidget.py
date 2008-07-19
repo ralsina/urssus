@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '/home/ralsina/Desktop/proyectos/urssus/searchwidget.ui'
 #
-# Created: Fri Jul 18 21:47:02 2008
+# Created: Fri Jul 18 22:16:13 2008
 #      by: PyQt4 UI code generator 4.4.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -12,8 +12,9 @@ from PyQt4 import QtCore, QtGui
 class Ui_Form(object):
     def setupUi(self, Form):
         Form.setObjectName("Form")
-        Form.resize(438,46)
+        Form.resize(369,29)
         self.horizontalLayout = QtGui.QHBoxLayout(Form)
+        self.horizontalLayout.setMargin(2)
         self.horizontalLayout.setObjectName("horizontalLayout")
         self.close = QtGui.QToolButton(Form)
         icon = QtGui.QIcon()
@@ -47,6 +48,7 @@ class Ui_Form(object):
         self.label.setBuddy(self.text)
 
         self.retranslateUi(Form)
+        QtCore.QObject.connect(self.close,QtCore.SIGNAL("clicked()"),Form.hide)
         QtCore.QMetaObject.connectSlotsByName(Form)
 
     def retranslateUi(self, Form):
