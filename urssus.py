@@ -349,7 +349,12 @@ class MainWindow(QtGui.QMainWindow):
   def on_feeds_clicked(self, index, filter=None):
     self.open_feed(index, filter)
     self.ui.view.setHtml(tmplLookup.get_template('feed.tmpl').render_unicode(feed=feed))
-
+    if feed.title:
+      self.setWindowTitle("%s - uRSSus"%feed.title)
+    else:
+      self.setWindowTitle("%s - uRSSus"%feed.text)
+      
+ 
   def open_feed(self, index, filter=None):
     item=self.model.itemFromIndex(index)
     if not item: return
@@ -358,7 +363,6 @@ class MainWindow(QtGui.QMainWindow):
     if not feed or not feed.xmlUrl:
       # FIXME: implement "aggregated feeds" when the user clicks on a folder
       return
-    self.setWindowTitle("%s - uRSSus"%feed.title)
     
     if not filter:
       posts=Post.query.filter(Post.feed==feed).order_by(sql.desc("date"))
