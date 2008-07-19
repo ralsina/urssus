@@ -1,5 +1,8 @@
 <RCC>
   <qresource prefix="/" >
+    <file>1rightarrow.svg</file>
+    <file>1leftarrow.svg</file>
+    <file>editdelete.svg</file>
     <file>editclear.svg</file>
     <file>viewmag+.svg</file>
     <file>viewmag-.svg</file>
