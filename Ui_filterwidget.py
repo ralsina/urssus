@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file '/home/ralsina/Desktop/proyectos/urssus/searchwidget.ui'
+# Form implementation generated from reading ui file '/home/ralsina/Desktop/proyectos/urssus/filterwidget.ui'
 #
-# Created: Fri Jul 18 21:22:17 2008
+# Created: Fri Jul 18 21:38:06 2008
 #      by: PyQt4 UI code generator 4.4.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -39,7 +39,6 @@ class Ui_Form(object):
         self.label_2.setBuddy(self.statusCombo)
 
         self.retranslateUi(Form)
-        QtCore.QObject.connect(self.clear,QtCore.SIGNAL("clicked()"),self.filter.clear)
         QtCore.QMetaObject.connectSlotsByName(Form)
 
     def retranslateUi(self, Form):

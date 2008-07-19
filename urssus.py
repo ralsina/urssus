@@ -180,13 +180,13 @@ def initDB():
 from PyQt4 import QtGui, QtCore
 from Ui_main import Ui_MainWindow
 from Ui_about import Ui_Dialog as UI_AboutDialog
-from Ui_searchwidget import Ui_Form as UI_SearchWidget
+from Ui_filterwidget import Ui_Form as UI_FilterWidget
 
-class SearchWidget(QtGui.QWidget):
+class FilterWidget(QtGui.QWidget):
   def __init__(self):
     QtGui.QWidget.__init__(self)
     # Set up the UI from designer
-    self.ui=UI_SearchWidget()
+    self.ui=UI_FilterWidget()
     self.ui.setupUi(self)
     
 class AboutDialog(QtGui.QDialog):
@@ -209,7 +209,7 @@ class MainWindow(QtGui.QMainWindow):
     self.ui.posts.setItemDelegate(PostDelegate(self))
     
     # Article filter fields
-    self.swidget=SearchWidget()
+    self.swidget=FilterWidget()
     self.ui.filterBar.addWidget(self.swidget)
     QtCore.QObject.connect(self.swidget.ui.filter, QtCore.SIGNAL("returnPressed()"), self.filterPosts)
     QtCore.QObject.connect(self.swidget.ui.clear, QtCore.SIGNAL("clicked()"), self.unFilterPosts)
