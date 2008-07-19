@@ -212,6 +212,7 @@ class MainWindow(QtGui.QMainWindow):
     self.swidget=SearchWidget()
     self.ui.filterBar.addWidget(self.swidget)
     QtCore.QObject.connect(self.swidget.ui.filter, QtCore.SIGNAL("returnPressed()"), self.filterPosts)
+    QtCore.QObject.connect(self.swidget.ui.clear, QtCore.SIGNAL("clicked()"), self.unFilterPosts)
     
     
     # Set some properties of the Web view
@@ -233,6 +234,9 @@ class MainWindow(QtGui.QMainWindow):
     QtCore.QObject.connect(self.feedStatusTimer, QtCore.SIGNAL("timeout()"), self.updateFeedStatus)
     self.feedStatusTimer.start(0)
     self.updatesCounter=0
+
+  def unFilterPosts(self):
+    self.on_feeds_clicked(self.ui.feeds.currentIndex())
 
   def filterPosts(self):
     self.on_feeds_clicked(self.ui.feeds.currentIndex(), filter=self.swidget.ui.filter.text())
