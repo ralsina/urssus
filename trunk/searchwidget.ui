@@ -25,6 +25,9 @@
       <iconset resource="images/icons.qrc" >
        <normaloff>:/editdelete.svg</normaloff>:/editdelete.svg</iconset>
      </property>
+     <property name="shortcut" >
+      <string>Esc</string>
+     </property>
     </widget>
    </item>
    <item>

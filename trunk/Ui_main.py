@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '/home/ralsina/Desktop/proyectos/urssus/main.ui'
 #
-# Created: Fri Jul 18 22:16:10 2008
+# Created: Sat Jul 19 22:18:42 2008
 #      by: PyQt4 UI code generator 4.4.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -149,6 +149,8 @@ class Ui_MainWindow(object):
         icon.addPixmap(QtGui.QPixmap(":/find.svg"),QtGui.QIcon.Normal,QtGui.QIcon.Off)
         self.actionFind.setIcon(icon)
         self.actionFind.setObjectName("actionFind")
+        self.actionFind_Again = QtGui.QAction(MainWindow)
+        self.actionFind_Again.setObjectName("actionFind_Again")
         self.toolBar.addAction(self.actionFetch_Feed)
         self.toolBar.addAction(self.actionFetch_All_Feeds)
         self.toolBar.addAction(self.actionAbort_Fetches)
@@ -179,6 +181,7 @@ class Ui_MainWindow(object):
         self.menu_View.addAction(self.actionIncrease_Font_Sizes)
         self.menu_View.addAction(self.actionDecrease_Font_Sizes)
         self.menu_Edit.addAction(self.actionFind)
+        self.menu_Edit.addAction(self.actionFind_Again)
         self.menuBar.addAction(self.menu_File.menuAction())
         self.menuBar.addAction(self.menu_Edit.menuAction())
         self.menuBar.addAction(self.menu_View.menuAction())
@@ -235,6 +238,8 @@ class Ui_MainWindow(object):
         self.actionPrevious_Unread_Article.setShortcut(QtGui.QApplication.translate("MainWindow", "-", None, QtGui.QApplication.UnicodeUTF8))
         self.actionFind.setText(QtGui.QApplication.translate("MainWindow", "&Find", None, QtGui.QApplication.UnicodeUTF8))
         self.actionFind.setShortcut(QtGui.QApplication.translate("MainWindow", "Ctrl+F", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionFind_Again.setText(QtGui.QApplication.translate("MainWindow", "Find Again", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionFind_Again.setShortcut(QtGui.QApplication.translate("MainWindow", "Ctrl+G", None, QtGui.QApplication.UnicodeUTF8))
 
 from PyQt4 import QtWebKit
 import icons_rc
