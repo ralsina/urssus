@@ -74,7 +74,7 @@
        </widget>
        <widget class="QWebView" name="view" >
         <property name="focusPolicy" >
-         <enum>Qt::NoFocus</enum>
+         <enum>Qt::ClickFocus</enum>
         </property>
         <property name="url" >
          <url>
