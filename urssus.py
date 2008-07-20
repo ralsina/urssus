@@ -147,7 +147,10 @@ class Feed(Entity):
           link=post['link']
         else:
             link=None
-        p = Post.get_by(feed=self, date=date, title=post['title'],post_id=post[idkey])
+        # FIXME: if I use date to check here, I get duplicates on posts where I use
+        # artificial date because it's not in the feed's entry.
+        # If I don't I don't re-get updated posts.
+        p = Post.get_by(feed=self, title=post['title'],post_id=post[idkey])
         if not p:
           p=Post(feed=self, date=date, title=post['title'], 
                  post_id=post[idkey], content=content, 
@@ -233,6 +236,8 @@ class MainWindow(QtGui.QMainWindow):
     # Set some properties of the Web view
     page=self.ui.view.page()
     page.setLinkDelegationPolicy(page.DelegateAllLinks)
+    self.ui.view.setFocus(QtCore.Qt.TabFocusReason)
+
     
     # Fill with feed data
     self.initTree()

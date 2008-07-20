@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '/home/ralsina/Desktop/proyectos/urssus/main.ui'
 #
-# Created: Sat Jul 19 22:18:42 2008
+# Created: Sun Jul 20 13:21:08 2008
 #      by: PyQt4 UI code generator 4.4.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -43,7 +43,7 @@ class Ui_MainWindow(object):
         self.posts.setUniformItemSizes(True)
         self.posts.setObjectName("posts")
         self.view = QtWebKit.QWebView(self.splitter)
-        self.view.setFocusPolicy(QtCore.Qt.NoFocus)
+        self.view.setFocusPolicy(QtCore.Qt.ClickFocus)
         self.view.setUrl(QtCore.QUrl("about:blank"))
         self.view.setObjectName("view")
         self.verticalLayout.addWidget(self.splitter_2)
