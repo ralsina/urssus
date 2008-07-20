@@ -178,6 +178,7 @@
      <string>&amp;Edit</string>
     </property>
     <addaction name="actionFind" />
+    <addaction name="actionFind_Again" />
    </widget>
    <addaction name="menu_File" />
    <addaction name="menu_Edit" />
@@ -406,6 +407,14 @@
    </property>
    <property name="shortcut" >
     <string>Ctrl+F</string>
+   </property>
+  </action>
+  <action name="actionFind_Again" >
+   <property name="text" >
+    <string>Find Again</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+G</string>
    </property>
   </action>
  </widget>

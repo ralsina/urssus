@@ -255,6 +255,10 @@ class MainWindow(QtGui.QMainWindow):
     self.searchWidget.show()
     self.searchWidget.ui.text.setFocus(QtCore.Qt.TabFocusReason)
 
+  def on_actionFind_Again_triggered(self, i=None):
+    if i==None: return
+    self.findText()
+
   def findText(self):
     # FIXME: handle "Match Case"
     text=unicode(self.searchWidget.ui.text.text())
