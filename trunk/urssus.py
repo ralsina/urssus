@@ -342,6 +342,7 @@ class MainWindow(QtGui.QMainWindow):
     # Internal function
     def addSubTree(parent, node):
       nn=QtGui.QStandardItem(unicode(node))
+      nn.setToolTip(unicode(node))
       parent.appendRow(nn)
       nn.feed=node
       self.feedItems[node.id]=nn
