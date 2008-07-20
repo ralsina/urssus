@@ -177,7 +177,7 @@ def initDB():
     create_all()
 
 # UI Classes
-from PyQt4 import QtGui, QtCore
+from PyQt4 import QtGui, QtCore, QtWebKit
 from Ui_main import Ui_MainWindow
 from Ui_about import Ui_Dialog as UI_AboutDialog
 from Ui_filterwidget import Ui_Form as UI_FilterWidget
@@ -226,6 +226,9 @@ class MainWindow(QtGui.QMainWindow):
     self.searchWidget=SearchWidget()
     self.searchWidget.hide()
     self.ui.splitter.addWidget(self.searchWidget)
+    QtCore.QObject.connect(self.searchWidget.ui.next, QtCore.SIGNAL("clicked()"), self.findText)
+    QtCore.QObject.connect(self.searchWidget.ui.previous, QtCore.SIGNAL("clicked()"), self.findTextReverse)
+    
     
     # Set some properties of the Web view
     page=self.ui.view.page()
@@ -247,6 +250,21 @@ class MainWindow(QtGui.QMainWindow):
     self.feedStatusTimer.start(0)
     self.updatesCounter=0
 
+  def on_actionFind_triggered(self, i=None):
+    if i==None: return
+    self.searchWidget.show()
+    self.searchWidget.ui.text.setFocus(QtCore.Qt.TabFocusReason)
+
+  def findText(self):
+    # FIXME: handle "Match Case"
+    text=unicode(self.searchWidget.ui.text.text())
+    self.ui.view.findText(text)
+
+  def findTextReverse(self):
+    # FIXME: handle "Match Case"
+    text=unicode(self.searchWidget.ui.text.text())
+    self.ui.view.findText(text, QtWebKit.QWebPage.FindBackward)
+
   def unFilterPosts(self):
     self.open_feed(self.ui.feeds.currentIndex())
 
@@ -261,11 +279,7 @@ class MainWindow(QtGui.QMainWindow):
     
   def on_view_linkClicked(self, url):
     QtGui.QDesktopServices.openUrl(url)
-    
-  def on_actionFind_triggered(self, i=None):
-    if i==None: return
-    self.searchWidget.show()
-    
+        
   def on_actionStatus_Bar_triggered(self, i=None):
     if i==None: return
     if self.ui.actionStatus_Bar.isChecked():

@@ -6,7 +6,7 @@
     <x>0</x>
     <y>0</y>
     <width>369</width>
-    <height>29</height>
+    <height>32</height>
    </rect>
   </property>
   <property name="windowTitle" >
@@ -94,6 +94,22 @@
     <hint type="destinationlabel" >
      <x>33</x>
      <y>31</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>text</sender>
+   <signal>returnPressed()</signal>
+   <receiver>next</receiver>
+   <slot>animateClick()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>122</x>
+     <y>14</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>247</x>
+     <y>21</y>
     </hint>
    </hints>
   </connection>
