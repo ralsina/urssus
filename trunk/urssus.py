@@ -460,6 +460,9 @@ class MainWindow(QtGui.QMainWindow):
     # Go to next article
     while True:
       self.on_actionNext_Article_triggered(True, do_open=False)
+      # FIXME: this enters infinite loops if there are unread
+      # articles in previous feeds but not in following feeds
+      # probably the same thing happens on other methods
       curIndex=self.ui.posts.currentIndex()
       curItem=self.ui.posts.model().itemFromIndex(curIndex)
       if curItem and curItem.post.unread:
@@ -537,8 +540,11 @@ class MainWindow(QtGui.QMainWindow):
       return #No unread articles, so don't bother
     # Go to next feed
     while True:
+      oldIndex=self.ui.feeds.currentIndex()
       self.on_actionNext_Feed_triggered(True)
       curIndex=self.ui.feeds.currentIndex()
+      if oldIndex==curIndex or not curIndex.isValid(): # Next feed stopped
+        break
       curItem=self.ui.feeds.model().itemFromIndex(curIndex)
       if curItem and curItem.feed and curItem.feed.unreadCount()<>0:
         break
@@ -556,8 +562,11 @@ class MainWindow(QtGui.QMainWindow):
       else:
         # No childs, see if there is a next sibling
         nextIndex=curIndex.sibling(curIndex.row()+1, 0)
-        while not nextIndex.isValid(): #If invalid, go parent and next
-          nextIndex=curIndex.parent().sibling(curIndex.parent().row()+1, 0)
+        #If invalid, go parent and next sibling of him
+        if not nextIndex.isValid(): 
+          if curIndex.parent().isValid():
+            nextIndex=curIndex.parent().sibling(curIndex.parent().row()+1, 0)
+            
         
     else: # Just go to the first feed there is
       i=self.ui.feeds.model().index(0, 0) # This one always exists, unless you have no feeds, in which case, who cares?

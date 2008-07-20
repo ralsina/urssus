@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE Tasks SYSTEM "Tasks-4.1.dtd">
 <!-- eric4 tasks file for project urssus -->
-<!-- Saved: 2008-07-18, 23:14:27 -->
+<!-- Saved: 2008-07-19, 21:39:32 -->
 <Tasks version="4.1">
   <Task priority="1" completed="False" bugfix="True">
     <Summary>FIXME: when deploying make this work</Summary>
     <Description></Description>
-    <Created>2008-07-18, 23:11:03</Created>
+    <Created>2008-07-19, 21:38:55</Created>
     <Resource>
       <Filename>
         <Name>urssus.py</Name>
@@ -17,7 +17,7 @@
   <Task priority="1" completed="False" bugfix="True">
     <Summary>FIXME: how about using the feed's author, or something like that</Summary>
     <Description></Description>
-    <Created>2008-07-18, 23:11:03</Created>
+    <Created>2008-07-19, 21:38:55</Created>
     <Resource>
       <Filename>
         <Name>urssus.py</Name>
@@ -28,7 +28,7 @@
   <Task priority="1" completed="False" bugfix="True">
     <Summary>FIXME: use the palette to find the correct colors</Summary>
     <Description></Description>
-    <Created>2008-07-18, 23:11:03</Created>
+    <Created>2008-07-19, 21:38:55</Created>
     <Resource>
       <Filename>
         <Name>urssus.py</Name>
@@ -39,34 +39,23 @@
   <Task priority="1" completed="False" bugfix="True">
     <Summary>FIXME: implement "aggregated feeds" when the user clicks on a folder</Summary>
     <Description></Description>
-    <Created>2008-07-18, 23:11:03</Created>
+    <Created>2008-07-19, 21:38:55</Created>
     <Resource>
       <Filename>
         <Name>urssus.py</Name>
       </Filename>
-      <Linenumber>365</Linenumber>
+      <Linenumber>366</Linenumber>
     </Resource>
   </Task>
   <Task priority="1" completed="False" bugfix="True">
     <Summary>FIXME: move to out-of-process</Summary>
     <Description></Description>
-    <Created>2008-07-18, 23:11:03</Created>
+    <Created>2008-07-19, 21:38:55</Created>
     <Resource>
       <Filename>
         <Name>urssus.py</Name>
       </Filename>
-      <Linenumber>413</Linenumber>
-    </Resource>
-  </Task>
-  <Task priority="1" completed="False" bugfix="True">
-    <Summary>FIXME: implement without using next_article so we can skip whole feeds without unread articles</Summary>
-    <Description></Description>
-    <Created>2008-07-18, 23:11:03</Created>
-    <Resource>
-      <Filename>
-        <Name>urssus.py</Name>
-      </Filename>
-      <Linenumber>455</Linenumber>
+      <Linenumber>414</Linenumber>
     </Resource>
   </Task>
 </Tasks>
