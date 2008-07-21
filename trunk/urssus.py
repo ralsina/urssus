@@ -698,7 +698,6 @@ def importOPML(fname):
              parent=parent
              )
           
-#      parent.children.append(f)
     else: # Let's guess it's a folder
       f=Feed(text=node.get('text'), parent=parent)
       for child in node.getchildren():
@@ -709,8 +708,6 @@ def importOPML(fname):
   parent=root_feed
   for node in tree.find('//body').getchildren():
     importSubTree(parent, node)
-  
-  
   session.flush()
 
 # The feed updater (runs out-of-process)
