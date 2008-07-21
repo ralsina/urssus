@@ -171,13 +171,17 @@ class Post(Entity):
   author      = Field(Text)
   link        = Field(Text)
 
+root_feed=None
+
 def initDB():
+  global root_feed
   # This is just temporary
   metadata.bind = "sqlite:///urssus.sqlite"
   # metadata.bind.echo = True
   setup_all()
   if not os.path.exists("urssus.sqlite"):
     create_all()
+  root_feed=Feed.get_by_or_init(parent=None)
 
 # UI Classes
 from PyQt4 import QtGui, QtCore, QtWebKit
@@ -359,10 +363,9 @@ class MainWindow(QtGui.QMainWindow):
         nn.setIcon(QtGui.QIcon(":/urssus.svg"))
       return nn
           
-    roots=Feed.query.filter(Feed.parent==None)
     iroot=self.model.invisibleRootItem()
-    iroot.feed=None
-    for root in roots:
+    iroot.feed=root_feed
+    for root in root_feed.children:
       addSubTree(iroot, root)
       
     self.ui.feeds.expandAll()
@@ -678,28 +681,37 @@ class PostDelegate(QtGui.QItemDelegate):
     QtGui.QItemDelegate.__init__(self, parent)
   
 def importOPML(fname):
-  from xml.etree import ElementTree
-  tree = ElementTree.parse(fname)
-  current=None
-  for outline in tree.findall("//outline"):
-    xu=outline.get('xmlUrl')
+
+  def importSubTree(parent, node):
+    xu=node.get('xmlUrl')
     if xu:
-      f=Feed.get_by(xmlUrl=outline.get('xmlUrl'), 
-             htmlUrl=outline.get('htmlUrl'), 
+      # If it's already somewhere, don't duplicate
+      f=Feed.get_by(xmlUrl=node.get('xmlUrl'), 
+             htmlUrl=node.get('htmlUrl'), 
              )
       if not f:
-        f=Feed(xmlUrl=outline.get('xmlUrl'), 
-             htmlUrl=outline.get('htmlUrl'), 
-             title=outline.get('title'),
-             text=outline.get('text'), 
-             description=outline.get('description')
-             )        
-        if current:
-          current.children.append(f)
-          f.parent=current
-    else:
-      current=Feed.get_by_or_init(text=outline.get('text'))
-    session.flush()
+        f=Feed(xmlUrl=node.get('xmlUrl'), 
+             htmlUrl=node.get('htmlUrl'), 
+             title=node.get('title'),
+             text=node.get('text'), 
+             description=node.get('description'), 
+             parent=parent
+             )
+          
+#      parent.children.append(f)
+    else: # Let's guess it's a folder
+      f=Feed(text=node.get('text'), parent=parent)
+      for child in node.getchildren():
+        importSubTree(f, child)
+
+  from xml.etree import ElementTree
+  tree = ElementTree.parse(fname)
+  parent=root_feed
+  for node in tree.find('//body').getchildren():
+    importSubTree(parent, node)
+  
+  
+  session.flush()
 
 # The feed updater (runs out-of-process)
 def feedUpdater(full=False):
