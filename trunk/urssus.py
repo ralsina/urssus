@@ -735,21 +735,18 @@ class MainWindow(QtGui.QMainWindow):
     print "Previous Feed"
     if self.currentFeed:
       prevFeed=self.currentFeed.previousFeed()
-      if prevFeed:
+      if prevFeed and prevFeed<>root_feed: # The root feed has no UI
         self.open_feed(self.ui.feeds.model().indexFromItem(self.feedItems[prevFeed.id]))
-    else:
-      # FIXME: implement something reasonable like "go to last unread feed" (not important)
-      pass
+    # No current feed, so what's the meaning of "previous feed"?
+
 
   def on_actionPrevious_Unread_Feed_triggered(self, i=None):
     if i==None: return
     if self.currentFeed:
       prevFeed=self.currentFeed.previousUnreadFeed()
-      if prevFeed:
+      if prevFeed and prevFeed<>root_feed: # The root feed has no UI
         self.open_feed(self.ui.feeds.model().indexFromItem(self.feedItems[prevFeed.id]))
-    else:
-      # FIXME: implement something reasonable like "go to last unread feed" (not important)
-      pass
+    # No current feed, so what's the meaning of "previous unread feed"?
       
   def on_actionIncrease_Font_Sizes_triggered(self, i=None):
     if i==None: return
