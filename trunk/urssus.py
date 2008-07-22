@@ -77,6 +77,7 @@ class Feed(Entity):
   parent      = ManyToOne('Feed')
   posts       = OneToMany('Post')
   lastUpdated = Field(DateTime, default=datetime(1970,1,1))
+  loadFull    = Field(Boolean, default=False)
 
   def __repr__(self):
     c=self.unreadCount()
@@ -628,7 +629,10 @@ class MainWindow(QtGui.QMainWindow):
     session.flush()
     self.updateFeedItem(post.feed)
     self.updatePostItem(post)
-    self.ui.view.setHtml(tmplLookup.get_template('post.tmpl').render_unicode(post=post))
+    if post.feed.loadFull and post.link:
+      self.ui.view.setUrl(QtCore.QUrl(post.link))
+    else:
+      self.ui.view.setHtml(tmplLookup.get_template('post.tmpl').render_unicode(post=post))
 
   def on_actionImport_Feeds_triggered(self, i=None):
     if i==None: return
