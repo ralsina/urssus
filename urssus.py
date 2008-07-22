@@ -622,6 +622,9 @@ class MainWindow(QtGui.QMainWindow):
       self.updatePostItem(post)
 
   def updatePostItem(self, post):
+    if not post.id in self.postItems: #post is not being displayed
+      return
+      
     item=self.postItems[post.id]
     index=self.ui.posts.model().indexFromItem(item)
     item2=self.ui.posts.model().itemFromIndex(self.ui.posts.model().index(index.row(), 1, index.parent()))
@@ -676,6 +679,7 @@ class MainWindow(QtGui.QMainWindow):
     if item and item.feed:
       for post in item.feed.posts:
         post.unread=False
+        self.updatePostItem(post)
       session.flush()
       self.updateFeedItem(item.feed)
 
