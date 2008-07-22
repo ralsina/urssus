@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '/home/ralsina/Desktop/proyectos/urssus/main.ui'
 #
-# Created: Tue Jul 22 19:52:04 2008
+# Created: Tue Jul 22 20:00:22 2008
 #      by: PyQt4 UI code generator 4.4.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -178,10 +178,23 @@ class Ui_MainWindow(object):
         icon.addPixmap(QtGui.QPixmap(":/editdelete.svg"),QtGui.QIcon.Normal,QtGui.QIcon.Off)
         self.actionDelete_Feed.setIcon(icon)
         self.actionDelete_Feed.setObjectName("actionDelete_Feed")
+        self.actionAdd_Feed = QtGui.QAction(MainWindow)
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap(":/filenew.svg"),QtGui.QIcon.Normal,QtGui.QIcon.Off)
+        self.actionAdd_Feed.setIcon(icon)
+        self.actionAdd_Feed.setObjectName("actionAdd_Feed")
+        self.actionNew_Folder = QtGui.QAction(MainWindow)
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap(":/folder_new.svg"),QtGui.QIcon.Normal,QtGui.QIcon.Off)
+        self.actionNew_Folder.setIcon(icon)
+        self.actionNew_Folder.setObjectName("actionNew_Folder")
         self.toolBar.addAction(self.actionFetch_Feed)
         self.toolBar.addAction(self.actionFetch_All_Feeds)
         self.toolBar.addAction(self.actionAbort_Fetches)
         self.toolBar.addAction(self.actionMark_Feed_as_Read)
+        self.menuFeed.addSeparator()
+        self.menuFeed.addAction(self.actionAdd_Feed)
+        self.menuFeed.addAction(self.actionNew_Folder)
         self.menuFeed.addSeparator()
         self.menuFeed.addAction(self.actionMark_Feed_as_Read)
         self.menuFeed.addSeparator()
@@ -276,6 +289,10 @@ class Ui_MainWindow(object):
         self.actionOpen_Homepage.setShortcut(QtGui.QApplication.translate("MainWindow", "Ctrl+H", None, QtGui.QApplication.UnicodeUTF8))
         self.actionDelete_Feed.setText(QtGui.QApplication.translate("MainWindow", "Delete Feed", None, QtGui.QApplication.UnicodeUTF8))
         self.actionDelete_Feed.setShortcut(QtGui.QApplication.translate("MainWindow", "Alt+Del", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionAdd_Feed.setText(QtGui.QApplication.translate("MainWindow", "Add Feed", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionAdd_Feed.setShortcut(QtGui.QApplication.translate("MainWindow", "Ins", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionNew_Folder.setText(QtGui.QApplication.translate("MainWindow", "New Folder", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionNew_Folder.setShortcut(QtGui.QApplication.translate("MainWindow", "Shift+Ins", None, QtGui.QApplication.UnicodeUTF8))
 
 from PyQt4 import QtWebKit
 import icons_rc
