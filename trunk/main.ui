@@ -473,6 +473,14 @@
     <string>Show Only Unread Feeds</string>
    </property>
   </action>
+  <action name="actionOpen_Homepage" >
+   <property name="text" >
+    <string>Open Homepage</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+H</string>
+   </property>
+  </action>
  </widget>
  <customwidgets>
   <customwidget>
