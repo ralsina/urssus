@@ -105,11 +105,13 @@ class Feed(Entity):
       if sib.unreadCount():
         return sib
     else:
-      # Go to next uncle
-      if self.parent.nextSibling():
-        return self.parent.nextSibling().nextUnreadFeed()
-      else:
-        return None
+      # Go to next uncle/greatuncle/whatever
+      parent=self.parent
+      while parent:
+        nextSib=parent.nextSibling()
+        if nextSib: return nextSib.nextUnreadFeed()
+        parent=parent.parent
+    return None
     
 
   def unreadCount(self):
