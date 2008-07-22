@@ -84,14 +84,38 @@ class Feed(Entity):
       return self.text+'(%d)'%c
     return self.text
 
+  def prevSibling(self):
+    if not self.parent: return None
+    sibs=self.parent.children
+    ind=sibs.index(self)
+    if ind==0: return None
+    else:
+      return sibs[ind-1]
+
   def nextSibling(self):
     if not self.parent: return None
     sibs=self.parent.children
     ind=sibs.index(self)+1
     if ind >= len(sibs):
       return None
-    print sibs[ind:], ind, len(sibs)
     return sibs[ind]
+
+  def nextFeed(self):
+    # First see if we have children
+    if len(self.children):
+      return self.children[0]
+    # Then search for a sibling below this one
+    sib=self.nextSibling()
+    if sib:
+      return sib
+    else:
+      # Go to next uncle/greatuncle/whatever
+      parent=self.parent
+      while parent:
+        nextSib=parent.nextSibling()
+        if nextSib: return nextSib.nextFeed()
+        parent=parent.parent
+    return None
 
   def nextUnreadFeed(self):
     # First see if we have children with unread articles
@@ -111,8 +135,8 @@ class Feed(Entity):
         nextSib=parent.nextSibling()
         if nextSib: return nextSib.nextUnreadFeed()
         parent=parent.parent
-    return None
-    
+    # There is nothing below, so go to the top and try again
+    return root_feed.nextUnreadFeed()
 
   def unreadCount(self):
     if self.children:
@@ -333,12 +357,6 @@ class MainWindow(QtGui.QMainWindow):
 
   def filterPosts(self):
     self.open_feed(self.ui.feeds.currentIndex(), filter=self.filterWidget.ui.filter.text())
-
-  def feedIndexFromFeed(self, feed):
-    '''Given a feed, find the index in the feeds model that matches'''
-    if feed.id in self.feedItems:
-      return self.feedItems[feed.id]
-    return None
     
   def on_view_linkClicked(self, url):
     QtGui.QDesktopServices.openUrl(url)
@@ -434,8 +452,7 @@ class MainWindow(QtGui.QMainWindow):
       self.setWindowTitle("%s - uRSSus"%item.feed.text)
     else:
       self.setWindowTitle("uRSSus")
-      
- 
+
   def open_feed(self, index, filter=None):
     item=self.model.itemFromIndex(index)
     if not item: return
@@ -456,12 +473,15 @@ class MainWindow(QtGui.QMainWindow):
       self.postItems[post.id]=item
     self.ui.posts.setModel(self.ui.posts.__model)
 
+  def updateFeedItem(self, feed):
+    self.feedItems[post.feed.id].setText(unicode(post.feed))
+
   def on_posts_clicked(self, index=None, item=None):
     if item: post=item.post
     else: post=self.ui.posts.model().itemFromIndex(index).post
     post.unread=False
     session.flush()
-    self.feedItems[post.feed.id].setText(unicode(post.feed))
+    self.updateFeedItem(post.feed)
     self.ui.view.setHtml(tmplLookup.get_template('post.tmpl').render_unicode(post=post))
 
   def on_actionImport_Feeds_triggered(self, i=None):
@@ -483,7 +503,7 @@ class MainWindow(QtGui.QMainWindow):
       for post in item.feed.posts:
         post.unread=False
       session.flush()
-      self.feedItems[item.feed.id].setText(unicode(item.feed))
+      self.updateFeedItem(item.feed)
 
   def on_actionFetch_Feed_triggered(self, i=None):
     if i==None: return
@@ -547,9 +567,10 @@ class MainWindow(QtGui.QMainWindow):
         self.on_posts_clicked(index=nextIndex)
       else:
         nextFeed=curItem.post.feed.nextUnreadFeed()
-        if not nextFeed:
-          return #FIXME: Maybe loop to the beginning?
-        self.open_feed(self.model.indexFromItem(self.feedItems[nextFeed.id]))
+        if not nextFeed: # Go to first unread feed
+          nextFeed=root_feed.nextUnreadFeed()
+        if nextFeed:
+          self.open_feed(self.model.indexFromItem(self.feedItems[nextFeed.id]))
 
     else:
       # There is no article selected, so if there are unread articles,
@@ -564,8 +585,9 @@ class MainWindow(QtGui.QMainWindow):
       else: # No unreads or no posts
         nextFeed=self.currentFeed.nextUnreadFeed()
         if not nextFeed:
-          return #FIXME: Maybe loop to the beginning?
-        self.open_feed(self.model.indexFromItem(self.feedItems[nextFeed.id]))
+          nextFeed=root_feed.nextUnreadFeed()
+        if nextFeed:
+          self.open_feed(self.model.indexFromItem(self.feedItems[nextFeed.id]))
 
   def on_actionNext_Article_triggered(self, i=None, do_open=True):
     if i==None: return
@@ -634,53 +656,25 @@ class MainWindow(QtGui.QMainWindow):
 
   def on_actionNext_Unread_Feed_triggered(self, i=None):
     if i==None: return
+    print "Next unread feed"
     if Post.query.filter(Post.unread==True).count()==0:
       return #No unread articles, so don't bother
-    if not self.currentFeed:
-      # FIXME: handle next unread feed with no current feed (annoying)
-      pass
-    else:
+    if self.currentFeed:
       nextFeed=self.currentFeed.nextUnreadFeed()
-      if nextFeed:
-        self.open_feed(self.ui.feeds.model().indexFromItem(self.feedItems[nextFeed.id]))
+    else:
+      nextFeed=root_feed.nextUnreadFeed()
+    if nextFeed:
+      self.open_feed(self.ui.feeds.model().indexFromItem(self.feedItems[nextFeed.id]))
 
   def on_actionNext_Feed_triggered(self, i=None):
     if i==None: return
     print "Next Feed"
-    nextIndex=None
-    # First see if we are on a specific feed
-    curIndex=self.ui.feeds.currentIndex()
-    if curIndex.isValid():
-      # If there is a child, go there
-      if self.model.hasChildren(curIndex):
-        nextIndex=curIndex.child(0, 0)
-      else:
-        # No childs, see if there is a next sibling
-        nextIndex=curIndex.sibling(curIndex.row()+1, 0)
-        #If invalid, go parent and next sibling of him
-        if not nextIndex.isValid(): 
-          if curIndex.parent().isValid():
-            nextIndex=curIndex.parent().sibling(curIndex.parent().row()+1, 0)
-            
-        
-    else: # Just go to the first feed there is
-      i=self.ui.feeds.model().index(0, 0) # This one always exists, unless you have no feeds, in which case, who cares?
-      it=self.model.itemFromIndex(i)
-      # dig until there is something
-      while (it.feed==None or it.feed.xmlUrl==None) and self.ui.feeds.model().hasChildren(i):
-        i=self.model.index(0, 0, i)
-        it=self.model.itemFromIndex(i)
-      nextIndex=i
-
-    # And go there
-    if nextIndex and nextIndex.isValid():
-      self.ui.feeds.setCurrentIndex(nextIndex)
-      # If nextIndex is not a real feed, we need to do one more step forward
-      it=self.model.itemFromIndex(nextIndex)  
-      if it.feed==None or it.feed.xmlUrl==None:
-        self.on_actionNext_Feed_triggered(True)
-      else: # Finally!
-        self.open_feed(nextIndex)
+    if self.currentFeed:
+      nextFeed=self.currentFeed.nextFeed()
+    else:
+      nextFeed=root_feed.nextFeed()
+    if nextFeed:
+      self.open_feed(self.ui.feeds.model().indexFromItem(self.feedItems[nextFeed.id]))
 
   def on_actionPrevious_Feed_triggered(self, i=None):
     if i==None: return
@@ -749,7 +743,6 @@ class PostDelegate(QtGui.QItemDelegate):
     QtGui.QItemDelegate.__init__(self, parent)
   
 def importOPML(fname):
-
   def importSubTree(parent, node):
     if node.tag<>'outline':
       return # Don't handle
@@ -767,7 +760,6 @@ def importOPML(fname):
              description=node.get('description'), 
              parent=parent
              )
-          
     else: # Let's guess it's a folder
       f=Feed.get_by_or_init(text=node.get('text'), parent=parent)
       for child in node.getchildren():
@@ -824,7 +816,6 @@ if __name__ == "__main__":
   
   # This will start the background fetcher as a side effect
   window.on_actionAbort_Fetches_triggered(True)
-  
   window.show()
   sys.exit(app.exec_())
 
