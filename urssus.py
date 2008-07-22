@@ -458,9 +458,9 @@ class MainWindow(QtGui.QMainWindow):
     menu.addSeparator()
     menu.addAction(self.ui.actionFetch_Feed)
     menu.addSeparator()
-    # FIXME: implement the following actions
-    #menu.addAction(self.ui.actionOpen_Homepage)
+    menu.addAction(self.ui.actionOpen_Homepage)
     menu.addSeparator()
+    # FIXME: implement the following actions
     #menu.addAction(self.ui.actionEdit_Feed)
     #menu.addAction(self.ui.actionDelete_Feed)
     menu.exec_(QtGui.QCursor.pos())
@@ -682,6 +682,15 @@ class MainWindow(QtGui.QMainWindow):
         self.updatePostItem(post)
       session.flush()
       self.updateFeedItem(item.feed)
+
+
+  def on_actionOpen_Homepage_triggered(self, i=None):
+    if i==None: return
+    item=self.model.itemFromIndex(self.ui.feeds.currentIndex())
+    if item and item.feed and item.feed.htmlUrl:
+      print "Opening ", item.feed.htmlUrl
+      QtGui.QDesktopServices.openUrl(QtCore.QUrl(item.feed.htmlUrl))
+    
 
   def on_actionFetch_Feed_triggered(self, i=None):
     if i==None: return

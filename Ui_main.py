@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '/home/ralsina/Desktop/proyectos/urssus/main.ui'
 #
-# Created: Tue Jul 22 18:24:45 2008
+# Created: Tue Jul 22 18:40:59 2008
 #      by: PyQt4 UI code generator 4.4.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -171,6 +171,8 @@ class Ui_MainWindow(object):
         self.actionShow_Only_Unread_Feeds = QtGui.QAction(MainWindow)
         self.actionShow_Only_Unread_Feeds.setCheckable(True)
         self.actionShow_Only_Unread_Feeds.setObjectName("actionShow_Only_Unread_Feeds")
+        self.actionOpen_Homepage = QtGui.QAction(MainWindow)
+        self.actionOpen_Homepage.setObjectName("actionOpen_Homepage")
         self.toolBar.addAction(self.actionFetch_Feed)
         self.toolBar.addAction(self.actionFetch_All_Feeds)
         self.toolBar.addAction(self.actionAbort_Fetches)
@@ -263,6 +265,8 @@ class Ui_MainWindow(object):
         self.actionFind_Again.setText(QtGui.QApplication.translate("MainWindow", "Find Again", None, QtGui.QApplication.UnicodeUTF8))
         self.actionFind_Again.setShortcut(QtGui.QApplication.translate("MainWindow", "Ctrl+G", None, QtGui.QApplication.UnicodeUTF8))
         self.actionShow_Only_Unread_Feeds.setText(QtGui.QApplication.translate("MainWindow", "Show Only Unread Feeds", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionOpen_Homepage.setText(QtGui.QApplication.translate("MainWindow", "Open Homepage", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionOpen_Homepage.setShortcut(QtGui.QApplication.translate("MainWindow", "Ctrl+H", None, QtGui.QApplication.UnicodeUTF8))
 
 from PyQt4 import QtWebKit
 import icons_rc
