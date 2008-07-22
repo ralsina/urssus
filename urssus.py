@@ -356,6 +356,10 @@ class AboutDialog(QtGui.QDialog):
     self.ui=UI_AboutDialog()
     self.ui.setupUi(self)
 
+class TrayIcon(QtGui.QSystemTrayIcon):
+  def __init__(self):
+    QtGui.QSystemTrayIcon.__init__ (self,QtGui.QIcon(":/urssus.svg"))
+ 
 class MainWindow(QtGui.QMainWindow):
   def __init__(self):
     QtGui.QMainWindow.__init__(self)
@@ -856,6 +860,8 @@ if __name__ == "__main__":
       # Import a OPML file into the DB so we have some data to work with
       importOPML(sys.argv[1])
   app=QtGui.QApplication(sys.argv)
+  tray=TrayIcon()
+  tray.show()
   window=MainWindow()
   
   # This will start the background fetcher as a side effect
