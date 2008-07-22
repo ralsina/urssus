@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '/home/ralsina/Desktop/proyectos/urssus/main.ui'
 #
-# Created: Tue Jul 22 13:26:49 2008
+# Created: Tue Jul 22 14:56:50 2008
 #      by: PyQt4 UI code generator 4.4.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -19,14 +19,16 @@ class Ui_MainWindow(object):
         self.centralWidget = QtGui.QWidget(MainWindow)
         self.centralWidget.setGeometry(QtCore.QRect(0,70,800,506))
         self.centralWidget.setObjectName("centralWidget")
-        self.verticalLayout = QtGui.QVBoxLayout(self.centralWidget)
-        self.verticalLayout.setMargin(2)
-        self.verticalLayout.setObjectName("verticalLayout")
+        self.verticalLayout_2 = QtGui.QVBoxLayout(self.centralWidget)
+        self.verticalLayout_2.setMargin(1)
+        self.verticalLayout_2.setObjectName("verticalLayout_2")
         self.splitter_2 = QtGui.QSplitter(self.centralWidget)
         self.splitter_2.setOrientation(QtCore.Qt.Horizontal)
         self.splitter_2.setObjectName("splitter_2")
         self.feeds = QtGui.QTreeView(self.splitter_2)
         self.feeds.setFocusPolicy(QtCore.Qt.NoFocus)
+        self.feeds.setFrameShape(QtGui.QFrame.Panel)
+        self.feeds.setFrameShadow(QtGui.QFrame.Plain)
         self.feeds.setAlternatingRowColors(True)
         self.feeds.setTextElideMode(QtCore.Qt.ElideMiddle)
         self.feeds.setIndentation(20)
@@ -39,15 +41,23 @@ class Ui_MainWindow(object):
         self.splitter = QtGui.QSplitter(self.splitter_2)
         self.splitter.setOrientation(QtCore.Qt.Vertical)
         self.splitter.setObjectName("splitter")
-        self.posts = QtGui.QListView(self.splitter)
-        self.posts.setFocusPolicy(QtCore.Qt.NoFocus)
-        self.posts.setUniformItemSizes(True)
+        self.posts = QtGui.QTreeView(self.splitter)
+        self.posts.setFrameShape(QtGui.QFrame.Panel)
+        self.posts.setFrameShadow(QtGui.QFrame.Plain)
         self.posts.setObjectName("posts")
-        self.view = QtWebKit.QWebView(self.splitter)
+        self.frame = QtGui.QFrame(self.splitter)
+        self.frame.setFrameShape(QtGui.QFrame.Panel)
+        self.frame.setFrameShadow(QtGui.QFrame.Plain)
+        self.frame.setObjectName("frame")
+        self.verticalLayout = QtGui.QVBoxLayout(self.frame)
+        self.verticalLayout.setMargin(0)
+        self.verticalLayout.setObjectName("verticalLayout")
+        self.view = QtWebKit.QWebView(self.frame)
         self.view.setFocusPolicy(QtCore.Qt.ClickFocus)
         self.view.setUrl(QtCore.QUrl("about:blank"))
         self.view.setObjectName("view")
-        self.verticalLayout.addWidget(self.splitter_2)
+        self.verticalLayout.addWidget(self.view)
+        self.verticalLayout_2.addWidget(self.splitter_2)
         MainWindow.setCentralWidget(self.centralWidget)
         self.toolBar = QtGui.QToolBar(MainWindow)
         self.toolBar.setGeometry(QtCore.QRect(0,31,155,39))
