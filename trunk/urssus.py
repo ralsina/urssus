@@ -588,12 +588,25 @@ class MainWindow(QtGui.QMainWindow):
     else:
       self.posts=Post.query.filter(Post.feed==feed).filter(sql.or_(Post.title.like('%%%s%%'%filter), Post.content.like('%%%s%%'%filter))).order_by(sql.desc("date")).all()
     self.ui.posts.__model=PostModel()
+    self.ui.posts.setModel(self.ui.posts.__model)
     for post in self.posts:
       item=QtGui.QStandardItem('%s - %s'%(decodeString(post.title), post.date))
       item.post=post
       self.ui.posts.__model.appendRow(item)
       self.postItems[post.id]=item
-    self.ui.posts.setModel(self.ui.posts.__model)
+      self.updatePostItem(post)
+
+  def updatePostItem(self, post):
+    item=self.postItems[post.id]
+    index=self.ui.posts.model().indexFromItem(item)
+    item2=self.ui.posts.model().itemFromIndex(self.ui.posts.model().index(index.row(), 1, index.parent()))
+    # FIXME: respect the palette
+    if post.unread:
+      item.setForeground(QtGui.QColor("darkred"))
+      item2.setForeground(QtGui.QColor("darkred"))
+    else:
+      item.setForeground(QtGui.QColor("black"))
+      item2.setForeground(QtGui.QColor("black"))
 
   def updateFeedItem(self, feed):
     item=self.feedItems[feed.id]
@@ -614,6 +627,7 @@ class MainWindow(QtGui.QMainWindow):
     post.unread=False
     session.flush()
     self.updateFeedItem(post.feed)
+    self.updatePostItem(post)
     self.ui.view.setHtml(tmplLookup.get_template('post.tmpl').render_unicode(post=post))
 
   def on_actionImport_Feeds_triggered(self, i=None):
