@@ -419,14 +419,18 @@ class MainWindow(QtGui.QMainWindow):
     self.findText()
 
   def findText(self):
-    # FIXME: handle "Match Case"
     text=unicode(self.searchWidget.ui.text.text())
-    self.ui.view.findText(text)
+    if self.searchWidget.ui.matchCase.isChecked():
+      self.ui.view.findText(text, QtWebKit.QWebPage.FindCaseSensitively)
+    else:  
+      self.ui.view.findText(text)
 
   def findTextReverse(self):
-    # FIXME: handle "Match Case"
     text=unicode(self.searchWidget.ui.text.text())
-    self.ui.view.findText(text, QtWebKit.QWebPage.FindBackward)
+    if self.searchWidget.ui.matchCase.isChecked():
+      self.ui.view.findText(text, QtWebKit.QWebPage.FindBackward | QtWebKit.QWebPage.FindCaseSensitively)
+    else:  
+      self.ui.view.findText(text, QtWebKit.QWebPage.FindBackward)
 
   def unFilterPosts(self):
     self.open_feed(self.ui.feeds.currentIndex())
@@ -841,4 +845,3 @@ if __name__ == "__main__":
   window.on_actionAbort_Fetches_triggered(True)
   window.show()
   sys.exit(app.exec_())
-
