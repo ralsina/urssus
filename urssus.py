@@ -77,15 +77,46 @@ class Feed(Entity):
   parent      = ManyToOne('Feed')
   posts       = OneToMany('Post')
   lastUpdated = Field(DateTime, default=datetime(1970,1,1))
+
   def __repr__(self):
-    if self.xmlUrl:
-      c=self.unreadCount()
-      if c:
-        return self.text+'(%d)'%c
+    c=self.unreadCount()
+    if c:
+      return self.text+'(%d)'%c
     return self.text
+
+  def nextSibling(self):
+    if not self.parent: return None
+    sibs=self.parent.children
+    ind=sibs.index(self)+1
+    if ind >= len(sibs):
+      return None
+    print sibs[ind:], ind, len(sibs)
+    return sibs[ind]
+
+  def nextUnreadFeed(self):
+    # First see if we have children with unread articles
+    if len(self.children):
+      for child in self.children:
+        if child.unreadCount():
+          return child
+    # Then search for a sibling with unread items below this one
+    sibs=self.parent.children
+    for sib in sibs[sibs.index(self)+1:]:
+      if sib.unreadCount():
+        return sib
+    else:
+      # Go to next uncle
+      if self.parent.nextSibling():
+        return self.parent.nextSibling().nextUnreadFeed()
+      else:
+        return None
     
+
   def unreadCount(self):
-    return Post.query.filter(Post.feed==self).filter(Post.unread==True).count()
+    if self.children:
+      return sum([ f.unreadCount() for f in self.children])
+    else:
+      return Post.query.filter(Post.feed==self).filter(Post.unread==True).count()
     
   def update(self):
     statusQueue.put(u"Updating: "+ self.title)
@@ -170,6 +201,19 @@ class Post(Entity):
   unread      = Field(Boolean, default=True)
   author      = Field(Text)
   link        = Field(Text)
+
+  def nextUnreadPost(self):
+    '''Returns next unread post in this feed or None'''
+    # FIXME: think about sorting issues
+    post=Post.query.filter(Post.feed==self.feed).filter(Post.unread==True).\
+          filter(Post.date <= self.date).filter(Post.id<>self.id).\
+          order_by(sql.desc(Post.date)).first()
+    if post:
+      return post
+    return None
+    
+  def __repr__(self):
+    return unicode(self.title)
 
 root_feed=None
 
@@ -258,6 +302,10 @@ class MainWindow(QtGui.QMainWindow):
     QtCore.QObject.connect(self.feedStatusTimer, QtCore.SIGNAL("timeout()"), self.updateFeedStatus)
     self.feedStatusTimer.start(0)
     self.updatesCounter=0
+    
+    # Internal indexes
+    self.posts=[]
+    self.currentFeed=None
 
   def on_actionFind_triggered(self, i=None):
     if i==None: return
@@ -380,6 +428,8 @@ class MainWindow(QtGui.QMainWindow):
     self.ui.view.setHtml(tmplLookup.get_template('feed.tmpl').render_unicode(feed=item.feed))
     if item.feed.title:
       self.setWindowTitle("%s - uRSSus"%item.feed.title)
+    if item.feed.text:
+      self.setWindowTitle("%s - uRSSus"%item.feed.text)
     else:
       self.setWindowTitle("uRSSus")
       
@@ -387,26 +437,26 @@ class MainWindow(QtGui.QMainWindow):
   def open_feed(self, index, filter=None):
     item=self.model.itemFromIndex(index)
     if not item: return
+    self.ui.feeds.setCurrentIndex(index)
     feed=item.feed
-    
-    if not feed or not feed.xmlUrl:
-      # FIXME: implement "aggregated feeds" when the user clicks on a folder
-      return
-    
+    self.currentFeed=feed
+    self.postItems={}
+    self.posts=[]
     if not filter:
-      posts=Post.query.filter(Post.feed==feed).order_by(sql.desc("date"))
+      self.posts=Post.query.filter(Post.feed==feed).order_by(sql.desc("date"))
     else:
-      posts=Post.query.filter(Post.feed==feed).filter(sql.or_(Post.title.like('%%%s%%'%filter), Post.content.like('%%%s%%'%filter))).order_by(sql.desc("date"))
+      self.posts=Post.query.filter(Post.feed==feed).filter(sql.or_(Post.title.like('%%%s%%'%filter), Post.content.like('%%%s%%'%filter))).order_by(sql.desc("date"))
     self.ui.posts.__model=QtGui.QStandardItemModel()
-    for post in posts:
+    for post in self.posts:
       item=QtGui.QStandardItem('%s - %s'%(decodeString(post.title), post.date))
       item.post=post
       self.ui.posts.__model.appendRow(item)
+      self.postItems[post.id]=item
     self.ui.posts.setModel(self.ui.posts.__model)
 
-  def on_posts_clicked(self, index):
-    item=self.ui.posts.__model.itemFromIndex(index)
-    post=item.post
+  def on_posts_clicked(self, index=None, item=None):
+    if item: post=item.post
+    else: post=self.ui.posts.model().itemFromIndex(index).post
     post.unread=False
     session.flush()
     self.feedItems[post.feed.id].setText(unicode(post.feed))
@@ -484,17 +534,36 @@ class MainWindow(QtGui.QMainWindow):
     print "Next Unread"
     if Post.query.filter(Post.unread==True).count()==0:
       return #No unread articles, so don't bother
-    # Go to next article
-    while True:
-      self.on_actionNext_Article_triggered(True, do_open=False)
-      # FIXME: this enters infinite loops if there are unread
-      # articles in previous feeds but not in following feeds
-      # probably the same thing happens on other methods
-      curIndex=self.ui.posts.currentIndex()
-      curItem=self.ui.posts.model().itemFromIndex(curIndex)
-      if curItem and curItem.post.unread:
-        break
-    self.on_posts_clicked(self.ui.posts.currentIndex())
+    curIndex=self.ui.posts.currentIndex()
+    curItem=self.ui.posts.model().itemFromIndex(curIndex)
+    if curItem:
+      nextPost=curItem.post.nextUnreadPost()
+      if nextPost:
+        print "Jumping to ", nextPost
+        nextIndex=self.ui.posts.model().indexFromItem(self.postItems[nextPost.id])
+        self.ui.posts.setCurrentIndex(nextIndex)
+        self.on_posts_clicked(index=nextIndex)
+      else:
+        nextFeed=curItem.post.feed.nextUnreadFeed()
+        if not nextFeed:
+          return #FIXME: Maybe loop to the beginning?
+        self.open_feed(self.model.indexFromItem(self.feedItems[nextFeed.id]))
+
+    else:
+      # There is no article selected, so if there are unread articles,
+      # go to first unread.
+      # If there aren't, go to next unread feed
+      for nextPost in self.posts:
+        if nextPost.unread:
+          nextIndex=self.ui.posts.model().indexFromItem(self.postItems[nextPost.id])
+          self.ui.posts.setCurrentIndex(nextIndex)
+          self.on_posts_clicked(index=nextIndex)
+          break
+      else: # No unreads or no posts
+        nextFeed=self.currentFeed.nextUnreadFeed()
+        if not nextFeed:
+          return #FIXME: Maybe loop to the beginning?
+        self.open_feed(self.model.indexFromItem(self.feedItems[nextFeed.id]))
 
   def on_actionNext_Article_triggered(self, i=None, do_open=True):
     if i==None: return
@@ -518,7 +587,7 @@ class MainWindow(QtGui.QMainWindow):
         self.on_actionNext_Feed_triggered(True)
     it=self.ui.posts.model().itemFromIndex(self.ui.posts.currentIndex())
     if do_open:
-      self.on_posts_clicked(self.ui.posts.currentIndex())
+      self.on_posts_clicked(index=self.ui.posts.currentIndex())
 
   def on_actionPrevious_Unread_Article_triggered(self, i=None):
     if i==None: return
@@ -534,7 +603,7 @@ class MainWindow(QtGui.QMainWindow):
         break
       if not (self.ui.feeds.currentIndex().parent().isValid() and self.ui.feeds.currentIndex().isValid()):
         break
-    self.on_posts_clicked(self.ui.posts.currentIndex())
+    self.on_posts_clicked(index=self.ui.posts.currentIndex())
 
   def on_actionPrevious_Article_triggered(self, i=None, do_open=True):
     if i==None: return
@@ -559,22 +628,19 @@ class MainWindow(QtGui.QMainWindow):
         self.on_actionPrevious_Feed_triggered(True)
     it=self.ui.posts.model().itemFromIndex(self.ui.posts.currentIndex())
     if do_open:
-      self.on_posts_clicked(self.ui.posts.currentIndex())
+      self.on_posts_clicked(index=self.ui.posts.currentIndex())
 
   def on_actionNext_Unread_Feed_triggered(self, i=None):
     if i==None: return
     if Post.query.filter(Post.unread==True).count()==0:
       return #No unread articles, so don't bother
-    # Go to next feed
-    while True:
-      oldIndex=self.ui.feeds.currentIndex()
-      self.on_actionNext_Feed_triggered(True)
-      curIndex=self.ui.feeds.currentIndex()
-      if oldIndex==curIndex or not curIndex.isValid(): # Next feed stopped
-        break
-      curItem=self.ui.feeds.model().itemFromIndex(curIndex)
-      if curItem and curItem.feed and curItem.feed.unreadCount()<>0:
-        break
+    if not self.currentFeed:
+      # FIXME: handle next unread feed with no current feed (annoying)
+      pass
+    else:
+      nextFeed=self.currentFeed.nextUnreadFeed()
+      if nextFeed:
+        self.open_feed(self.ui.feeds.model().indexFromItem(self.feedItems[nextFeed.id]))
 
   def on_actionNext_Feed_triggered(self, i=None):
     if i==None: return
@@ -683,6 +749,8 @@ class PostDelegate(QtGui.QItemDelegate):
 def importOPML(fname):
 
   def importSubTree(parent, node):
+    if node.tag<>'outline':
+      return # Don't handle
     xu=node.get('xmlUrl')
     if xu:
       # If it's already somewhere, don't duplicate
