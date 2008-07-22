@@ -160,7 +160,7 @@ class Feed(Entity):
 
   def nextUnreadFeed(self):
     # If there are no unread articles, there is no point
-    if len(Post.query.filter(Post.unread==True))==0:
+    if Post.query.filter(Post.unread==True).count()==0:
       return None
     # First see if we have children with unread articles
     if len(self.children):
@@ -274,14 +274,25 @@ class Post(Entity):
 
   def nextUnreadPost(self):
     '''Returns next unread post in this feed or None'''
-    # FIXME: think about sorting issues
+    # FIXME: think about sorting/filtering issues
     post=Post.query.filter(Post.feed==self.feed).filter(Post.unread==True).\
           filter(Post.date <= self.date).filter(Post.id<>self.id).\
           order_by(sql.desc(Post.date)).first()
     if post:
       return post
     return None
-    
+
+  def nextPost(self):
+    '''Returns next post in this feed or None'''
+    # FIXME: think about sorting/filtering issues
+    post=Post.query.filter(Post.feed==self.feed).\
+          filter(Post.date <= self.date).filter(Post.id<>self.id).\
+          order_by(sql.desc(Post.date)).first()
+    if post:
+      return post
+    return None
+
+
   def __repr__(self):
     return unicode(self.title)
 
@@ -376,6 +387,7 @@ class MainWindow(QtGui.QMainWindow):
     # Internal indexes
     self.posts=[]
     self.currentFeed=None
+    self.currentPost=None
 
   def on_actionFind_triggered(self, i=None):
     if i==None: return
@@ -506,9 +518,9 @@ class MainWindow(QtGui.QMainWindow):
     self.postItems={}
     self.posts=[]
     if not filter:
-      self.posts=Post.query.filter(Post.feed==feed).order_by(sql.desc("date"))
+      self.posts=Post.query.filter(Post.feed==feed).order_by(sql.desc("date")).all()
     else:
-      self.posts=Post.query.filter(Post.feed==feed).filter(sql.or_(Post.title.like('%%%s%%'%filter), Post.content.like('%%%s%%'%filter))).order_by(sql.desc("date"))
+      self.posts=Post.query.filter(Post.feed==feed).filter(sql.or_(Post.title.like('%%%s%%'%filter), Post.content.like('%%%s%%'%filter))).order_by(sql.desc("date")).all()
     self.ui.posts.__model=QtGui.QStandardItemModel()
     for post in self.posts:
       item=QtGui.QStandardItem('%s - %s'%(decodeString(post.title), post.date))
@@ -518,11 +530,12 @@ class MainWindow(QtGui.QMainWindow):
     self.ui.posts.setModel(self.ui.posts.__model)
 
   def updateFeedItem(self, feed):
-    self.feedItems[post.feed.id].setText(unicode(post.feed))
+    self.feedItems[feed.id].setText(unicode(feed))
 
   def on_posts_clicked(self, index=None, item=None):
     if item: post=item.post
     else: post=self.ui.posts.model().itemFromIndex(index).post
+    self.currentPost=post
     post.unread=False
     session.flush()
     self.updateFeedItem(post.feed)
@@ -597,64 +610,43 @@ class MainWindow(QtGui.QMainWindow):
     
   def on_actionNext_Unread_Article_triggered(self, i=None):
     if i==None: return
-    print "Next Unread"
-    if Post.query.filter(Post.unread==True).count()==0:
-      return #No unread articles, so don't bother
-    curIndex=self.ui.posts.currentIndex()
-    curItem=self.ui.posts.model().itemFromIndex(curIndex)
-    if curItem:
-      nextPost=curItem.post.nextUnreadPost()
-      if nextPost:
-        print "Jumping to ", nextPost
-        nextIndex=self.ui.posts.model().indexFromItem(self.postItems[nextPost.id])
-        self.ui.posts.setCurrentIndex(nextIndex)
-        self.on_posts_clicked(index=nextIndex)
-      else:
-        nextFeed=curItem.post.feed.nextUnreadFeed()
-        if not nextFeed: # Go to first unread feed
-          nextFeed=root_feed.nextUnreadFeed()
-        if nextFeed:
-          self.open_feed(self.model.indexFromItem(self.feedItems[nextFeed.id]))
-
+    print "Next Unread Article"
+    if self.currentPost:
+      post=self.currentPost
+    elif len(self.posts):
+      post=self.posts[0]
+    else: # No posts in this feed, just go the next unread feed
+      self.on_actionNext_Unread_Feed_triggered(True)
+    if post.unread: # Quirk, should redo the flow
+      nextPost=post
     else:
-      # There is no article selected, so if there are unread articles,
-      # go to first unread.
-      # If there aren't, go to next unread feed
-      for nextPost in self.posts:
-        if nextPost.unread:
-          nextIndex=self.ui.posts.model().indexFromItem(self.postItems[nextPost.id])
-          self.ui.posts.setCurrentIndex(nextIndex)
-          self.on_posts_clicked(index=nextIndex)
-          break
-      else: # No unreads or no posts
-        nextFeed=self.currentFeed.nextUnreadFeed()
-        if not nextFeed:
-          nextFeed=root_feed.nextUnreadFeed()
-        if nextFeed:
-          self.open_feed(self.model.indexFromItem(self.feedItems[nextFeed.id]))
-
+      nextPost=post.nextUnreadPost()
+    if nextPost:
+      nextIndex=self.ui.posts.model().indexFromItem(self.postItems[nextPost.id])
+      self.ui.posts.setCurrentIndex(nextIndex)
+      self.on_posts_clicked(index=nextIndex)
+    else:
+      # At the end of the feed, go to next unread feed
+      self.on_actionNext_Unread_Feed_triggered(True)
+      
   def on_actionNext_Article_triggered(self, i=None, do_open=True):
     if i==None: return
-    print "Next"
-    # First see if we have a next item here
-    curIndex=self.ui.posts.currentIndex()
-    if curIndex.isValid():
-      nextIndex=curIndex.sibling(curIndex.row()+1, 0)
-      if nextIndex.isValid():
-        self.ui.posts.setCurrentIndex(nextIndex)
-      else: # This was the last item here, need to go somewhere else
-        self.on_actionNext_Feed_triggered(True)
-    else: # At no post in particular
-      # Are there any item in this model?
-      if self.ui.posts.model() and self.ui.posts.model().rowCount()>0:
-        # Then go to the first one
-        self.ui.posts.setCurrentIndex(self.ui.posts.model().index(0, 0))
-      else: # No items here, we need to go to the next feed
-        print "No posts"
-        self.on_actionNext_Feed_triggered(True)
-    it=self.ui.posts.model().itemFromIndex(self.ui.posts.currentIndex())
-    if do_open:
-      self.on_posts_clicked(index=self.ui.posts.currentIndex())
+    print "Next Article"
+    if self.currentPost:
+      post=self.currentPost
+      nextPost=post.nextPost()
+    elif len(self.posts):
+      nextPost=self.posts[0]
+    else: # No posts in this feed, just go the next unread feed
+      self.on_actionNext_Feed_triggered(True)
+
+    if nextPost:
+      nextIndex=self.ui.posts.model().indexFromItem(self.postItems[nextPost.id])
+      self.ui.posts.setCurrentIndex(nextIndex)
+      self.on_posts_clicked(index=nextIndex)
+    else:
+      # At the end of the feed, go to next unread feed
+      self.on_actionNext_Feed_triggered(True)
 
   def on_actionPrevious_Unread_Article_triggered(self, i=None):
     if i==None: return
@@ -700,8 +692,6 @@ class MainWindow(QtGui.QMainWindow):
   def on_actionNext_Unread_Feed_triggered(self, i=None):
     if i==None: return
     print "Next unread feed"
-    if Post.query.filter(Post.unread==True).count()==0:
-      return #No unread articles, so don't bother
     if self.currentFeed:
       nextFeed=self.currentFeed.nextUnreadFeed()
     else:
