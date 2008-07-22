@@ -173,6 +173,8 @@
     </property>
     <addaction name="actionStatus_Bar" />
     <addaction name="separator" />
+    <addaction name="actionShow_Only_Unread_Feeds" />
+    <addaction name="separator" />
     <addaction name="actionIncrease_Font_Sizes" />
     <addaction name="actionDecrease_Font_Sizes" />
    </widget>
@@ -418,6 +420,14 @@
    </property>
    <property name="shortcut" >
     <string>Ctrl+G</string>
+   </property>
+  </action>
+  <action name="actionShow_Only_Unread_Feeds" >
+   <property name="checkable" >
+    <bool>true</bool>
+   </property>
+   <property name="text" >
+    <string>Show Only Unread Feeds</string>
    </property>
   </action>
  </widget>

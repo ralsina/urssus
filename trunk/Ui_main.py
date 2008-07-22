@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '/home/ralsina/Desktop/proyectos/urssus/main.ui'
 #
-# Created: Sun Jul 20 13:21:08 2008
+# Created: Tue Jul 22 13:26:49 2008
 #      by: PyQt4 UI code generator 4.4.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -33,6 +33,7 @@ class Ui_MainWindow(object):
         self.feeds.setRootIsDecorated(True)
         self.feeds.setUniformRowHeights(True)
         self.feeds.setAnimated(True)
+        self.feeds.setAllColumnsShowFocus(True)
         self.feeds.setHeaderHidden(True)
         self.feeds.setObjectName("feeds")
         self.splitter = QtGui.QSplitter(self.splitter_2)
@@ -151,6 +152,9 @@ class Ui_MainWindow(object):
         self.actionFind.setObjectName("actionFind")
         self.actionFind_Again = QtGui.QAction(MainWindow)
         self.actionFind_Again.setObjectName("actionFind_Again")
+        self.actionShow_Only_Unread_Feeds = QtGui.QAction(MainWindow)
+        self.actionShow_Only_Unread_Feeds.setCheckable(True)
+        self.actionShow_Only_Unread_Feeds.setObjectName("actionShow_Only_Unread_Feeds")
         self.toolBar.addAction(self.actionFetch_Feed)
         self.toolBar.addAction(self.actionFetch_All_Feeds)
         self.toolBar.addAction(self.actionAbort_Fetches)
@@ -177,6 +181,8 @@ class Ui_MainWindow(object):
         self.menu_Go.addAction(self.actionNext_Unread_Feed)
         self.menuHelp.addAction(self.actionAbout_uRSSus)
         self.menu_View.addAction(self.actionStatus_Bar)
+        self.menu_View.addSeparator()
+        self.menu_View.addAction(self.actionShow_Only_Unread_Feeds)
         self.menu_View.addSeparator()
         self.menu_View.addAction(self.actionIncrease_Font_Sizes)
         self.menu_View.addAction(self.actionDecrease_Font_Sizes)
@@ -240,6 +246,7 @@ class Ui_MainWindow(object):
         self.actionFind.setShortcut(QtGui.QApplication.translate("MainWindow", "Ctrl+F", None, QtGui.QApplication.UnicodeUTF8))
         self.actionFind_Again.setText(QtGui.QApplication.translate("MainWindow", "Find Again", None, QtGui.QApplication.UnicodeUTF8))
         self.actionFind_Again.setShortcut(QtGui.QApplication.translate("MainWindow", "Ctrl+G", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionShow_Only_Unread_Feeds.setText(QtGui.QApplication.translate("MainWindow", "Show Only Unread Feeds", None, QtGui.QApplication.UnicodeUTF8))
 
 from PyQt4 import QtWebKit
 import icons_rc
