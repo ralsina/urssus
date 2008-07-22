@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '/home/ralsina/Desktop/proyectos/urssus/main.ui'
 #
-# Created: Tue Jul 22 14:56:50 2008
+# Created: Tue Jul 22 16:35:23 2008
 #      by: PyQt4 UI code generator 4.4.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -29,6 +29,7 @@ class Ui_MainWindow(object):
         self.feeds.setFocusPolicy(QtCore.Qt.NoFocus)
         self.feeds.setFrameShape(QtGui.QFrame.Panel)
         self.feeds.setFrameShadow(QtGui.QFrame.Plain)
+        self.feeds.setEditTriggers(QtGui.QAbstractItemView.NoEditTriggers)
         self.feeds.setAlternatingRowColors(True)
         self.feeds.setTextElideMode(QtCore.Qt.ElideMiddle)
         self.feeds.setIndentation(20)
@@ -44,6 +45,10 @@ class Ui_MainWindow(object):
         self.posts = QtGui.QTreeView(self.splitter)
         self.posts.setFrameShape(QtGui.QFrame.Panel)
         self.posts.setFrameShadow(QtGui.QFrame.Plain)
+        self.posts.setEditTriggers(QtGui.QAbstractItemView.NoEditTriggers)
+        self.posts.setRootIsDecorated(False)
+        self.posts.setUniformRowHeights(True)
+        self.posts.setAllColumnsShowFocus(True)
         self.posts.setObjectName("posts")
         self.frame = QtGui.QFrame(self.splitter)
         self.frame.setFrameShape(QtGui.QFrame.Panel)
