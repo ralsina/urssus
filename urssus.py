@@ -68,16 +68,24 @@ def get_by_or_init(cls, if_new_set={}, **params):
 Entity.get_by_or_init = classmethod(get_by_or_init)
 
 class Feed(Entity):
-  htmlUrl     = Field(Text)
-  xmlUrl      = Field(Text)
-  title       = Field(Text)
-  text        = Field(Text, default='')
-  description = Field(Text)
-  children    = OneToMany('Feed')
-  parent      = ManyToOne('Feed')
-  posts       = OneToMany('Post')
-  lastUpdated = Field(DateTime, default=datetime(1970,1,1))
-  loadFull    = Field(Boolean, default=False)
+  htmlUrl        = Field(Text)
+  xmlUrl         = Field(Text)
+  title          = Field(Text)
+  text           = Field(Text, default='')
+  description    = Field(Text)
+  children       = OneToMany('Feed')
+  parent         = ManyToOne('Feed')
+  posts          = OneToMany('Post')
+  lastUpdated    = Field(DateTime, default=datetime(1970,1,1))
+  loadFull       = Field(Boolean, default=False)
+  # 0 = use default, 1 = keepall, 2 = use limitCount
+  # 3 = use limitDate, 4 = no archiving
+  archiveType    = Field(Integer, default=0) 
+  notify         = Field(Boolean, default=False)
+  markRead       = Field(Boolean, default=False)
+  defaultArchive = Field(Boolean, default=True)
+  limitCount     = Field(Integer, default=1000)
+  limitTime      = Field(Integer, default=60)
 
   def __repr__(self):
     c=self.unreadCount()
