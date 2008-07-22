@@ -25,9 +25,9 @@
      <height>506</height>
     </rect>
    </property>
-   <layout class="QVBoxLayout" name="verticalLayout" >
+   <layout class="QVBoxLayout" name="verticalLayout_2" >
     <property name="margin" >
-     <number>2</number>
+     <number>1</number>
     </property>
     <item>
      <widget class="QSplitter" name="splitter_2" >
@@ -37,6 +37,12 @@
       <widget class="QTreeView" name="feeds" >
        <property name="focusPolicy" >
         <enum>Qt::NoFocus</enum>
+       </property>
+       <property name="frameShape" >
+        <enum>QFrame::Panel</enum>
+       </property>
+       <property name="frameShadow" >
+        <enum>QFrame::Plain</enum>
        </property>
        <property name="alternatingRowColors" >
         <bool>true</bool>
@@ -67,28 +73,47 @@
        <property name="orientation" >
         <enum>Qt::Vertical</enum>
        </property>
-       <widget class="QListView" name="posts" >
-        <property name="focusPolicy" >
-         <enum>Qt::NoFocus</enum>
+       <widget class="QTreeView" name="posts" >
+        <property name="frameShape" >
+         <enum>QFrame::Panel</enum>
         </property>
-        <property name="uniformItemSizes" >
-         <bool>true</bool>
+        <property name="frameShadow" >
+         <enum>QFrame::Plain</enum>
         </property>
        </widget>
-       <widget class="QWebView" name="view" >
-        <property name="focusPolicy" >
-         <enum>Qt::ClickFocus</enum>
+       <widget class="QFrame" name="frame" >
+        <property name="frameShape" >
+         <enum>QFrame::Panel</enum>
         </property>
-        <property name="url" >
-         <url>
-          <string>about:blank</string>
-         </url>
+        <property name="frameShadow" >
+         <enum>QFrame::Plain</enum>
         </property>
+        <layout class="QVBoxLayout" name="verticalLayout" >
+         <property name="margin" >
+          <number>0</number>
+         </property>
+         <item>
+          <widget class="QWebView" name="view" >
+           <property name="focusPolicy" >
+            <enum>Qt::ClickFocus</enum>
+           </property>
+           <property name="url" >
+            <url>
+             <string>about:blank</string>
+            </url>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </widget>
       </widget>
      </widget>
     </item>
    </layout>
+   <zorder>splitter_2</zorder>
+   <zorder>frame</zorder>
+   <zorder>frame</zorder>
+   <zorder>splitter_2</zorder>
   </widget>
   <widget class="QToolBar" name="toolBar" >
    <property name="geometry" >

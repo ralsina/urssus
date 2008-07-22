@@ -335,6 +335,33 @@ from Ui_about import Ui_Dialog as UI_AboutDialog
 from Ui_filterwidget import Ui_Form as UI_FilterWidget
 from Ui_searchwidget import Ui_Form as UI_SearchWidget
 
+class PostModel(QtGui.QStandardItemModel):
+  def __init__(self):
+    QtGui.QStandardItemModel.__init__(self)
+    self.setColumnCount(2)
+    print self.setHeaderData(0, QtCore.Qt.Horizontal, QtCore.QVariant("Title"))
+    print self.setHeaderData(1, QtCore.Qt.Horizontal, QtCore.QVariant("Date"))
+
+  def data(self, index, role):
+    if not index.isValid():
+      return QtCore.QVariant()
+      
+    if role<>QtCore.Qt.DisplayRole:
+      return QtGui.QStandardItemModel.data(self, index, role)
+    
+    if index.column()==0:
+      item=self.itemFromIndex(index)
+      print "title: ", item.post.title
+      v=QtCore.QVariant(item.post.title)
+    elif index.column()==1:
+      # Tricky!
+      ind=self.index(index.row(), 0, index.parent())
+      item=self.itemFromIndex(ind)
+      print "date: ", item.post.date
+      v=QtCore.QVariant(str(item.post.date))
+    else:
+      return QtCore.QVariant()
+    return v
 class FilterWidget(QtGui.QWidget):
   def __init__(self):
     QtGui.QWidget.__init__(self)
@@ -560,7 +587,7 @@ class MainWindow(QtGui.QMainWindow):
       self.posts=Post.query.filter(Post.feed==feed).order_by(sql.desc("date")).all()
     else:
       self.posts=Post.query.filter(Post.feed==feed).filter(sql.or_(Post.title.like('%%%s%%'%filter), Post.content.like('%%%s%%'%filter))).order_by(sql.desc("date")).all()
-    self.ui.posts.__model=QtGui.QStandardItemModel()
+    self.ui.posts.__model=PostModel()
     for post in self.posts:
       item=QtGui.QStandardItem('%s - %s'%(decodeString(post.title), post.date))
       item.post=post
