@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '/home/ralsina/Desktop/proyectos/urssus/main.ui'
 #
-# Created: Tue Jul 22 19:42:07 2008
+# Created: Tue Jul 22 19:52:04 2008
 #      by: PyQt4 UI code generator 4.4.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -188,6 +188,8 @@ class Ui_MainWindow(object):
         self.menuFeed.addAction(self.actionFetch_Feed)
         self.menuFeed.addAction(self.actionFetch_All_Feeds)
         self.menuFeed.addAction(self.actionAbort_Fetches)
+        self.menuFeed.addSeparator()
+        self.menuFeed.addAction(self.actionDelete_Feed)
         self.menu_File.addAction(self.actionImport_Feeds)
         self.menu_File.addAction(self.actionExport_Feeds)
         self.menu_File.addSeparator()

@@ -179,6 +179,8 @@
     <addaction name="actionFetch_Feed" />
     <addaction name="actionFetch_All_Feeds" />
     <addaction name="actionAbort_Fetches" />
+    <addaction name="separator" />
+    <addaction name="actionDelete_Feed" />
    </widget>
    <widget class="QMenu" name="menu_File" >
     <property name="title" >
