@@ -462,7 +462,7 @@ class MainWindow(QtGui.QMainWindow):
     menu.addSeparator()
     # FIXME: implement the following actions
     #menu.addAction(self.ui.actionEdit_Feed)
-    #menu.addAction(self.ui.actionDelete_Feed)
+    menu.addAction(self.ui.actionDelete_Feed)
     menu.exec_(QtGui.QCursor.pos())
     
     
@@ -683,6 +683,17 @@ class MainWindow(QtGui.QMainWindow):
       session.flush()
       self.updateFeedItem(item.feed)
 
+  def on_actionDelete_Feed_triggered(self, i=None):
+    if i==None: return
+    index=self.ui.feeds.currentIndex()
+    item=self.model.itemFromIndex(index)
+    if item and item.feed:
+      print "Deleting ", item.feed
+      # FIXME: ask for confirmation
+      item.feed.delete()
+      self.ui.feeds.model().removeRow(index.row(), index.parent())
+      session.flush()
+    #self.initTree()
 
   def on_actionOpen_Homepage_triggered(self, i=None):
     if i==None: return

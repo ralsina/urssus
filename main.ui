@@ -481,6 +481,18 @@
     <string>Ctrl+H</string>
    </property>
   </action>
+  <action name="actionDelete_Feed" >
+   <property name="icon" >
+    <iconset resource="images/icons.qrc" >
+     <normaloff>:/editdelete.svg</normaloff>:/editdelete.svg</iconset>
+   </property>
+   <property name="text" >
+    <string>Delete Feed</string>
+   </property>
+   <property name="shortcut" >
+    <string>Alt+Del</string>
+   </property>
+  </action>
  </widget>
  <customwidgets>
   <customwidget>
