@@ -84,7 +84,7 @@ class Feed(Entity):
       return self.text+'(%d)'%c
     return self.text
 
-  def prevSibling(self):
+  def previousSibling(self):
     if not self.parent: return None
     sibs=self.parent.children
     ind=sibs.index(self)
@@ -99,6 +99,17 @@ class Feed(Entity):
     if ind >= len(sibs):
       return None
     return sibs[ind]
+
+  def previousFeed(self):
+    # Search for a sibling above this one
+    sib=self.previousSibling()
+    if sib:
+      return sib
+    else:
+      # Go to parent
+      if parent:
+        return self.parent
+    return None
 
   def nextFeed(self):
     # First see if we have children
@@ -117,7 +128,32 @@ class Feed(Entity):
         parent=parent.parent
     return None
 
+  def previousUnreadFeed(self):
+    # If there are no unread articles, there is no point
+    if Post.query.filter(Post.unread==True).count()==0:
+      return None
+      
+    # First see if there is any sibling with unread items above this one
+    sibs=self.parent.children
+    sibs=sibs[:sibs.index(self)]
+    sibs.reverse()
+    for sib in sibs:
+      if sib.unreadCount():
+        return sib
+    # Then see if our parent is the answer
+    if self.parent and self.parent.unreadCount():
+      return self.parent
+    elif self.parent:
+      # Not him, pass the ball to uncle/gramps/whatever
+      return self.parent.previousUnreadFeed()
+    # Maybe should go to the *last* feed with unread articles, but it's
+    # a corner case
+    return None
+
   def nextUnreadFeed(self):
+    # If there are no unread articles, there is no point
+    if len(Post.query.filter(Post.unread==True))==0:
+      return None
     # First see if we have children with unread articles
     if len(self.children):
       for child in self.children:
@@ -599,7 +635,6 @@ class MainWindow(QtGui.QMainWindow):
       if nextIndex.isValid():
         self.ui.posts.setCurrentIndex(nextIndex)
       else: # This was the last item here, need to go somewhere else
-        print "At last post"
         self.on_actionNext_Feed_triggered(True)
     else: # At no post in particular
       # Are there any item in this model?
@@ -714,16 +749,14 @@ class MainWindow(QtGui.QMainWindow):
 
   def on_actionPrevious_Unread_Feed_triggered(self, i=None):
     if i==None: return
-    if Post.query.filter(Post.unread==True).count()==0:
-      return #No unread articles, so don't bother
-    # Go to previous feed
-    while True:
-      self.on_actionPrevious_Feed_triggered(True)
-      curIndex=self.ui.feeds.currentIndex()
-      curItem=self.ui.feeds.model().itemFromIndex(curIndex)
-      if curItem and curItem.feed and curItem.feed.unreadCount()<>0:
-        break
-
+    if self.currentFeed:
+      prevFeed=self.currentFeed.previousUnreadFeed()
+      if prevFeed:
+        self.open_feed(self.ui.feeds.model().indexFromItem(self.feedItems[prevFeed.id]))
+    else:
+      # FIXME: implement something reasonable like "go to last unread feed" (not important)
+      pass
+      
   def on_actionIncrease_Font_Sizes_triggered(self, i=None):
     if i==None: return
     self.ui.view.setTextSizeMultiplier(self.ui.view.textSizeMultiplier()+.2)
