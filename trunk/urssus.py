@@ -464,8 +464,6 @@ class MainWindow(QtGui.QMainWindow):
     #menu.addAction(self.ui.actionEdit_Feed)
     menu.addAction(self.ui.actionDelete_Feed)
     menu.exec_(QtGui.QCursor.pos())
-    
-    
 
   def on_actionShow_Only_Unread_Feeds_triggered(self, checked=None):
     if checked==None: return
