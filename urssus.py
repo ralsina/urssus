@@ -71,7 +71,7 @@ class Feed(Entity):
   htmlUrl     = Field(Text)
   xmlUrl      = Field(Text)
   title       = Field(Text)
-  text        = Field(Text)
+  text        = Field(Text, default='')
   description = Field(Text)
   children    = OneToMany('Feed')
   parent      = ManyToOne('Feed')
@@ -359,7 +359,12 @@ class AboutDialog(QtGui.QDialog):
 class MainWindow(QtGui.QMainWindow):
   def __init__(self):
     QtGui.QMainWindow.__init__(self)
-  
+
+    # Internal indexes
+    self.posts=[]
+    self.currentFeed=None
+    self.currentPost=None
+
     # Set up the UI from designer
     self.ui=Ui_MainWindow()
     self.ui.setupUi(self)
@@ -389,6 +394,8 @@ class MainWindow(QtGui.QMainWindow):
 
     
     # Fill with feed data
+    # TODO: make configurable
+    self.showOnlyUnread=False
     self.initTree()
     
     # Timer to trigger status bar updates
@@ -404,11 +411,13 @@ class MainWindow(QtGui.QMainWindow):
     self.feedStatusTimer.start(0)
     self.updatesCounter=0
     
-    # Internal indexes
-    self.posts=[]
-    self.currentFeed=None
-    self.currentPost=None
-
+  def on_actionShow_Only_Unread_Feeds_triggered(self, checked=None):
+    if checked==None: return
+    print "Show only unread", checked
+    self.showOnlyUnread=checked
+    for feed in Feed.query().all():
+      self.updateFeedItem(feed)
+  
   def on_actionFind_triggered(self, i=None):
     if i==None: return
     self.searchWidget.show()
@@ -503,6 +512,7 @@ class MainWindow(QtGui.QMainWindow):
       parent.appendRow(nn)
       nn.feed=node
       self.feedItems[node.id]=nn
+      self.updateFeedItem(node)
       if node.children:
         nn.setIcon(QtGui.QIcon(":/folder.svg"))
         for child in node.children:
@@ -513,6 +523,7 @@ class MainWindow(QtGui.QMainWindow):
           
     iroot=self.model.invisibleRootItem()
     iroot.feed=root_feed
+    self.feedItems[root_feed.id]=iroot
     for root in root_feed.children:
       addSubTree(iroot, root)
       
@@ -554,7 +565,16 @@ class MainWindow(QtGui.QMainWindow):
     self.ui.posts.setModel(self.ui.posts.__model)
 
   def updateFeedItem(self, feed):
-    self.feedItems[feed.id].setText(unicode(feed))
+    item=self.feedItems[feed.id]
+    item.setText(unicode(feed))
+    if self.showOnlyUnread:
+      if feed.unreadCount()==0 and feed<>self.currentFeed: 
+        # Hide feeds with no unread items
+        self.ui.feeds.setRowHidden(item.row(), self.model.indexFromItem(item.parent()), True)
+      else:
+        self.ui.feeds.setRowHidden(item.row(), self.model.indexFromItem(item.parent()), False)
+    else:
+      self.ui.feeds.setRowHidden(item.row(), self.model.indexFromItem(item.parent()), False)
 
   def on_posts_clicked(self, index=None, item=None):
     if item: post=item.post
