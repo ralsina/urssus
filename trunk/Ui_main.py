@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '/home/ralsina/Desktop/proyectos/urssus/main.ui'
 #
-# Created: Tue Jul 22 18:40:59 2008
+# Created: Tue Jul 22 19:42:07 2008
 #      by: PyQt4 UI code generator 4.4.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -173,6 +173,11 @@ class Ui_MainWindow(object):
         self.actionShow_Only_Unread_Feeds.setObjectName("actionShow_Only_Unread_Feeds")
         self.actionOpen_Homepage = QtGui.QAction(MainWindow)
         self.actionOpen_Homepage.setObjectName("actionOpen_Homepage")
+        self.actionDelete_Feed = QtGui.QAction(MainWindow)
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap(":/editdelete.svg"),QtGui.QIcon.Normal,QtGui.QIcon.Off)
+        self.actionDelete_Feed.setIcon(icon)
+        self.actionDelete_Feed.setObjectName("actionDelete_Feed")
         self.toolBar.addAction(self.actionFetch_Feed)
         self.toolBar.addAction(self.actionFetch_All_Feeds)
         self.toolBar.addAction(self.actionAbort_Fetches)
@@ -267,6 +272,8 @@ class Ui_MainWindow(object):
         self.actionShow_Only_Unread_Feeds.setText(QtGui.QApplication.translate("MainWindow", "Show Only Unread Feeds", None, QtGui.QApplication.UnicodeUTF8))
         self.actionOpen_Homepage.setText(QtGui.QApplication.translate("MainWindow", "Open Homepage", None, QtGui.QApplication.UnicodeUTF8))
         self.actionOpen_Homepage.setShortcut(QtGui.QApplication.translate("MainWindow", "Ctrl+H", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionDelete_Feed.setText(QtGui.QApplication.translate("MainWindow", "Delete Feed", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionDelete_Feed.setShortcut(QtGui.QApplication.translate("MainWindow", "Alt+Del", None, QtGui.QApplication.UnicodeUTF8))
 
 from PyQt4 import QtWebKit
 import icons_rc
