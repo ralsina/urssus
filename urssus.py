@@ -453,17 +453,42 @@ class MainWindow(QtGui.QMainWindow):
 
   def on_feeds_customContextMenuRequested(self, pos=None):
     if pos==None: return
-    menu=QtGui.QMenu()
-    menu.addAction(self.ui.actionMark_Feed_as_Read)
-    menu.addSeparator()
-    menu.addAction(self.ui.actionFetch_Feed)
-    menu.addSeparator()
-    menu.addAction(self.ui.actionOpen_Homepage)
-    menu.addSeparator()
-    # FIXME: implement the following actions
-    #menu.addAction(self.ui.actionEdit_Feed)
-    menu.addAction(self.ui.actionDelete_Feed)
-    menu.exec_(QtGui.QCursor.pos())
+    
+    item=self.model.itemFromIndex(self.ui.feeds.currentIndex())
+    if item and item.feed:
+      menu=QtGui.QMenu()
+      menu.addAction(self.ui.actionMark_Feed_as_Read)
+      menu.addSeparator()
+      menu.addAction(self.ui.actionFetch_Feed)
+      menu.addSeparator()
+      menu.addAction(self.ui.actionOpen_Homepage)
+      menu.addSeparator()
+      # FIXME: implement the following actions
+      #menu.addAction(self.ui.actionEdit_Feed)
+      menu.addAction(self.ui.actionDelete_Feed)
+      menu.exec_(QtGui.QCursor.pos())
+
+  def on_actionNew_Folder_triggered(self, i=None):
+    if i==None: return
+    # Ask for folder name
+    [name, ok]=QtGui.QInputDialog.getText(self, "Add Folder - uRSSus", "&Folder name:")
+    if ok:
+      newFolder=Feed(text=unicode(name))
+      # Figure out the insertion point
+      index=self.ui.feeds.currentIndex()
+      if index.isValid():         
+        curFeed=self.itemFromIndex(index).feed
+      else:
+        curFeed=root_feed
+      # if curFeed is a feed, add as sibling
+      if curFeed.xmlUrl:
+        newFolder.parent=curFeed.parent
+      # if curFeed is a folder, add as child
+      else:
+        newFolder.parent=curFeed
+      session.flush()
+      self.initTree()
+      self.ui.feeds.setCurrentIndex(self.ui.feeds.model().indexFromItem(self.feedItems[newFolder.id]))
 
   def on_actionShow_Only_Unread_Feeds_triggered(self, checked=None):
     if checked==None: return
@@ -567,12 +592,12 @@ class MainWindow(QtGui.QMainWindow):
       nn.feed=node
       self.feedItems[node.id]=nn
       self.updateFeedItem(node)
-      if node.children:
+      if node.xmlUrl:
+        nn.setIcon(QtGui.QIcon(":/urssus.svg"))
+      else:
         nn.setIcon(QtGui.QIcon(":/folder.svg"))
         for child in node.children:
           addSubTree(nn, child)
-      else:
-        nn.setIcon(QtGui.QIcon(":/urssus.svg"))
       return nn
           
     iroot=self.model.invisibleRootItem()
