@@ -450,7 +450,23 @@ class MainWindow(QtGui.QMainWindow):
     QtCore.QObject.connect(self.feedStatusTimer, QtCore.SIGNAL("timeout()"), self.updateFeedStatus)
     self.feedStatusTimer.start(0)
     self.updatesCounter=0
+
+  def on_feeds_customContextMenuRequested(self, pos=None):
+    if pos==None: return
+    menu=QtGui.QMenu()
+    menu.addAction(self.ui.actionMark_Feed_as_Read)
+    menu.addSeparator()
+    menu.addAction(self.ui.actionFetch_Feed)
+    menu.addSeparator()
+    # FIXME: implement the following actions
+    #menu.addAction(self.ui.actionOpen_Homepage)
+    menu.addSeparator()
+    #menu.addAction(self.ui.actionEdit_Feed)
+    #menu.addAction(self.ui.actionDelete_Feed)
+    menu.exec_(QtGui.QCursor.pos())
     
+    
+
   def on_actionShow_Only_Unread_Feeds_triggered(self, checked=None):
     if checked==None: return
     print "Show only unread", checked

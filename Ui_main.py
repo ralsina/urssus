@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '/home/ralsina/Desktop/proyectos/urssus/main.ui'
 #
-# Created: Tue Jul 22 16:35:23 2008
+# Created: Tue Jul 22 18:24:45 2008
 #      by: PyQt4 UI code generator 4.4.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -27,6 +27,7 @@ class Ui_MainWindow(object):
         self.splitter_2.setObjectName("splitter_2")
         self.feeds = QtGui.QTreeView(self.splitter_2)
         self.feeds.setFocusPolicy(QtCore.Qt.NoFocus)
+        self.feeds.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
         self.feeds.setFrameShape(QtGui.QFrame.Panel)
         self.feeds.setFrameShadow(QtGui.QFrame.Plain)
         self.feeds.setEditTriggers(QtGui.QAbstractItemView.NoEditTriggers)
