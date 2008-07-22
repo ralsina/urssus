@@ -769,7 +769,7 @@ def importOPML(fname):
              )
           
     else: # Let's guess it's a folder
-      f=Feed(text=node.get('text'), parent=parent)
+      f=Feed.get_by_or_init(text=node.get('text'), parent=parent)
       for child in node.getchildren():
         importSubTree(f, child)
 
