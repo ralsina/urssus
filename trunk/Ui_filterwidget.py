@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '/home/ralsina/Desktop/proyectos/urssus/filterwidget.ui'
 #
-# Created: Fri Jul 18 22:04:04 2008
+# Created: Tue Jul 22 21:33:03 2008
 #      by: PyQt4 UI code generator 4.4.2
 #
 # WARNING! All changes made in this file will be lost!
