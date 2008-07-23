@@ -3,6 +3,9 @@
 import sys, os, time
 from datetime import datetime, timedelta
 
+# Configuration
+import config
+
 # Logging
 from easylog import critical, error, warning, debug, info, setLogger, DEBUG
 setLogger(name='urssus', level=DEBUG)
@@ -486,6 +489,15 @@ class MainWindow(QtGui.QMainWindow):
     self.feedStatusTimer.start(0)
     self.updatesCounter=0
 
+    # Load user preferences
+    self.loadPreferences()
+
+  def loadPreferences(self):
+    ssbar=config.getValue('ui', 'showStatus', True)
+    self.ui.actionStatus_Bar.setChecked(ssbar)
+    self.on_actionStatus_Bar_triggered(ssbar)
+    
+
   def on_feeds_customContextMenuRequested(self, pos=None):
     if pos==None: return
     
@@ -619,6 +631,7 @@ class MainWindow(QtGui.QMainWindow):
       self.statusBar().show()
     else:
       self.statusBar().hide()
+    config.setValue('ui', 'showStatus', self.ui.actionStatus_Bar.isChecked())
 
   def on_actionAbout_uRSSus_triggered(self, i=None):
     if i==None: return
