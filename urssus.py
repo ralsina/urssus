@@ -847,6 +847,7 @@ class MainWindow(QtGui.QMainWindow):
     processes.append(p)
     
   def on_actionNext_Unread_Article_triggered(self, i=None):
+    # FIXME: bug it doesn't really go to the next unread article if it's in another feed
     if i==None: return
     info( "Next Unread Article")
     if self.currentPost:
@@ -868,11 +869,11 @@ class MainWindow(QtGui.QMainWindow):
       self.on_actionNext_Unread_Feed_triggered(True)
       
   def on_actionNext_Article_triggered(self, i=None, do_open=True):
+    # FIXME: bug where it skips to next feed even if this feed has articles
     if i==None: return
     info ("Next Article")
     if self.currentPost:
-      post=self.currentPost
-      nextPost=post.nextPost()
+      nextPost=self.currentPost.nextPost()
     elif len(self.posts):
       nextPost=self.posts[0]
     else: # No posts in this feed, just go the next unread feed
