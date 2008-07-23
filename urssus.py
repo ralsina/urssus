@@ -106,10 +106,14 @@ class Feed(Entity):
     '''
     if self.xmlUrl: #I'm not a folder
       return []
+    info("allposts for feed: %s", self)
     
-    # FIXME: Implement
+    # Get posts for all children
+    posts=[]
+    for child in self.children:
+      posts.extend(child.posts)
+    return posts
     
-
   def previousSibling(self):
     if not self.parent: return None
     sibs=self.parent.children
@@ -810,13 +814,17 @@ class MainWindow(QtGui.QMainWindow):
     self.postItems={}
     self.posts=[]
     self.currentPost=None
-    if not filter:
-      self.posts=Post.query.filter(Post.feed==feed).order_by(sql.desc("date")).all()
-    else:
-      self.posts=Post.query.filter(Post.feed==feed).filter(sql.or_(Post.title.like('%%%s%%'%filter), Post.content.like('%%%s%%'%filter))).order_by(sql.desc("date")).all()
+    
+    if feed.xmlUrl: # A regular feed
+      if not filter:
+        self.posts=Post.query.filter(Post.feed==feed).order_by(sql.desc("date")).all()
+      else:
+        self.posts=Post.query.filter(Post.feed==feed).filter(sql.or_(Post.title.like('%%%s%%'%filter), Post.content.like('%%%s%%'%filter))).order_by(sql.desc("date")).all()
+    else: # A folder
+      self.posts=feed.allPosts()
+    
     self.ui.posts.__model=PostModel()
     self.ui.posts.setModel(self.ui.posts.__model)
-    
     # Fixes for post list UI
     header=self.ui.posts.header()
     header.setStretchLastSection(False)
