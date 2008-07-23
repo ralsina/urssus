@@ -267,6 +267,7 @@
     <addaction name="actionOpen_in_Browser" />
     <addaction name="separator" />
     <addaction name="actionMark_as_Important" />
+    <addaction name="actionRemove_Important_Mark" />
     <addaction name="actionMark_as_Read" />
     <addaction name="actionMark_as_Unread" />
     <addaction name="actionDelete_Article" />
@@ -621,9 +622,16 @@
     <string>Shift+Return</string>
    </property>
   </action>
-  <action name="actionMark_as" >
+  <action name="actionRemove_Important_Mark" >
+   <property name="icon" >
+    <iconset resource="images/icons.qrc" >
+     <normaloff>:/flag.svg</normaloff>:/flag.svg</iconset>
+   </property>
    <property name="text" >
-    <string>Mark as...</string>
+    <string>Remove Important Mark</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+Shift+I</string>
    </property>
   </action>
  </widget>
