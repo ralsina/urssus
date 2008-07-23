@@ -490,8 +490,15 @@ class MainWindow(QtGui.QMainWindow):
 
   def on_actionEdit_Feed_triggered(self, i=None):
     if i==None: return
-    editDlg=FeedProperties(None)
-    editDlg.exec_()
+    index=self.ui.feeds.currentIndex()
+    if index.isValid():         
+      curFeed=self.ui.feeds.model().itemFromIndex(index).feed
+    print "Editing feed: ", curFeed
+
+    editDlg=FeedProperties(curFeed)
+    if editDlg.exec_():
+      # update feed item
+      self.updateFeedItem(curFeed)
 
   def on_actionAdd_Feed_triggered(self, i=None):
     if i==None: return
@@ -517,7 +524,7 @@ class MainWindow(QtGui.QMainWindow):
       # Figure out the insertion point
       index=self.ui.feeds.currentIndex()
       if index.isValid():         
-        curFeed=self.itemFromIndex(index).feed
+        curFeed=self.ui.feeds.model().itemFromIndex(index).feed
       else:
         curFeed=root_feed
       # if curFeed is a feed, add as sibling
