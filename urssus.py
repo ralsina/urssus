@@ -488,6 +488,11 @@ class MainWindow(QtGui.QMainWindow):
       menu.addAction(self.ui.actionDelete_Feed)
       menu.exec_(QtGui.QCursor.pos())
 
+  def on_actionEdit_Feed_triggered(self, i=None):
+    if i==None: return
+    editDlg=FeedProperties(None)
+    editDlg.exec_()
+
   def on_actionAdd_Feed_triggered(self, i=None):
     if i==None: return
     # Ask for feed URL

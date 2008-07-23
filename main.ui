@@ -489,7 +489,7 @@
      <normaloff>:/editdelete.svg</normaloff>:/editdelete.svg</iconset>
    </property>
    <property name="text" >
-    <string>Delete Feed</string>
+    <string>&amp;Delete Feed</string>
    </property>
    <property name="shortcut" >
     <string>Alt+Del</string>
@@ -525,7 +525,10 @@
      <normaloff>:/edit.svg</normaloff>:/edit.svg</iconset>
    </property>
    <property name="text" >
-    <string>Edit Feed</string>
+    <string>&amp;Edit Feed</string>
+   </property>
+   <property name="shortcut" >
+    <string>F2, Ctrl+S</string>
    </property>
   </action>
  </widget>

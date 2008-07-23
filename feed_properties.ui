@@ -34,7 +34,7 @@
        <item>
         <layout class="QGridLayout" name="gridLayout" >
          <item row="1" column="1" >
-          <widget class="QLineEdit" name="lineEdit_2" />
+          <widget class="QLineEdit" name="url" />
          </item>
          <item row="1" column="0" >
           <widget class="QLabel" name="label_2" >
@@ -42,7 +42,7 @@
             <string>&amp;URL:</string>
            </property>
            <property name="buddy" >
-            <cstring>lineEdit_2</cstring>
+            <cstring>url</cstring>
            </property>
           </widget>
          </item>
@@ -52,24 +52,24 @@
             <string>&amp;Name:</string>
            </property>
            <property name="buddy" >
-            <cstring>lineEdit</cstring>
+            <cstring>name</cstring>
            </property>
           </widget>
          </item>
          <item row="0" column="1" >
-          <widget class="QLineEdit" name="lineEdit" />
+          <widget class="QLineEdit" name="name" />
          </item>
         </layout>
        </item>
        <item>
-        <widget class="QCheckBox" name="checkBox_2" >
+        <widget class="QCheckBox" name="notify" >
          <property name="text" >
           <string>Notify when new articles arri&amp;ve</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QCheckBox" name="checkBox" >
+        <widget class="QCheckBox" name="customUpdate" >
          <property name="text" >
           <string>U&amp;se a custom update interval</string>
          </property>
@@ -86,19 +86,19 @@
             <string>Update &amp;every</string>
            </property>
            <property name="buddy" >
-            <cstring>spinBox</cstring>
+            <cstring>updatePeriod</cstring>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QSpinBox" name="spinBox" >
+          <widget class="QSpinBox" name="updatePeriod" >
            <property name="enabled" >
             <bool>false</bool>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QComboBox" name="comboBox" >
+          <widget class="QComboBox" name="updateUnit" >
            <property name="enabled" >
             <bool>false</bool>
            </property>
@@ -137,49 +137,58 @@
        <item>
         <layout class="QGridLayout" name="gridLayout_2" >
          <item row="0" column="0" colspan="2" >
-          <widget class="QRadioButton" name="radioButton" >
+          <widget class="QRadioButton" name="useDefault" >
            <property name="text" >
             <string>&amp;Use default settings</string>
+           </property>
+           <property name="checked" >
+            <bool>true</bool>
            </property>
           </widget>
          </item>
          <item row="1" column="0" colspan="2" >
-          <widget class="QRadioButton" name="radioButton_2" >
+          <widget class="QRadioButton" name="keepAll" >
            <property name="text" >
             <string>&amp;Keep all articles</string>
            </property>
           </widget>
          </item>
          <item row="2" column="0" >
-          <widget class="QRadioButton" name="radioButton_3" >
+          <widget class="QRadioButton" name="limitCount" >
            <property name="text" >
             <string>Limit archi&amp;ve to:</string>
            </property>
           </widget>
          </item>
          <item row="2" column="1" >
-          <widget class="QSpinBox" name="spinBox_2" >
+          <widget class="QSpinBox" name="count" >
+           <property name="enabled" >
+            <bool>false</bool>
+           </property>
            <property name="suffix" >
             <string> articles</string>
            </property>
           </widget>
          </item>
          <item row="3" column="0" >
-          <widget class="QRadioButton" name="radioButton_4" >
+          <widget class="QRadioButton" name="limitDays" >
            <property name="text" >
             <string>&amp;Delete older than:</string>
            </property>
           </widget>
          </item>
          <item row="3" column="1" >
-          <widget class="QSpinBox" name="spinBox_3" >
+          <widget class="QSpinBox" name="days" >
+           <property name="enabled" >
+            <bool>false</bool>
+           </property>
            <property name="suffix" >
             <string> days</string>
            </property>
           </widget>
          </item>
          <item row="4" column="0" colspan="2" >
-          <widget class="QRadioButton" name="radioButton_5" >
+          <widget class="QRadioButton" name="noArchive" >
            <property name="text" >
             <string>Di&amp;sable archiving</string>
            </property>
@@ -203,19 +212,27 @@
       </layout>
      </widget>
      <widget class="QWidget" name="advanced" >
+      <property name="geometry" >
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>365</width>
+        <height>200</height>
+       </rect>
+      </property>
       <attribute name="title" >
        <string>A&amp;dvanced</string>
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_4" >
        <item>
-        <widget class="QCheckBox" name="checkBox_3" >
+        <widget class="QCheckBox" name="loadFull" >
          <property name="text" >
           <string>&amp;Load the full website when reading articles</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QCheckBox" name="checkBox_4" >
+        <widget class="QCheckBox" name="markRead" >
          <property name="text" >
           <string>&amp;Mark articles as read when they arrive</string>
          </property>
@@ -250,15 +267,6 @@
    </item>
   </layout>
   <zorder>buttonBox</zorder>
-  <zorder>lineEdit_2</zorder>
-  <zorder>checkBox</zorder>
-  <zorder>lineEdit</zorder>
-  <zorder>label</zorder>
-  <zorder>label_2</zorder>
-  <zorder>comboBox</zorder>
-  <zorder>label_3</zorder>
-  <zorder>spinBox</zorder>
-  <zorder>radioButton_5</zorder>
   <zorder>tabWidget</zorder>
  </widget>
  <resources/>
@@ -286,12 +294,44 @@
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel" >
-     <x>295</x>
-     <y>282</y>
+     <x>304</x>
+     <y>277</y>
     </hint>
     <hint type="destinationlabel" >
      <x>286</x>
      <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>limitCount</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>count</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>77</x>
+     <y>112</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>261</x>
+     <y>122</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>limitDays</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>days</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>111</x>
+     <y>149</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>265</x>
+     <y>153</y>
     </hint>
    </hints>
   </connection>
