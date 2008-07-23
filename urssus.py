@@ -462,7 +462,7 @@ class MainWindow(QtGui.QMainWindow):
     # TODO: make configurable
     self.showOnlyUnread=False
     self.initTree()
-    
+
     # Timer to trigger status bar updates
     self.statusTimer=QtCore.QTimer()
     self.statusTimer.setSingleShot(True)
@@ -711,6 +711,14 @@ class MainWindow(QtGui.QMainWindow):
       self.posts=Post.query.filter(Post.feed==feed).filter(sql.or_(Post.title.like('%%%s%%'%filter), Post.content.like('%%%s%%'%filter))).order_by(sql.desc("date")).all()
     self.ui.posts.__model=PostModel()
     self.ui.posts.setModel(self.ui.posts.__model)
+    
+    # Fixes for post list UI
+    header=self.ui.posts.header()
+    header.setStretchLastSection(False)
+    header.setResizeMode(0, QtGui.QHeaderView.Stretch)
+    header.setResizeMode(1, QtGui.QHeaderView.Fixed)
+    header.resizeSection(1, header.fontMetrics().width(' 8888-88-88 88:88:88 ')+4)
+    
     for post in self.posts:
       item=QtGui.QStandardItem('%s - %s'%(decodeString(post.title), post.date))
       item.post=post
