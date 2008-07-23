@@ -3,6 +3,10 @@
 import sys, os, time
 from datetime import datetime, timedelta
 
+# Logging
+from easylog import critical, error, warning, debug, info, setLogger, DEBUG
+setLogger(name='urssus', level=DEBUG)
+
 # Templates
 from mako.template import Template
 from mako.lookup import TemplateLookup
@@ -201,7 +205,7 @@ class Feed(Entity):
     # assumes this feed has a xmlUrl, fetches any missing data from it
     if not self.xmlUrl: # Nowhere to fetch data from
       return
-    print "Updating feed data from: ", self.xmlUrl
+    info ( "Updating feed data from: %s", self.xmlUrl)
     d=fp.parse(self.xmlUrl)
     if not self.htmlUrl:
       self.htmlUrl=d['feed']['link']
@@ -284,7 +288,7 @@ class Feed(Entity):
                  author=author, link=link)
         posts.append(p)
       except KeyError:
-        print post
+        debug( post )
     self.lastUpdated=datetime.now()
     session.flush()
     
@@ -366,8 +370,8 @@ class PostModel(QtGui.QStandardItemModel):
   def __init__(self):
     QtGui.QStandardItemModel.__init__(self)
     self.setColumnCount(2)
-    print self.setHeaderData(0, QtCore.Qt.Horizontal, QtCore.QVariant("Title"))
-    print self.setHeaderData(1, QtCore.Qt.Horizontal, QtCore.QVariant("Date"))
+    self.setHeaderData(0, QtCore.Qt.Horizontal, QtCore.QVariant("Title"))
+    self.setHeaderData(1, QtCore.Qt.Horizontal, QtCore.QVariant("Date"))
 
   def data(self, index, role):
     if not index.isValid():
@@ -493,7 +497,7 @@ class MainWindow(QtGui.QMainWindow):
     index=self.ui.feeds.currentIndex()
     if index.isValid():         
       curFeed=self.ui.feeds.model().itemFromIndex(index).feed
-    print "Editing feed: ", curFeed
+    info ("Editing feed: %s", curFeed)
 
     editDlg=FeedProperties(curFeed)
     if editDlg.exec_():
@@ -513,7 +517,7 @@ class MainWindow(QtGui.QMainWindow):
       if not feed:
         QtGui.QMessageBox.critical(self, "Error - uRSSus", "Can't find a feed wit URL: %s"%url)
         return
-      print "Found feed:", feed
+      info ("Found feed: %s", feed)
       if Feed.get_by(xmlUrl=feed):
         # Already subscribed
         QtGui.QMessageBox.critical(self, "Error - uRSSus", "You are already subscribed")
@@ -562,7 +566,7 @@ class MainWindow(QtGui.QMainWindow):
 
   def on_actionShow_Only_Unread_Feeds_triggered(self, checked=None):
     if checked==None: return
-    print "Show only unread", checked
+    info ("Show only unread: %d", checked)
     self.showOnlyUnread=checked
     for feed in Feed.query().all():
       self.updateFeedItem(feed)
@@ -616,8 +620,8 @@ class MainWindow(QtGui.QMainWindow):
       if not id in self.feedItems:
         # This shouldn't happen, it means there is a 
         # feed that is not in the tree
-        print "id %s not in the tree"%id
-        print Feed.get_by(id=id)
+        error( "id %s not in the tree", id)
+        debug( Feed.get_by(id=id) )
         sys.exit(1)
       item=self.feedItems[id]
 
@@ -781,7 +785,7 @@ class MainWindow(QtGui.QMainWindow):
     index=self.ui.feeds.currentIndex()
     item=self.model.itemFromIndex(index)
     if item and item.feed:
-      print "Deleting ", item.feed
+      info( "Deleting %s", item.feed)
       # FIXME: ask for confirmation
       item.feed.delete()
       self.ui.feeds.model().removeRow(index.row(), index.parent())
@@ -792,7 +796,7 @@ class MainWindow(QtGui.QMainWindow):
     if i==None: return
     item=self.model.itemFromIndex(self.ui.feeds.currentIndex())
     if item and item.feed and item.feed.htmlUrl:
-      print "Opening ", item.feed.htmlUrl
+      info("Opening %s", item.feed.htmlUrl)
       QtGui.QDesktopServices.openUrl(QtCore.QUrl(item.feed.htmlUrl))
     
 
@@ -844,7 +848,7 @@ class MainWindow(QtGui.QMainWindow):
     
   def on_actionNext_Unread_Article_triggered(self, i=None):
     if i==None: return
-    print "Next Unread Article"
+    info( "Next Unread Article")
     if self.currentPost:
       post=self.currentPost
     elif len(self.posts):
@@ -865,7 +869,7 @@ class MainWindow(QtGui.QMainWindow):
       
   def on_actionNext_Article_triggered(self, i=None, do_open=True):
     if i==None: return
-    print "Next Article"
+    info ("Next Article")
     if self.currentPost:
       post=self.currentPost
       nextPost=post.nextPost()
@@ -873,7 +877,7 @@ class MainWindow(QtGui.QMainWindow):
       nextPost=self.posts[0]
     else: # No posts in this feed, just go the next unread feed
       self.on_actionNext_Feed_triggered(True)
-
+      return
     if nextPost:
       nextIndex=self.ui.posts.model().indexFromItem(self.postItems[nextPost.id])
       self.ui.posts.setCurrentIndex(nextIndex)
@@ -884,7 +888,7 @@ class MainWindow(QtGui.QMainWindow):
 
   def on_actionPrevious_Unread_Article_triggered(self, i=None):
     if i==None: return
-    print "Previous Unread Article"
+    info("Previous Unread Article")
     if self.currentPost:
       post=self.currentPost
       previousPost=post.previousUnreadPost()
@@ -904,7 +908,7 @@ class MainWindow(QtGui.QMainWindow):
 
   def on_actionPrevious_Article_triggered(self, i=None, do_open=True):
     if i==None: return
-    print "Previous Article"
+    info ("Previous Article")
     if self.currentPost:
       post=self.currentPost
       previousPost=post.previousPost()
@@ -922,7 +926,7 @@ class MainWindow(QtGui.QMainWindow):
 
   def on_actionNext_Unread_Feed_triggered(self, i=None):
     if i==None: return
-    print "Next unread feed"
+    info("Next unread feed")
     if self.currentFeed:
       nextFeed=self.currentFeed.nextUnreadFeed()
     else:
@@ -932,7 +936,7 @@ class MainWindow(QtGui.QMainWindow):
 
   def on_actionNext_Feed_triggered(self, i=None):
     if i==None: return
-    print "Next Feed"
+    info("Next Feed")
     if self.currentFeed:
       nextFeed=self.currentFeed.nextFeed()
     else:
@@ -942,7 +946,7 @@ class MainWindow(QtGui.QMainWindow):
 
   def on_actionPrevious_Feed_triggered(self, i=None):
     if i==None: return
-    print "Previous Feed"
+    info("Previous Feed")
     if self.currentFeed:
       prevFeed=self.currentFeed.previousFeed()
       if prevFeed and prevFeed<>root_feed: # The root feed has no UI
@@ -968,12 +972,12 @@ class MainWindow(QtGui.QMainWindow):
 
 class FeedDelegate(QtGui.QItemDelegate):
   def __init__(self, parent=None):
-    print "Creating FeedDelegate"
+    info("Creating FeedDelegate")
     QtGui.QItemDelegate.__init__(self, parent)
     
 class PostDelegate(QtGui.QItemDelegate):
   def __init__(self, parent=None):
-    print "Creating PostDelegate"
+    info("Creating PostDelegate")
     QtGui.QItemDelegate.__init__(self, parent)
   
 def importOPML(fname):
@@ -1019,19 +1023,18 @@ def feedUpdater(full=False):
         feedStatusQueue.put([1, feed.id])
   else:
     while True:
-      print "updater loop"
+      info("updater loop")
       time.sleep(60)
       now=datetime.now()
       for feed in Feed.query.filter(Feed.xmlUrl<>None):
         if (now-feed.lastUpdated).seconds>1800:
-          print "updating because of timeout"
+          info("updating because of timeout")
           feedStatusQueue.put([0, feed.id])
           try: # we can't let this fail or it will stay yellow forever;-)
             feed.update()
           except:
             pass
           feedStatusQueue.put([1, feed.id])
-      print "---------------------"
 
 from BeautifulSoup import BeautifulStoneSoup 
 def decodeString(s):
