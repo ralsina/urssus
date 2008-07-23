@@ -493,10 +493,14 @@ class MainWindow(QtGui.QMainWindow):
     self.loadPreferences()
 
   def loadPreferences(self):
-    ssbar=config.getValue('ui', 'showStatus', True)
-    self.ui.actionStatus_Bar.setChecked(ssbar)
-    self.on_actionStatus_Bar_triggered(ssbar)
     
+    v=config.getValue('ui', 'showStatus', True)
+    self.ui.actionStatus_Bar.setChecked(v)
+    self.on_actionStatus_Bar_triggered(v)
+    
+    v=config.getValue('ui', 'showOnlyUnreadFeeds', False)
+    self.ui.actionShow_Only_Unread_Feeds.setChecked(v)
+    self.on_actionShow_Only_Unread_Feeds_triggered(v)
 
   def on_feeds_customContextMenuRequested(self, pos=None):
     if pos==None: return
@@ -592,6 +596,7 @@ class MainWindow(QtGui.QMainWindow):
     self.showOnlyUnread=checked
     for feed in Feed.query().all():
       self.updateFeedItem(feed)
+    config.setValue('ui', 'showOnlyUnreadFeeds', checked)
   
   def on_actionFind_triggered(self, i=None):
     if i==None: return
