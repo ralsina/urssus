@@ -360,6 +360,7 @@ from Ui_main import Ui_MainWindow
 from Ui_about import Ui_Dialog as UI_AboutDialog
 from Ui_filterwidget import Ui_Form as UI_FilterWidget
 from Ui_searchwidget import Ui_Form as UI_SearchWidget
+from Ui_feed_properties import Ui_Dialog as UI_FeedPropertiesDialog
 
 class PostModel(QtGui.QStandardItemModel):
   def __init__(self):
@@ -411,6 +412,13 @@ class TrayIcon(QtGui.QSystemTrayIcon):
   def __init__(self):
     QtGui.QSystemTrayIcon.__init__ (self,QtGui.QIcon(":/urssus.svg"))
  
+class FeedProperties(QtGui.QDialog):
+  def __init__(self, feed):
+    QtGui.QDialog.__init__(self)
+    # Set up the UI from designer
+    self.ui=UI_FeedPropertiesDialog()
+    self.ui.setupUi(self)
+ 
 class MainWindow(QtGui.QMainWindow):
   def __init__(self):
     QtGui.QMainWindow.__init__(self)
@@ -441,13 +449,11 @@ class MainWindow(QtGui.QMainWindow):
     QtCore.QObject.connect(self.searchWidget.ui.next, QtCore.SIGNAL("clicked()"), self.findText)
     QtCore.QObject.connect(self.searchWidget.ui.previous, QtCore.SIGNAL("clicked()"), self.findTextReverse)
     
-    
     # Set some properties of the Web view
     page=self.ui.view.page()
     page.setLinkDelegationPolicy(page.DelegateAllLinks)
     self.ui.view.setFocus(QtCore.Qt.TabFocusReason)
 
-    
     # Fill with feed data
     # TODO: make configurable
     self.showOnlyUnread=False
@@ -478,8 +484,7 @@ class MainWindow(QtGui.QMainWindow):
       menu.addSeparator()
       menu.addAction(self.ui.actionOpen_Homepage)
       menu.addSeparator()
-      # FIXME: implement the following actions
-      #menu.addAction(self.ui.actionEdit_Feed)
+      menu.addAction(self.ui.actionEdit_Feed)
       menu.addAction(self.ui.actionDelete_Feed)
       menu.exec_(QtGui.QCursor.pos())
 

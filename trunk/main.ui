@@ -128,10 +128,6 @@
      </widget>
     </item>
    </layout>
-   <zorder>splitter_2</zorder>
-   <zorder>frame</zorder>
-   <zorder>frame</zorder>
-   <zorder>splitter_2</zorder>
   </widget>
   <widget class="QToolBar" name="toolBar" >
    <property name="geometry" >
@@ -183,6 +179,7 @@
     <addaction name="actionFetch_All_Feeds" />
     <addaction name="actionAbort_Fetches" />
     <addaction name="separator" />
+    <addaction name="actionEdit_Feed" />
     <addaction name="actionDelete_Feed" />
    </widget>
    <widget class="QMenu" name="menu_File" >
@@ -520,6 +517,15 @@
    </property>
    <property name="shortcut" >
     <string>Shift+Ins</string>
+   </property>
+  </action>
+  <action name="actionEdit_Feed" >
+   <property name="icon" >
+    <iconset resource="images/icons.qrc" >
+     <normaloff>:/edit.svg</normaloff>:/edit.svg</iconset>
+   </property>
+   <property name="text" >
+    <string>Edit Feed</string>
    </property>
   </action>
  </widget>
