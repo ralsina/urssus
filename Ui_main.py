@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '/home/ralsina/Desktop/proyectos/urssus/main.ui'
 #
-# Created: Wed Jul 23 10:46:06 2008
+# Created: Wed Jul 23 10:54:41 2008
 #      by: PyQt4 UI code generator 4.4.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -47,6 +47,7 @@ class Ui_MainWindow(object):
         self.splitter.setObjectName("splitter")
         self.posts = QtGui.QTreeView(self.splitter)
         self.posts.setFocusPolicy(QtCore.Qt.NoFocus)
+        self.posts.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
         self.posts.setFrameShape(QtGui.QFrame.Panel)
         self.posts.setFrameShadow(QtGui.QFrame.Plain)
         self.posts.setEditTriggers(QtGui.QAbstractItemView.NoEditTriggers)
@@ -94,6 +95,8 @@ class Ui_MainWindow(object):
         self.menu_View.setObjectName("menu_View")
         self.menu_Edit = QtGui.QMenu(self.menuBar)
         self.menu_Edit.setObjectName("menu_Edit")
+        self.menuArticle = QtGui.QMenu(self.menuBar)
+        self.menuArticle.setObjectName("menuArticle")
         MainWindow.setMenuBar(self.menuBar)
         self.statusBar = QtGui.QStatusBar(MainWindow)
         self.statusBar.setGeometry(QtCore.QRect(0,576,800,24))
@@ -200,6 +203,24 @@ class Ui_MainWindow(object):
         icon.addPixmap(QtGui.QPixmap(":/edit.svg"),QtGui.QIcon.Normal,QtGui.QIcon.Off)
         self.actionEdit_Feed.setIcon(icon)
         self.actionEdit_Feed.setObjectName("actionEdit_Feed")
+        self.actionMark_as_Read = QtGui.QAction(MainWindow)
+        self.actionMark_as_Read.setObjectName("actionMark_as_Read")
+        self.actionMark_as_Unread = QtGui.QAction(MainWindow)
+        self.actionMark_as_Unread.setObjectName("actionMark_as_Unread")
+        self.actionMark_as_Important = QtGui.QAction(MainWindow)
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap(":/flag.svg"),QtGui.QIcon.Normal,QtGui.QIcon.Off)
+        self.actionMark_as_Important.setIcon(icon)
+        self.actionMark_as_Important.setObjectName("actionMark_as_Important")
+        self.actionDelete_Article = QtGui.QAction(MainWindow)
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap(":/editdelete.svg"),QtGui.QIcon.Normal,QtGui.QIcon.Off)
+        self.actionDelete_Article.setIcon(icon)
+        self.actionDelete_Article.setObjectName("actionDelete_Article")
+        self.actionOpen_in_Browser = QtGui.QAction(MainWindow)
+        self.actionOpen_in_Browser.setObjectName("actionOpen_in_Browser")
+        self.actionMark_as = QtGui.QAction(MainWindow)
+        self.actionMark_as.setObjectName("actionMark_as")
         self.toolBar.addAction(self.actionFetch_Feed)
         self.toolBar.addAction(self.actionFetch_All_Feeds)
         self.toolBar.addAction(self.actionAbort_Fetches)
@@ -239,11 +260,18 @@ class Ui_MainWindow(object):
         self.menu_View.addAction(self.actionDecrease_Font_Sizes)
         self.menu_Edit.addAction(self.actionFind)
         self.menu_Edit.addAction(self.actionFind_Again)
+        self.menuArticle.addAction(self.actionOpen_in_Browser)
+        self.menuArticle.addSeparator()
+        self.menuArticle.addAction(self.actionMark_as_Important)
+        self.menuArticle.addAction(self.actionMark_as_Read)
+        self.menuArticle.addAction(self.actionMark_as_Unread)
+        self.menuArticle.addAction(self.actionDelete_Article)
         self.menuBar.addAction(self.menu_File.menuAction())
         self.menuBar.addAction(self.menu_Edit.menuAction())
         self.menuBar.addAction(self.menu_View.menuAction())
         self.menuBar.addAction(self.menu_Go.menuAction())
         self.menuBar.addAction(self.menuFeed.menuAction())
+        self.menuBar.addAction(self.menuArticle.menuAction())
         self.menuBar.addAction(self.menuHelp.menuAction())
 
         self.retranslateUi(MainWindow)
@@ -258,6 +286,7 @@ class Ui_MainWindow(object):
         self.menuHelp.setTitle(QtGui.QApplication.translate("MainWindow", "&Help", None, QtGui.QApplication.UnicodeUTF8))
         self.menu_View.setTitle(QtGui.QApplication.translate("MainWindow", "&View", None, QtGui.QApplication.UnicodeUTF8))
         self.menu_Edit.setTitle(QtGui.QApplication.translate("MainWindow", "&Edit", None, QtGui.QApplication.UnicodeUTF8))
+        self.menuArticle.setTitle(QtGui.QApplication.translate("MainWindow", "&Article", None, QtGui.QApplication.UnicodeUTF8))
         self.filterBar.setWindowTitle(QtGui.QApplication.translate("MainWindow", "toolBar_2", None, QtGui.QApplication.UnicodeUTF8))
         self.actionFetch_Feed.setText(QtGui.QApplication.translate("MainWindow", "Fetch Feed", None, QtGui.QApplication.UnicodeUTF8))
         self.actionFetch_Feed.setShortcut(QtGui.QApplication.translate("MainWindow", "F5", None, QtGui.QApplication.UnicodeUTF8))
@@ -308,6 +337,17 @@ class Ui_MainWindow(object):
         self.actionNew_Folder.setShortcut(QtGui.QApplication.translate("MainWindow", "Shift+Ins", None, QtGui.QApplication.UnicodeUTF8))
         self.actionEdit_Feed.setText(QtGui.QApplication.translate("MainWindow", "&Edit Feed", None, QtGui.QApplication.UnicodeUTF8))
         self.actionEdit_Feed.setShortcut(QtGui.QApplication.translate("MainWindow", "F2", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionMark_as_Read.setText(QtGui.QApplication.translate("MainWindow", "Mark as Read", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionMark_as_Read.setShortcut(QtGui.QApplication.translate("MainWindow", "Ctrl+E", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionMark_as_Unread.setText(QtGui.QApplication.translate("MainWindow", "Mark as Unread", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionMark_as_Unread.setShortcut(QtGui.QApplication.translate("MainWindow", "Ctrl+U", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionMark_as_Important.setText(QtGui.QApplication.translate("MainWindow", "Mark as Important", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionMark_as_Important.setShortcut(QtGui.QApplication.translate("MainWindow", "Ctrl+I", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionDelete_Article.setText(QtGui.QApplication.translate("MainWindow", "Delete Article", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionDelete_Article.setShortcut(QtGui.QApplication.translate("MainWindow", "Del", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionOpen_in_Browser.setText(QtGui.QApplication.translate("MainWindow", "Open in Browser", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionOpen_in_Browser.setShortcut(QtGui.QApplication.translate("MainWindow", "Shift+Return", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionMark_as.setText(QtGui.QApplication.translate("MainWindow", "Mark as...", None, QtGui.QApplication.UnicodeUTF8))
 
 from PyQt4 import QtWebKit
 import icons_rc
