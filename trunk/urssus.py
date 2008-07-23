@@ -196,11 +196,28 @@ class Feed(Entity):
       return sum([ f.unreadCount() for f in self.children])
     else:
       return Post.query.filter(Post.feed==self).filter(Post.unread==True).count()
+      
+  def updateFeedData(self):
+    # assumes this feed has a xmlUrl, fetches any missing data from it
+    if not self.xmlUrl: # Nowhere to fetch data from
+      return
+    print "Updating feed data from: ", self.xmlUrl
+    d=fp.parse(self.xmlUrl)
+    if not self.htmlUrl:
+      self.htmlUrl=d['feed']['link']
+    if not self.title:
+      self.title=d['feed']['title']
+      self.text=d['feed']['title']
+    if not self.description:
+      self.description=d['feed']['description']
+    session.flush()
     
   def update(self):
-    statusQueue.put(u"Updating: "+ self.title)
     if not self.xmlUrl: # Not a real feed
+      # FIXME: should update all children
       return
+    if self.title:
+      statusQueue.put(u"Updating: "+ self.title)
     d=fp.parse(self.xmlUrl)
     posts=[]
     for post in d['entries']:
@@ -360,13 +377,11 @@ class PostModel(QtGui.QStandardItemModel):
     
     if index.column()==0:
       item=self.itemFromIndex(index)
-      print "title: ", item.post.title
       v=QtCore.QVariant(item.post.title)
     elif index.column()==1:
       # Tricky!
       ind=self.index(index.row(), 0, index.parent())
       item=self.itemFromIndex(ind)
-      print "date: ", item.post.date
       v=QtCore.QVariant(str(item.post.date))
     else:
       return QtCore.QVariant()
@@ -467,6 +482,44 @@ class MainWindow(QtGui.QMainWindow):
       #menu.addAction(self.ui.actionEdit_Feed)
       menu.addAction(self.ui.actionDelete_Feed)
       menu.exec_(QtGui.QCursor.pos())
+
+  def on_actionAdd_Feed_triggered(self, i=None):
+    if i==None: return
+    # Ask for feed URL
+    [url, ok]=QtGui.QInputDialog.getText(self, "Add Feed - uRSSus", "&Feed URL:")
+    if ok:
+      url=unicode(url)
+      # Use Mark pilgrim / Aaron Swartz's RSS finder module
+      # FIXME: make this non-blocking somehow
+      import feedfinder
+      feed=feedfinder.feed(url)
+      if not feed:
+        QtGui.QMessageBox.critical(self, "Error - uRSSus", "Can't find a feed wit URL: %s"%url)
+        return
+      print "Found feed:", feed
+      if Feed.get_by(xmlUrl=feed):
+        # Already subscribed
+        QtGui.QMessageBox.critical(self, "Error - uRSSus", "You are already subscribed")
+        return
+      newFeed=Feed(xmlUrl=feed)
+      newFeed.updateFeedData()
+      
+      # Figure out the insertion point
+      index=self.ui.feeds.currentIndex()
+      if index.isValid():         
+        curFeed=self.itemFromIndex(index).feed
+      else:
+        curFeed=root_feed
+      # if curFeed is a feed, add as sibling
+      if curFeed.xmlUrl:
+        newFeed.parent=curFeed.parent
+      # if curFeed is a folder, add as child
+      else:
+        newFeed.parent=curFeed
+      session.flush()
+      self.initTree()
+      self.ui.feeds.setCurrentIndex(self.ui.feeds.model().indexFromItem(self.feedItems[newFeed.id]))
+      # FIXME: open feed options dialog
 
   def on_actionNew_Folder_triggered(self, i=None):
     if i==None: return
