@@ -97,13 +97,13 @@
     <pixmap resource="images/icons.qrc" >:/urssus.jpg</pixmap>
    </property>
   </widget>
-  <widget class="QLabel" name="label_2" >
+  <widget class="QTextBrowser" name="textBrowser" >
    <property name="geometry" >
     <rect>
-     <x>20</x>
-     <y>370</y>
-     <width>441</width>
-     <height>121</height>
+     <x>10</x>
+     <y>270</y>
+     <width>461</width>
+     <height>241</height>
     </rect>
    </property>
    <property name="palette" >
@@ -111,19 +111,10 @@
      <active>
       <colorrole role="Base" >
        <brush brushstyle="SolidPattern" >
-        <color alpha="255" >
-         <red>255</red>
-         <green>255</green>
-         <blue>255</blue>
-        </color>
-       </brush>
-      </colorrole>
-      <colorrole role="Window" >
-       <brush brushstyle="SolidPattern" >
-        <color alpha="120" >
-         <red>238</red>
-         <green>237</green>
-         <blue>237</blue>
+        <color alpha="180" >
+         <red>226</red>
+         <green>226</green>
+         <blue>226</blue>
         </color>
        </brush>
       </colorrole>
@@ -131,19 +122,10 @@
      <inactive>
       <colorrole role="Base" >
        <brush brushstyle="SolidPattern" >
-        <color alpha="255" >
-         <red>255</red>
-         <green>255</green>
-         <blue>255</blue>
-        </color>
-       </brush>
-      </colorrole>
-      <colorrole role="Window" >
-       <brush brushstyle="SolidPattern" >
-        <color alpha="120" >
-         <red>238</red>
-         <green>237</green>
-         <blue>237</blue>
+        <color alpha="180" >
+         <red>226</red>
+         <green>226</green>
+         <blue>226</blue>
         </color>
        </brush>
       </colorrole>
@@ -151,29 +133,23 @@
      <disabled>
       <colorrole role="Base" >
        <brush brushstyle="SolidPattern" >
-        <color alpha="120" >
-         <red>238</red>
-         <green>237</green>
-         <blue>237</blue>
-        </color>
-       </brush>
-      </colorrole>
-      <colorrole role="Window" >
-       <brush brushstyle="SolidPattern" >
-        <color alpha="120" >
-         <red>238</red>
-         <green>237</green>
-         <blue>237</blue>
+        <color alpha="255" >
+         <red>255</red>
+         <green>255</green>
+         <blue>255</blue>
         </color>
        </brush>
       </colorrole>
      </disabled>
     </palette>
    </property>
-   <property name="autoFillBackground" >
-    <bool>true</bool>
+   <property name="frameShape" >
+    <enum>QFrame::NoFrame</enum>
    </property>
-   <property name="text" >
+   <property name="frameShadow" >
+    <enum>QFrame::Plain</enum>
+   </property>
+   <property name="html" >
     <string>&lt;!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
 &lt;html>&lt;head>&lt;meta name="qrichtext" content="1" />&lt;style type="text/css">
 p, li { white-space: pre-wrap; }
@@ -181,14 +157,22 @@ p, li { white-space: pre-wrap; }
 &lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">&lt;span style=" font-size:12pt; font-weight:600;">uRSSus&lt;/span>&lt;span style=" font-size:12pt;">: a news aggregator (v0.0.1).&lt;/span>&lt;/p>
 &lt;p style="-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">&lt;/p>
 &lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">&lt;span style=" font-weight:600;">Author:&lt;/span> Roberto Alsina &amp;lt;&lt;a href="mailto:ralsina@netmanagers.com.ar">&lt;span style=" text-decoration: underline; color:#0000ff;">ralsina@netmanagers.com.ar&lt;/span>&lt;/a>&amp;gt;&lt;/p>
-&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">&lt;span style=" font-weight:600;">Icons:&lt;/span> Dan Leinir Turthra Jensen&lt;/p>
-&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">&lt;span style=" font-weight:600;">Bear picture:&lt;/span> Bob Jagendorf&lt;/p>&lt;/body>&lt;/html></string>
-   </property>
-   <property name="textFormat" >
-    <enum>Qt::RichText</enum>
-   </property>
-   <property name="wordWrap" >
-    <bool>true</bool>
+&lt;p style="-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">&lt;/p>
+&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-weight:600;">Artwork:&lt;/p>
+&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">&lt;span style=" font-weight:600;">  Icons:&lt;/span> Dan Leinir Turthra Jensen (Reinhardt icon set)&lt;/p>
+&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">&lt;span style=" font-weight:600;">  Bear picture:&lt;/span> Bob Jagendorf&lt;/p>
+&lt;p style="-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">&lt;/p>
+&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">Urssus uses many other open source programs and libraries. Here they are, and a big thank you to their generous authors:&lt;/p>
+&lt;p style="-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">&lt;/p>
+&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">&lt;span style=" font-weight:600;">Qt: &lt;/span>TrollTech&lt;/p>
+&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">&lt;span style=" font-weight:600;">Feed Finder and Feed Parser:&lt;/span> Mark Pilgrim&lt;/p>
+&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">&lt;span style=" font-weight:600;">Easylog: &lt;/span>Jim Jewett&lt;/p>
+&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">&lt;span style=" font-weight:600;">OPML:&lt;/span> Juri Pakaste&lt;/p>
+&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">&lt;span style=" font-weight:600;">Python: &lt;/span>The Python Software Foundation&lt;/p>
+&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">&lt;span style=" font-weight:600;">Elixir:&lt;/span> Daniel Haus, Jonathan LaCour, G. de Menten &amp;amp; others&lt;/p>
+&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">&lt;span style=" font-weight:600;">SQLAlchemy: &lt;/span>Michael Bayer and contributors&lt;/p>
+&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-weight:600;">SQLite:&lt;span style=" font-weight:400;"> D. Richard Hipp and others&lt;/span>&lt;/p>
+&lt;p style="-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">&lt;/p>&lt;/body>&lt;/html></string>
    </property>
   </widget>
  </widget>
