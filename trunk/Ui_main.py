@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '/home/ralsina/Desktop/proyectos/urssus/main.ui'
 #
-# Created: Tue Jul 22 21:36:32 2008
+# Created: Wed Jul 23 00:43:11 2008
 #      by: PyQt4 UI code generator 4.4.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -16,6 +16,8 @@ class Ui_MainWindow(object):
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap(":/urssus.svg"),QtGui.QIcon.Normal,QtGui.QIcon.Off)
         MainWindow.setWindowIcon(icon)
+        MainWindow.setIconSize(QtCore.QSize(24,24))
+        MainWindow.setToolButtonStyle(QtCore.Qt.ToolButtonIconOnly)
         self.centralWidget = QtGui.QWidget(MainWindow)
         self.centralWidget.setGeometry(QtCore.QRect(0,70,800,506))
         self.centralWidget.setObjectName("centralWidget")
@@ -47,9 +49,12 @@ class Ui_MainWindow(object):
         self.posts.setFrameShape(QtGui.QFrame.Panel)
         self.posts.setFrameShadow(QtGui.QFrame.Plain)
         self.posts.setEditTriggers(QtGui.QAbstractItemView.NoEditTriggers)
+        self.posts.setAlternatingRowColors(True)
         self.posts.setRootIsDecorated(False)
         self.posts.setUniformRowHeights(True)
+        self.posts.setItemsExpandable(False)
         self.posts.setAllColumnsShowFocus(True)
+        self.posts.setExpandsOnDoubleClick(False)
         self.posts.setObjectName("posts")
         self.frame = QtGui.QFrame(self.splitter)
         self.frame.setFrameShape(QtGui.QFrame.Panel)
@@ -70,6 +75,7 @@ class Ui_MainWindow(object):
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap(":/urssus.svg"),QtGui.QIcon.Normal,QtGui.QIcon.Off)
         self.toolBar.setWindowIcon(icon)
+        self.toolBar.setIconSize(QtCore.QSize(24,24))
         self.toolBar.setObjectName("toolBar")
         MainWindow.addToolBar(QtCore.Qt.TopToolBarArea,self.toolBar)
         self.menuBar = QtGui.QMenuBar(MainWindow)
