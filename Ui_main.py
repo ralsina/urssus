@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '/home/ralsina/Desktop/proyectos/urssus/main.ui'
 #
-# Created: Tue Jul 22 21:33:02 2008
+# Created: Tue Jul 22 21:36:32 2008
 #      by: PyQt4 UI code generator 4.4.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -300,7 +300,7 @@ class Ui_MainWindow(object):
         self.actionNew_Folder.setText(QtGui.QApplication.translate("MainWindow", "New Folder", None, QtGui.QApplication.UnicodeUTF8))
         self.actionNew_Folder.setShortcut(QtGui.QApplication.translate("MainWindow", "Shift+Ins", None, QtGui.QApplication.UnicodeUTF8))
         self.actionEdit_Feed.setText(QtGui.QApplication.translate("MainWindow", "&Edit Feed", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionEdit_Feed.setShortcut(QtGui.QApplication.translate("MainWindow", "F2, Ctrl+S", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionEdit_Feed.setShortcut(QtGui.QApplication.translate("MainWindow", "F2", None, QtGui.QApplication.UnicodeUTF8))
 
 from PyQt4 import QtWebKit
 import icons_rc

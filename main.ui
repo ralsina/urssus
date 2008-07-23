@@ -528,7 +528,7 @@
     <string>&amp;Edit Feed</string>
    </property>
    <property name="shortcut" >
-    <string>F2, Ctrl+S</string>
+    <string>F2</string>
    </property>
   </action>
  </widget>
