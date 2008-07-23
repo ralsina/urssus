@@ -89,6 +89,9 @@
         <enum>Qt::Vertical</enum>
        </property>
        <widget class="QTreeView" name="posts" >
+        <property name="focusPolicy" >
+         <enum>Qt::NoFocus</enum>
+        </property>
         <property name="frameShape" >
          <enum>QFrame::Panel</enum>
         </property>

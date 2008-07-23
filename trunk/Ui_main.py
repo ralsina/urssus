@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '/home/ralsina/Desktop/proyectos/urssus/main.ui'
 #
-# Created: Wed Jul 23 00:43:11 2008
+# Created: Wed Jul 23 10:46:06 2008
 #      by: PyQt4 UI code generator 4.4.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -46,6 +46,7 @@ class Ui_MainWindow(object):
         self.splitter.setOrientation(QtCore.Qt.Vertical)
         self.splitter.setObjectName("splitter")
         self.posts = QtGui.QTreeView(self.splitter)
+        self.posts.setFocusPolicy(QtCore.Qt.NoFocus)
         self.posts.setFrameShape(QtGui.QFrame.Panel)
         self.posts.setFrameShadow(QtGui.QFrame.Plain)
         self.posts.setEditTriggers(QtGui.QAbstractItemView.NoEditTriggers)
