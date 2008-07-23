@@ -512,7 +512,28 @@ class MainWindow(QtGui.QMainWindow):
     curPost.delete()
     session.flush()
     self.open_feed(self.ui.feeds.currentIndex())
-    
+
+  def on_actionMark_as_Read_triggered(self, i=None):
+    if i==None: return
+    index=self.ui.posts.currentIndex()
+    if index.isValid():         
+      curPost=self.ui.posts.model().itemFromIndex(index).post
+    info ("Marking as read post: %s", curPost)
+    curPost.unread=False
+    session.flush()
+    self.updatePostItem(curPost)
+
+  def on_actionMark_as_Unread_triggered(self, i=None):
+    if i==None: return
+    index=self.ui.posts.currentIndex()
+    if index.isValid():         
+      curPost=self.ui.posts.model().itemFromIndex(index).post
+    info ("Marking as read post: %s", curPost)
+    curPost.unread=True
+    session.flush()
+    self.updatePostItem(curPost)
+
+
   def on_posts_customContextMenuRequested(self, pos=None):
     if pos==None: return
     item=self.ui.posts.model().itemFromIndex(self.ui.posts.currentIndex())
