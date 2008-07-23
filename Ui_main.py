@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '/home/ralsina/Desktop/proyectos/urssus/main.ui'
 #
-# Created: Tue Jul 22 20:00:22 2008
+# Created: Tue Jul 22 21:22:01 2008
 #      by: PyQt4 UI code generator 4.4.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -188,6 +188,11 @@ class Ui_MainWindow(object):
         icon.addPixmap(QtGui.QPixmap(":/folder_new.svg"),QtGui.QIcon.Normal,QtGui.QIcon.Off)
         self.actionNew_Folder.setIcon(icon)
         self.actionNew_Folder.setObjectName("actionNew_Folder")
+        self.actionEdit_Feed = QtGui.QAction(MainWindow)
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap(":/edit.svg"),QtGui.QIcon.Normal,QtGui.QIcon.Off)
+        self.actionEdit_Feed.setIcon(icon)
+        self.actionEdit_Feed.setObjectName("actionEdit_Feed")
         self.toolBar.addAction(self.actionFetch_Feed)
         self.toolBar.addAction(self.actionFetch_All_Feeds)
         self.toolBar.addAction(self.actionAbort_Fetches)
@@ -202,6 +207,7 @@ class Ui_MainWindow(object):
         self.menuFeed.addAction(self.actionFetch_All_Feeds)
         self.menuFeed.addAction(self.actionAbort_Fetches)
         self.menuFeed.addSeparator()
+        self.menuFeed.addAction(self.actionEdit_Feed)
         self.menuFeed.addAction(self.actionDelete_Feed)
         self.menu_File.addAction(self.actionImport_Feeds)
         self.menu_File.addAction(self.actionExport_Feeds)
@@ -293,6 +299,7 @@ class Ui_MainWindow(object):
         self.actionAdd_Feed.setShortcut(QtGui.QApplication.translate("MainWindow", "Ins", None, QtGui.QApplication.UnicodeUTF8))
         self.actionNew_Folder.setText(QtGui.QApplication.translate("MainWindow", "New Folder", None, QtGui.QApplication.UnicodeUTF8))
         self.actionNew_Folder.setShortcut(QtGui.QApplication.translate("MainWindow", "Shift+Ins", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionEdit_Feed.setText(QtGui.QApplication.translate("MainWindow", "Edit Feed", None, QtGui.QApplication.UnicodeUTF8))
 
 from PyQt4 import QtWebKit
 import icons_rc
