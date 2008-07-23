@@ -504,6 +504,7 @@ class MainWindow(QtGui.QMainWindow):
     self.on_actionShow_Only_Unread_Feeds_triggered(v)
 
   def on_actionDelete_Article_triggered(self, i=None):
+    # FIXME: handle selections
     if i==None: return
     index=self.ui.posts.currentIndex()
     if index.isValid():         
@@ -514,6 +515,7 @@ class MainWindow(QtGui.QMainWindow):
     self.open_feed(self.ui.feeds.currentIndex())
 
   def on_actionMark_as_Read_triggered(self, i=None):
+    # FIXME: handle selections
     if i==None: return
     index=self.ui.posts.currentIndex()
     if index.isValid():         
@@ -524,26 +526,55 @@ class MainWindow(QtGui.QMainWindow):
     self.updatePostItem(curPost)
 
   def on_actionMark_as_Unread_triggered(self, i=None):
+    # FIXME: handle selections
     if i==None: return
     index=self.ui.posts.currentIndex()
     if index.isValid():         
       curPost=self.ui.posts.model().itemFromIndex(index).post
-    info ("Marking as read post: %s", curPost)
+    info ("Marking as unread post: %s", curPost)
     curPost.unread=True
+    session.flush()
+    self.updatePostItem(curPost)
+
+  def on_actionMark_as_Important_triggered(self, i=None):
+    # FIXME: handle selections
+    if i==None: return
+    index=self.ui.posts.currentIndex()
+    if index.isValid():         
+      curPost=self.ui.posts.model().itemFromIndex(index).post
+    info ("Marking as important post: %s", curPost)
+    curPost.important=True
+    session.flush()
+    self.updatePostItem(curPost)
+
+  def on_actionRemove_Important_Mark_triggered(self, i=None):
+    # FIXME: handle selections
+    if i==None: return
+    index=self.ui.posts.currentIndex()
+    if index.isValid():         
+      curPost=self.ui.posts.model().itemFromIndex(index).post
+    info ("Marking as not important post: %s", curPost)
+    curPost.important=False
     session.flush()
     self.updatePostItem(curPost)
 
 
   def on_posts_customContextMenuRequested(self, pos=None):
+    # FIXME: handle selections
     if pos==None: return
     item=self.ui.posts.model().itemFromIndex(self.ui.posts.currentIndex())
     if item and item.post:
       menu=QtGui.QMenu()
       menu.addAction(self.ui.actionOpen_in_Browser)
       menu.addSeparator()
-      menu.addAction(self.ui.actionMark_as_Important)
-      menu.addAction(self.ui.actionMark_as_Read)
-      menu.addAction(self.ui.actionMark_as_Unread)
+      if item.post.important:
+        menu.addAction(self.ui.actionMark_as_Important)
+      else:
+        menu.addAction(self.ui.actionRemove_Important_Mark)
+      if item.post.unread:
+        menu.addAction(self.ui.actionMark_as_Read)
+      else:
+        menu.addAction(self.ui.actionMark_as_Unread)
       menu.addAction(self.ui.actionDelete_Article)
       menu.exec_(QtGui.QCursor.pos())
 
@@ -808,9 +839,12 @@ class MainWindow(QtGui.QMainWindow):
     index=self.ui.posts.model().indexFromItem(item)
     item2=self.ui.posts.model().itemFromIndex(self.ui.posts.model().index(index.row(), 1, index.parent()))
     # FIXME: respect the palette
-    if post.unread:
-      item.setForeground(QtGui.QColor("darkred"))
-      item2.setForeground(QtGui.QColor("darkred"))
+    if post.important:
+      item.setForeground(QtGui.QColor("red"))
+      item2.setForeground(QtGui.QColor("red"))
+    elif post.unread:
+      item.setForeground(QtGui.QColor("darkgreen"))
+      item2.setForeground(QtGui.QColor("darkgreen"))
     else:
       item.setForeground(QtGui.QColor("black"))
       item2.setForeground(QtGui.QColor("black"))

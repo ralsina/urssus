@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '/home/ralsina/Desktop/proyectos/urssus/main.ui'
 #
-# Created: Wed Jul 23 11:09:31 2008
+# Created: Wed Jul 23 11:20:57 2008
 #      by: PyQt4 UI code generator 4.4.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -219,8 +219,11 @@ class Ui_MainWindow(object):
         self.actionDelete_Article.setObjectName("actionDelete_Article")
         self.actionOpen_in_Browser = QtGui.QAction(MainWindow)
         self.actionOpen_in_Browser.setObjectName("actionOpen_in_Browser")
-        self.actionMark_as = QtGui.QAction(MainWindow)
-        self.actionMark_as.setObjectName("actionMark_as")
+        self.actionRemove_Important_Mark = QtGui.QAction(MainWindow)
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap(":/flag.svg"),QtGui.QIcon.Normal,QtGui.QIcon.Off)
+        self.actionRemove_Important_Mark.setIcon(icon)
+        self.actionRemove_Important_Mark.setObjectName("actionRemove_Important_Mark")
         self.toolBar.addAction(self.actionFetch_Feed)
         self.toolBar.addAction(self.actionFetch_All_Feeds)
         self.toolBar.addAction(self.actionAbort_Fetches)
@@ -263,6 +266,7 @@ class Ui_MainWindow(object):
         self.menuArticle.addAction(self.actionOpen_in_Browser)
         self.menuArticle.addSeparator()
         self.menuArticle.addAction(self.actionMark_as_Important)
+        self.menuArticle.addAction(self.actionRemove_Important_Mark)
         self.menuArticle.addAction(self.actionMark_as_Read)
         self.menuArticle.addAction(self.actionMark_as_Unread)
         self.menuArticle.addAction(self.actionDelete_Article)
@@ -347,7 +351,8 @@ class Ui_MainWindow(object):
         self.actionDelete_Article.setShortcut(QtGui.QApplication.translate("MainWindow", "Del", None, QtGui.QApplication.UnicodeUTF8))
         self.actionOpen_in_Browser.setText(QtGui.QApplication.translate("MainWindow", "Open in Browser", None, QtGui.QApplication.UnicodeUTF8))
         self.actionOpen_in_Browser.setShortcut(QtGui.QApplication.translate("MainWindow", "Shift+Return", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionMark_as.setText(QtGui.QApplication.translate("MainWindow", "Mark as...", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionRemove_Important_Mark.setText(QtGui.QApplication.translate("MainWindow", "Remove Important Mark", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionRemove_Important_Mark.setShortcut(QtGui.QApplication.translate("MainWindow", "Ctrl+Shift+I", None, QtGui.QApplication.UnicodeUTF8))
 
 from PyQt4 import QtWebKit
 import icons_rc
