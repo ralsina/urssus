@@ -44,7 +44,7 @@ firstRun=False
 if not os.path.isdir(cfdir):
     os.mkdir(cfdir)
 if not os.path.isfile(cfname):
-    open(cfname).close()
+    open(cfname, 'w').close()
     firstRun=True
 f=open(cfname,'r')
 conf.readfp(f)
