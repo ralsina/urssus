@@ -97,6 +97,16 @@ class Feed(Entity):
       return self.text+'(%d)'%c
     return self.text
 
+  def allPosts(self):
+    '''This is used if you want all posts in this feed as well as in its childrens.
+    Obviously meant to be used with folders, not regular feeds ;-)
+    '''
+    if self.xmlUrl: #I'm not a folder
+      return []
+    
+    # FIXME: Implement
+    
+
   def previousSibling(self):
     if not self.parent: return None
     sibs=self.parent.children
@@ -705,6 +715,7 @@ class MainWindow(QtGui.QMainWindow):
     self.currentFeed=feed
     self.postItems={}
     self.posts=[]
+    self.currentPost=None
     if not filter:
       self.posts=Post.query.filter(Post.feed==feed).order_by(sql.desc("date")).all()
     else:
@@ -855,7 +866,6 @@ class MainWindow(QtGui.QMainWindow):
     processes.append(p)
     
   def on_actionNext_Unread_Article_triggered(self, i=None):
-    # FIXME: bug it doesn't really go to the next unread article if it's in another feed
     if i==None: return
     info( "Next Unread Article")
     if self.currentPost:
@@ -877,7 +887,6 @@ class MainWindow(QtGui.QMainWindow):
       self.on_actionNext_Unread_Feed_triggered(True)
       
   def on_actionNext_Article_triggered(self, i=None, do_open=True):
-    # FIXME: bug where it skips to next feed even if this feed has articles
     if i==None: return
     info ("Next Article")
     if self.currentPost:
