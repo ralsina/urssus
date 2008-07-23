@@ -312,6 +312,7 @@ class Post(Entity):
   content     = Field(Text)
   date        = Field(DateTime)
   unread      = Field(Boolean, default=True)
+  important   = Field(Boolean, default=False)
   author      = Field(Text)
   link        = Field(Text)
 
@@ -502,6 +503,16 @@ class MainWindow(QtGui.QMainWindow):
     self.ui.actionShow_Only_Unread_Feeds.setChecked(v)
     self.on_actionShow_Only_Unread_Feeds_triggered(v)
 
+  def on_actionDelete_Article_triggered(self, i=None):
+    if i==None: return
+    index=self.ui.posts.currentIndex()
+    if index.isValid():         
+      curPost=self.ui.posts.model().itemFromIndex(index).post
+    info ("Deleting post: %s", curPost)
+    curPost.delete()
+    session.flush()
+    self.open_feed(self.ui.feeds.currentIndex())
+    
   def on_posts_customContextMenuRequested(self, pos=None):
     if pos==None: return
     item=self.ui.posts.model().itemFromIndex(self.ui.posts.currentIndex())
