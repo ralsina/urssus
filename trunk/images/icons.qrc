@@ -1,5 +1,6 @@
 <RCC>
   <qresource prefix="/" >
+    <file>flag.svg</file>
     <file>edit.svg</file>
     <file>folder_new.svg</file>
     <file>filenew.svg</file>

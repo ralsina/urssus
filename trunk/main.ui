@@ -92,6 +92,9 @@
         <property name="focusPolicy" >
          <enum>Qt::NoFocus</enum>
         </property>
+        <property name="contextMenuPolicy" >
+         <enum>Qt::CustomContextMenu</enum>
+        </property>
         <property name="frameShape" >
          <enum>QFrame::Panel</enum>
         </property>
@@ -257,11 +260,23 @@
     <addaction name="actionFind" />
     <addaction name="actionFind_Again" />
    </widget>
+   <widget class="QMenu" name="menuArticle" >
+    <property name="title" >
+     <string>&amp;Article</string>
+    </property>
+    <addaction name="actionOpen_in_Browser" />
+    <addaction name="separator" />
+    <addaction name="actionMark_as_Important" />
+    <addaction name="actionMark_as_Read" />
+    <addaction name="actionMark_as_Unread" />
+    <addaction name="actionDelete_Article" />
+   </widget>
    <addaction name="menu_File" />
    <addaction name="menu_Edit" />
    <addaction name="menu_View" />
    <addaction name="menu_Go" />
    <addaction name="menuFeed" />
+   <addaction name="menuArticle" />
    <addaction name="menuHelp" />
   </widget>
   <widget class="QStatusBar" name="statusBar" >
@@ -556,6 +571,59 @@
    </property>
    <property name="shortcut" >
     <string>F2</string>
+   </property>
+  </action>
+  <action name="actionMark_as_Read" >
+   <property name="text" >
+    <string>Mark as Read</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+E</string>
+   </property>
+  </action>
+  <action name="actionMark_as_Unread" >
+   <property name="text" >
+    <string>Mark as Unread</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+U</string>
+   </property>
+  </action>
+  <action name="actionMark_as_Important" >
+   <property name="icon" >
+    <iconset resource="images/icons.qrc" >
+     <normaloff>:/flag.svg</normaloff>:/flag.svg</iconset>
+   </property>
+   <property name="text" >
+    <string>Mark as Important</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+I</string>
+   </property>
+  </action>
+  <action name="actionDelete_Article" >
+   <property name="icon" >
+    <iconset resource="images/icons.qrc" >
+     <normaloff>:/editdelete.svg</normaloff>:/editdelete.svg</iconset>
+   </property>
+   <property name="text" >
+    <string>Delete Article</string>
+   </property>
+   <property name="shortcut" >
+    <string>Del</string>
+   </property>
+  </action>
+  <action name="actionOpen_in_Browser" >
+   <property name="text" >
+    <string>Open in Browser</string>
+   </property>
+   <property name="shortcut" >
+    <string>Shift+Return</string>
+   </property>
+  </action>
+  <action name="actionMark_as" >
+   <property name="text" >
+    <string>Mark as...</string>
    </property>
   </action>
  </widget>

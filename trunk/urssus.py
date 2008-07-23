@@ -502,6 +502,19 @@ class MainWindow(QtGui.QMainWindow):
     self.ui.actionShow_Only_Unread_Feeds.setChecked(v)
     self.on_actionShow_Only_Unread_Feeds_triggered(v)
 
+  def on_posts_customContextMenuRequested(self, pos=None):
+    if pos==None: return
+    item=self.ui.posts.model().itemFromIndex(self.ui.posts.currentIndex())
+    if item and item.post:
+      menu=QtGui.QMenu()
+      menu.addAction(self.ui.actionOpen_in_Browser)
+      menu.addSeparator()
+      menu.addAction(self.ui.actionMark_as_Important)
+      menu.addAction(self.ui.actionMark_as_Read)
+      menu.addAction(self.ui.actionMark_as_Unread)
+      menu.addAction(self.ui.actionDelete_Article)
+      menu.exec_(QtGui.QCursor.pos())
+
   def on_feeds_customContextMenuRequested(self, pos=None):
     if pos==None: return
     
