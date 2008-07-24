@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
-import sys, os, time
+import sys, os, time, urlparse
+from urllib import urlopen
 from datetime import datetime, timedelta
 
 # Configuration
@@ -93,6 +94,7 @@ class Feed(Entity):
   defaultArchive = Field(Boolean, default=True)
   limitCount     = Field(Integer, default=1000)
   limitTime      = Field(Integer, default=60)
+  icon           = Field(Binary)
 
   def __repr__(self):
     c=self.unreadCount()
@@ -219,6 +221,7 @@ class Feed(Entity):
       return Post.query.filter(Post.feed==self).filter(Post.unread==True).count()
       
   def updateFeedData(self):
+    print "Updating data for feed: ", unicode(self)
     # assumes this feed has a xmlUrl, fetches any missing data from it
     if not self.xmlUrl: # Nowhere to fetch data from
       return
@@ -230,8 +233,16 @@ class Feed(Entity):
       self.title=d['feed']['title']
       self.text=d['feed']['title']
     if not self.description:
-      self.description=d['feed']['description']
+      if 'info' in d['feed']:
+        self.description=d['feed']['info']
+      elif 'description' in d['feed']:
+        self.description=d['feed']['description']
+    if not self.icon:
+      # FIXME: handle 404, 403 whatever errors
+      self.icon=urlopen(urlparse.urljoin(self.htmlUrl,'/favicon.ico')).read()
+      open('/tmp/icon.ico', 'w').write(self.icon)
     session.flush()
+
     
   def update(self):
     if not self.xmlUrl: # Not a real feed
@@ -857,7 +868,7 @@ class MainWindow(QtGui.QMainWindow):
       item.setForeground(QtGui.QColor("black"))
       item2.setForeground(QtGui.QColor("black"))
 
-  def updateFeedItem(self, feed):
+  def updateFeedItem(self, feed, parents=False):
     item=self.feedItems[feed.id]
     item.setText(unicode(feed))
     if self.showOnlyUnread:
@@ -868,6 +879,11 @@ class MainWindow(QtGui.QMainWindow):
         self.ui.feeds.setRowHidden(item.row(), self.model.indexFromItem(item.parent()), False)
     else:
       self.ui.feeds.setRowHidden(item.row(), self.model.indexFromItem(item.parent()), False)
+    if parents: # Not by default because it's slow
+      # Update all ancestors too, because unread counts and such change
+      while feed.parent:
+        self.updateFeedItem(feed.parent, True)
+        feed=feed.parent
 
   def on_posts_clicked(self, index=None, item=None):
     if item: post=item.post
@@ -875,7 +891,7 @@ class MainWindow(QtGui.QMainWindow):
     self.currentPost=post
     post.unread=False
     session.flush()
-    self.updateFeedItem(post.feed)
+    self.updateFeedItem(post.feed, parents=True)
     self.updatePostItem(post)
     if post.feed.loadFull and post.link:
       self.ui.view.setUrl(QtCore.QUrl(post.link))
@@ -902,7 +918,7 @@ class MainWindow(QtGui.QMainWindow):
         post.unread=False
         self.updatePostItem(post)
       session.flush()
-      self.updateFeedItem(item.feed)
+      self.updateFeedItem(item.feed, parents=True)
 
   def on_actionDelete_Feed_triggered(self, i=None):
     if i==None: return
@@ -1121,6 +1137,9 @@ def importOPML(fname):
              description=node.get('description'), 
              parent=parent
              )
+        # Add any missing stuff (mainly icons, I guess)
+        # Kills performance, though
+        # f.updateFeedData()
     else: # Let's guess it's a folder
       f=Feed.get_by_or_init(text=node.get('text'), parent=parent)
       for child in node.getchildren():
