@@ -536,10 +536,11 @@ class MainWindow(QtGui.QMainWindow):
     index=self.ui.posts.currentIndex()
     if index.isValid():         
       curPost=self.ui.posts.model().itemFromIndex(index).post
-    info ("Marking as read post: %s", curPost)
-    curPost.unread=False
-    session.flush()
-    self.updatePostItem(curPost)
+    if post.unread:
+      info ("Marking as read post: %s", curPost)
+      curPost.unread=False
+      session.flush()
+      self.updatePostItem(curPost)
 
   def on_actionMark_as_Unread_triggered(self, i=None):
     # FIXME: handle selections
@@ -547,10 +548,11 @@ class MainWindow(QtGui.QMainWindow):
     index=self.ui.posts.currentIndex()
     if index.isValid():         
       curPost=self.ui.posts.model().itemFromIndex(index).post
-    info ("Marking as unread post: %s", curPost)
-    curPost.unread=True
-    session.flush()
-    self.updatePostItem(curPost)
+    if not post.unread:
+      info ("Marking as unread post: %s", curPost)
+      curPost.unread=True
+      session.flush()
+      self.updatePostItem(curPost)
 
   def on_actionMark_as_Important_triggered(self, i=None):
     # FIXME: handle selections
@@ -783,7 +785,7 @@ class MainWindow(QtGui.QMainWindow):
       parent.appendRow(nn)
       nn.feed=node
       self.feedItems[node.id]=nn
-      self.queueUpdateFeedItem(node)
+      self.updateFeedItem(node)
       if node.xmlUrl:
         nn.setIcon(QtGui.QIcon(":/urssus.svg"))
       else:
@@ -902,7 +904,7 @@ class MainWindow(QtGui.QMainWindow):
     self.currentPost=post
     post.unread=False
     session.flush()
-    self.queueUpdateFeedItem(post.feed, parents=True)
+    self.updateFeedItem(post.feed, parents=True)
     self.updatePostItem(post)
     if post.feed.loadFull and post.link:
       self.ui.view.setUrl(QtCore.QUrl(post.link))
