@@ -947,11 +947,12 @@ class MainWindow(QtGui.QMainWindow):
     item=self.model.itemFromIndex(index)
     if item and item.feed:
       info( "Deleting %s", item.feed)
-      # FIXME: ask for confirmation
-      item.feed.delete()
-      self.ui.feeds.model().removeRow(index.row(), index.parent())
-      session.flush()
-    #self.initTree()
+      if QtGui.QMessageBox.question(None, "Delete Feed - uRSSus", 
+         'Are you sure you want to delete "%s"'%item.feed, 
+         QtGui.QMessageBox.Yes | QtGui.QMessageBox.No, QtGui.QMessageBox.No ) == QtGui.QMessageBox.Yes:
+        item.feed.delete()
+        self.ui.feeds.model().removeRow(index.row(), index.parent())
+        session.flush()
 
   def on_actionOpen_Homepage_triggered(self, i=None):
     if i==None: return
