@@ -215,6 +215,7 @@ class Feed(Entity):
     return root_feed.nextUnreadFeed()
 
   def unreadCount(self):
+    #FIXME: slooooooooow.
     if self.children:
       return sum([ f.unreadCount() for f in self.children])
     else:
@@ -807,12 +808,6 @@ class MainWindow(QtGui.QMainWindow):
     if not item: return
     self.open_feed(index, filter)
     self.ui.view.setHtml(tmplLookup.get_template('feed.tmpl').render_unicode(feed=item.feed))
-    if item.feed.title:
-      self.setWindowTitle("%s - uRSSus"%item.feed.title)
-    if item.feed.text:
-      self.setWindowTitle("%s - uRSSus"%item.feed.text)
-    else:
-      self.setWindowTitle("uRSSus")
 
   def open_feed(self, index, filter=None):
     item=self.model.itemFromIndex(index)
@@ -823,7 +818,15 @@ class MainWindow(QtGui.QMainWindow):
     self.postItems={}
     self.posts=[]
     self.currentPost=None
-    
+
+    # Update window title
+    if feed.title:
+      self.setWindowTitle("%s - uRSSus"%item.feed.title)
+    elif feed.text:
+      self.setWindowTitle("%s - uRSSus"%item.feed.text)
+    else:
+      self.setWindowTitle("uRSSus")
+      
     if feed.xmlUrl: # A regular feed
       if not filter:
         self.posts=Post.query.filter(Post.feed==feed).order_by(sql.desc("date")).all()
