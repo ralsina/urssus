@@ -362,12 +362,14 @@ class Post(Entity):
   author      = Field(Text)
   link        = Field(Text)
 
-  def nextUnreadPost(self, order, required=None):
+  def nextUnreadPost(self, order, required=None, textFilter=''):
     '''Returns next unread post in this feed or None'''
     # FIXME: think about filtering issues
     posts=Post.query.filter(Post.feed==self.feed).filter(sql.or_(Post.unread==True, Post.id==self.id))
     if required:
       posts=posts.filter(sql.or_(Post.id==self.id, required==True))
+    if textFilter:
+      post=posts.filter(sql.or_(Post.id==self.id,Post.title.like('%%%s%%'%textFilter), Post.content.like('%%%s%%'%textFilter)))
     posts=posts.order_by(order).all()    
     if posts:
       ind=posts.index(self)
@@ -375,12 +377,14 @@ class Post(Entity):
         return posts[ind+1]
     return None
 
-  def nextPost(self, order, required=None):
+  def nextPost(self, order, required=None, textFilter=''):
     '''Returns next post in this feed or None'''
     # FIXME: think about filtering issues
     posts=Post.query.filter(Post.feed==self.feed)
     if required:
       posts=posts.filter(sql.or_(Post.id==self.id, required==True))
+    if textFilter:
+      post=posts.filter(sql.or_(Post.id==self.id,Post.title.like('%%%s%%'%textFilter), Post.content.like('%%%s%%'%textFilter)))
     posts=posts.order_by(order).all()
     if posts:
       ind=posts.index(self)
@@ -388,13 +392,15 @@ class Post(Entity):
         return posts[ind+1]
     return None
 
-  def previousUnreadPost(self, order, required=None):
+  def previousUnreadPost(self, order, required=None, textFilter=''):
     '''Returns previous post in this feed or None'''
     # FIXME: think about filtering issues
     posts=Post.query.filter(Post.feed==self.feed).\
           filter(sql.or_(Post.unread==True, Post.id==self.id))
     if required:
       posts=posts.filter(sql.or_(Post.id==self.id, required==True))
+    if textFilter:
+      post=posts.filter(sql.or_(Post.id==self.id,Post.title.like('%%%s%%'%textFilter), Post.content.like('%%%s%%'%textFilter)))
     posts=posts.order_by(order).all()
     if posts:
       ind=posts.index(self)
@@ -402,12 +408,14 @@ class Post(Entity):
         return posts[ind-1]
     return None
     
-  def previousPost(self, order, required=None):
+  def previousPost(self, order, required=None, textFilter=''):
     '''Returns previous post in this feed or None'''
     # FIXME: think about filtering issues
     posts=Post.query.filter(Post.feed==self.feed)
     if required:
       posts=posts.filter(sql.or_(Post.id==self.id, required==True))
+    if textFilter:
+      post=posts.filter(sql.or_(Post.id==self.id,Post.title.like('%%%s%%'%textFilter), Post.content.like('%%%s%%'%textFilter)))
     posts=posts.order_by(order).all()
     if posts:
       ind=posts.index(self)
