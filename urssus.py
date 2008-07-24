@@ -94,7 +94,8 @@ class Feed(Entity):
   defaultArchive = Field(Boolean, default=True)
   limitCount     = Field(Integer, default=1000)
   limitTime      = Field(Integer, default=60)
-  icon           = Field(Binary)
+  icon           = Field(Binary, deferred=True)
+  curUnread      = -1
 
   def __repr__(self):
     c=self.unreadCount()
@@ -215,11 +216,12 @@ class Feed(Entity):
     return root_feed.nextUnreadFeed()
 
   def unreadCount(self):
-    #FIXME: slooooooooow.
     if self.children:
-      return sum([ f.unreadCount() for f in self.children])
+      self.curUnread=sum([ f.unreadCount() for f in self.children])
     else:
-      return Post.query.filter(Post.feed==self).filter(Post.unread==True).count()
+      if self.curUnread==-1:
+        self.curUnread=Post.query.filter(Post.feed==self).filter(Post.unread==True).count()
+    return self.curUnread
       
   def updateFeedData(self):
     print "Updating data for feed: ", unicode(self)
@@ -539,6 +541,7 @@ class MainWindow(QtGui.QMainWindow):
     if post.unread:
       info ("Marking as read post: %s", curPost)
       curPost.unread=False
+      curPost.feed.curUnread-=1 
       session.flush()
       self.updatePostItem(curPost)
 
@@ -551,6 +554,7 @@ class MainWindow(QtGui.QMainWindow):
     if not post.unread:
       info ("Marking as unread post: %s", curPost)
       curPost.unread=True
+      curPost.feed.curUnread+=1
       session.flush()
       self.updatePostItem(curPost)
 
@@ -902,8 +906,10 @@ class MainWindow(QtGui.QMainWindow):
     if item: post=item.post
     else: post=self.ui.posts.model().itemFromIndex(index).post
     self.currentPost=post
-    post.unread=False
-    session.flush()
+    if post.unread:
+      post.unread=False
+      post.feed.curUnread-=1
+      session.flush()
     self.updateFeedItem(post.feed, parents=True)
     self.updatePostItem(post)
     if post.feed.loadFull and post.link:
@@ -928,8 +934,10 @@ class MainWindow(QtGui.QMainWindow):
     item=self.model.itemFromIndex(self.ui.feeds.currentIndex())
     if item and item.feed:
       for post in item.feed.posts:
-        post.unread=False
-        self.updatePostItem(post)
+        if post.unread:
+          post.unread=False
+          post.feed.curUnread-=1
+          self.updatePostItem(post)
       session.flush()
       self.updateFeedItem(item.feed, parents=True)
 
