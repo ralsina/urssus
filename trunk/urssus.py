@@ -734,6 +734,7 @@ class MainWindow(QtGui.QMainWindow):
     AboutDialog().exec_()
     
   def updateFeedStatus(self):
+    # FIXME: use updateFeedItem!
     while not feedStatusQueue.empty():
       [action, id] = feedStatusQueue.get()
       if not id in self.feedItems:
