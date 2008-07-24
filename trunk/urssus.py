@@ -362,44 +362,53 @@ class Post(Entity):
   author      = Field(Text)
   link        = Field(Text)
 
-  def nextUnreadPost(self, order):
+  def nextUnreadPost(self, order, required=None):
     '''Returns next unread post in this feed or None'''
     # FIXME: think about filtering issues
-    posts=Post.query.filter(Post.feed==self.feed).filter(sql.or_(Post.unread==True, Post.id==self.id)).\
-          order_by(order).all()
+    posts=Post.query.filter(Post.feed==self.feed).filter(sql.or_(Post.unread==True, Post.id==self.id))
+    if required:
+      posts=posts.filter(sql.or_(Post.id==self.id, required==True))
+    posts=posts.order_by(order).all()    
     if posts:
       ind=posts.index(self)
       if ind+1<len(posts):
         return posts[ind+1]
     return None
 
-  def nextPost(self, order):
+  def nextPost(self, order, required=None):
     '''Returns next post in this feed or None'''
     # FIXME: think about filtering issues
-    posts=Post.query.filter(Post.feed==self.feed).\
-          order_by(order).all()
+    posts=Post.query.filter(Post.feed==self.feed)
+    if required:
+      posts=posts.filter(sql.or_(Post.id==self.id, required==True))
+    posts=posts.order_by(order).all()
     if posts:
       ind=posts.index(self)
       if ind+1<len(posts):
         return posts[ind+1]
     return None
 
-  def previousUnreadPost(self, order):
+  def previousUnreadPost(self, order, required=None):
     '''Returns previous post in this feed or None'''
     # FIXME: think about filtering issues
     posts=Post.query.filter(Post.feed==self.feed).\
-          filter(sql.or_(Post.unread==True, Post.id==self.id)).\
-          order_by(order).all()
+          filter(sql.or_(Post.unread==True, Post.id==self.id))
+    if required:
+      posts=posts.filter(sql.or_(Post.id==self.id, required==True))
+    posts=posts.order_by(order).all()
     if posts:
       ind=posts.index(self)
       if ind>0:
         return posts[ind-1]
     return None
     
-  def previousPost(self, order):
+  def previousPost(self, order, required=None):
     '''Returns previous post in this feed or None'''
     # FIXME: think about filtering issues
-    posts=Post.query.filter(Post.feed==self.feed).order_by(order).all()
+    posts=Post.query.filter(Post.feed==self.feed)
+    if required:
+      posts=posts.filter(sql.or_(Post.id==self.id, required==True))
+    posts=posts.order_by(order).all()
     if posts:
       ind=posts.index(self)
       if ind>0:
@@ -1000,7 +1009,6 @@ class MainWindow(QtGui.QMainWindow):
         self.posts=self.posts.filter(self.statusFilter==True)
       self.posts=self.posts.order_by(sk)
       self.posts=self.posts.all()
-      print self.posts
     else: # A folder
       self.posts=feed.allPosts()
     
@@ -1188,7 +1196,7 @@ class MainWindow(QtGui.QMainWindow):
     if post.unread: # Quirk, should redo the flow
       nextPost=post
     else:
-      nextPost=post.nextUnreadPost(self.ui.posts.model().sortOrder())
+      nextPost=post.nextUnreadPost(self.ui.posts.model().sortOrder(), self.statusFilter)
     if nextPost:
       nextIndex=self.ui.posts.model().indexFromItem(self.postItems[nextPost.id])
       self.ui.posts.setCurrentIndex(nextIndex)
@@ -1201,7 +1209,7 @@ class MainWindow(QtGui.QMainWindow):
     if i==None: return
     info ("Next Article")
     if self.currentPost:
-      nextPost=self.currentPost.nextPost(self.ui.posts.model().sortOrder())
+      nextPost=self.currentPost.nextPost(self.ui.posts.model().sortOrder(), self.statusFilter)
     elif len(self.posts):
       nextPost=self.posts[0]
     else: # No posts in this feed, just go the next unread feed
@@ -1220,11 +1228,11 @@ class MainWindow(QtGui.QMainWindow):
     info("Previous Unread Article")
     if self.currentPost:
       post=self.currentPost
-      previousPost=post.previousUnreadPost(self.ui.posts.model().sortOrder())
+      previousPost=post.previousUnreadPost(self.ui.posts.model().sortOrder(), self.statusFilter)
     elif self.posts: # Not on a specific post, go to the last unread article
       previousPost=self.posts[-1]
       if not previousPost.unread:
-        previousPost=previousPost.previousUnreadPost(self.ui.posts.model().sortOrder())
+        previousPost=previousPost.previousUnreadPost(self.ui.posts.model().sortOrder(), self.statusFilter)
     else:
       previousPost=None
     if previousPost:
@@ -1240,7 +1248,7 @@ class MainWindow(QtGui.QMainWindow):
     info ("Previous Article")
     if self.currentPost:
       post=self.currentPost
-      previousPost=post.previousPost(self.ui.posts.model().sortOrder())
+      previousPost=post.previousPost(self.ui.posts.model().sortOrder(), self.statusFilter)
     elif self.posts: # Not on a specific post, go to the last article
       previousPost=posts[-1]
     else:
