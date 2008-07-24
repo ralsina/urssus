@@ -464,6 +464,7 @@ class FeedProperties(QtGui.QDialog):
     # Set up the UI from designer
     self.ui=UI_FeedPropertiesDialog()
     self.ui.setupUi(self)
+    self.ui.tabWidget.setCurrentIndex(0)
     self.feed=feed
     self.loadData()
   
