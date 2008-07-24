@@ -1016,6 +1016,13 @@ class MainWindow(QtGui.QMainWindow):
     else:
       self.ui.view.setHtml(tmplLookup.get_template('post.tmpl').render_unicode(post=post))
 
+  def on_actionExport_Feeds_triggered(self, i=None):
+    if i==None: return
+    fname = unicode(QtGui.QFileDialog.getSaveFileName(self, "Save as", os.getcwd(), 
+                                              "OPML files (*.opml *.xml)"))
+    if fname:
+      exportOPML(fname)
+
   def on_actionImport_Feeds_triggered(self, i=None):
     if i==None: return
     fname = unicode(QtGui.QFileDialog.getOpenFileName(self, "Open OPML file", os.getcwd(), 
@@ -1239,6 +1246,31 @@ class PostDelegate(QtGui.QItemDelegate):
   def __init__(self, parent=None):
     info("Creating PostDelegate")
     QtGui.QItemDelegate.__init__(self, parent)
+  
+def exportOPML(fname):
+  from OPML import Outline, OPML
+  from cgi import escape
+  def exportSubTree(parent, node):
+    if not node.children:
+      return
+    for feed in node.children:
+      co=Outline()
+      co['text']=feed.text or ''
+      if feed.xmlUrl:
+        co['type']='rss'
+        co['xmlUrl']=escape(feed.xmlUrl) or ''
+        co['htmlUrl']=escape(feed.htmlUrl) or ''
+        co['title']=escape(feed.title) or ''
+        co['description']=escape(feed.description) or ''
+      parent.add_child(co)
+      
+  opml=OPML()
+  root=Outline()
+  for feed in root_feed.children:
+    exportSubTree(root, feed)
+  opml.outlines=root._children
+  opml.output(open(fname, 'w'))
+    
   
 def importOPML(fname):
   def importSubTree(parent, node):
