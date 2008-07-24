@@ -1,5 +1,7 @@
 <RCC>
   <qresource prefix="/" >
+    <file>mail_generic.svg</file>
+    <file>gear.svg</file>
     <file>flag.svg</file>
     <file>edit.svg</file>
     <file>folder_new.svg</file>
