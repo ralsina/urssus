@@ -507,6 +507,11 @@ class FeedProperties(QtGui.QDialog):
     feed.xmlUrl=unicode(self.ui.url.text())
     feed.notify=self.ui.notify.isChecked()
     
+    if self.ui.customUpdate.isChecked():
+      multiplier=[1, 60, 1440, 0][self.ui.updateUnit.currentIndex()]
+      feed.updateInterval=self.ui.updatePeriod.value()*multiplier
+
+    session.flush()
     QtGui.QDialog.accept(self)
  
 class MainWindow(QtGui.QMainWindow):
