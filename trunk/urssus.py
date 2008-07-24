@@ -243,7 +243,6 @@ class Feed(Entity):
     return self.curUnread
       
   def updateFeedData(self):
-    print "Updating data for feed: ", unicode(self)
     # assumes this feed has a xmlUrl, fetches any missing data from it
     if not self.xmlUrl: # Nowhere to fetch data from
       return
@@ -363,24 +362,26 @@ class Post(Entity):
   author      = Field(Text)
   link        = Field(Text)
 
-  def nextUnreadPost(self):
+  def nextUnreadPost(self, order):
     '''Returns next unread post in this feed or None'''
-    # FIXME: think about sorting/filtering issues
-    post=Post.query.filter(Post.feed==self.feed).filter(Post.unread==True).\
-          filter(Post.date <= self.date).filter(Post.id<>self.id).\
-          order_by(sql.desc(Post.date)).first()
-    if post:
-      return post
+    # FIXME: think about filtering issues
+    posts=Post.query.filter(Post.feed==self.feed).filter(sql.or_(Post.unread==True, Post.id==self.id)).\
+          order_by(order).all()
+    if posts:
+      ind=posts.index(self)
+      if ind+1<len(posts):
+        return posts[ind+1]
     return None
 
-  def nextPost(self):
+  def nextPost(self, order):
     '''Returns next post in this feed or None'''
-    # FIXME: think about sorting/filtering issues
-    post=Post.query.filter(Post.feed==self.feed).\
-          filter(Post.date <= self.date).filter(Post.id<>self.id).\
-          order_by(sql.desc(Post.date)).first()
-    if post:
-      return post
+    # FIXME: think about filtering issues
+    posts=Post.query.filter(Post.feed==self.feed).\
+          order_by(order).all()
+    if posts:
+      ind=posts.index(self)
+      if ind+1<len(posts):
+        return posts[ind+1]
     return None
 
   def previousUnreadPost(self):
@@ -433,16 +434,19 @@ class PostModel(QtGui.QStandardItemModel):
     self.setColumnCount(2)
     self.setHeaderData(0, QtCore.Qt.Horizontal, QtCore.QVariant("Title"))
     self.setHeaderData(1, QtCore.Qt.Horizontal, QtCore.QVariant("Date"))
-    self.sortingColumn=1 # date
-    self.order=1 # Descending
+    self.sort(1, QtCore.Qt.DescendingOrder) # Date, descending
+
+  def sortOrder(self):
+    order=["title", "date"][self.sortingColumn]
+    if self.order==QtCore.Qt.DescendingOrder:
+      order=sql.desc(order)
+    info("ORDER: %s", order)
+    return order
 
   def sort(self, column, order):
     info ("Changing post model sort order to %d %d", column, order)
     self.sortingColumn=column
-    if order==QtCore.Qt.AscendingOrder:
-      self.order=1
-    else:
-      self.order=0
+    self.order=order
     self.emit(QtCore.SIGNAL("resorted()"))
 
   def data(self, index, role):
@@ -545,10 +549,12 @@ class MainWindow(QtGui.QMainWindow):
     QtGui.QMainWindow.__init__(self)
 
     # Internal indexes
+    self.feedItems={}
+    self.postItems={}
     self.posts=[]
     self.currentFeed=None
     self.currentPost=None
-
+    
     # Set up the UI from designer
     self.ui=Ui_MainWindow()
     self.ui.setupUi(self)
@@ -556,7 +562,12 @@ class MainWindow(QtGui.QMainWindow):
     # Use custom delegate to paint feed and post items
     self.ui.feeds.setItemDelegate(FeedDelegate(self))
     self.ui.posts.setItemDelegate(PostDelegate(self))
-    
+
+    # Fill with feed data
+    self.showOnlyUnread=False
+    self.initTree()
+
+
     # Article filter fields
     self.filterWidget=FilterWidget()
     self.ui.filterBar.addWidget(self.filterWidget)
@@ -575,10 +586,9 @@ class MainWindow(QtGui.QMainWindow):
     page.setLinkDelegationPolicy(page.DelegateAllLinks)
     self.ui.view.setFocus(QtCore.Qt.TabFocusReason)
 
-    # Fill with feed data
-    # TODO: make configurable
-    self.showOnlyUnread=False
-    self.initTree()
+    # Set sorting for post list
+    self.ui.posts.sortByColumn(1, QtCore.Qt.DescendingOrder)
+
 
     # Timer to trigger status bar updates
     self.statusTimer=QtCore.QTimer()
@@ -595,6 +605,7 @@ class MainWindow(QtGui.QMainWindow):
 
     # Load user preferences
     self.loadPreferences()
+
 
     # Tray icon
     self.tray=TrayIcon()
@@ -772,7 +783,7 @@ class MainWindow(QtGui.QMainWindow):
       session.flush()
       self.initTree()
       self.ui.feeds.setCurrentIndex(self.ui.feeds.model().indexFromItem(self.feedItems[newFeed.id]))
-      # FIXME: open feed options dialog
+      self.on_actionEdit_Feed_triggered(True)
 
   def on_actionNew_Folder_triggered(self, i=None):
     if i==None: return
@@ -960,9 +971,7 @@ class MainWindow(QtGui.QMainWindow):
       self.setWindowTitle("uRSSus")
       
     # Sorting according to the model
-    sk=["title","date"][self.ui.posts.model().sortingColumn]
-    if self.ui.posts.model().order==1:
-      sk=sql.desc(sk)
+    sk=self.ui.posts.model().sortOrder()
       
     if feed.xmlUrl: # A regular feed
       if not filter:
@@ -1156,7 +1165,7 @@ class MainWindow(QtGui.QMainWindow):
     if post.unread: # Quirk, should redo the flow
       nextPost=post
     else:
-      nextPost=post.nextUnreadPost()
+      nextPost=post.nextUnreadPost(self.ui.posts.model().sortOrder())
     if nextPost:
       nextIndex=self.ui.posts.model().indexFromItem(self.postItems[nextPost.id])
       self.ui.posts.setCurrentIndex(nextIndex)
@@ -1169,7 +1178,7 @@ class MainWindow(QtGui.QMainWindow):
     if i==None: return
     info ("Next Article")
     if self.currentPost:
-      nextPost=self.currentPost.nextPost()
+      nextPost=self.currentPost.nextPost(self.ui.posts.model().sortOrder())
     elif len(self.posts):
       nextPost=self.posts[0]
     else: # No posts in this feed, just go the next unread feed
