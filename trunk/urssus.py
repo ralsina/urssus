@@ -223,7 +223,7 @@ class Feed(Entity):
       self.curUnread=sum([ f.unreadCount() for f in self.children])
     else:
       if self.curUnread==-1:
-        print "Forcing recount in ", self.title
+        info ("Forcing recount in %s", self.title)
         self.curUnread=Post.query.filter(Post.feed==self).filter(Post.unread==True).count()
     return self.curUnread
       
@@ -469,7 +469,7 @@ class FeedProperties(QtGui.QDialog):
   
   def loadData(self):
     feed=self.feed
-    self.ui.name.setText(feed.title)
+    self.ui.name.setText(feed.text)
     self.ui.url.setText(feed.xmlUrl)
     self.ui.notify.setChecked(feed.notify)
     if feed.updateInterval==-1: # Use default
@@ -493,10 +493,14 @@ class FeedProperties(QtGui.QDialog):
   
     self.ui.loadFull.setChecked(feed.loadFull)
     self.ui.markRead.setChecked(feed.markRead)
-      
     
-  def accept():
-    print "Accepted"
+  def accept(self):
+    feed=self.feed
+    feed.text=unicode(self.ui.name.text())
+    # FIXME: validate
+    feed.xmlUrl=unicode(self.ui.url.text())
+    
+    QtGui.QDialog.accept(self)
  
 class MainWindow(QtGui.QMainWindow):
   def __init__(self):
