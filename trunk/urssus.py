@@ -1263,7 +1263,12 @@ def feedUpdater(full=False):
       time.sleep(60)
       now=datetime.now()
       for feed in Feed.query.filter(Feed.xmlUrl<>None):
-        if (now-feed.lastUpdated).seconds>1800:
+        period=1800 # FIXME: make this configurable
+        if feed.updateInterval==0: # Update never
+          continue
+        elif feed.updateInterval<>-1: # not update default
+          period=60*feed.updateInterval # convert to seconds
+        if (now-feed.lastUpdated).seconds>period:
           info("updating because of timeout")
           feedStatusQueue.put([0, feed.id])
           try: # we can't let this fail or it will stay yellow forever;-)
