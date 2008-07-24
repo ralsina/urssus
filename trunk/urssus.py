@@ -574,11 +574,6 @@ class MainWindow(QtGui.QMainWindow):
     self.ui.feeds.setItemDelegate(FeedDelegate(self))
     self.ui.posts.setItemDelegate(PostDelegate(self))
 
-    # Fill with feed data
-    self.showOnlyUnread=False
-    self.initTree()
-
-
     # Article filter fields
     self.filterWidget=FilterWidget()
     self.ui.filterBar.addWidget(self.filterWidget)
@@ -586,8 +581,8 @@ class MainWindow(QtGui.QMainWindow):
     QtCore.QObject.connect(self.filterWidget.ui.clear, QtCore.SIGNAL("clicked()"), self.unFilterPosts)
     QtCore.QObject.connect(self.filterWidget.ui.statusCombo, QtCore.SIGNAL("currentIndexChanged(int)"), self.filterPostsByStatus)
     self.statusFilter=None
-    
-    
+    self.textFilter=''
+        
     # Search widget
     self.searchWidget=SearchWidget()
     self.searchWidget.hide()
@@ -603,6 +598,10 @@ class MainWindow(QtGui.QMainWindow):
     # Set sorting for post list
     self.ui.posts.sortByColumn(1, QtCore.Qt.DescendingOrder)
 
+
+    # Fill with feed data
+    self.showOnlyUnread=False
+    self.initTree()
 
     # Timer to trigger status bar updates
     self.statusTimer=QtCore.QTimer()
@@ -867,10 +866,14 @@ class MainWindow(QtGui.QMainWindow):
     self.open_feed(self.ui.feeds.currentIndex())
       
   def unFilterPosts(self):
+    self.textFilter=''
+    info("Text filter removed")
     self.open_feed(self.ui.feeds.currentIndex())
 
   def filterPosts(self):
-    self.open_feed(self.ui.feeds.currentIndex(), filter=self.filterWidget.ui.filter.text())
+    self.textFilter=unicode(self.filterWidget.ui.filter.text())
+    info("Text filter set to: %s", self.textFilter)
+    self.open_feed(self.ui.feeds.currentIndex())
     
   def on_view_linkClicked(self, url):
     QtGui.QDesktopServices.openUrl(url)
@@ -959,10 +962,10 @@ class MainWindow(QtGui.QMainWindow):
   def on_view_loadProgress(self, p):
     self.statusBar().showMessage("Page loaded %d%%"%p)
 
-  def on_feeds_clicked(self, index, filter=None):
+  def on_feeds_clicked(self, index):
     item=self.model.itemFromIndex(index)
     if not item: return
-    self.open_feed(index, filter)
+    self.open_feed(index)
     self.ui.view.setHtml(tmplLookup.get_template('feed.tmpl').render_unicode(feed=item.feed))
 
   def resortPosts(self):
@@ -977,7 +980,7 @@ class MainWindow(QtGui.QMainWindow):
       self.ui.posts.setCurrentIndex(self.ui.posts.model().indexFromItem(self.postItems[cpid]))
       self.currentPost=Post.get_by(id=cpid)
 
-  def open_feed(self, index, filter=None):
+  def open_feed(self, index):
     item=self.model.itemFromIndex(index)
     if not item: return
     self.ui.feeds.setCurrentIndex(index)
@@ -1001,10 +1004,12 @@ class MainWindow(QtGui.QMainWindow):
     # Sorting according to the model
     sk=self.ui.posts.model().sortOrder()
       
+      
     if feed.xmlUrl: # A regular feed
       self.posts=Post.query.filter(Post.feed==feed)
-      if filter:
-        self.posts=self.posts.filter(sql.or_(Post.title.like('%%%s%%'%filter), Post.content.like('%%%s%%'%filter)))
+      # Filter by text according to the contents of self.textFilter
+      if self.textFilter:
+        self.posts=self.posts.filter(sql.or_(Post.title.like('%%%s%%'%self.textFilter), Post.content.like('%%%s%%'%self.textFilter)))
       if self.statusFilter:
         self.posts=self.posts.filter(self.statusFilter==True)
       self.posts=self.posts.order_by(sk)
