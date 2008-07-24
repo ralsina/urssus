@@ -384,24 +384,26 @@ class Post(Entity):
         return posts[ind+1]
     return None
 
-  def previousUnreadPost(self):
+  def previousUnreadPost(self, order):
     '''Returns previous post in this feed or None'''
-    # FIXME: think about sorting/filtering issues
-    post=Post.query.filter(Post.feed==self.feed).filter(Post.unread==True).\
-          filter(Post.date >= self.date).filter(Post.id<>self.id).\
-          order_by(Post.date).first()
-    if post:
-      return post
+    # FIXME: think about filtering issues
+    posts=Post.query.filter(Post.feed==self.feed).\
+          filter(sql.or_(Post.unread==True, Post.id==self.id)).\
+          order_by(order).all()
+    if posts:
+      ind=posts.index(self)
+      if ind>0:
+        return posts[ind-1]
     return None
     
-  def previousPost(self):
+  def previousPost(self, order):
     '''Returns previous post in this feed or None'''
-    # FIXME: think about sorting/filtering issues
-    post=Post.query.filter(Post.feed==self.feed).\
-          filter(Post.date >= self.date).filter(Post.id<>self.id).\
-          order_by(Post.date).first()
-    if post:
-      return post
+    # FIXME: think about filtering issues
+    posts=Post.query.filter(Post.feed==self.feed).order_by(order).all()
+    if posts:
+      ind=posts.index(self)
+      if ind>0:
+        return posts[ind-1]
     return None
 
 
@@ -1197,11 +1199,11 @@ class MainWindow(QtGui.QMainWindow):
     info("Previous Unread Article")
     if self.currentPost:
       post=self.currentPost
-      previousPost=post.previousUnreadPost()
+      previousPost=post.previousUnreadPost(self.ui.posts.model().sortOrder())
     elif self.posts: # Not on a specific post, go to the last unread article
       previousPost=self.posts[-1]
       if not previousPost.unread:
-        previousPost=previousPost.previousUnreadPost()
+        previousPost=previousPost.previousUnreadPost(self.ui.posts.model().sortOrder())
     else:
       previousPost=None
     if previousPost:
@@ -1217,7 +1219,7 @@ class MainWindow(QtGui.QMainWindow):
     info ("Previous Article")
     if self.currentPost:
       post=self.currentPost
-      previousPost=post.previousPost()
+      previousPost=post.previousPost(self.ui.posts.model().sortOrder())
     elif self.posts: # Not on a specific post, go to the last article
       previousPost=posts[-1]
     else:
