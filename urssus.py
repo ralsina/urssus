@@ -568,6 +568,12 @@ class MainWindow(QtGui.QMainWindow):
     # Tray icon
     self.tray=TrayIcon()
     self.tray.show()
+    self.notifiedFeed=None
+    QtCore.QObject.connect(self.tray, QtCore.SIGNAL("messageClicked()"), self.notificationClicked)
+
+  def notificationClicked(self):
+    if self.notifiedFeed:
+      self.open_feed(self.ui.feeds.model().indexFromItem(self.feedItems[self.notifiedFeed.id]))
 
   def loadPreferences(self):
     
@@ -817,6 +823,7 @@ class MainWindow(QtGui.QMainWindow):
       elif action==2: # Just update it
         self.updateFeedItem(feed, data[2])
       elif action==3: # Systray notification
+        self.notifiedFeed=feed
         self.tray.showMessage("New Articles", "%d new articles in %s"%(data[2], feed.text) )
       if self.updatesCounter>0:
         self.ui.actionAbort_Fetches.setEnabled(True)
