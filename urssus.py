@@ -86,15 +86,18 @@ class Feed(Entity):
   posts          = OneToMany('Post')
   lastUpdated    = Field(DateTime, default=datetime(1970,1,1))
   loadFull       = Field(Boolean, default=False)
+  # meaning of archiveType:
   # 0 = use default, 1 = keepall, 2 = use limitCount
-  # 3 = use limitDate, 4 = no archiving
+  # 3 = use limitDays, 4 = no archiving
   archiveType    = Field(Integer, default=0) 
+  limitCount     = Field(Integer, default=1000)
+  limitDays      = Field(Integer, default=60)
+
   notify         = Field(Boolean, default=False)
   markRead       = Field(Boolean, default=False)
-  defaultArchive = Field(Boolean, default=True)
-  limitCount     = Field(Integer, default=1000)
-  limitTime      = Field(Integer, default=60)
   icon           = Field(Binary, deferred=True)
+  # updateInterval -1 means use the app default, any other value, it's in minutes
+  updateInterval = Field(Integer, default=-1)
   curUnread      = -1
 
   def __repr__(self):
@@ -249,7 +252,7 @@ class Feed(Entity):
     
   def update(self):
     if not self.xmlUrl: # Not a real feed
-      # FIXME: should update all children
+      # FIXME: should update all children?
       return
     if self.title:
       statusQueue.put(u"Updating: "+ self.title)
@@ -454,6 +457,39 @@ class FeedProperties(QtGui.QDialog):
     # Set up the UI from designer
     self.ui=UI_FeedPropertiesDialog()
     self.ui.setupUi(self)
+    self.feed=feed
+    self.loadData()
+  
+  def loadData(self):
+    feed=self.feed
+    self.ui.name.setText(feed.title)
+    self.ui.url.setText(feed.xmlUrl)
+    self.ui.notify.setChecked(feed.notify)
+    if feed.updateInterval==-1: # Use default
+      self.ui.updatePeriod.setEnabled(False)
+      self.ui.updateUnit.setEnabled(False)
+      self.ui.customUpdate.setChecked(False)
+    else:
+      pass # Implement
+    if feed.archiveType==0: # Use default archiving
+      self.ui.useDefault.setChecked(True)
+    elif feed.archiveType==1: # Keep all articles
+      self.ui.keepAll.setChecked(True)
+    elif feed.archiveType==2: # Keep a number of articles
+      self.ui.limitCount.setChecked(True)
+      self.ui.count.setValue(feed.limitCount)
+    elif feed.archiveType==3: # Keep for a period of time
+      self.ui.limitDays.setChecked(True)
+      self.ui.days.setValue(feed.limitDays)
+    elif feed.archiveType==4: # Keep nothing
+      self.ui.noArchive.setChecked(True)
+  
+    self.ui.loadFull.setChecked(feed.loadFull)
+    self.ui.markRead.setChecked(feed.markRead)
+      
+    
+  def accept():
+    print "Accepted"
  
 class MainWindow(QtGui.QMainWindow):
   def __init__(self):
