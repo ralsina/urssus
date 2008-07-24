@@ -60,27 +60,15 @@
       <property name="text" >
        <string>All Articles</string>
       </property>
-      <property name="icon" >
-       <iconset resource="images/icons.qrc" >
-        <normaloff>:/gear.svg</normaloff>:/gear.svg</iconset>
-      </property>
      </item>
      <item>
       <property name="text" >
        <string>Unread</string>
       </property>
-      <property name="icon" >
-       <iconset resource="images/icons.qrc" >
-        <normaloff>:/mail_generic.svg</normaloff>:/mail_generic.svg</iconset>
-      </property>
      </item>
      <item>
       <property name="text" >
        <string>Important</string>
-      </property>
-      <property name="icon" >
-       <iconset resource="images/icons.qrc" >
-        <normaloff>:/flag.svg</normaloff>:/flag.svg</iconset>
       </property>
      </item>
     </widget>

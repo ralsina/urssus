@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '/home/ralsina/Desktop/proyectos/urssus/filterwidget.ui'
 #
-# Created: Thu Jul 24 18:12:40 2008
+# Created: Thu Jul 24 18:23:54 2008
 #      by: PyQt4 UI code generator 4.4.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -34,12 +34,6 @@ class Ui_Form(object):
         self.horizontalLayout.addWidget(self.label_2)
         self.statusCombo = QtGui.QComboBox(Form)
         self.statusCombo.setObjectName("statusCombo")
-        icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap(":/gear.svg"),QtGui.QIcon.Normal,QtGui.QIcon.Off)
-        icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap(":/mail_generic.svg"),QtGui.QIcon.Normal,QtGui.QIcon.Off)
-        icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap(":/flag.svg"),QtGui.QIcon.Normal,QtGui.QIcon.Off)
         self.horizontalLayout.addWidget(self.statusCombo)
         self.label.setBuddy(self.filter)
         self.label_2.setBuddy(self.statusCombo)
@@ -52,9 +46,9 @@ class Ui_Form(object):
         self.label.setText(QtGui.QApplication.translate("Form", "Sear&ch:", None, QtGui.QApplication.UnicodeUTF8))
         self.clear.setText(QtGui.QApplication.translate("Form", "...", None, QtGui.QApplication.UnicodeUTF8))
         self.label_2.setText(QtGui.QApplication.translate("Form", "Status:", None, QtGui.QApplication.UnicodeUTF8))
-        self.statusCombo.addItem(icon,QtGui.QApplication.translate("Form", "All Articles", None, QtGui.QApplication.UnicodeUTF8))
-        self.statusCombo.addItem(icon,QtGui.QApplication.translate("Form", "Unread", None, QtGui.QApplication.UnicodeUTF8))
-        self.statusCombo.addItem(icon,QtGui.QApplication.translate("Form", "Important", None, QtGui.QApplication.UnicodeUTF8))
+        self.statusCombo.addItem(QtGui.QApplication.translate("Form", "All Articles", None, QtGui.QApplication.UnicodeUTF8))
+        self.statusCombo.addItem(QtGui.QApplication.translate("Form", "Unread", None, QtGui.QApplication.UnicodeUTF8))
+        self.statusCombo.addItem(QtGui.QApplication.translate("Form", "Important", None, QtGui.QApplication.UnicodeUTF8))
 
 import icons_rc
 
