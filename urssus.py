@@ -734,26 +734,21 @@ class MainWindow(QtGui.QMainWindow):
     AboutDialog().exec_()
     
   def updateFeedStatus(self):
-    # FIXME: use updateFeedItem!
     while not feedStatusQueue.empty():
       [action, id] = feedStatusQueue.get()
       if not id in self.feedItems:
         # This shouldn't happen, it means there is a 
         # feed that is not in the tree
         error( "id %s not in the tree", id)
-        debug( Feed.get_by(id=id) )
         sys.exit(1)
-      item=self.feedItems[id]
-
-      #FIXME: use the palette to find the correct colors
+      feed=Feed.get_by(id=id)
       if action==0: # Mark as updating
-        item.setForeground(QtGui.QBrush(QtGui.QColor("lightgrey")))
+        self.updateFeedItem(feed, updating=True)
         self.updatesCounter+=1
       if action==1: # Mark as finished updating
-        item.setForeground(QtGui.QBrush(QtGui.QColor("black")))
+        self.updateFeedItem(feed, updating=False)
         self.updatesCounter-=1
         
-      item.setText(unicode(item.feed))
       if self.updatesCounter>0:
         self.ui.actionAbort_Fetches.setEnabled(True)
       else:
@@ -869,7 +864,7 @@ class MainWindow(QtGui.QMainWindow):
       item.setForeground(QtGui.QColor("black"))
       item2.setForeground(QtGui.QColor("black"))
 
-  def updateFeedItem(self, feed, parents=False):
+  def updateFeedItem(self, feed, parents=False, updating=False):
     item=self.feedItems[feed.id]
     item.setText(unicode(feed))
     if self.showOnlyUnread:
@@ -880,6 +875,10 @@ class MainWindow(QtGui.QMainWindow):
         self.ui.feeds.setRowHidden(item.row(), self.model.indexFromItem(item.parent()), False)
     else:
       self.ui.feeds.setRowHidden(item.row(), self.model.indexFromItem(item.parent()), False)
+    if updating:
+      item.setForeground(QtGui.QColor("darkgrey"))
+    else:
+      item.setForeground(QtGui.QColor("black"))
     if parents: # Not by default because it's slow
       # Update all ancestors too, because unread counts and such change
       while feed.parent:
