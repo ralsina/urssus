@@ -223,6 +223,7 @@ class Feed(Entity):
       self.curUnread=sum([ f.unreadCount() for f in self.children])
     else:
       if self.curUnread==-1:
+        print "Forcing recount in ", self.title
         self.curUnread=Post.query.filter(Post.feed==self).filter(Post.unread==True).count()
     return self.curUnread
       
@@ -325,6 +326,12 @@ class Feed(Entity):
         debug( post )
     self.lastUpdated=datetime.now()
     session.flush()
+    # Force full recount of unread articles for this and all parents
+    f=self
+    while f.parent:
+      f.curUnread=-1
+      f.unreadCount()
+      f=f.parent
     
 class Post(Entity):
   feed        = ManyToOne('Feed')
@@ -790,7 +797,7 @@ class MainWindow(QtGui.QMainWindow):
         self.updateFeedItem(feed, updating=True)
         self.updatesCounter+=1
       elif action==1: # Mark as finished updating
-        self.updateFeedItem(feed, updating=False)
+        self.updateFeedItem(feed, updating=False, parents=True)
         self.updatesCounter-=1
       elif action==2: # Just update it
         self.updateFeedItem(feed, data[2])
@@ -1216,7 +1223,7 @@ def feedUpdater(full=False):
   if full:
       for feed in Feed.query.filter(Feed.xmlUrl<>None):
         feedStatusQueue.put([0, feed.id])
-        try: # we can't let this fail or it will stay yellow forever;-)
+        try: # we can't let this fail or it will stay marked forever;-)
           feed.update()
         except:
           pass
