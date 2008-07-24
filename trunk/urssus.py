@@ -107,6 +107,20 @@ class Feed(Entity):
       return self.text+'(%d)'%c
     return self.text
 
+  def expire(self):
+    '''Delete all posts that are too old'''
+    now=datetime.now()
+    if self.archiveType==0: # Default archive config
+      for post in self.posts:
+        if post.important: continue # Don't delete important stuff
+        # FIXME: makethis configurable
+        if (now-post.date).days>7: # Right now, keep for a week
+          post.delete()
+    # Force recount
+    session.flush()
+    self.curUnread=-1
+    self.unreadCount()
+
   def allPosts(self):
     '''This is used if you want all posts in this feed as well as in its childrens.
     Obviously meant to be used with folders, not regular feeds ;-)
@@ -682,8 +696,21 @@ class MainWindow(QtGui.QMainWindow):
       menu.addAction(self.ui.actionOpen_Homepage)
       menu.addSeparator()
       menu.addAction(self.ui.actionEdit_Feed)
+      menu.addAction(self.ui.actionExpire_Feed)
       menu.addAction(self.ui.actionDelete_Feed)
       menu.exec_(QtGui.QCursor.pos())
+
+  def on_actionExpire_Feed_triggered(self, i=None):
+    if i==None: return
+    index=self.ui.feeds.currentIndex()
+    if index.isValid():         
+      curFeed=self.ui.feeds.model().itemFromIndex(index).feed
+    info ("Expiring feed: %s", curFeed)
+    curFeed.expire()
+    # Queue update of feed display (number of unreads may have changed)
+    feedStatusQueue.put([2, curFeed.id, True])
+    # Reopen it because the post list probably changed
+    self.open_feed(index)
 
   def on_actionEdit_Feed_triggered(self, i=None):
     if i==None: return
