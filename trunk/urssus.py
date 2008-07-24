@@ -32,6 +32,7 @@ statusQueue=processing.Queue()
 # [1,id] means "finished updating"
 # [2,id,parents] means "refresh the text" (for example if you read an article, 
 #                         to update the unread count,parents updates all parents)
+# [3,id,count] means "notify on the systray icon that there are new articles here
 
 feedStatusQueue=processing.Queue()
 
@@ -321,7 +322,7 @@ class Feed(Entity):
           p=Post(feed=self, date=date, title=post['title'], 
                  post_id=post[idkey], content=content, 
                  author=author, link=link)
-        posts.append(p)
+          posts.append(p)
       except KeyError:
         debug( post )
     self.lastUpdated=datetime.now()
@@ -332,6 +333,10 @@ class Feed(Entity):
       f.curUnread=-1
       f.unreadCount()
       f=f.parent
+      
+    # Queue a notification if needed
+    if posts and self.notify:
+      feedStatusQueue.put([3, self.id, len(posts)])
     
 class Post(Entity):
   feed        = ManyToOne('Feed')
@@ -500,6 +505,7 @@ class FeedProperties(QtGui.QDialog):
     feed.text=unicode(self.ui.name.text())
     # FIXME: validate
     feed.xmlUrl=unicode(self.ui.url.text())
+    feed.notify=self.ui.notify.isChecked()
     
     QtGui.QDialog.accept(self)
  
@@ -558,6 +564,10 @@ class MainWindow(QtGui.QMainWindow):
 
     # Load user preferences
     self.loadPreferences()
+
+    # Tray icon
+    self.tray=TrayIcon()
+    self.tray.show()
 
   def loadPreferences(self):
     
@@ -806,6 +816,8 @@ class MainWindow(QtGui.QMainWindow):
         self.updatesCounter-=1
       elif action==2: # Just update it
         self.updateFeedItem(feed, data[2])
+      elif action==3: # Systray notification
+        self.tray.showMessage("New Articles", "%d new articles in %s"%(data[2], feed.text) )
       if self.updatesCounter>0:
         self.ui.actionAbort_Fetches.setEnabled(True)
       else:
@@ -1261,8 +1273,6 @@ if __name__ == "__main__":
       # Import a OPML file into the DB so we have some data to work with
       importOPML(sys.argv[1])
   app=QtGui.QApplication(sys.argv)
-  tray=TrayIcon()
-  tray.show()
   window=MainWindow()
   
   # This will start the background fetcher as a side effect
