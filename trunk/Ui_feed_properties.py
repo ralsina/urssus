@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '/home/ralsina/Desktop/proyectos/urssus/feed_properties.ui'
 #
-# Created: Wed Jul 23 22:14:10 2008
+# Created: Thu Jul 24 13:22:55 2008
 #      by: PyQt4 UI code generator 4.4.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -51,6 +51,8 @@ class Ui_Dialog(object):
         self.horizontalLayout.addWidget(self.label_3)
         self.updatePeriod = QtGui.QSpinBox(self.general)
         self.updatePeriod.setEnabled(False)
+        self.updatePeriod.setMinimum(1)
+        self.updatePeriod.setMaximum(500)
         self.updatePeriod.setObjectName("updatePeriod")
         self.horizontalLayout.addWidget(self.updatePeriod)
         self.updateUnit = QtGui.QComboBox(self.general)
@@ -121,11 +123,13 @@ class Ui_Dialog(object):
         self.label_3.setBuddy(self.updatePeriod)
 
         self.retranslateUi(Dialog)
-        self.tabWidget.setCurrentIndex(2)
+        self.tabWidget.setCurrentIndex(0)
         QtCore.QObject.connect(self.buttonBox,QtCore.SIGNAL("accepted()"),Dialog.accept)
         QtCore.QObject.connect(self.buttonBox,QtCore.SIGNAL("rejected()"),Dialog.reject)
         QtCore.QObject.connect(self.limitCount,QtCore.SIGNAL("toggled(bool)"),self.count.setEnabled)
         QtCore.QObject.connect(self.limitDays,QtCore.SIGNAL("toggled(bool)"),self.days.setEnabled)
+        QtCore.QObject.connect(self.customUpdate,QtCore.SIGNAL("toggled(bool)"),self.updatePeriod.setEnabled)
+        QtCore.QObject.connect(self.customUpdate,QtCore.SIGNAL("toggled(bool)"),self.updateUnit.setEnabled)
         QtCore.QMetaObject.connectSlotsByName(Dialog)
 
     def retranslateUi(self, Dialog):
@@ -135,6 +139,10 @@ class Ui_Dialog(object):
         self.notify.setText(QtGui.QApplication.translate("Dialog", "Notify when new articles arri&ve", None, QtGui.QApplication.UnicodeUTF8))
         self.customUpdate.setText(QtGui.QApplication.translate("Dialog", "U&se a custom update interval", None, QtGui.QApplication.UnicodeUTF8))
         self.label_3.setText(QtGui.QApplication.translate("Dialog", "Update &every", None, QtGui.QApplication.UnicodeUTF8))
+        self.updateUnit.addItem(QtGui.QApplication.translate("Dialog", "Minutes", None, QtGui.QApplication.UnicodeUTF8))
+        self.updateUnit.addItem(QtGui.QApplication.translate("Dialog", "Hours", None, QtGui.QApplication.UnicodeUTF8))
+        self.updateUnit.addItem(QtGui.QApplication.translate("Dialog", "Days", None, QtGui.QApplication.UnicodeUTF8))
+        self.updateUnit.addItem(QtGui.QApplication.translate("Dialog", "Never", None, QtGui.QApplication.UnicodeUTF8))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.general), QtGui.QApplication.translate("Dialog", "&General", None, QtGui.QApplication.UnicodeUTF8))
         self.useDefault.setText(QtGui.QApplication.translate("Dialog", "&Use default settings", None, QtGui.QApplication.UnicodeUTF8))
         self.keepAll.setText(QtGui.QApplication.translate("Dialog", "&Keep all articles", None, QtGui.QApplication.UnicodeUTF8))
