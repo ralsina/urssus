@@ -30,8 +30,8 @@ statusQueue=processing.Queue()
 # 
 # [0,id] means "mark this feed as updating"
 # [1,id] means "finished updating"
-# [2,id] means "refresh the text" (for example if you read an article, 
-#                                  to update the unread count)
+# [2,id,parents] means "refresh the text" (for example if you read an article, 
+#                         to update the unread count,parents updates all parents)
 
 feedStatusQueue=processing.Queue()
 
@@ -735,7 +735,8 @@ class MainWindow(QtGui.QMainWindow):
     
   def updateFeedStatus(self):
     while not feedStatusQueue.empty():
-      [action, id] = feedStatusQueue.get()
+      data=feedStatusQueue.get()
+      [action, id] = data[:2]
       if not id in self.feedItems:
         # This shouldn't happen, it means there is a 
         # feed that is not in the tree
@@ -745,10 +746,11 @@ class MainWindow(QtGui.QMainWindow):
       if action==0: # Mark as updating
         self.updateFeedItem(feed, updating=True)
         self.updatesCounter+=1
-      if action==1: # Mark as finished updating
+      elif action==1: # Mark as finished updating
         self.updateFeedItem(feed, updating=False)
         self.updatesCounter-=1
-        
+      elif action==2: # Just update it
+        self.updateFeedItem(feed, data[2])
       if self.updatesCounter>0:
         self.ui.actionAbort_Fetches.setEnabled(True)
       else:
@@ -780,7 +782,7 @@ class MainWindow(QtGui.QMainWindow):
       parent.appendRow(nn)
       nn.feed=node
       self.feedItems[node.id]=nn
-      self.updateFeedItem(node)
+      self.queueUpdateFeedItem(node)
       if node.xmlUrl:
         nn.setIcon(QtGui.QIcon(":/urssus.svg"))
       else:
@@ -864,9 +866,14 @@ class MainWindow(QtGui.QMainWindow):
       item.setForeground(QtGui.QColor("black"))
       item2.setForeground(QtGui.QColor("black"))
 
+  def queueUpdateFeedItem(self, feed, parents=False):
+    '''Queues a call to updateFeedItem to be done whenever the timer triggers'''
+    feedStatusQueue.put([2, feed.id, parents])
+
   def updateFeedItem(self, feed, parents=False, updating=False):
     item=self.feedItems[feed.id]
     item.setText(unicode(feed))
+    # The calls to setRowHidden cause a change in the column's width! Looks like a Qt bug to me.
     if self.showOnlyUnread:
       if feed.unreadCount()==0 and feed<>self.currentFeed: 
         # Hide feeds with no unread items
@@ -874,7 +881,8 @@ class MainWindow(QtGui.QMainWindow):
       else:
         self.ui.feeds.setRowHidden(item.row(), self.model.indexFromItem(item.parent()), False)
     else:
-      self.ui.feeds.setRowHidden(item.row(), self.model.indexFromItem(item.parent()), False)
+      if self.ui.feeds.isRowHidden(item.row(), self.model.indexFromItem(item.parent())):
+        self.ui.feeds.setRowHidden(item.row(), self.model.indexFromItem(item.parent()), False)
     if updating:
       item.setForeground(QtGui.QColor("darkgrey"))
     else:
@@ -891,7 +899,7 @@ class MainWindow(QtGui.QMainWindow):
     self.currentPost=post
     post.unread=False
     session.flush()
-    self.updateFeedItem(post.feed, parents=True)
+    self.queueUpdateFeedItem(post.feed, parents=True)
     self.updatePostItem(post)
     if post.feed.loadFull and post.link:
       self.ui.view.setUrl(QtCore.QUrl(post.link))
@@ -1196,6 +1204,6 @@ if __name__ == "__main__":
   window=MainWindow()
   
   # This will start the background fetcher as a side effect
-  window.on_actionAbort_Fetches_triggered(True)
+  # window.on_actionAbort_Fetches_triggered(True)
   window.show()
   sys.exit(app.exec_())
