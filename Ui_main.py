@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '/home/ralsina/Desktop/proyectos/urssus/main.ui'
 #
-# Created: Thu Jul 24 13:37:43 2008
+# Created: Thu Jul 24 15:14:41 2008
 #      by: PyQt4 UI code generator 4.4.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -55,6 +55,8 @@ class Ui_MainWindow(object):
         self.posts.setRootIsDecorated(False)
         self.posts.setUniformRowHeights(True)
         self.posts.setItemsExpandable(False)
+        self.posts.setSortingEnabled(True)
+        self.posts.setAnimated(True)
         self.posts.setAllColumnsShowFocus(True)
         self.posts.setExpandsOnDoubleClick(False)
         self.posts.setObjectName("posts")

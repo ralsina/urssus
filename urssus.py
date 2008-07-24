@@ -351,7 +351,7 @@ class Feed(Entity):
     # Queue a notification if needed
     if posts and self.notify:
       feedStatusQueue.put([3, self.id, len(posts)])
-    
+
 class Post(Entity):
   feed        = ManyToOne('Feed')
   title       = Field(Text)
@@ -433,6 +433,17 @@ class PostModel(QtGui.QStandardItemModel):
     self.setColumnCount(2)
     self.setHeaderData(0, QtCore.Qt.Horizontal, QtCore.QVariant("Title"))
     self.setHeaderData(1, QtCore.Qt.Horizontal, QtCore.QVariant("Date"))
+    self.sortingColumn=1 # date
+    self.order=1 # Descending
+
+  def sort(self, column, order):
+    info ("Changing post model sort order to %d %d", column, order)
+    self.sortingColumn=column
+    if order==QtCore.Qt.AscendingOrder:
+      self.order=1
+    else:
+      self.order=0
+    self.emit(QtCore.SIGNAL("resorted()"))
 
   def data(self, index, role):
     if not index.isValid():
@@ -452,6 +463,7 @@ class PostModel(QtGui.QStandardItemModel):
     else:
       return QtCore.QVariant()
     return v
+    
 class FilterWidget(QtGui.QWidget):
   def __init__(self):
     QtGui.QWidget.__init__(self)
@@ -914,6 +926,18 @@ class MainWindow(QtGui.QMainWindow):
     self.open_feed(index, filter)
     self.ui.view.setHtml(tmplLookup.get_template('feed.tmpl').render_unicode(feed=item.feed))
 
+  def resortPosts(self):
+    info ("Resorting posts")
+    if self.currentPost:
+      cpid=self.currentPost.id
+      info ("cpid=%d", cpid)
+    else:
+      cpid=-1
+    self.open_feed(self.ui.feeds.currentIndex())
+    if cpid in self.postItems:
+      self.ui.posts.setCurrentIndex(self.ui.posts.model().indexFromItem(self.postItems[cpid]))
+      self.currentPost=Post.get_by(id=cpid)
+
   def open_feed(self, index, filter=None):
     item=self.model.itemFromIndex(index)
     if not item: return
@@ -923,6 +947,9 @@ class MainWindow(QtGui.QMainWindow):
     self.postItems={}
     self.posts=[]
     self.currentPost=None
+    self.ui.posts.__model=PostModel()
+    self.ui.posts.setModel(self.ui.posts.__model)
+    QtCore.QObject.connect(self.ui.posts.__model, QtCore.SIGNAL("resorted()"), self.resortPosts)
 
     # Update window title
     if feed.title:
@@ -932,16 +959,19 @@ class MainWindow(QtGui.QMainWindow):
     else:
       self.setWindowTitle("uRSSus")
       
+    # Sorting according to the model
+    sk=["title","date"][self.ui.posts.model().sortingColumn]
+    if self.ui.posts.model().order==1:
+      sk=sql.desc(sk)
+      
     if feed.xmlUrl: # A regular feed
       if not filter:
-        self.posts=Post.query.filter(Post.feed==feed).order_by(sql.desc("date")).all()
+        self.posts=Post.query.filter(Post.feed==feed).order_by(sk).all()
       else:
-        self.posts=Post.query.filter(Post.feed==feed).filter(sql.or_(Post.title.like('%%%s%%'%filter), Post.content.like('%%%s%%'%filter))).order_by(sql.desc("date")).all()
+        self.posts=Post.query.filter(Post.feed==feed).filter(sql.or_(Post.title.like('%%%s%%'%filter), Post.content.like('%%%s%%'%filter))).order_by(sk).all()
     else: # A folder
       self.posts=feed.allPosts()
     
-    self.ui.posts.__model=PostModel()
-    self.ui.posts.setModel(self.ui.posts.__model)
     # Fixes for post list UI
     header=self.ui.posts.header()
     header.setStretchLastSection(False)
