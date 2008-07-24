@@ -575,6 +575,9 @@ class MainWindow(QtGui.QMainWindow):
     self.ui.filterBar.addWidget(self.filterWidget)
     QtCore.QObject.connect(self.filterWidget.ui.filter, QtCore.SIGNAL("returnPressed()"), self.filterPosts)
     QtCore.QObject.connect(self.filterWidget.ui.clear, QtCore.SIGNAL("clicked()"), self.unFilterPosts)
+    QtCore.QObject.connect(self.filterWidget.ui.statusCombo, QtCore.SIGNAL("currentIndexChanged(int)"), self.filterPostsByStatus)
+    self.statusFilter=None
+    
     
     # Search widget
     self.searchWidget=SearchWidget()
@@ -659,7 +662,7 @@ class MainWindow(QtGui.QMainWindow):
     index=self.ui.posts.currentIndex()
     if index.isValid():         
       curPost=self.ui.posts.model().itemFromIndex(index).post
-    if not post.unread:
+    if not curPost.unread:
       info ("Marking as unread post: %s", curPost)
       curPost.unread=True
       curPost.feed.curUnread+=1
@@ -698,9 +701,9 @@ class MainWindow(QtGui.QMainWindow):
       menu.addAction(self.ui.actionOpen_in_Browser)
       menu.addSeparator()
       if item.post.important:
-        menu.addAction(self.ui.actionMark_as_Important)
-      else:
         menu.addAction(self.ui.actionRemove_Important_Mark)
+      else:
+        menu.addAction(self.ui.actionMark_as_Important)
       if item.post.unread:
         menu.addAction(self.ui.actionMark_as_Read)
       else:
@@ -840,6 +843,20 @@ class MainWindow(QtGui.QMainWindow):
     else:  
       self.ui.view.findText(text, QtWebKit.QWebPage.FindBackward)
 
+  def filterPostsByStatus(self, status=None):
+    if status==None: return
+    
+    if status==0: # All articles
+      info ("No filtering by status")
+      self.statusFilter=None
+    elif status==1: # Unread
+      info ("Filtering by status: unread")
+      self.statusFilter=Post.unread
+    elif status==2: # Important
+      info ("Filtering by status: important")
+      self.statusFilter=Post.important
+    self.open_feed(self.ui.feeds.currentIndex())
+      
   def unFilterPosts(self):
     self.open_feed(self.ui.feeds.currentIndex())
 
@@ -976,10 +993,14 @@ class MainWindow(QtGui.QMainWindow):
     sk=self.ui.posts.model().sortOrder()
       
     if feed.xmlUrl: # A regular feed
-      if not filter:
-        self.posts=Post.query.filter(Post.feed==feed).order_by(sk).all()
-      else:
-        self.posts=Post.query.filter(Post.feed==feed).filter(sql.or_(Post.title.like('%%%s%%'%filter), Post.content.like('%%%s%%'%filter))).order_by(sk).all()
+      self.posts=Post.query.filter(Post.feed==feed)
+      if filter:
+        self.posts=self.posts.filter(sql.or_(Post.title.like('%%%s%%'%filter), Post.content.like('%%%s%%'%filter)))
+      if self.statusFilter:
+        self.posts=self.posts.filter(self.statusFilter==True)
+      self.posts=self.posts.order_by(sk)
+      self.posts=self.posts.all()
+      print self.posts
     else: # A folder
       self.posts=feed.allPosts()
     
