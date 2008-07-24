@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file '/home/ralsina/Desktop/proyectos/urssus/main.ui'
 #
-# Created: Thu Jul 24 12:08:13 2008
+# Created: Thu Jul 24 13:37:43 2008
 #      by: PyQt4 UI code generator 4.4.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -224,6 +224,8 @@ class Ui_MainWindow(object):
         icon.addPixmap(QtGui.QPixmap(":/flag.svg"),QtGui.QIcon.Normal,QtGui.QIcon.Off)
         self.actionRemove_Important_Mark.setIcon(icon)
         self.actionRemove_Important_Mark.setObjectName("actionRemove_Important_Mark")
+        self.actionExpire_Feed = QtGui.QAction(MainWindow)
+        self.actionExpire_Feed.setObjectName("actionExpire_Feed")
         self.toolBar.addAction(self.actionFetch_Feed)
         self.toolBar.addAction(self.actionFetch_All_Feeds)
         self.toolBar.addAction(self.actionAbort_Fetches)
@@ -239,6 +241,7 @@ class Ui_MainWindow(object):
         self.menuFeed.addAction(self.actionAbort_Fetches)
         self.menuFeed.addSeparator()
         self.menuFeed.addAction(self.actionEdit_Feed)
+        self.menuFeed.addAction(self.actionExpire_Feed)
         self.menuFeed.addAction(self.actionDelete_Feed)
         self.menu_File.addAction(self.actionImport_Feeds)
         self.menu_File.addAction(self.actionExport_Feeds)
@@ -353,6 +356,7 @@ class Ui_MainWindow(object):
         self.actionOpen_in_Browser.setShortcut(QtGui.QApplication.translate("MainWindow", "Shift+Return", None, QtGui.QApplication.UnicodeUTF8))
         self.actionRemove_Important_Mark.setText(QtGui.QApplication.translate("MainWindow", "Remove Important Mark", None, QtGui.QApplication.UnicodeUTF8))
         self.actionRemove_Important_Mark.setShortcut(QtGui.QApplication.translate("MainWindow", "Ctrl+Shift+I", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionExpire_Feed.setText(QtGui.QApplication.translate("MainWindow", "Expire Feed", None, QtGui.QApplication.UnicodeUTF8))
 
 from PyQt4 import QtWebKit
 import icons_rc

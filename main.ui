@@ -210,6 +210,7 @@
     <addaction name="actionAbort_Fetches" />
     <addaction name="separator" />
     <addaction name="actionEdit_Feed" />
+    <addaction name="actionExpire_Feed" />
     <addaction name="actionDelete_Feed" />
    </widget>
    <widget class="QMenu" name="menu_File" >
@@ -632,6 +633,11 @@
    </property>
    <property name="shortcut" >
     <string>Ctrl+Shift+I</string>
+   </property>
+  </action>
+  <action name="actionExpire_Feed" >
+   <property name="text" >
+    <string>Expire Feed</string>
    </property>
   </action>
  </widget>
