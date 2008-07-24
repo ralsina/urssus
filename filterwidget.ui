@@ -5,7 +5,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>449</width>
+    <width>559</width>
     <height>28</height>
    </rect>
   </property>
@@ -55,7 +55,35 @@
     </widget>
    </item>
    <item>
-    <widget class="QComboBox" name="statusCombo" />
+    <widget class="QComboBox" name="statusCombo" >
+     <item>
+      <property name="text" >
+       <string>All Articles</string>
+      </property>
+      <property name="icon" >
+       <iconset resource="images/icons.qrc" >
+        <normaloff>:/gear.svg</normaloff>:/gear.svg</iconset>
+      </property>
+     </item>
+     <item>
+      <property name="text" >
+       <string>Unread</string>
+      </property>
+      <property name="icon" >
+       <iconset resource="images/icons.qrc" >
+        <normaloff>:/mail_generic.svg</normaloff>:/mail_generic.svg</iconset>
+      </property>
+     </item>
+     <item>
+      <property name="text" >
+       <string>Important</string>
+      </property>
+      <property name="icon" >
+       <iconset resource="images/icons.qrc" >
+        <normaloff>:/flag.svg</normaloff>:/flag.svg</iconset>
+      </property>
+     </item>
+    </widget>
    </item>
   </layout>
  </widget>
