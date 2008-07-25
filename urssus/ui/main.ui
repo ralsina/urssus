@@ -255,12 +255,21 @@
     <property name="title" >
      <string>&amp;View</string>
     </property>
+    <widget class="QMenu" name="menu_View_Mode" >
+     <property name="title" >
+      <string>&amp;View Mode</string>
+     </property>
+     <addaction name="actionNormal_View" />
+     <addaction name="actionCombined_View" />
+    </widget>
     <addaction name="actionStatus_Bar" />
     <addaction name="separator" />
     <addaction name="actionShow_Only_Unread_Feeds" />
     <addaction name="separator" />
     <addaction name="actionIncrease_Font_Sizes" />
     <addaction name="actionDecrease_Font_Sizes" />
+    <addaction name="separator" />
+    <addaction name="menu_View_Mode" />
    </widget>
    <widget class="QMenu" name="menu_Edit" >
     <property name="title" >
@@ -651,6 +660,24 @@
   <action name="actionTechnorati_Top_100" >
    <property name="text" >
     <string>Import Technorati Top 100</string>
+   </property>
+  </action>
+  <action name="actionNormal_View" >
+   <property name="enabled" >
+    <bool>false</bool>
+   </property>
+   <property name="text" >
+    <string>Normal View</string>
+   </property>
+  </action>
+  <action name="actionCombined_View" >
+   <property name="text" >
+    <string>Combined View</string>
+   </property>
+  </action>
+  <action name="actionCaca" >
+   <property name="text" >
+    <string>caca</string>
    </property>
   </action>
  </widget>
