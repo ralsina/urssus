@@ -1,5 +1,7 @@
 <RCC>
   <qresource prefix="/" >
+    <file>view_top_bottom.svg</file>
+    <file>view_detailed.svg</file>
     <file>mail_generic.svg</file>
     <file>gear.svg</file>
     <file>flag.svg</file>
