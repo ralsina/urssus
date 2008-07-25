@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE Project SYSTEM "Project-4.2.dtd">
 <!-- eric4 project file for project urssus -->
-<!-- Saved: 2008-07-25, 12:09:31 -->
+<!-- Saved: 2008-07-25, 15:34:58 -->
 <!-- Copyright (C) 2008 Roberto Alsina, ralsina@netmanagers.com.ar -->
 <Project version="4.2">
   <ProgLanguage mixed="0">Python</ProgLanguage>
@@ -81,6 +81,9 @@
       <Dir>urssus</Dir>
       <Dir>templates</Dir>
       <Name>combined.tmpl</Name>
+    </Source>
+    <Source>
+      <Name>setup_win.py</Name>
     </Source>
   </Sources>
   <Forms>
