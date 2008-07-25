@@ -14,11 +14,13 @@ options(
 def sdist():
   """Overrides sdist to make sure that our setup.py is generated."""
   pass
+  
+  
+uidir=os.path.join('urssus', 'ui')
 
 @task
 def compile_ui():
   '''Compile the .ui files using pyuic4'''
-  uidir=os.path.join('urssus', 'ui')
   for f in os.listdir(uidir):
     if f.endswith('.ui'):
       print "Compiling ", f
@@ -27,4 +29,4 @@ def compile_ui():
 @task
 def compile_resource():
   '''Compile the icons/images resource file'''
-  os.system ('pyrcc4 %s -o %s'%(os.path.join('urssus','images', 'icons.qrc'), os.path.join('urssus', 'icons_rc.py')))
+  os.system ('pyrcc4 %s -o %s'%(os.path.join('urssus','images', 'icons.qrc'), os.path.join(uidir, 'icons_rc.py')))

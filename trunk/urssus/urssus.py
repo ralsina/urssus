@@ -13,7 +13,9 @@ setLogger(name='urssus', level=DEBUG)
 
 # Templates
 import tenjin
-from tenjin.helpers import escape, to_str
+# The obvious import doesn't work for complicated reasons ;-)
+to_str=tenjin.helpers.to_str
+escape=tenjin.helpers.escape
 # FIXME: when deploying need to find a decent way to locate the templates
 templateEngine=tenjin.Engine()
 
@@ -451,7 +453,7 @@ root_feed=None
 def initDB():
   global root_feed
   # This is just temporary
-  metadata.bind = "sqlite:///urssus.sqlite"
+  metadata.bind = "sqlite:///%s/urssus.sqlite"%config.cfdir
   # metadata.bind.echo = True
   setup_all()
   if not os.path.exists("urssus.sqlite"):
@@ -1017,7 +1019,7 @@ class MainWindow(QtGui.QMainWindow):
     item=self.model.itemFromIndex(index)
     if not item: return
     self.open_feed(index)
-    self.ui.view.setHtml(templateEngine.render('templates/feed.tmpl', {'feed':item.feed}))
+    self.ui.view.setHtml(templateEngine.render('urssus/templates/feed.tmpl', {'feed':item.feed}))
 
   def resortPosts(self):
     info ("Resorting posts")
@@ -1143,7 +1145,7 @@ class MainWindow(QtGui.QMainWindow):
     if post.feed.loadFull and post.link:
       self.ui.view.setUrl(QtCore.QUrl(post.link))
     else:
-      self.ui.view.setHtml(templateEngine.render('templates/post.tmpl', {'post':post}))
+      self.ui.view.setHtml(templateEngine.render('urssus/templates/post.tmpl', {'post':post}))
 
   def on_actionExport_Feeds_triggered(self, i=None):
     if i==None: return
@@ -1472,8 +1474,8 @@ def decodeString(s):
   '''Decode HTML strings so you don't get &lt; and all those things.'''
   u=unicode(BeautifulStoneSoup(s,convertEntities=BeautifulStoneSoup.HTML_ENTITIES ))
   return u
-  
-if __name__ == "__main__":
+
+def main():
   initDB()
     
   if len(sys.argv)>1:
@@ -1486,3 +1488,6 @@ if __name__ == "__main__":
   # window.on_actionAbort_Fetches_triggered(True)
   window.show()
   sys.exit(app.exec_())
+  
+if __name__ == "__main__":
+  main()
