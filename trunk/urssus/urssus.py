@@ -17,12 +17,12 @@ import tenjin
 to_str=tenjin.helpers.to_str
 escape=tenjin.helpers.escape
 templateEngine=tenjin.Engine()
-
+tmplDir=os.path.join(os.path.abspath(os.path.dirname(__file__)), 'templates')
 # FIXME: when deploying need to find a decent way to locate the templates
 def renderTemplate(tname, **context):
   context['to_str']=to_str
   context['escape']=escape
-  return templateEngine.render(os.path.join('urssus/templates/',tname), context)
+  return templateEngine.render(os.path.join(tmplDir,tname), context)
 
 
 # References to background processes
