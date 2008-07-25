@@ -16,8 +16,14 @@ import tenjin
 # The obvious import doesn't work for complicated reasons ;-)
 to_str=tenjin.helpers.to_str
 escape=tenjin.helpers.escape
-# FIXME: when deploying need to find a decent way to locate the templates
 templateEngine=tenjin.Engine()
+
+# FIXME: when deploying need to find a decent way to locate the templates
+def renderTemplate(tname, **context):
+  context['to_str']=to_str
+  context['escape']=escape
+  return templateEngine.render(os.path.join('urssus/templates/',tname), context)
+
 
 # References to background processes
 import processing
@@ -1019,8 +1025,7 @@ class MainWindow(QtGui.QMainWindow):
     item=self.model.itemFromIndex(index)
     if not item: return
     self.open_feed(index)
-    self.ui.view.setHtml(templateEngine.render('urssus/templates/feed.tmpl', {'feed':item.feed}))
-
+    self.ui.view.setHtml(renderTemplate('feed.tmpl', feed=item.feed))
   def resortPosts(self):
     info ("Resorting posts")
     if self.currentPost:
@@ -1145,7 +1150,7 @@ class MainWindow(QtGui.QMainWindow):
     if post.feed.loadFull and post.link:
       self.ui.view.setUrl(QtCore.QUrl(post.link))
     else:
-      self.ui.view.setHtml(templateEngine.render('urssus/templates/post.tmpl', {'post':post}))
+      self.ui.view.setHtml(renderTemplate('post.tmpl',post=post))
 
   def on_actionExport_Feeds_triggered(self, i=None):
     if i==None: return
