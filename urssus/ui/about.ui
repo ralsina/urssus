@@ -94,7 +94,7 @@
     <string/>
    </property>
    <property name="pixmap" >
-    <pixmap resource="images/icons.qrc" >:/urssus.jpg</pixmap>
+    <pixmap resource="../images/icons.qrc" >:/urssus.jpg</pixmap>
    </property>
   </widget>
   <widget class="QTextBrowser" name="textBrowser" >
@@ -180,7 +180,7 @@ p, li { white-space: pre-wrap; }
   </widget>
  </widget>
  <resources>
-  <include location="images/icons.qrc" />
+  <include location="../images/icons.qrc" />
  </resources>
  <connections>
   <connection>

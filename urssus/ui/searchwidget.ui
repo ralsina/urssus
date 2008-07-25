@@ -22,7 +22,7 @@
       <string>...</string>
      </property>
      <property name="icon" >
-      <iconset resource="images/icons.qrc" >
+      <iconset resource="../images/icons.qrc" >
        <normaloff>:/editdelete.svg</normaloff>:/editdelete.svg</iconset>
      </property>
      <property name="shortcut" >
@@ -49,7 +49,7 @@
       <string>&amp;Previous</string>
      </property>
      <property name="icon" >
-      <iconset resource="images/icons.qrc" >
+      <iconset resource="../images/icons.qrc" >
        <normaloff>:/1leftarrow.svg</normaloff>:/1leftarrow.svg</iconset>
      </property>
      <property name="toolButtonStyle" >
@@ -63,7 +63,7 @@
       <string>&amp;Next</string>
      </property>
      <property name="icon" >
-      <iconset resource="images/icons.qrc" >
+      <iconset resource="../images/icons.qrc" >
        <normaloff>:/1rightarrow.svg</normaloff>:/1rightarrow.svg</iconset>
      </property>
      <property name="toolButtonStyle" >
@@ -81,7 +81,7 @@
   </layout>
  </widget>
  <resources>
-  <include location="images/icons.qrc" />
+  <include location="../images/icons.qrc" />
  </resources>
  <connections>
   <connection>

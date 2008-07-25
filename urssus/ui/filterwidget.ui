@@ -39,7 +39,7 @@
       <string>...</string>
      </property>
      <property name="icon" >
-      <iconset resource="images/icons.qrc" >
+      <iconset resource="../images/icons.qrc" >
        <normaloff>:/editclear.svg</normaloff>:/editclear.svg</iconset>
      </property>
     </widget>
@@ -76,7 +76,7 @@
   </layout>
  </widget>
  <resources>
-  <include location="images/icons.qrc" />
+  <include location="../images/icons.qrc" />
  </resources>
  <connections/>
 </ui>
