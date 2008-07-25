@@ -22,7 +22,7 @@ def compile_ui():
   for f in os.listdir(uidir):
     if f.endswith('.ui'):
       print "Compiling ", f
-      os.system ('pyuic4 %s -o %s'%(os.path.join(uidir, f), os.path.join('urssus', 'Ui_%s.py'%f[:-3])))
+      os.system ('pyuic4 %s -o %s'%(os.path.join(uidir, f), os.path.join(uidir, 'Ui_%s.py'%f[:-3])))
       
 @task
 def compile_resource():

@@ -460,11 +460,11 @@ def initDB():
 
 # UI Classes
 from PyQt4 import QtGui, QtCore, QtWebKit
-from Ui_main import Ui_MainWindow
-from Ui_about import Ui_Dialog as UI_AboutDialog
-from Ui_filterwidget import Ui_Form as UI_FilterWidget
-from Ui_searchwidget import Ui_Form as UI_SearchWidget
-from Ui_feed_properties import Ui_Dialog as UI_FeedPropertiesDialog
+from ui.Ui_main import Ui_MainWindow
+from ui.Ui_about import Ui_Dialog as UI_AboutDialog
+from ui.Ui_filterwidget import Ui_Form as UI_FilterWidget
+from ui.Ui_searchwidget import Ui_Form as UI_SearchWidget
+from ui.Ui_feed_properties import Ui_Dialog as UI_FeedPropertiesDialog
 
 class PostModel(QtGui.QStandardItemModel):
   def __init__(self):
