@@ -551,7 +551,19 @@ class FeedProperties(QtGui.QDialog):
       self.ui.updateUnit.setEnabled(False)
       self.ui.customUpdate.setChecked(False)
     else:
-      pass # Implement
+      self.ui.updatePeriod.setEnabled(True)
+      self.ui.updateUnit.setEnabled(True)
+      self.ui.customUpdate.setChecked(True)
+      if feed.updateInterval==0:
+        i=3
+      elif feed.updateInterval%1440==0:
+        i=2
+      elif feed.updateInterval%60==0:
+        i=1
+      else:
+        i=0
+      self.ui.updateUnit.setCurrentIndex(i)
+      self.ui.updatePeriod.setValue(feed.updateInterval/([1, 60, 1440, 1][i]))
     if feed.archiveType==0: # Use default archiving
       self.ui.useDefault.setChecked(True)
     elif feed.archiveType==1: # Keep all articles
