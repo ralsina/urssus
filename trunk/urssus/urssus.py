@@ -614,6 +614,9 @@ class MainWindow(QtGui.QMainWindow):
     self.currentFeed=None
     self.currentPost=None
     
+    # View mode FIXME: make configurable
+    self.combinedView=False
+    
     # Set up the UI from designer
     self.ui=Ui_MainWindow()
     self.ui.setupUi(self)
@@ -1025,7 +1028,31 @@ class MainWindow(QtGui.QMainWindow):
     item=self.model.itemFromIndex(index)
     if not item: return
     self.open_feed(index)
-    self.ui.view.setHtml(renderTemplate('feed.tmpl', feed=item.feed))
+    if self.combinedView:
+      self.open_feed(index)
+    else:
+      self.ui.view.setHtml(renderTemplate('feed.tmpl', feed=item.feed))
+
+  def on_actionNormal_View_triggered(self, i=None):
+    if i==None: return
+    info("Switch to normal view")
+    if self.combinedView:
+      self.combinedView=False
+      self.ui.posts.show()
+      self.ui.actionNormal_View.setEnabled(False)
+      self.ui.actionCombined_View.setEnabled(True)
+      self.open_feed(self.ui.feeds.currentIndex())
+
+  def on_actionCombined_View_triggered(self, i=None):
+    if i==None: return
+    info("Switch to combined view")    
+    if not self.combinedView:
+      self.combinedView=True
+      self.ui.posts.hide()
+      self.ui.actionNormal_View.setEnabled(True)
+      self.ui.actionCombined_View.setEnabled(False)
+      self.open_feed(self.ui.feeds.currentIndex())
+
   def resortPosts(self):
     info ("Resorting posts")
     if self.currentPost:
@@ -1044,50 +1071,68 @@ class MainWindow(QtGui.QMainWindow):
     self.ui.feeds.setCurrentIndex(index)
     feed=item.feed
     self.currentFeed=feed
-    self.postItems={}
-    self.posts=[]
-    self.currentPost=None
-    self.ui.posts.__model=PostModel()
-    self.ui.posts.setModel(self.ui.posts.__model)
-    QtCore.QObject.connect(self.ui.posts.__model, QtCore.SIGNAL("resorted()"), self.resortPosts)
+    
+    if self.combinedView: # All items filtered, as a page
+      info("Opening combined")
+      if feed.xmlUrl: # A regular feed
+        self.posts=Post.query.filter(Post.feed==feed)
+      else: # A folder
+        self.posts=feed.allPostsQuery()
+      # Filter by text according to the contents of self.textFilter
+      if self.textFilter:
+        self.posts=self.posts.filter(sql.or_(Post.title.like('%%%s%%'%self.textFilter), Post.content.like('%%%s%%'%self.textFilter)))
+      if self.statusFilter:
+        self.posts=self.posts.filter(self.statusFilter==True)
+      # FIXME: find a way to add sorting to the UI for this (not very important)
+      self.posts=self.posts.order_by(sql.desc(Post.date)).all()
+      data=renderTemplate('combined.tmpl',posts=self.posts)
+      self.ui.view.setHtml(data)
 
-    # Update window title
-    if feed.title:
-      self.setWindowTitle("%s - uRSSus"%item.feed.title)
-    elif feed.text:
-      self.setWindowTitle("%s - uRSSus"%item.feed.text)
-    else:
-      self.setWindowTitle("uRSSus")
+    else: # Standard View
+      info ("Opening in standard view")
+      self.postItems={}
+      self.posts=[]
+      self.currentPost=None
+      self.ui.posts.__model=PostModel()
+      self.ui.posts.setModel(self.ui.posts.__model)
+      QtCore.QObject.connect(self.ui.posts.__model, QtCore.SIGNAL("resorted()"), self.resortPosts)
+
+      # Update window title
+      if feed.title:
+        self.setWindowTitle("%s - uRSSus"%item.feed.title)
+      elif feed.text:
+        self.setWindowTitle("%s - uRSSus"%item.feed.text)
+      else:
+        self.setWindowTitle("uRSSus")
       
-    # Sorting according to the model
-    sk=self.ui.posts.model().sortOrder()
+      # Sorting according to the model
+      sk=self.ui.posts.model().sortOrder()
       
-      
-    if feed.xmlUrl: # A regular feed
-      self.posts=Post.query.filter(Post.feed==feed)
-    else: # A folder
-      self.posts=feed.allPostsQuery()
-    # Filter by text according to the contents of self.textFilter
-    if self.textFilter:
-      self.posts=self.posts.filter(sql.or_(Post.title.like('%%%s%%'%self.textFilter), Post.content.like('%%%s%%'%self.textFilter)))
-    if self.statusFilter:
-      self.posts=self.posts.filter(self.statusFilter==True)
-    self.posts=self.posts.order_by(sk)
-    self.posts=self.posts.all()
+      if feed.xmlUrl: # A regular feed
+        self.posts=Post.query.filter(Post.feed==feed)
+      else: # A folder
+        self.posts=feed.allPostsQuery()
+      # Filter by text according to the contents of self.textFilter
+      if self.textFilter:
+        self.posts=self.posts.filter(sql.or_(Post.title.like('%%%s%%'%self.textFilter), Post.content.like('%%%s%%'%self.textFilter)))
+      if self.statusFilter:
+        self.posts=self.posts.filter(self.statusFilter==True)
+      self.posts=self.posts.order_by(sk)
+      self.posts=self.posts.all()
     
-    # Fixes for post list UI
-    header=self.ui.posts.header()
-    header.setStretchLastSection(False)
-    header.setResizeMode(0, QtGui.QHeaderView.Stretch)
-    header.setResizeMode(1, QtGui.QHeaderView.Fixed)
-    header.resizeSection(1, header.fontMetrics().width(' 8888-88-88 88:88:88 ')+4)
+      # Fixes for post list UI
+      header=self.ui.posts.header()
+      header.setStretchLastSection(False)
+      header.setResizeMode(0, QtGui.QHeaderView.Stretch)
+      header.setResizeMode(1, QtGui.QHeaderView.Fixed)
+      header.resizeSection(1, header.fontMetrics().width(' 8888-88-88 88:88:88 ')+4)
     
-    for post in self.posts:
-      item=QtGui.QStandardItem('%s - %s'%(decodeString(post.title), post.date))
-      item.post=post
-      self.ui.posts.__model.appendRow(item)
-      self.postItems[post.id]=item
-      self.updatePostItem(post)
+      for post in self.posts:
+        item=QtGui.QStandardItem('%s - %s'%(decodeString(post.title), post.date))
+        item.post=post
+        self.ui.posts.__model.appendRow(item)
+        self.postItems[post.id]=item
+        self.updatePostItem(post)
 
   def updatePostItem(self, post):
     if not post.id in self.postItems: #post is not being displayed
