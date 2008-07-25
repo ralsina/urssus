@@ -1226,10 +1226,13 @@ class MainWindow(QtGui.QMainWindow):
       t100=Feed.get_by_or_init(text='Top 100')
       if not t100.parent:
         t100.parent=root_feed
-      tf=tempfile.NamedTemporaryFile()
+      [h, name]=tempfile.mkstemp()
+      tf=os.fdopen(h, 'wb+')
       tf.write(data)
       tf.flush()
-      importOPML(tf.name, parent=t100)
+      tf.close()
+      importOPML(name, parent=t100)
+      os.unlink(name)
       self.initTree()
       self.ui.feeds.setCurrentIndex(self.ui.feeds.model().indexFromItem(self.feedItems[t100.id]))
     
