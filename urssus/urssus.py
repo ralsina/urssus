@@ -594,7 +594,8 @@ class FeedProperties(QtGui.QDialog):
     # FIXME: validate
     feed.xmlUrl=unicode(self.ui.url.text())
     feed.notify=self.ui.notify.isChecked()
-    feed.marRead=self.ui.markRead.isChecked()
+    feed.markRead=self.ui.markRead.isChecked()
+    feed.loadFull=self.ui.loadFull.isChecked()
     
     if self.ui.customUpdate.isChecked():
       multiplier=[1, 60, 1440, 0][self.ui.updateUnit.currentIndex()]
@@ -1193,7 +1194,8 @@ class MainWindow(QtGui.QMainWindow):
     self.updateFeedItem(post.feed, parents=True)
     self.updatePostItem(post)
     if post.feed.loadFull and post.link:
-      self.ui.view.setUrl(QtCore.QUrl(post.link))
+      # If I pass post.link, it crashes if I click something else quickly
+      self.ui.view.setUrl(QtCore.QUrl(QtCore.QString(post.link)))
     else:
       self.ui.view.setHtml(renderTemplate('post.tmpl',post=post))
 
