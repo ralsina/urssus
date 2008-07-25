@@ -351,6 +351,8 @@ class Feed(Entity):
           p=Post(feed=self, date=date, title=post['title'], 
                  post_id=post[idkey], content=content, 
                  author=author, link=link)
+          if self.markRead:
+            p.unread=False
           posts.append(p)
       except KeyError:
         debug( post )
@@ -572,6 +574,7 @@ class FeedProperties(QtGui.QDialog):
     # FIXME: validate
     feed.xmlUrl=unicode(self.ui.url.text())
     feed.notify=self.ui.notify.isChecked()
+    feed.marRead=self.ui.markRead.isChecked()
     
     if self.ui.customUpdate.isChecked():
       multiplier=[1, 60, 1440, 0][self.ui.updateUnit.currentIndex()]
