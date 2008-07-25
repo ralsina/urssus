@@ -121,6 +121,22 @@ class Feed(Entity):
     self.curUnread=-1
     self.unreadCount()
 
+  def allFeeds(self):
+    '''Returns a list of all "real" feeds that have this one as ancestor'''
+    if not self.children:
+      return [self]
+    feeds=[]
+    for child in self.children:
+      feeds.extend(child.allFeeds())
+    return feeds
+
+  def allPostsQuery(self):
+    '''Returns a query that should give you all the posts contained in this folder's children
+    down to any level. Required for aggregate feeds, I'm afraid'''
+    af=self.allFeeds()
+    ored=sql.or_(*[Post.feed==f for f in af])
+    return Post.query().filter(ored)
+
   def allPosts(self):
     '''This is used if you want all posts in this feed as well as in its childrens.
     Obviously meant to be used with folders, not regular feeds ;-)
@@ -1015,15 +1031,15 @@ class MainWindow(QtGui.QMainWindow):
       
     if feed.xmlUrl: # A regular feed
       self.posts=Post.query.filter(Post.feed==feed)
-      # Filter by text according to the contents of self.textFilter
-      if self.textFilter:
-        self.posts=self.posts.filter(sql.or_(Post.title.like('%%%s%%'%self.textFilter), Post.content.like('%%%s%%'%self.textFilter)))
-      if self.statusFilter:
-        self.posts=self.posts.filter(self.statusFilter==True)
-      self.posts=self.posts.order_by(sk)
-      self.posts=self.posts.all()
     else: # A folder
-      self.posts=feed.allPosts()
+      self.posts=feed.allPostsQuery()
+    # Filter by text according to the contents of self.textFilter
+    if self.textFilter:
+      self.posts=self.posts.filter(sql.or_(Post.title.like('%%%s%%'%self.textFilter), Post.content.like('%%%s%%'%self.textFilter)))
+    if self.statusFilter:
+      self.posts=self.posts.filter(self.statusFilter==True)
+    self.posts=self.posts.order_by(sk)
+    self.posts=self.posts.all()
     
     # Fixes for post list UI
     header=self.ui.posts.header()
