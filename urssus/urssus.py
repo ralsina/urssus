@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-import sys, os, time, urlparse
+import sys, os, time, urlparse, tempfile
 from urllib import urlopen
 from datetime import datetime, timedelta
 
@@ -1167,6 +1167,26 @@ class MainWindow(QtGui.QMainWindow):
       importOPML(fname)
       self.initTree()
       
+  def on_actionTechnorati_Top_100_triggered(self, i=None):
+    if i==None: return
+    if QtGui.QMessageBox.question(None, "Technorati Top 100 - uRSSus", 
+       'You are about to import Technorati\'s Top 100 feeds for today.\nClick Yes to confirm.', 
+       QtGui.QMessageBox.Yes | QtGui.QMessageBox.No, QtGui.QMessageBox.No ) == QtGui.QMessageBox.Yes:
+      
+      url='http://elliottback.com/tools/top100/technorati-100-to-opml.php'
+      data=urlopen(url).read()
+      # Create a 'Top 100' folder if there isn't one
+      t100=Feed.get_by_or_init(text='Top 100')
+      if not t100.parent:
+        t100.parent=root_feed
+      tf=tempfile.NamedTemporaryFile()
+      tf.write(data)
+      tf.flush()
+      importOPML(tf.name, parent=t100)
+      self.initTree()
+      self.ui.feeds.setCurrentIndex(self.ui.feeds.model().indexFromItem(self.feedItems[t100.id]))
+    
+      
   def on_actionQuit_triggered(self, i=None):
     if i==None: return
     QtGui.QApplication.instance().quit()
@@ -1409,8 +1429,7 @@ def exportOPML(fname):
   opml.outlines=root._children
   opml.output(open(fname, 'w'))
     
-  
-def importOPML(fname):
+def importOPML(fname, parent=root_feed):
   def importSubTree(parent, node):
     if node.tag<>'outline':
       return # Don't handle
@@ -1438,7 +1457,6 @@ def importOPML(fname):
 
   from xml.etree import ElementTree
   tree = ElementTree.parse(fname)
-  parent=root_feed
   for node in tree.find('//body').getchildren():
     importSubTree(parent, node)
   session.flush()

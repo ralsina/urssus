@@ -13,7 +13,7 @@
    <string>uRSSus</string>
   </property>
   <property name="windowIcon" >
-   <iconset resource="images/icons.qrc" >
+   <iconset resource="../images/icons.qrc" >
     <normaloff>:/urssus.svg</normaloff>:/urssus.svg</iconset>
   </property>
   <property name="iconSize" >
@@ -172,7 +172,7 @@
     <string>toolBar</string>
    </property>
    <property name="windowIcon" >
-    <iconset resource="images/icons.qrc" >
+    <iconset resource="../images/icons.qrc" >
      <normaloff>:/urssus.svg</normaloff>:/urssus.svg</iconset>
    </property>
    <property name="iconSize" >
@@ -225,6 +225,8 @@
     </property>
     <addaction name="actionImport_Feeds" />
     <addaction name="actionExport_Feeds" />
+    <addaction name="separator" />
+    <addaction name="actionTechnorati_Top_100" />
     <addaction name="separator" />
     <addaction name="actionQuit" />
    </widget>
@@ -318,7 +320,7 @@
   </widget>
   <action name="actionFetch_Feed" >
    <property name="icon" >
-    <iconset resource="images/icons.qrc" >
+    <iconset resource="../images/icons.qrc" >
      <normaloff>:/1downarrow.svg</normaloff>:/1downarrow.svg</iconset>
    </property>
    <property name="text" >
@@ -330,7 +332,7 @@
   </action>
   <action name="actionFetch_All_Feeds" >
    <property name="icon" >
-    <iconset resource="images/icons.qrc" >
+    <iconset resource="../images/icons.qrc" >
      <normaloff>:/2downarrow.svg</normaloff>:/2downarrow.svg</iconset>
    </property>
    <property name="text" >
@@ -345,7 +347,7 @@
     <bool>false</bool>
    </property>
    <property name="icon" >
-    <iconset resource="images/icons.qrc" >
+    <iconset resource="../images/icons.qrc" >
      <normaloff>:/stop.svg</normaloff>:/stop.svg</iconset>
    </property>
    <property name="text" >
@@ -357,7 +359,7 @@
   </action>
   <action name="actionMark_Feed_as_Read" >
    <property name="icon" >
-    <iconset resource="images/icons.qrc" >
+    <iconset resource="../images/icons.qrc" >
      <normaloff>:/apply.svg</normaloff>:/apply.svg</iconset>
    </property>
    <property name="text" >
@@ -379,7 +381,7 @@
   </action>
   <action name="actionQuit" >
    <property name="icon" >
-    <iconset resource="images/icons.qrc" >
+    <iconset resource="../images/icons.qrc" >
      <normaloff>:/exit.svg</normaloff>:/exit.svg</iconset>
    </property>
    <property name="text" >
@@ -423,7 +425,7 @@
   </action>
   <action name="actionAbout_uRSSus" >
    <property name="icon" >
-    <iconset resource="images/icons.qrc" >
+    <iconset resource="../images/icons.qrc" >
      <normaloff>:/urssus.svg</normaloff>:/urssus.svg</iconset>
    </property>
    <property name="text" >
@@ -432,7 +434,7 @@
   </action>
   <action name="actionIncrease_Font_Sizes" >
    <property name="icon" >
-    <iconset resource="images/icons.qrc" >
+    <iconset resource="../images/icons.qrc" >
      <normaloff>:/viewmag+.svg</normaloff>:/viewmag+.svg</iconset>
    </property>
    <property name="text" >
@@ -444,7 +446,7 @@
   </action>
   <action name="actionDecrease_Font_Sizes" >
    <property name="icon" >
-    <iconset resource="images/icons.qrc" >
+    <iconset resource="../images/icons.qrc" >
      <normaloff>:/viewmag-.svg</normaloff>:/viewmag-.svg</iconset>
    </property>
    <property name="text" >
@@ -499,7 +501,7 @@
   </action>
   <action name="actionFind" >
    <property name="icon" >
-    <iconset resource="images/icons.qrc" >
+    <iconset resource="../images/icons.qrc" >
      <normaloff>:/find.svg</normaloff>:/find.svg</iconset>
    </property>
    <property name="text" >
@@ -535,7 +537,7 @@
   </action>
   <action name="actionDelete_Feed" >
    <property name="icon" >
-    <iconset resource="images/icons.qrc" >
+    <iconset resource="../images/icons.qrc" >
      <normaloff>:/editdelete.svg</normaloff>:/editdelete.svg</iconset>
    </property>
    <property name="text" >
@@ -547,7 +549,7 @@
   </action>
   <action name="actionAdd_Feed" >
    <property name="icon" >
-    <iconset resource="images/icons.qrc" >
+    <iconset resource="../images/icons.qrc" >
      <normaloff>:/filenew.svg</normaloff>:/filenew.svg</iconset>
    </property>
    <property name="text" >
@@ -559,7 +561,7 @@
   </action>
   <action name="actionNew_Folder" >
    <property name="icon" >
-    <iconset resource="images/icons.qrc" >
+    <iconset resource="../images/icons.qrc" >
      <normaloff>:/folder_new.svg</normaloff>:/folder_new.svg</iconset>
    </property>
    <property name="text" >
@@ -571,7 +573,7 @@
   </action>
   <action name="actionEdit_Feed" >
    <property name="icon" >
-    <iconset resource="images/icons.qrc" >
+    <iconset resource="../images/icons.qrc" >
      <normaloff>:/edit.svg</normaloff>:/edit.svg</iconset>
    </property>
    <property name="text" >
@@ -599,7 +601,7 @@
   </action>
   <action name="actionMark_as_Important" >
    <property name="icon" >
-    <iconset resource="images/icons.qrc" >
+    <iconset resource="../images/icons.qrc" >
      <normaloff>:/flag.svg</normaloff>:/flag.svg</iconset>
    </property>
    <property name="text" >
@@ -611,7 +613,7 @@
   </action>
   <action name="actionDelete_Article" >
    <property name="icon" >
-    <iconset resource="images/icons.qrc" >
+    <iconset resource="../images/icons.qrc" >
      <normaloff>:/editdelete.svg</normaloff>:/editdelete.svg</iconset>
    </property>
    <property name="text" >
@@ -631,7 +633,7 @@
   </action>
   <action name="actionRemove_Important_Mark" >
    <property name="icon" >
-    <iconset resource="images/icons.qrc" >
+    <iconset resource="../images/icons.qrc" >
      <normaloff>:/flag.svg</normaloff>:/flag.svg</iconset>
    </property>
    <property name="text" >
@@ -646,6 +648,11 @@
     <string>Expire Feed</string>
    </property>
   </action>
+  <action name="actionTechnorati_Top_100" >
+   <property name="text" >
+    <string>Import Technorati Top 100</string>
+   </property>
+  </action>
  </widget>
  <customwidgets>
   <customwidget>
@@ -655,7 +662,7 @@
   </customwidget>
  </customwidgets>
  <resources>
-  <include location="images/icons.qrc" />
+  <include location="../images/icons.qrc" />
  </resources>
  <connections/>
 </ui>
