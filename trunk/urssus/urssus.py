@@ -85,6 +85,7 @@ def get_by_or_init(cls, if_new_set={}, **params):
 Entity.get_by_or_init = classmethod(get_by_or_init)
 
 class Feed(Entity):
+  using_options (tablename='feeds')
   htmlUrl        = Field(Text)
   xmlUrl         = Field(Text)
   title          = Field(Text)
@@ -439,8 +440,8 @@ class Feed(Entity):
         return posts[ind-1]
     return None
 
-
 class Post(Entity):
+  using_options (tablename='posts')
   feed        = ManyToOne('Feed')
   title       = Field(Text)
   post_id     = Field(Text)
@@ -465,6 +466,7 @@ def initDB():
   if not os.path.exists("urssus.sqlite"):
     create_all()
   root_feed=Feed.get_by_or_init(parent=None)
+  session.flush()
 
 # UI Classes
 from PyQt4 import QtGui, QtCore, QtWebKit
@@ -670,7 +672,6 @@ class MainWindow(QtGui.QMainWindow):
 
     # Load user preferences
     self.loadPreferences()
-
 
     # Tray icon
     self.tray=TrayIcon()
@@ -1480,6 +1481,7 @@ def exportOPML(fname):
   opml.output(open(fname, 'w'))
     
 def importOPML(fname, parent=root_feed):
+
   def importSubTree(parent, node):
     if node.tag<>'outline':
       return # Don't handle
@@ -1549,11 +1551,12 @@ def decodeString(s):
   return u
 
 def main():
+  global root_feed
   initDB()
     
   if len(sys.argv)>1:
       # Import a OPML file into the DB so we have some data to work with
-      importOPML(sys.argv[1])
+      importOPML(sys.argv[1], root_feed)
   app=QtGui.QApplication(sys.argv)
   window=MainWindow()
   
