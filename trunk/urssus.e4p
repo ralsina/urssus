@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE Project SYSTEM "Project-4.2.dtd">
 <!-- eric4 project file for project urssus -->
-<!-- Saved: 2008-07-25, 09:55:17 -->
+<!-- Saved: 2008-07-25, 10:00:31 -->
 <!-- Copyright (C) 2008 Roberto Alsina, ralsina@netmanagers.com.ar -->
 <Project version="4.2">
   <ProgLanguage mixed="0">Python</ProgLanguage>
@@ -12,82 +12,197 @@
   <Email>ralsina@netmanagers.com.ar</Email>
   <Sources>
     <Source>
-      <Name>Ui_main.py</Name>
+      <Name>pavement.py</Name>
     </Source>
     <Source>
-      <Name>OPML.py</Name>
+      <Dir>urssus</Dir>
+      <Name>__init__.py</Name>
     </Source>
     <Source>
-      <Name>urssus.py</Name>
-    </Source>
-    <Source>
-      <Name>feedparser.py</Name>
-    </Source>
-    <Source>
-      <Name>Ui_about.py</Name>
-    </Source>
-    <Source>
-      <Name>Ui_feed_properties.py</Name>
-    </Source>
-    <Source>
-      <Name>Ui_filterwidget.py</Name>
-    </Source>
-    <Source>
-      <Name>Ui_searchwidget.py</Name>
-    </Source>
-    <Source>
+      <Dir>urssus</Dir>
       <Name>BeautifulSoup.py</Name>
     </Source>
     <Source>
-      <Name>feedfinder.py</Name>
-    </Source>
-    <Source>
-      <Name>icons_rc.py</Name>
-    </Source>
-    <Source>
+      <Dir>urssus</Dir>
       <Name>config.py</Name>
     </Source>
     <Source>
+      <Dir>urssus</Dir>
       <Name>demjson.py</Name>
     </Source>
     <Source>
+      <Dir>urssus</Dir>
+      <Name>easylog.py</Name>
+    </Source>
+    <Source>
+      <Dir>urssus</Dir>
+      <Name>feedfinder.py</Name>
+    </Source>
+    <Source>
+      <Dir>urssus</Dir>
+      <Name>feedparser.py</Name>
+    </Source>
+    <Source>
+      <Dir>urssus</Dir>
+      <Name>OPML.py</Name>
+    </Source>
+    <Source>
+      <Dir>urssus</Dir>
       <Name>tenjin.py</Name>
     </Source>
     <Source>
-      <Name>pavement.py</Name>
+      <Dir>urssus</Dir>
+      <Name>urssus.py</Name>
+    </Source>
+    <Source>
+      <Dir>urssus</Dir>
+      <Dir>ui</Dir>
+      <Name>Ui_about.py</Name>
     </Source>
   </Sources>
   <Forms>
     <Form>
-      <Name>main.ui</Name>
-    </Form>
-    <Form>
+      <Dir>urssus</Dir>
+      <Dir>ui</Dir>
       <Name>about.ui</Name>
     </Form>
     <Form>
+      <Dir>urssus</Dir>
+      <Dir>ui</Dir>
       <Name>feed_properties.ui</Name>
     </Form>
     <Form>
+      <Dir>urssus</Dir>
+      <Dir>ui</Dir>
       <Name>filterwidget.ui</Name>
     </Form>
     <Form>
+      <Dir>urssus</Dir>
+      <Dir>ui</Dir>
+      <Name>main.ui</Name>
+    </Form>
+    <Form>
+      <Dir>urssus</Dir>
+      <Dir>ui</Dir>
       <Name>searchwidget.ui</Name>
     </Form>
   </Forms>
   <Translations>
   </Translations>
   <Resources>
+    <Resource>
+      <Dir>urssus</Dir>
+      <Dir>images</Dir>
+      <Name>icons.qrc</Name>
+    </Resource>
   </Resources>
   <Interfaces>
   </Interfaces>
   <Others>
     <Other>
-      <Dir>templates</Dir>
-      <Name>post.tmpl</Name>
+      <Dir>urssus</Dir>
+      <Dir>images</Dir>
+      <Name>1downarrow.svg</Name>
     </Other>
     <Other>
-      <Dir>templates</Dir>
-      <Name>feed.tmpl</Name>
+      <Dir>urssus</Dir>
+      <Dir>images</Dir>
+      <Name>1leftarrow.svg</Name>
+    </Other>
+    <Other>
+      <Dir>urssus</Dir>
+      <Dir>images</Dir>
+      <Name>1rightarrow.svg</Name>
+    </Other>
+    <Other>
+      <Dir>urssus</Dir>
+      <Dir>images</Dir>
+      <Name>2downarrow.svg</Name>
+    </Other>
+    <Other>
+      <Dir>urssus</Dir>
+      <Dir>images</Dir>
+      <Name>apply.svg</Name>
+    </Other>
+    <Other>
+      <Dir>urssus</Dir>
+      <Dir>images</Dir>
+      <Name>edit.svg</Name>
+    </Other>
+    <Other>
+      <Dir>urssus</Dir>
+      <Dir>images</Dir>
+      <Name>editclear.svg</Name>
+    </Other>
+    <Other>
+      <Dir>urssus</Dir>
+      <Dir>images</Dir>
+      <Name>editdelete.svg</Name>
+    </Other>
+    <Other>
+      <Dir>urssus</Dir>
+      <Dir>images</Dir>
+      <Name>exit.svg</Name>
+    </Other>
+    <Other>
+      <Dir>urssus</Dir>
+      <Dir>images</Dir>
+      <Name>filenew.svg</Name>
+    </Other>
+    <Other>
+      <Dir>urssus</Dir>
+      <Dir>images</Dir>
+      <Name>find.svg</Name>
+    </Other>
+    <Other>
+      <Dir>urssus</Dir>
+      <Dir>images</Dir>
+      <Name>flag.svg</Name>
+    </Other>
+    <Other>
+      <Dir>urssus</Dir>
+      <Dir>images</Dir>
+      <Name>folder.svg</Name>
+    </Other>
+    <Other>
+      <Dir>urssus</Dir>
+      <Dir>images</Dir>
+      <Name>folder_new.svg</Name>
+    </Other>
+    <Other>
+      <Dir>urssus</Dir>
+      <Dir>images</Dir>
+      <Name>gear.svg</Name>
+    </Other>
+    <Other>
+      <Dir>urssus</Dir>
+      <Dir>images</Dir>
+      <Name>mail_generic.svg</Name>
+    </Other>
+    <Other>
+      <Dir>urssus</Dir>
+      <Dir>images</Dir>
+      <Name>stop.svg</Name>
+    </Other>
+    <Other>
+      <Dir>urssus</Dir>
+      <Dir>images</Dir>
+      <Name>urssus.jpg</Name>
+    </Other>
+    <Other>
+      <Dir>urssus</Dir>
+      <Dir>images</Dir>
+      <Name>urssus.svg</Name>
+    </Other>
+    <Other>
+      <Dir>urssus</Dir>
+      <Dir>images</Dir>
+      <Name>viewmag+.svg</Name>
+    </Other>
+    <Other>
+      <Dir>urssus</Dir>
+      <Dir>images</Dir>
+      <Name>viewmag-.svg</Name>
     </Other>
   </Others>
   <MainScript>
