@@ -1,14 +1,14 @@
 <table width=100%>
 <tr><td>
-<h4>${feed.title}</h4>
+<h4>#{feed.title}</h4>
 </td></tr>
-% if feed.description:
+<?py if feed.description: ?>
 <tr><td>
-  ${feed.description}
+  #{feed.description}
 </td></tr>
-% endif
-% if feed.htmlUrl:
+<?py #end ?>
+<?py if feed.htmlUrl: ?>
 <tr><td>
-  <a href="${feed.htmlUrl}">${feed.htmlUrl}</a>
+  <a href="#{feed.htmlUrl}">#{feed.htmlUrl}</a>
 </td></tr>
-% endif
+<?py #end ?>
