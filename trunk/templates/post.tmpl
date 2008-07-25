@@ -1,15 +1,15 @@
 <table width=100%>
 <tr><td>
-<h4>${post.title}</h4>
+<h4>#{post.title}</h4>
 </td></tr>
-<tr><td><b>Date:&nbsp;</b>${post.date}</td></tr>
-% if post.author:
-  <tr><td><b>Author:&nbsp;</b>${post.author}</td></tr>
-% endif
+<tr><td><b>Date:&nbsp;</b>#{post.date}</td></tr>
+<?py if post.author: ?>
+  <tr><td><b>Author:&nbsp;</b>#{post.author}</td></tr>
+<?py #end ?>
 </table>
 <p>
-${post.content}
+#{post.content}
 <p>
-% if post.link:
-  <a href="${post.link}">Complete Story</a>
-% endif
+<?py if post.link: ?>
+  <a href="#{post.link}">Complete Story</a>
+<?py #end ?>

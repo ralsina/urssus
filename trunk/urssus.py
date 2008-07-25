@@ -12,10 +12,10 @@ from easylog import critical, error, warning, debug, info, setLogger, DEBUG
 setLogger(name='urssus', level=DEBUG)
 
 # Templates
-from mako.template import Template
-from mako.lookup import TemplateLookup
-# FIXME: when deploying make this work
-tmplLookup=TemplateLookup(directories='templates')
+import tenjin
+from tenjin.helpers import escape, to_str
+# FIXME: when deploying need to find a decent way to locate the templates
+templateEngine=tenjin.Engine()
 
 # References to background processes
 import processing
@@ -1017,7 +1017,7 @@ class MainWindow(QtGui.QMainWindow):
     item=self.model.itemFromIndex(index)
     if not item: return
     self.open_feed(index)
-    self.ui.view.setHtml(tmplLookup.get_template('feed.tmpl').render_unicode(feed=item.feed))
+    self.ui.view.setHtml(templateEngine.render('templates/feed.tmpl', {'feed':item.feed}))
 
   def resortPosts(self):
     info ("Resorting posts")
@@ -1143,7 +1143,7 @@ class MainWindow(QtGui.QMainWindow):
     if post.feed.loadFull and post.link:
       self.ui.view.setUrl(QtCore.QUrl(post.link))
     else:
-      self.ui.view.setHtml(tmplLookup.get_template('post.tmpl').render_unicode(post=post))
+      self.ui.view.setHtml(templateEngine.render('templates/post.tmpl', {'post':post}))
 
   def on_actionExport_Feeds_triggered(self, i=None):
     if i==None: return
