@@ -664,12 +664,19 @@ class MainWindow(QtGui.QMainWindow):
     self.ui.actionShow_Only_Unread_Feeds.setChecked(v)
     self.on_actionShow_Only_Unread_Feeds_triggered(v)
 
+  def getCurrentPost(self):
+    index=self.ui.posts.currentIndex()
+    if index.isValid():         
+      if index.column()<>0:
+        index=self.ui.posts.model().index(index.row(), 0, index.parent())
+      return self.ui.posts.model().itemFromIndex(index).post
+    return None
+
   def on_actionDelete_Article_triggered(self, i=None):
     # FIXME: handle selections
     if i==None: return
-    index=self.ui.posts.currentIndex()
-    if index.isValid():         
-      curPost=self.ui.posts.model().itemFromIndex(index).post
+    curPost=self.getCurrentPost()
+    if not curPost: return
     info ("Deleting post: %s", curPost)
     curPost.delete()
     session.flush()
@@ -678,10 +685,9 @@ class MainWindow(QtGui.QMainWindow):
   def on_actionMark_as_Read_triggered(self, i=None):
     # FIXME: handle selections
     if i==None: return
-    index=self.ui.posts.currentIndex()
-    if index.isValid():         
-      curPost=self.ui.posts.model().itemFromIndex(index).post
-    if post.unread:
+    curPost=self.getCurrentPost()
+    if not curPost: return
+    if curPost.unread:
       info ("Marking as read post: %s", curPost)
       curPost.unread=False
       curPost.feed.curUnread-=1 
@@ -691,9 +697,8 @@ class MainWindow(QtGui.QMainWindow):
   def on_actionMark_as_Unread_triggered(self, i=None):
     # FIXME: handle selections
     if i==None: return
-    index=self.ui.posts.currentIndex()
-    if index.isValid():         
-      curPost=self.ui.posts.model().itemFromIndex(index).post
+    curPost=self.getCurrentPost()
+    if not curPost: return
     if not curPost.unread:
       info ("Marking as unread post: %s", curPost)
       curPost.unread=True
@@ -701,12 +706,19 @@ class MainWindow(QtGui.QMainWindow):
       session.flush()
       self.updatePostItem(curPost)
 
+  def on_actionOpen_in_Browser_triggered(self, i=None):
+    # FIXME: handle selections
+    if i==None: return
+    curPost=self.getCurrentPost()
+    if not curPost: return
+    QtGui.QDesktopServices.openUrl(QtCore.QUrl(curPost.link))
+
+
   def on_actionMark_as_Important_triggered(self, i=None):
     # FIXME: handle selections
     if i==None: return
-    index=self.ui.posts.currentIndex()
-    if index.isValid():         
-      curPost=self.ui.posts.model().itemFromIndex(index).post
+    curPost=self.getCurrentPost()
+    if not curPost: return
     info ("Marking as important post: %s", curPost)
     curPost.important=True
     session.flush()
@@ -715,9 +727,8 @@ class MainWindow(QtGui.QMainWindow):
   def on_actionRemove_Important_Mark_triggered(self, i=None):
     # FIXME: handle selections
     if i==None: return
-    index=self.ui.posts.currentIndex()
-    if index.isValid():         
-      curPost=self.ui.posts.model().itemFromIndex(index).post
+    curPost=self.getCurrentPost()
+    if not curPost: return
     info ("Marking as not important post: %s", curPost)
     curPost.important=False
     session.flush()
@@ -727,21 +738,21 @@ class MainWindow(QtGui.QMainWindow):
   def on_posts_customContextMenuRequested(self, pos=None):
     # FIXME: handle selections
     if pos==None: return
-    item=self.ui.posts.model().itemFromIndex(self.ui.posts.currentIndex())
-    if item and item.post:
-      menu=QtGui.QMenu()
-      menu.addAction(self.ui.actionOpen_in_Browser)
-      menu.addSeparator()
-      if item.post.important:
-        menu.addAction(self.ui.actionRemove_Important_Mark)
-      else:
-        menu.addAction(self.ui.actionMark_as_Important)
-      if item.post.unread:
-        menu.addAction(self.ui.actionMark_as_Read)
-      else:
-        menu.addAction(self.ui.actionMark_as_Unread)
-      menu.addAction(self.ui.actionDelete_Article)
-      menu.exec_(QtGui.QCursor.pos())
+    curPost=self.getCurrentPost()
+    if not curPost: return
+    menu=QtGui.QMenu()
+    menu.addAction(self.ui.actionOpen_in_Browser)
+    menu.addSeparator()
+    if curPost.important:
+      menu.addAction(self.ui.actionRemove_Important_Mark)
+    else:
+      menu.addAction(self.ui.actionMark_as_Important)
+    if curPost.unread:
+      menu.addAction(self.ui.actionMark_as_Read)
+    else:
+      menu.addAction(self.ui.actionMark_as_Unread)
+    menu.addAction(self.ui.actionDelete_Article)
+    menu.exec_(QtGui.QCursor.pos())
 
   def on_feeds_customContextMenuRequested(self, pos=None):
     if pos==None: return
@@ -1102,7 +1113,10 @@ class MainWindow(QtGui.QMainWindow):
 
   def on_posts_clicked(self, index=None, item=None):
     if item: post=item.post
-    else: post=self.ui.posts.model().itemFromIndex(index).post
+    else: 
+      if index.column()<>0:
+        index=self.ui.posts.model().index(index.column(), 0, index.parent())
+      post=self.ui.posts.model().itemFromIndex(index).post
     self.currentPost=post
     if post.unread:
       post.unread=False
@@ -1212,7 +1226,9 @@ class MainWindow(QtGui.QMainWindow):
     p.setDaemon(True)
     p.start()
     processes.append(p)
-    
+
+
+
   def on_actionNext_Unread_Article_triggered(self, i=None):
     if i==None: return
     info( "Next Unread Article")
