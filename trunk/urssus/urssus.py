@@ -93,7 +93,7 @@ class Feed(Entity):
   description    = Field(Text)
   children       = OneToMany('Feed')
   parent         = ManyToOne('Feed')
-  posts          = OneToMany('Post')
+  posts          = OneToMany('Post', order_by="-date")
   lastUpdated    = Field(DateTime, default=datetime(1970,1,1))
   loadFull       = Field(Boolean, default=False)
   # meaning of archiveType:
@@ -116,15 +116,40 @@ class Feed(Entity):
       return self.text+'(%d)'%c
     return self.text
 
-  def expire(self):
+  def expire(self, expunge=False):
     '''Delete all posts that are too old'''
+    # meaning of archiveType:
+    # 0 = use default, 1 = keepall, 2 = use limitCount
+    # 3 = use limitDays, 4 = no archiving
     now=datetime.now()
     if self.archiveType==0: # Default archive config
       for post in self.posts:
         if post.important: continue # Don't delete important stuff
         # FIXME: makethis configurable
         if (now-post.date).days>7: # Right now, keep for a week
-          post.delete()
+          post.deleted=True
+    elif self.archiveType==1: #keepall
+      return
+    elif self.archiveType==2: #limitCount
+      print "Keep only ", self.limitCount
+      for post in self.posts[self.limitCount:]:
+        if post.important: continue # Don't delete important stuff
+        post.deleted=True
+    elif self.archiveType==3: #limitDays
+      for post in self.posts:
+        if post.important: continue # Don't delete important stuff
+        if (now-post.date).days>self.limitDays: # Right now, keep for a week
+          post.deleted=True
+    elif self.archiveType==4: #no archiving
+      for post in self.posts:
+        if post.important: continue # Don't delete important stuff
+        post.deleted=True
+        
+    if expunge:
+      # Delete all posts with deleted==True 
+      for post in Post.query().filter(Post.feed==self).filter(Post.deleted==True).all():
+        post.delete()
+      
     # Force recount
     session.flush()
     self.curUnread=-1
@@ -451,6 +476,7 @@ class Post(Entity):
   important   = Field(Boolean, default=False)
   author      = Field(Text)
   link        = Field(Text)
+  deleted     = Field(Boolean)
 
   def __repr__(self):
     return unicode(self.title)
@@ -574,6 +600,7 @@ class FeedProperties(QtGui.QDialog):
         i=0
       self.ui.updateUnit.setCurrentIndex(i)
       self.ui.updatePeriod.setValue(feed.updateInterval/([1, 60, 1440, 1][i]))
+      
     if feed.archiveType==0: # Use default archiving
       self.ui.useDefault.setChecked(True)
     elif feed.archiveType==1: # Keep all articles
@@ -602,6 +629,20 @@ class FeedProperties(QtGui.QDialog):
     if self.ui.customUpdate.isChecked():
       multiplier=[1, 60, 1440, 0][self.ui.updateUnit.currentIndex()]
       feed.updateInterval=self.ui.updatePeriod.value()*multiplier
+
+    if self.ui.useDefault.isChecked(): # Default expire
+      feed.archiveType=0
+    elif self.ui.keepAll.isChecked(): # Keep everything
+      feed.archiveType=1
+    elif self.ui.limitCount.isChecked(): # Limit by count
+      feed.archiveType=2
+      feed.limitCount=self.ui.count.value()
+    elif self.ui.limitDays.isChecked(): # Limit by age
+      feed.archiveType=3
+      feed.limitDays=self.ui.days.value()
+    elif self.ui.noArchive.isChecked(): # Don't archive
+      feed.archiveType=4
+
 
     session.flush()
     QtGui.QDialog.accept(self)
@@ -806,9 +847,9 @@ class MainWindow(QtGui.QMainWindow):
     if index.isValid():         
       curFeed=self.ui.feeds.model().itemFromIndex(index).feed
     info ("Expiring feed: %s", curFeed)
-    curFeed.expire()
-    # Queue update of feed display (number of unreads may have changed)
-    feedStatusQueue.put([2, curFeed.id, True])
+    curFeed.expire(expunge=True)
+    # Update feed display (number of unreads may have changed)
+    self.updateFeedItem(curFeed)
     # Reopen it because the post list probably changed
     self.open_feed(index)
 
