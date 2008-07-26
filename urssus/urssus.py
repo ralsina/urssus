@@ -1195,10 +1195,6 @@ class MainWindow(QtGui.QMainWindow):
       item.setForeground(QtGui.QColor("black"))
       item2.setForeground(QtGui.QColor("black"))
 
-  def queueUpdateFeedItem(self, feed, parents=False):
-    '''Queues a call to updateFeedItem to be done whenever the timer triggers'''
-    feedStatusQueue.put([2, feed.id, parents])
-
   def updateFeedItem(self, feed, parents=False, updating=False):
     item=self.feedItems[feed.id]
     item.setText(unicode(feed))
