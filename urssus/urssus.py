@@ -11,7 +11,7 @@ import config
 if sys.platform=='win32':
   # easylog and Processing on windows == broken
   def dumb(*a, **kw):
-    pass
+    print a, kw
   critical=dumb
   error=dumb
   warning=dumb
