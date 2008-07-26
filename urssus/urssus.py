@@ -8,8 +8,20 @@ from datetime import datetime, timedelta
 import config
 
 # Logging
-from easylog import critical, error, warning, debug, info, setLogger, DEBUG
-setLogger(name='urssus', level=DEBUG)
+if sys.platform=='win32':
+  # easylog and Processing on windows == broken
+  def dumb(*a, **kw):
+    pass
+  critical=dumb
+  error=dumb
+  warning=dumb
+  debug=dumb
+  info=dumb 
+  setLogger=dumb 
+  DEBUG=dumb
+else:
+  from easylog import critical, error, warning, debug, info, setLogger, DEBUG
+  setLogger(name='urssus', level=DEBUG)
 
 # Templates
 import tenjin
