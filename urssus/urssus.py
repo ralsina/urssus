@@ -1591,7 +1591,7 @@ def main():
   window=MainWindow()
   
   # This will start the background fetcher as a side effect
-#  window.on_actionAbort_Fetches_triggered(True)
+  window.on_actionAbort_Fetches_triggered(True)
   window.show()
   sys.exit(app.exec_())
   
