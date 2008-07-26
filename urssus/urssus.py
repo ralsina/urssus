@@ -131,7 +131,6 @@ class Feed(Entity):
     elif self.archiveType==1: #keepall
       return
     elif self.archiveType==2: #limitCount
-      print "Keep only ", self.limitCount
       for post in self.posts[self.limitCount:]:
         if post.important: continue # Don't delete important stuff
         post.deleted=True
@@ -145,13 +144,14 @@ class Feed(Entity):
         if post.important: continue # Don't delete important stuff
         post.deleted=True
         
+    session.flush()
     if expunge:
       # Delete all posts with deleted==True 
       for post in Post.query().filter(Post.feed==self).filter(Post.deleted==True).all():
         post.delete()
+      session.flush()
       
     # Force recount
-    session.flush()
     self.curUnread=-1
     self.unreadCount()
 
@@ -476,7 +476,7 @@ class Post(Entity):
   important   = Field(Boolean, default=False)
   author      = Field(Text)
   link        = Field(Text)
-  deleted     = Field(Boolean)
+  deleted     = Field(Boolean, default=False)
 
   def __repr__(self):
     return unicode(self.title)
