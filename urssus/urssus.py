@@ -97,6 +97,22 @@ def get_by_or_init(cls, if_new_set={}, **params):
 
 Entity.get_by_or_init = classmethod(get_by_or_init)
 
+class Post(Entity):
+  using_options (tablename='posts')
+  feed        = ManyToOne('Feed')
+  title       = Field(Text)
+  post_id     = Field(Text)
+  content     = Field(Text)
+  date        = Field(DateTime)
+  unread      = Field(Boolean, default=True)
+  important   = Field(Boolean, default=False)
+  author      = Field(Text)
+  link        = Field(Text)
+  deleted     = Field(Boolean, default=False)
+
+  def __repr__(self):
+    return unicode(self.title)
+
 class Feed(Entity):
   using_options (tablename='feeds')
   htmlUrl        = Field(Text)
@@ -471,22 +487,6 @@ class Feed(Entity):
       if ind>0:
         return posts[ind-1]
     return None
-
-class Post(Entity):
-  using_options (tablename='posts')
-  feed        = ManyToOne('Feed')
-  title       = Field(Text)
-  post_id     = Field(Text)
-  content     = Field(Text)
-  date        = Field(DateTime)
-  unread      = Field(Boolean, default=True)
-  important   = Field(Boolean, default=False)
-  author      = Field(Text)
-  link        = Field(Text)
-  deleted     = Field(Boolean, default=False)
-
-  def __repr__(self):
-    return unicode(self.title)
 
 root_feed=None
 
@@ -1124,6 +1124,21 @@ class MainWindow(QtGui.QMainWindow):
     self.ui.feeds.setCurrentIndex(index)
     feed=item.feed
     self.currentFeed=feed
+    self.postItems={}
+    self.posts=[]
+    self.currentPost=None
+    
+    actions=[ self.ui.actionNext_Article,
+              self.ui.actionNext_Unread_Article,  
+              self.ui.actionPrevious_Article,  
+              self.ui.actionPrevious_Unread_Article,  
+              self.ui.actionMark_as_Read,  
+              self.ui.actionMark_as_Unread,  
+              self.ui.actionMark_as_Important,  
+              self.ui.actionDelete_Article,  
+              self.ui.actionOpen_in_Browser,  
+              self.ui.actionRemove_Important_Mark,  
+             ]
     
     if self.combinedView: # All items filtered, as a page
       info("Opening combined")
@@ -1140,12 +1155,14 @@ class MainWindow(QtGui.QMainWindow):
       self.posts=self.posts.order_by(sql.desc(Post.date)).all()
       data=renderTemplate('combined.tmpl',posts=self.posts)
       self.ui.view.setHtml(data)
+      for post in self.posts:
+        self.postItems[post.id]=item
+        
+      for action in actions:
+        action.setEnabled(False)
 
     else: # Standard View
       info ("Opening in standard view")
-      self.postItems={}
-      self.posts=[]
-      self.currentPost=None
       self.ui.posts.__model=PostModel()
       self.ui.posts.setModel(self.ui.posts.__model)
       QtCore.QObject.connect(self.ui.posts.__model, QtCore.SIGNAL("resorted()"), self.resortPosts)
@@ -1186,6 +1203,9 @@ class MainWindow(QtGui.QMainWindow):
         self.ui.posts.__model.appendRow(item)
         self.postItems[post.id]=item
         self.updatePostItem(post)
+
+      for action in actions:
+        action.setEnabled(True)
 
   def updatePostItem(self, post):
     if not post.id in self.postItems: #post is not being displayed
