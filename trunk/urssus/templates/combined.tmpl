@@ -1,8 +1,8 @@
 <?py for post in posts: ?>
     <div>
-    <h2>${post.title}</h2>
+    <h2>#{post.title}</h2>
     <table width=100%>
-    <tr><td><b>Date:&nbsp;</b>${post.date}</td></tr>
+    <tr><td><b>Date:&nbsp;</b>#{post.date}</td></tr>
     <?py if post.author: ?>
       <tr><td><b>Author:&nbsp;</b>#{post.author}</td></tr>
     <?py #end ?>
