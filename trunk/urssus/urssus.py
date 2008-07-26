@@ -283,11 +283,11 @@ class Feed(Entity):
     # There is nothing below, so go to the top and try again
     return root_feed.nextUnreadFeed()
 
-  def unreadCount(self):
+  def unreadCount(self, force=False):
     if self.children:
       self.curUnread=sum([ f.unreadCount() for f in self.children])
     else:
-      if self.curUnread==-1:
+      if self.curUnread==-1 or force:
         info ("Forcing recount in %s", self.title)
         self.curUnread=Post.query.filter(Post.feed==self).filter(Post.unread==True).count()
     return self.curUnread
@@ -392,12 +392,6 @@ class Feed(Entity):
         debug( post )
     self.lastUpdated=datetime.now()
     session.flush()
-    # Force full recount of unread articles for this and all parents
-    f=self
-    while f.parent:
-      f.curUnread=-1
-      f.unreadCount()
-      f=f.parent
       
     # Queue a notification if needed
     if posts and self.notify:
@@ -999,6 +993,7 @@ class MainWindow(QtGui.QMainWindow):
     while not feedStatusQueue.empty():
       data=feedStatusQueue.get()
       [action, id] = data[:2]
+      info("updateFeedStatus: %d %d", action, id)
       if not id in self.feedItems:
         # This shouldn't happen, it means there is a 
         # feed that is not in the tree
@@ -1009,6 +1004,8 @@ class MainWindow(QtGui.QMainWindow):
         self.updateFeedItem(feed, updating=True)
         self.updatesCounter+=1
       elif action==1: # Mark as finished updating
+        # Force recount after update
+        feed.curUnread=-1
         self.updateFeedItem(feed, updating=False, parents=True)
         self.updatesCounter-=1
       elif action==2: # Just update it
@@ -1196,8 +1193,10 @@ class MainWindow(QtGui.QMainWindow):
       item2.setForeground(QtGui.QColor("black"))
 
   def updateFeedItem(self, feed, parents=False, updating=False):
+    info("Updating item for feed %d", feed.id)
+    if not feed.id in self.feedItems:
+      return
     item=self.feedItems[feed.id]
-    item.setText(unicode(feed))
     # The calls to setRowHidden cause a change in the column's width! Looks like a Qt bug to me.
     if self.showOnlyUnread:
       if feed.unreadCount()==0 and feed<>self.currentFeed: 
@@ -1212,6 +1211,7 @@ class MainWindow(QtGui.QMainWindow):
       item.setForeground(QtGui.QColor("darkgrey"))
     else:
       item.setForeground(QtGui.QColor("black"))
+    item.setText(unicode(feed))
     if parents: # Not by default because it's slow
       # Update all ancestors too, because unread counts and such change
       while feed.parent:
@@ -1347,19 +1347,12 @@ class MainWindow(QtGui.QMainWindow):
       feedStatusQueue.put([1, id])
     self.updateFeedStatus()
     self.updatesCounter=0
-    
-    # Since we terminate forcefully, the contents of the
-    # queues are probably corrupted. So throw them away.
-    statusQueue=processing.Queue()
-    feedStatusQueue=processing.Queue()
-    
+  
     p = processing.Process(target=feedUpdater)
     p.setDaemon(True)
     p.start()
     processes.append(p)
-
-
-
+    
   def on_actionNext_Unread_Article_triggered(self, i=None):
     if i==None: return
     info( "Next Unread Article")
@@ -1575,7 +1568,7 @@ def feedUpdater(full=False):
         if (now-feed.lastUpdated).seconds>period:
           info("updating because of timeout")
           feedStatusQueue.put([0, feed.id])
-          try: # we can't let this fail or it will stay yellow forever;-)
+          try: # we can't let this fail or it will stay marked forever;-)
             feed.update()
           except:
             pass
@@ -1598,7 +1591,7 @@ def main():
   window=MainWindow()
   
   # This will start the background fetcher as a side effect
-  # window.on_actionAbort_Fetches_triggered(True)
+#  window.on_actionAbort_Fetches_triggered(True)
   window.show()
   sys.exit(app.exec_())
   
