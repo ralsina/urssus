@@ -283,11 +283,11 @@ class Feed(Entity):
     # There is nothing below, so go to the top and try again
     return root_feed.nextUnreadFeed()
 
-  def unreadCount(self, force=False):
+  def unreadCount(self):
     if self.children:
       self.curUnread=sum([ f.unreadCount() for f in self.children])
     else:
-      if self.curUnread==-1 or force:
+      if self.curUnread==-1:
         info ("Forcing recount in %s", self.title)
         self.curUnread=Post.query.filter(Post.feed==self).filter(Post.unread==True).count()
     return self.curUnread
