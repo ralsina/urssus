@@ -1211,6 +1211,9 @@ class MainWindow(QtGui.QMainWindow):
     if not post.id in self.postItems: #post is not being displayed
       return
       
+    if self.combinedView: # The post items are not visible anyway
+      return
+      
     item=self.postItems[post.id]
     index=self.ui.posts.model().indexFromItem(item)
     item2=self.ui.posts.model().itemFromIndex(self.ui.posts.model().index(index.row(), 1, index.parent()))
