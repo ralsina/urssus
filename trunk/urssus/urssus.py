@@ -18,12 +18,13 @@ to_str=tenjin.helpers.to_str
 escape=tenjin.helpers.escape
 templateEngine=tenjin.Engine()
 tmplDir=os.path.join(os.path.abspath(os.path.dirname(__file__)), 'templates')
+cssFile=os.path.join(tmplDir,'style.css')
+
 # FIXME: when deploying need to find a decent way to locate the templates
 def renderTemplate(tname, **context):
   context['to_str']=to_str
   context['escape']=escape
   return templateEngine.render(os.path.join(tmplDir,tname), context)
-
 
 # References to background processes
 import processing
@@ -683,7 +684,7 @@ class MainWindow(QtGui.QMainWindow):
     page=self.ui.view.page()
     page.setLinkDelegationPolicy(page.DelegateAllLinks)
     self.ui.view.setFocus(QtCore.Qt.TabFocusReason)
-
+    QtWebKit.QWebSettings.globalSettings().setUserStyleSheetUrl(QtCore.QUrl(cssFile))
     # Set sorting for post list
     self.ui.posts.sortByColumn(1, QtCore.Qt.DescendingOrder)
 
