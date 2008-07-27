@@ -1163,8 +1163,7 @@ class MainWindow(QtGui.QMainWindow):
         self.posts=self.posts.filter(self.statusFilter==True)
       # FIXME: find a way to add sorting to the UI for this (not very important)
       self.posts=self.posts.order_by(sql.desc(Post.date)).all()
-      data=renderTemplate('combined.tmpl',posts=self.posts)
-      self.ui.view.setHtml(data)
+      self.ui.view.setHtml(renderTemplate('combined.tmpl',posts=self.posts))
       for post in self.posts:
         self.postItems[post.id]=item
         
@@ -1216,6 +1215,9 @@ class MainWindow(QtGui.QMainWindow):
 
       for action in actions:
         action.setEnabled(True)
+
+      self.ui.view.setHtml(renderTemplate('feed.tmpl',feed=feed))
+
 
   def updatePostItem(self, post):
     if not post.id in self.postItems: #post is not being displayed
