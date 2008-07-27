@@ -672,6 +672,11 @@ class MainWindow(QtGui.QMainWindow):
     self.ui=Ui_MainWindow()
     self.ui.setupUi(self)
     
+    # add widgets to status bar
+    self.progress=QtGui.QProgressBar()
+    self.progress.setFixedWidth(120)
+    self.ui.statusBar.addPermanentWidget(self.progress)
+    
     # Use custom delegate to paint feed and post items
     self.ui.feeds.setItemDelegate(FeedDelegate(self))
     self.ui.posts.setItemDelegate(PostDelegate(self))
@@ -1075,7 +1080,7 @@ class MainWindow(QtGui.QMainWindow):
     self.ui.feeds.expandAll()
     
   def on_view_loadProgress(self, p):
-    self.statusBar().showMessage("Page loaded %d%%"%p)
+    self.progress.setValue(p)
 
   def on_feeds_clicked(self, index):
     item=self.model.itemFromIndex(index)
@@ -1269,6 +1274,7 @@ class MainWindow(QtGui.QMainWindow):
     self.updatePostItem(post)
     if post.feed.loadFull and post.link:
       # If I pass post.link, it crashes if I click something else quickly
+      self.ui.statusBar.showMessage("Opening %s"%post.link)
       self.ui.view.setUrl(QtCore.QUrl(QtCore.QString(post.link)))
     else:
       self.ui.view.setHtml(renderTemplate('post.tmpl',post=post))
@@ -1336,9 +1342,13 @@ class MainWindow(QtGui.QMainWindow):
       if QtGui.QMessageBox.question(None, "Delete Feed - uRSSus", 
          'Are you sure you want to delete "%s"'%item.feed, 
          QtGui.QMessageBox.Yes | QtGui.QMessageBox.No, QtGui.QMessageBox.No ) == QtGui.QMessageBox.Yes:
+        parent=item.feed.parent
         item.feed.delete()
         self.ui.feeds.model().removeRow(index.row(), index.parent())
         session.flush()
+        # Trigger update on parent item
+        # FIXME: check that deleting a feed corrects the parent's unread count
+        self.updateFeedItem(parent, parents=True)
 
   def on_actionOpen_Homepage_triggered(self, i=None):
     if i==None: return
