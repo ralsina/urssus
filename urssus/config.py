@@ -6,7 +6,7 @@ import ConfigParser
 import os
 from demjson import JSON
 
-cfdir=os.path.expanduser('~/.urssus/')
+cfdir=os.path.join(os.path.expanduser('~'),'.urssus')
 cfname=os.path.join(cfdir,'config')
 
 def getValue(section,key,default=None):

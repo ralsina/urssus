@@ -953,7 +953,7 @@ class Engine(object):
         _write_file_with_lock(cache_filename, s)
 
     def cachename(self, filename):
-        return filename + '.cache'
+        return os.path.join(os.path.expanduser('~'),'.urssus', os.path.basename(filename) + '.cache')
 
     def create_template(self, filename, _context, _globals):
         """Read template file and create template object."""

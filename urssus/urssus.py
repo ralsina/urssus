@@ -726,9 +726,10 @@ class MainWindow(QtGui.QMainWindow):
     page.setLinkDelegationPolicy(page.DelegateAllLinks)
     self.ui.view.setFocus(QtCore.Qt.TabFocusReason)
     QtWebKit.QWebSettings.globalSettings().setUserStyleSheetUrl(QtCore.QUrl(cssFile))
+    QtCore.QObject.connect(self.ui.view.page(), QtCore.SIGNAL(" linkHovered ( const QString & link, const QString & title, const QString & textContent )"), self.linkHovered)
+
     # Set sorting for post list
     self.ui.posts.sortByColumn(1, QtCore.Qt.DescendingOrder)
-
 
     # Fill with feed data
     self.showOnlyUnread=False
@@ -1015,10 +1016,26 @@ class MainWindow(QtGui.QMainWindow):
     self.textFilter=unicode(self.filterWidget.ui.filter.text())
     info("Text filter set to: %s", self.textFilter)
     self.open_feed(self.ui.feeds.currentIndex())
-    
+
+  def linkHovered(self, link, title, content):
+    # FIXME: doesn't trigger. Maybe I need to reconnect after 
+    # I set the contents of the webview?
+    self.ui.statusBar.showMessage(link)
+
   def on_view_linkClicked(self, url):
     QtGui.QDesktopServices.openUrl(url)
-        
+
+  def on_view_loadStarted(self):
+    self.progress.show()
+    self.progress.setValue(0)
+
+  def on_view_loadProgress(self, p):
+    self.progress.setValue(p)
+
+  def on_view_loadFinished(self):
+    self.progress.setValue(0)
+    self.progress.hide()
+
   def on_actionStatus_Bar_triggered(self, i=None):
     if i==None: return
     if self.ui.actionStatus_Bar.isChecked():
@@ -1103,9 +1120,6 @@ class MainWindow(QtGui.QMainWindow):
       
     self.ui.feeds.expandAll()
     
-  def on_view_loadProgress(self, p):
-    self.progress.setValue(p)
-
   def on_feeds_clicked(self, index):
     item=self.model.itemFromIndex(index)
     if not item: return
