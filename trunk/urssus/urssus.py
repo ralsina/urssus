@@ -60,6 +60,9 @@ feedStatusQueue=processing.Queue()
 # Mark Pilgrim's feed parser
 import feedparser as fp
 
+# Some feeds put html in titles, which can't be shown in QStandardItems
+from html2text import html2text as h2t
+
 def detailToAuthor(ad):
   '''Converts something like feedparser's author_detail into a 
   nice string describing the author'''
@@ -111,6 +114,8 @@ class Post(Entity):
   deleted     = Field(Boolean, default=False)
 
   def __repr__(self):
+    if '<' in self.title:
+      return h2t(self.title).strip()
     return unicode(self.title)
 
 class Feed(Entity):
@@ -539,7 +544,7 @@ class PostModel(QtGui.QStandardItemModel):
     
     if index.column()==0:
       item=self.itemFromIndex(index)
-      v=QtCore.QVariant(item.post.title)
+      v=QtCore.QVariant(unicode(item.post))
     elif index.column()==1:
       # Tricky!
       ind=self.index(index.row(), 0, index.parent())
