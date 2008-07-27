@@ -3,9 +3,13 @@ import os
 options(
     setup=Bunch(
         name="uRSSus",
-        packages=['urssus'],
+        packages=['urssus', 'urssus.ui', 'urssus.templates'],
         version="0.0.1",
-        author="Roberto Alsina"
+        author="Roberto Alsina", 
+        package_data = {'urssus.templates': ['*.tmpl']}, 
+        entry_points = {
+                        'gui_scripts': ['urssus = urssus.urssus:main']
+        }
     )
 )
 

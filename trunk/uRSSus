@@ -2,6 +2,6 @@
 
 '''Just a launcher for urssus'''
 
+import urssus
 from urssus import urssus
-
 urssus.main()
