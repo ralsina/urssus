@@ -388,6 +388,10 @@ class Feed(Entity):
         elif 'value' in post:
           content=post['value']
          
+        # Rudimentary NON-html detection
+        if not '<' in content:
+          content='<pre>%s</pre>'%escape(content)
+         
         # Author if available, else None
         author=''
         # First, we may have author_detail, which is the nicer one
