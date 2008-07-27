@@ -4,12 +4,25 @@ options(
     setup=Bunch(
         name="uRSSus",
         packages=['urssus', 'urssus.ui', 'urssus.templates'],
-        version="0.0.1",
-        author="Roberto Alsina", 
+        version="0.1.0",
+        author="Roberto Alsina",
+        author_email='ralsina@netmanagers.com.ar',  
         package_data = {'urssus.templates': ['*.tmpl']}, 
-        entry_points = {
-                        'gui_scripts': ['urssus = urssus.urssus:main']
-        }
+        entry_points = {'gui_scripts': ['urssus = urssus.urssus:main']}, 
+        install_requires = ['SQLAlchemy==0.4.6', 'Elixir==0.5.2', 'processing'], 
+        description = 'A multiplatform GUI news agregator.', 
+        license = 'GPLv2', 
+        keywords = 'atom rss pyqt', 
+        url = 'http://urssus.googlecode.com', 
+        long_description = '''
+uRSSus is a multi-platform RSS/Atom news aggregtor, with a PyQt4 GUI. 
+The code is hosted at http://urssus.googlecode.com and the license is GPL v2.0.
+
+Hope you enjoy it, please use googlecode's issues_ page for bug reports, or mail me at
+ralsina at netmanagers dot com dot ar.
+        
+.. _issues: http://code.google.com/p/urssus/issues/list
+'''
     )
 )
 
