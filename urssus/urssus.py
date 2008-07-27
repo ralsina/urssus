@@ -277,15 +277,23 @@ class Feed(Entity):
       return None
       
     # First see if there is any sibling with unread items above this one
+    if not self.parent: # At root feed
+      return self.lastChild().previousUnreadFeed()
     sibs=self.parent.children
     sibs=sibs[:sibs.index(self)]
     sibs.reverse()
     for sib in sibs:
       if sib.unreadCount():
-        return sib
+        if sib.xmlUrl:
+          return sib
+        else:
+          return sib.previousUnreadFeed()
     # Then see if our parent is the answer
     if self.parent and self.parent.unreadCount():
-      return self.parent
+      if self.parent.xmlUrl:
+        return self.parent
+      else:
+        return self.parent.lastChild().previousUnreadFeed()
     elif self.parent:
       # Not him, pass the ball to uncle/gramps/whatever
       return self.parent.previousUnreadFeed()
@@ -301,12 +309,18 @@ class Feed(Entity):
     if len(self.children):
       for child in self.children:
         if child.unreadCount():
-          return child
+          if child.xmlUrl:
+            return child
+          else: # Skip folders
+            return child.nextUnreadFeed()
     # Then search for a sibling with unread items below this one
     sibs=self.parent.children
     for sib in sibs[sibs.index(self)+1:]:
       if sib.unreadCount():
-        return sib
+        if sib.xmlUrl:
+          return sib
+        else:
+          return sib.nextUnreadFeed()
     else:
       # Go to next uncle/greatuncle/whatever
       parent=self.parent
@@ -316,6 +330,7 @@ class Feed(Entity):
         parent=parent.parent
     # There is nothing below, so go to the top and try again
     return root_feed.nextUnreadFeed()
+      
 
   def unreadCount(self):
     if self.children:
