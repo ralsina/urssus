@@ -7,7 +7,7 @@ meta = MetaData(migrate.migrate_engine)
 
 class Post(Entity):
   using_options (tablename='posts', metadata=meta)
-  feed        = ManyToOne('Feed')
+  feed        = ManyToOne('Feed', inverse='posts')
   title       = Field(Text)
   post_id     = Field(Text)
   content     = Field(Text)
