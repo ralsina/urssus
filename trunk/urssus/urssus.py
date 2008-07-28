@@ -123,17 +123,17 @@ root_feed=None
 
 def initDB():
   global root_feed
+  # FIXME: show something here
+  os.system('urssus_upgrade_db')
   elixir.metadata.bind = database.dbUrl
-  database.initDB()
   elixir.setup_all()
   elixir.session.flush()
-  root_feed=Feed.get_by(parent=None)
-  if not root_feed:
-    root_feed=Feed(parent=None)
+  root_feed=Feed.get_by_or_init(parent=None)
   elixir.session.flush()
+  return True
 
 class Post(elixir.Entity):
-  elixir.using_options (tablename='posts', autosetup=True)
+  elixir.using_options (tablename='posts')
   feed        = elixir.ManyToOne('Feed')
   title       = elixir.Field(elixir.Text)
   post_id     = elixir.Field(elixir.Text)
@@ -151,7 +151,7 @@ class Post(elixir.Entity):
     return unicode(self.title)
 
 class Feed(elixir.Entity):
-  elixir.using_options (tablename='feeds', autosetup=True)
+  elixir.using_options (tablename='feeds')
   htmlUrl        = elixir.Field(elixir.Text)
   xmlUrl         = elixir.Field(elixir.Text)
   title          = elixir.Field(elixir.Text)

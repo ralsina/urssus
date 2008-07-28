@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE Project SYSTEM "Project-4.2.dtd">
 <!-- eric4 project file for project urssus -->
-<!-- Saved: 2008-07-27, 23:07:32 -->
+<!-- Saved: 2008-07-28, 14:39:46 -->
 <!-- Copyright (C) 2008 Roberto Alsina, ralsina@netmanagers.com.ar -->
 <Project version="4.2">
   <ProgLanguage mixed="0">Python</ProgLanguage>
@@ -101,6 +101,36 @@
       <Dir>urssus</Dir>
       <Dir>ui</Dir>
       <Name>Ui_searchwidget.py</Name>
+    </Source>
+    <Source>
+      <Dir>urssus</Dir>
+      <Name>db_versions.py</Name>
+    </Source>
+    <Source>
+      <Dir>urssus</Dir>
+      <Name>database.py</Name>
+    </Source>
+    <Source>
+      <Dir>urssus</Dir>
+      <Dir>versioning</Dir>
+      <Name>__init__.py</Name>
+    </Source>
+    <Source>
+      <Dir>urssus</Dir>
+      <Dir>versioning</Dir>
+      <Name>manage.py</Name>
+    </Source>
+    <Source>
+      <Dir>urssus</Dir>
+      <Dir>versioning</Dir>
+      <Dir>versions</Dir>
+      <Name>__init__.py</Name>
+    </Source>
+    <Source>
+      <Dir>urssus</Dir>
+      <Dir>versioning</Dir>
+      <Dir>versions</Dir>
+      <Name>001_Add_initial_tables.py</Name>
     </Source>
   </Sources>
   <Forms>
