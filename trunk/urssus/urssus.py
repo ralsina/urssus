@@ -777,6 +777,8 @@ class MainWindow(QtGui.QMainWindow):
   def notificationClicked(self):
     if self.notifiedFeed:
       self.open_feed(self.ui.feeds.model().indexFromItem(self.feedItems[self.notifiedFeed.id]))
+      self.activateWindow()
+      self.raise_()
 
   def loadPreferences(self):
     
