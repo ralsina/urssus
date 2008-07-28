@@ -118,7 +118,7 @@ def get_by_or_init(cls, if_new_set={}, **params):
 Entity.get_by_or_init = classmethod(get_by_or_init)
 
 class Post(Entity):
-  using_options (tablename='posts')
+  using_options (tablename='posts', autosetup=True)
   feed        = ManyToOne('Feed')
   title       = Field(Text)
   post_id     = Field(Text)
@@ -136,7 +136,7 @@ class Post(Entity):
     return unicode(self.title)
 
 class Feed(Entity):
-  using_options (tablename='feeds')
+  using_options (tablename='feeds', autosetup=True)
   htmlUrl        = Field(Text)
   xmlUrl         = Field(Text)
   title          = Field(Text)
