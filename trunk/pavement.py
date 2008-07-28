@@ -11,7 +11,7 @@ options(
         version="0.1.0",
         author="Roberto Alsina",
         author_email='ralsina@netmanagers.com.ar',  
-        package_data = {'urssus.templates': ['*.tmpl'],
+        package_data = {'urssus.templates': ['*.tmpl', '*.css'],
                         'urssus.versioning': ['*.cfg'], 
                        }, 
         entry_points = {'gui_scripts': ['urssus = urssus.urssus:main'], 
