@@ -448,7 +448,7 @@ class Feed(elixir.Entity):
          
         # Rudimentary NON-html detection
         if not '<' in content:
-          content='<pre>%s</pre>'%escape(content)
+          content=escape(content).replace('\n\n','<p>')
          
         # Author if available, else None
         author=''
