@@ -804,9 +804,12 @@ class MainWindow(QtGui.QMainWindow):
     curPost=self.getCurrentPost()
     if not curPost: return
     info ("Deleting post: %s", curPost)
-    curPost.delete()
-    session.flush()
-    self.open_feed(self.ui.feeds.currentIndex())
+    if QtGui.QMessageBox.question(None, "Delete Article - uRSSus", 
+        'Are you sure you want to delete "%s"'%curPost, 
+        QtGui.QMessageBox.Yes | QtGui.QMessageBox.No, QtGui.QMessageBox.No ) == QtGui.QMessageBox.Yes:
+      curPost.delete()
+      session.flush()
+      self.open_feed(self.ui.feeds.currentIndex())
 
   def on_actionMark_as_Read_triggered(self, i=None):
     # FIXME: handle selections
