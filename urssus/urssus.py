@@ -100,8 +100,10 @@ def detailToAuthor(ad):
   return author
 
 # DB Classes
-from elixir import * 
 import sqlalchemy as sql
+import elixir as elixir
+import migrate as migrate
+import database
 
 # Patch from http://elixir.ematia.de/trac/wiki/Recipes/GetByOrAddPattern
 def get_by_or_init(cls, if_new_set={}, **params):
@@ -115,50 +117,61 @@ def get_by_or_init(cls, if_new_set={}, **params):
     result.set(**if_new_set)
   return result
 
-Entity.get_by_or_init = classmethod(get_by_or_init)
+elixir.Entity.get_by_or_init = classmethod(get_by_or_init)
 
-class Post(Entity):
-  using_options (tablename='posts', autosetup=True)
-  feed        = ManyToOne('Feed')
-  title       = Field(Text)
-  post_id     = Field(Text)
-  content     = Field(Text)
-  date        = Field(DateTime)
-  unread      = Field(Boolean, default=True)
-  important   = Field(Boolean, default=False)
-  author      = Field(Text)
-  link        = Field(Text)
-  deleted     = Field(Boolean, default=False)
+def initDB():
+  elixir.metadata.bind = database.dbUrl
+  database.initDB()
+  elixir.setup_all()
+  global root_feed
+  elixir.session.flush()
+  root_feed=Feed.get_by(parent=None)
+  if not root_feed:
+    root_feed=Feed(parent=None)
+  elixir.session.flush()
+
+class Post(elixir.Entity):
+  elixir.using_options (tablename='posts', autosetup=True)
+  feed        = elixir.ManyToOne('Feed')
+  title       = elixir.Field(elixir.Text)
+  post_id     = elixir.Field(elixir.Text)
+  content     = elixir.Field(elixir.Text)
+  date        = elixir.Field(elixir.DateTime)
+  unread      = elixir.Field(elixir.Boolean, default=True)
+  important   = elixir.Field(elixir.Boolean, default=False)
+  author      = elixir.Field(elixir.Text)
+  link        = elixir.Field(elixir.Text)
+  deleted     = elixir.Field(elixir.Boolean, default=False)
 
   def __repr__(self):
     if '<' in self.title:
       return h2t(self.title).strip()
     return unicode(self.title)
 
-class Feed(Entity):
-  using_options (tablename='feeds', autosetup=True)
-  htmlUrl        = Field(Text)
-  xmlUrl         = Field(Text)
-  title          = Field(Text)
-  text           = Field(Text, default='')
-  description    = Field(Text)
-  children       = OneToMany('Feed')
-  parent         = ManyToOne('Feed')
-  posts          = OneToMany('Post', order_by="-date")
-  lastUpdated    = Field(DateTime, default=datetime(1970,1,1))
-  loadFull       = Field(Boolean, default=False)
+class Feed(elixir.Entity):
+  elixir.using_options (tablename='feeds', autosetup=True)
+  htmlUrl        = elixir.Field(elixir.Text)
+  xmlUrl         = elixir.Field(elixir.Text)
+  title          = elixir.Field(elixir.Text)
+  text           = elixir.Field(elixir.Text, default='')
+  description    = elixir.Field(elixir.Text)
+  children       = elixir.OneToMany('Feed', inverse='parent')
+  parent         = elixir.ManyToOne('Feed')
+  posts          = elixir.OneToMany('Post', order_by="-date", inverse='feed')
+  lastUpdated    = elixir.Field(elixir.DateTime, default=datetime(1970,1,1))
+  loadFull       = elixir.Field(elixir.Boolean, default=False)
   # meaning of archiveType:
   # 0 = use default, 1 = keepall, 2 = use limitCount
   # 3 = use limitDays, 4 = no archiving
-  archiveType    = Field(Integer, default=0) 
-  limitCount     = Field(Integer, default=1000)
-  limitDays      = Field(Integer, default=60)
+  archiveType    = elixir.Field(elixir.Integer, default=0) 
+  limitCount     = elixir.Field(elixir.Integer, default=1000)
+  limitDays      = elixir.Field(elixir.Integer, default=60)
 
-  notify         = Field(Boolean, default=False)
-  markRead       = Field(Boolean, default=False)
-  icon           = Field(Binary, deferred=True)
+  notify         = elixir.Field(elixir.Boolean, default=False)
+  markRead       = elixir.Field(elixir.Boolean, default=False)
+  icon           = elixir.Field(elixir.Binary, deferred=True)
   # updateInterval -1 means use the app default, any other value, it's in minutes
-  updateInterval = Field(Integer, default=-1)
+  updateInterval = elixir.Field(elixir.Integer, default=-1)
   curUnread      = -1
 
   def __repr__(self):
@@ -195,12 +208,12 @@ class Feed(Entity):
         if post.important: continue # Don't delete important stuff
         post.deleted=True
         
-    session.flush()
+    elixir.session.flush()
     if expunge:
       # Delete all posts with deleted==True 
       for post in Post.query().filter(Post.feed==self).filter(Post.deleted==True).all():
         post.delete()
-      session.flush()
+      elixir.session.flush()
       
     # Force recount
     self.curUnread=-1
@@ -378,7 +391,7 @@ class Feed(Entity):
       # FIXME: handle 404, 403 whatever errors
       self.icon=urlopen(urlparse.urljoin(self.htmlUrl,'/favicon.ico')).read()
       open('/tmp/icon.ico', 'w').write(self.icon)
-    session.flush()
+    elixir.session.flush()
 
     
   def update(self):
@@ -461,7 +474,7 @@ class Feed(Entity):
       except KeyError:
         debug( post )
     self.lastUpdated=datetime.now()
-    session.flush()
+    elixir.session.flush()
       
     # Queue a notification if needed
     if posts and self.notify:
@@ -530,17 +543,6 @@ class Feed(Entity):
     return None
 
 root_feed=None
-
-def initDB():
-  global root_feed
-  # This is just temporary
-  metadata.bind = "sqlite:///%s/urssus.sqlite"%config.cfdir
-  # metadata.bind.echo = True
-  setup_all()
-  if not os.path.exists("urssus.sqlite"):
-    create_all()
-  root_feed=Feed.get_by_or_init(parent=None)
-  session.flush()
 
 # UI Classes
 from PyQt4 import QtGui, QtCore, QtWebKit
@@ -692,7 +694,7 @@ class FeedProperties(QtGui.QDialog):
       feed.archiveType=4
 
 
-    session.flush()
+    elixir.session.flush()
     QtGui.QDialog.accept(self)
  
 class MainWindow(QtGui.QMainWindow):
@@ -808,7 +810,7 @@ class MainWindow(QtGui.QMainWindow):
         'Are you sure you want to delete "%s"'%curPost, 
         QtGui.QMessageBox.Yes | QtGui.QMessageBox.No, QtGui.QMessageBox.No ) == QtGui.QMessageBox.Yes:
       curPost.delete()
-      session.flush()
+      elixir.session.flush()
       self.open_feed(self.ui.feeds.currentIndex())
 
   def on_actionMark_as_Read_triggered(self, i=None):
@@ -820,7 +822,7 @@ class MainWindow(QtGui.QMainWindow):
       info ("Marking as read post: %s", curPost)
       curPost.unread=False
       curPost.feed.curUnread-=1 
-      session.flush()
+      elixir.session.flush()
       self.updatePostItem(curPost)
       self.updateFeedItem(curPost.feed)
 
@@ -833,7 +835,7 @@ class MainWindow(QtGui.QMainWindow):
       info ("Marking as unread post: %s", curPost)
       curPost.unread=True
       curPost.feed.curUnread+=1
-      session.flush()
+      elixir.session.flush()
       self.updatePostItem(curPost)
       self.updateFeedItem(curPost.feed)
 
@@ -852,7 +854,7 @@ class MainWindow(QtGui.QMainWindow):
     if not curPost: return
     info ("Marking as important post: %s", curPost)
     curPost.important=True
-    session.flush()
+    elixir.session.flush()
     self.updatePostItem(curPost)
 
   def on_actionRemove_Important_Mark_triggered(self, i=None):
@@ -862,7 +864,7 @@ class MainWindow(QtGui.QMainWindow):
     if not curPost: return
     info ("Marking as not important post: %s", curPost)
     curPost.important=False
-    session.flush()
+    elixir.session.flush()
     self.updatePostItem(curPost)
 
 
@@ -959,7 +961,7 @@ class MainWindow(QtGui.QMainWindow):
       # if curFeed is a folder, add as child
       else:
         newFeed.parent=curFeed
-      session.flush()
+      elixir.session.flush()
       self.initTree()
       self.ui.feeds.setCurrentIndex(self.ui.feeds.model().indexFromItem(self.feedItems[newFeed.id]))
       self.on_actionEdit_Feed_triggered(True)
@@ -982,7 +984,7 @@ class MainWindow(QtGui.QMainWindow):
       # if curFeed is a folder, add as child
       else:
         newFolder.parent=curFeed
-      session.flush()
+      elixir.session.flush()
       self.initTree()
       self.ui.feeds.setCurrentIndex(self.ui.feeds.model().indexFromItem(self.feedItems[newFolder.id]))
 
@@ -1339,7 +1341,7 @@ class MainWindow(QtGui.QMainWindow):
     if post.unread:
       post.unread=False
       post.feed.curUnread-=1
-      session.flush()
+      elixir.session.flush()
     self.updateFeedItem(post.feed, parents=True)
     self.updatePostItem(post)
     if post.feed.loadFull and post.link:
@@ -1400,7 +1402,7 @@ class MainWindow(QtGui.QMainWindow):
           post.unread=False
           post.feed.curUnread-=1
           self.updatePostItem(post)
-      session.flush()
+      elixir.session.flush()
       self.updateFeedItem(item.feed, parents=True)
 
   def on_actionDelete_Feed_triggered(self, i=None):
@@ -1431,7 +1433,7 @@ class MainWindow(QtGui.QMainWindow):
         del(self.feedItems[item.feed.id])
         item.feed.delete()
         self.ui.feeds.model().removeRow(index.row(), index.parent())
-        session.flush()
+        elixir.session.flush()
         
   def on_actionOpen_Homepage_triggered(self, i=None):
     if i==None: return
@@ -1672,7 +1674,7 @@ def importOPML(fname, parent=root_feed):
   tree = ElementTree.parse(fname)
   for node in tree.find('//body').getchildren():
     importSubTree(parent, node)
-  session.flush()
+  elixir.session.flush()
 
 # The feed updater (runs out-of-process)
 def feedUpdater(full=False):
