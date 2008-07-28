@@ -1186,6 +1186,8 @@ class MainWindow(QtGui.QMainWindow):
     self.ui.feeds.setCurrentIndex(index)
     feed=item.feed
     self.currentFeed=feed
+    # Scroll the feeds view so this feed is visible
+    self.ui.feeds.scrollTo(self.ui.feeds.model().indexFromItem(self.postItems[self.currentFeed.id]))
     self.postItems={}
     self.posts=[]
     self.currentPost=None
