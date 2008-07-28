@@ -9,7 +9,7 @@ options(
         author_email='ralsina@netmanagers.com.ar',  
         package_data = {'urssus.templates': ['*.tmpl']}, 
         entry_points = {'gui_scripts': ['urssus = urssus.urssus:main']}, 
-        install_requires = ['SQLAlchemy==0.4.6', 'Elixir==0.5.2', 'processing'], 
+        install_requires = ['SQLAlchemy==0.4.6', 'Elixir==0.5.2', 'processing', 'sqlalchemy-migrate'], 
         description = 'A multiplatform GUI news agregator.', 
         license = 'GPLv2', 
         keywords = 'atom rss pyqt', 
