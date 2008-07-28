@@ -123,8 +123,19 @@ root_feed=None
 
 def initDB():
   global root_feed
-  # FIXME: show something here
-  os.system('urssus_upgrade_db')
+  REQUIRED_SCHEMA=1
+  # FIXME: show what we are doing on the UI
+  if not os.path.exists(database.dbfile): # Just create it
+    os.system('urssus_upgrade_db')
+  else: # May need to upgrade
+    try:
+      curVer=migrate.versioning.api.db_version(database.dbUrl, database.repo)
+    except:
+      curVer=0
+    if curVer < REQUIRED_SCHEMA:
+      print "UPGRADING from %s to %s"%(curVer, REQUIRED_SCHEMA)
+      os.system('urssus_upgrade_db')
+    
   elixir.metadata.bind = database.dbUrl
   elixir.setup_all()
   elixir.session.flush()
