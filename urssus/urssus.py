@@ -119,11 +119,13 @@ def get_by_or_init(cls, if_new_set={}, **params):
 
 elixir.Entity.get_by_or_init = classmethod(get_by_or_init)
 
+root_feed=None
+
 def initDB():
+  global root_feed
   elixir.metadata.bind = database.dbUrl
   database.initDB()
   elixir.setup_all()
-  global root_feed
   elixir.session.flush()
   root_feed=Feed.get_by(parent=None)
   if not root_feed:
@@ -541,8 +543,6 @@ class Feed(elixir.Entity):
       if ind>0:
         return posts[ind-1]
     return None
-
-root_feed=None
 
 # UI Classes
 from PyQt4 import QtGui, QtCore, QtWebKit
@@ -1643,7 +1643,10 @@ def exportOPML(fname):
   opml.outlines=root._children
   opml.output(open(fname, 'w'))
     
-def importOPML(fname, parent=root_feed):
+def importOPML(fname, parent=None):
+  global root_feed
+  if parent == None:
+    parent=root_feed
 
   def importSubTree(parent, node):
     if node.tag<>'outline':
