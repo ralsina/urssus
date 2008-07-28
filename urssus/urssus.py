@@ -1403,6 +1403,7 @@ class MainWindow(QtGui.QMainWindow):
          'Are you sure you want to delete "%s"'%item.feed, 
          QtGui.QMessageBox.Yes | QtGui.QMessageBox.No, QtGui.QMessageBox.No ) == QtGui.QMessageBox.Yes:
         parent=item.feed.parent
+        del(self.feedItems[item.feed.id])
         item.feed.delete()
         self.ui.feeds.model().removeRow(index.row(), index.parent())
         session.flush()
@@ -1413,6 +1414,10 @@ class MainWindow(QtGui.QMainWindow):
         # Clean posts list
         self.ui.posts.setModel(PostModel())
         self.ui.view.setHtml('')
+        
+        # No feed current
+        self.ui.feeds.setCurrentIndex(QtCore.QModelIndex())
+        self.currentFeed=None
 
   def on_actionOpen_Homepage_triggered(self, i=None):
     if i==None: return
@@ -1466,9 +1471,11 @@ class MainWindow(QtGui.QMainWindow):
   def on_actionNext_Unread_Article_triggered(self, i=None):
     if i==None: return
     info( "Next Unread Article")
+    if not self.currentFeed:
+      self.on_actionNext_Unread_Feed_triggered(True)
     if self.currentPost:
       post=self.currentPost
-    elif len(self.posts):
+    elif self.posts: 
       post=self.posts[0]
     else: # No posts in this feed, just go the next unread feed
       self.on_actionNext_Unread_Feed_triggered(True)
