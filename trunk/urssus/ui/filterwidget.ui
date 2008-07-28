@@ -42,6 +42,9 @@
       <iconset resource="../images/icons.qrc" >
        <normaloff>:/editclear.svg</normaloff>:/editclear.svg</iconset>
      </property>
+     <property name="autoRaise" >
+      <bool>true</bool>
+     </property>
     </widget>
    </item>
    <item>
