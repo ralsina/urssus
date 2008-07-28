@@ -1409,6 +1409,10 @@ class MainWindow(QtGui.QMainWindow):
         # Trigger update on parent item
         # FIXME: check that deleting a feed corrects the parent's unread count
         self.updateFeedItem(parent, parents=True)
+        
+        # Clean posts list
+        self.ui.posts.setModel(PostModel())
+        self.ui.view.setHtml('')
 
   def on_actionOpen_Homepage_triggered(self, i=None):
     if i==None: return
