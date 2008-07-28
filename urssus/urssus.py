@@ -1403,22 +1403,26 @@ class MainWindow(QtGui.QMainWindow):
          'Are you sure you want to delete "%s"'%item.feed, 
          QtGui.QMessageBox.Yes | QtGui.QMessageBox.No, QtGui.QMessageBox.No ) == QtGui.QMessageBox.Yes:
         parent=item.feed.parent
-        del(self.feedItems[item.feed.id])
-        item.feed.delete()
-        self.ui.feeds.model().removeRow(index.row(), index.parent())
-        session.flush()
-        # Trigger update on parent item
-        # FIXME: check that deleting a feed corrects the parent's unread count
-        self.updateFeedItem(parent, parents=True)
-        
+
         # Clean posts list
         self.ui.posts.setModel(PostModel())
         self.ui.view.setHtml('')
-        
+
+        # Trigger update on parent item
+        parent.curUnread=-1
+        # I really, really shouldn't have to do this. But it doesn'twork if I don't so...
+        parent.children.remove(item.feed)
+        self.updateFeedItem(parent, parents=True)
+
         # No feed current
         self.ui.feeds.setCurrentIndex(QtCore.QModelIndex())
         self.currentFeed=None
 
+        del(self.feedItems[item.feed.id])
+        item.feed.delete()
+        self.ui.feeds.model().removeRow(index.row(), index.parent())
+        session.flush()
+        
   def on_actionOpen_Homepage_triggered(self, i=None):
     if i==None: return
     item=self.model.itemFromIndex(self.ui.feeds.currentIndex())
