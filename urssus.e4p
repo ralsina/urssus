@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE Project SYSTEM "Project-4.2.dtd">
 <!-- eric4 project file for project urssus -->
-<!-- Saved: 2008-07-27, 18:00:46 -->
+<!-- Saved: 2008-07-27, 23:07:32 -->
 <!-- Copyright (C) 2008 Roberto Alsina, ralsina@netmanagers.com.ar -->
 <Project version="4.2">
   <ProgLanguage mixed="0">Python</ProgLanguage>
@@ -86,6 +86,21 @@
       <Dir>urssus</Dir>
       <Dir>templates</Dir>
       <Name>style.css</Name>
+    </Source>
+    <Source>
+      <Dir>urssus</Dir>
+      <Dir>ui</Dir>
+      <Name>Ui_feed_properties.py</Name>
+    </Source>
+    <Source>
+      <Dir>urssus</Dir>
+      <Dir>ui</Dir>
+      <Name>Ui_filterwidget.py</Name>
+    </Source>
+    <Source>
+      <Dir>urssus</Dir>
+      <Dir>ui</Dir>
+      <Name>Ui_searchwidget.py</Name>
     </Source>
   </Sources>
   <Forms>
