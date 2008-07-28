@@ -817,6 +817,7 @@ class MainWindow(QtGui.QMainWindow):
       curPost.feed.curUnread-=1 
       session.flush()
       self.updatePostItem(curPost)
+      self.updateFeedItem(curPost.feed)
 
   def on_actionMark_as_Unread_triggered(self, i=None):
     # FIXME: handle selections
@@ -829,6 +830,7 @@ class MainWindow(QtGui.QMainWindow):
       curPost.feed.curUnread+=1
       session.flush()
       self.updatePostItem(curPost)
+      self.updateFeedItem(curPost.feed)
 
   def on_actionOpen_in_Browser_triggered(self, i=None):
     # FIXME: handle selections
