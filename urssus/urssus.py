@@ -1267,6 +1267,8 @@ class MainWindow(QtGui.QMainWindow):
         action.setEnabled(True)
 
       self.ui.view.setHtml(renderTemplate('feed.tmpl',feed=feed))
+      # Scroll post view to the top
+      self.ui.posts.scrollTo(self.ui.posts.model().indexFromItem(self.postItems[self.posts[0].id]))
 
 
   def updatePostItem(self, post):
