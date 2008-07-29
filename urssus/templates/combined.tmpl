@@ -6,8 +6,9 @@
 </script>
 <style type="text/css">
   .action {visibility: hidden; background-color: #C3D4FF; padding: 4px;};
-  .post-body {border: solid #000000; width: 100%;};
-  .post-title {width: 100%; padding: 4px; border: solid #000000;};
+  .post-body {border: solid #000000; width: 100%; overflow: auto; margin: 12px;};
+  .post-title {width: 100%;};
+  .title {width: 100%; padding: 12px; margin: 12px; border: solid #000000; font-weight: bold;};
 </style>
 
 <script type="text/javascript">
@@ -18,15 +19,21 @@ function hideAction(action,id) {
   $('URSSUS-'+action+'-'+id).style.visibility='hidden';
 };
 window.addEvent('domready', function() {	
-	//create our Accordion instance
-	var myAccordion = new Accordion($('accordion'), 'h4.post-title', 'div.post-body', {
+
+  var myScroll = new Fx.Scroll($(document.body));
+
+	var myAccordion = new Accordion($('accordion'), 'div.post-title', 'div.post-body', {
 		opacity: false,
 		onActive: function(toggler, element){
 			toggler.setStyle('background-color', '#C3D4FF');
 		},
 		onBackground: function(toggler, element){
 			toggler.setStyle('background-color', '#E6FFC3');
-		}
+		},
+    onComplete: function(toggler, element){
+      // Very buggy :-(
+      myScroll.toElement(toggler);
+    }
 	});
 });
 </script> 
@@ -37,7 +44,7 @@ window.addEvent('domready', function() {
     <div>
     <a id="URSSUS-#{post.id}"></a>
     <div id="URSSUS-POST-#{post.id}">    
-    <h4 class="post-title">#{post.title}</h4>
+    <div class="post-title"><div class="title">#{post.title}</div></div>
     <div class="post-body">
     <div id="URSSUS-ACTIONS-#{post.id}" style="margin-top: .5em;">
     <span id="URSSUS-READ-#{post.id}" class='action' ><a href="urssus:/read/#{post.id}" onCLick="hideAction('READ',#{post.id});showAction('UNREAD',#{post.id});">Mark Read</a></span>&nbsp;&nbsp;
