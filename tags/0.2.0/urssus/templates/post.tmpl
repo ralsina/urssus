@@ -1,0 +1,13 @@
+<h3>#{post.title}</h3>
+<table width=100%>
+<tr><td><b>Date:&nbsp;</b>#{post.date}</td></tr>
+<?py if post.author: ?>
+  <tr><td><b>Author:&nbsp;</b>#{post.author}</td></tr>
+<?py #end ?>
+</table>
+<p>
+#{post.content}
+<p>
+<?py if post.link: ?>
+  <a href="#{post.link}">Complete Story</a>
+<?py #end ?>

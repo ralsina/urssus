@@ -1,0 +1,33 @@
+IMPORTANT
+=========
+
+
+Licensing
+---------
+
+Urssus is licensed under the GPL v2 (read COPYING).
+
+The included icons are form the Reinhardt KDE icon set, and they are licensed
+under the LGPL (read COPYING.LGPL).
+
+The image of a bear is Creative Commons, used with permission and attribution.
+
+Different modules have different licenses and authors, read each if you need to 
+find out, but they all should be GPL-compatible.
+
+Requirements
+------------
+
+* I have only tested this with Elixir 0.5.2 and SQLAlchemy 0.4.6.
+
+* If you got this from SVN and not a source tarball, you are missing files.
+
+  You can generate them using setup.py:
+
+    python setup.py compile_resource compile_ui
+
+  Those commands require a working PyQt 4.4 (at least) developing environment.
+
+If you have no idea what I'm talking about, use a package instead of SVN ;-)
+
+

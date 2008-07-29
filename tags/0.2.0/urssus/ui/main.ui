@@ -1,0 +1,698 @@
+<ui version="4.0" >
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow" >
+  <property name="geometry" >
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>800</width>
+    <height>600</height>
+   </rect>
+  </property>
+  <property name="windowTitle" >
+   <string>uRSSus</string>
+  </property>
+  <property name="windowIcon" >
+   <iconset resource="../images/icons.qrc" >
+    <normaloff>:/urssus.svg</normaloff>:/urssus.svg</iconset>
+  </property>
+  <property name="iconSize" >
+   <size>
+    <width>24</width>
+    <height>24</height>
+   </size>
+  </property>
+  <property name="toolButtonStyle" >
+   <enum>Qt::ToolButtonIconOnly</enum>
+  </property>
+  <widget class="QWidget" name="centralWidget" >
+   <property name="geometry" >
+    <rect>
+     <x>0</x>
+     <y>70</y>
+     <width>800</width>
+     <height>506</height>
+    </rect>
+   </property>
+   <layout class="QVBoxLayout" name="verticalLayout_2" >
+    <property name="margin" >
+     <number>1</number>
+    </property>
+    <item>
+     <widget class="QSplitter" name="splitter_2" >
+      <property name="orientation" >
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <widget class="QTreeView" name="feeds" >
+       <property name="focusPolicy" >
+        <enum>Qt::NoFocus</enum>
+       </property>
+       <property name="contextMenuPolicy" >
+        <enum>Qt::CustomContextMenu</enum>
+       </property>
+       <property name="frameShape" >
+        <enum>QFrame::Panel</enum>
+       </property>
+       <property name="frameShadow" >
+        <enum>QFrame::Plain</enum>
+       </property>
+       <property name="editTriggers" >
+        <set>QAbstractItemView::NoEditTriggers</set>
+       </property>
+       <property name="alternatingRowColors" >
+        <bool>true</bool>
+       </property>
+       <property name="textElideMode" >
+        <enum>Qt::ElideMiddle</enum>
+       </property>
+       <property name="indentation" >
+        <number>20</number>
+       </property>
+       <property name="rootIsDecorated" >
+        <bool>true</bool>
+       </property>
+       <property name="uniformRowHeights" >
+        <bool>true</bool>
+       </property>
+       <property name="animated" >
+        <bool>true</bool>
+       </property>
+       <property name="allColumnsShowFocus" >
+        <bool>true</bool>
+       </property>
+       <property name="headerHidden" >
+        <bool>true</bool>
+       </property>
+      </widget>
+      <widget class="QSplitter" name="splitter" >
+       <property name="orientation" >
+        <enum>Qt::Vertical</enum>
+       </property>
+       <widget class="QTreeView" name="posts" >
+        <property name="focusPolicy" >
+         <enum>Qt::NoFocus</enum>
+        </property>
+        <property name="contextMenuPolicy" >
+         <enum>Qt::CustomContextMenu</enum>
+        </property>
+        <property name="frameShape" >
+         <enum>QFrame::Panel</enum>
+        </property>
+        <property name="frameShadow" >
+         <enum>QFrame::Plain</enum>
+        </property>
+        <property name="editTriggers" >
+         <set>QAbstractItemView::NoEditTriggers</set>
+        </property>
+        <property name="alternatingRowColors" >
+         <bool>true</bool>
+        </property>
+        <property name="rootIsDecorated" >
+         <bool>false</bool>
+        </property>
+        <property name="uniformRowHeights" >
+         <bool>true</bool>
+        </property>
+        <property name="itemsExpandable" >
+         <bool>false</bool>
+        </property>
+        <property name="sortingEnabled" >
+         <bool>true</bool>
+        </property>
+        <property name="animated" >
+         <bool>true</bool>
+        </property>
+        <property name="allColumnsShowFocus" >
+         <bool>true</bool>
+        </property>
+        <property name="expandsOnDoubleClick" >
+         <bool>false</bool>
+        </property>
+       </widget>
+       <widget class="QFrame" name="frame" >
+        <property name="frameShape" >
+         <enum>QFrame::Panel</enum>
+        </property>
+        <property name="frameShadow" >
+         <enum>QFrame::Plain</enum>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout" >
+         <property name="margin" >
+          <number>0</number>
+         </property>
+         <item>
+          <widget class="QWebView" name="view" >
+           <property name="focusPolicy" >
+            <enum>Qt::ClickFocus</enum>
+           </property>
+           <property name="url" >
+            <url>
+             <string>about:blank</string>
+            </url>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </widget>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QToolBar" name="toolBar" >
+   <property name="geometry" >
+    <rect>
+     <x>0</x>
+     <y>31</y>
+     <width>155</width>
+     <height>39</height>
+    </rect>
+   </property>
+   <property name="windowTitle" >
+    <string>toolBar</string>
+   </property>
+   <property name="windowIcon" >
+    <iconset resource="../images/icons.qrc" >
+     <normaloff>:/urssus.svg</normaloff>:/urssus.svg</iconset>
+   </property>
+   <property name="iconSize" >
+    <size>
+     <width>24</width>
+     <height>24</height>
+    </size>
+   </property>
+   <attribute name="toolBarArea" >
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak" >
+    <bool>false</bool>
+   </attribute>
+   <addaction name="actionFetch_Feed" />
+   <addaction name="actionFetch_All_Feeds" />
+   <addaction name="actionAbort_Fetches" />
+   <addaction name="actionMark_Feed_as_Read" />
+  </widget>
+  <widget class="QMenuBar" name="menuBar" >
+   <property name="geometry" >
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>800</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuFeed" >
+    <property name="title" >
+     <string>Fee&amp;d</string>
+    </property>
+    <addaction name="separator" />
+    <addaction name="actionAdd_Feed" />
+    <addaction name="actionNew_Folder" />
+    <addaction name="separator" />
+    <addaction name="actionMark_Feed_as_Read" />
+    <addaction name="separator" />
+    <addaction name="actionFetch_Feed" />
+    <addaction name="actionFetch_All_Feeds" />
+    <addaction name="actionAbort_Fetches" />
+    <addaction name="separator" />
+    <addaction name="actionEdit_Feed" />
+    <addaction name="actionExpire_Feed" />
+    <addaction name="actionDelete_Feed" />
+   </widget>
+   <widget class="QMenu" name="menu_File" >
+    <property name="title" >
+     <string>&amp;File</string>
+    </property>
+    <addaction name="actionImport_Feeds" />
+    <addaction name="actionExport_Feeds" />
+    <addaction name="separator" />
+    <addaction name="actionTechnorati_Top_100" />
+    <addaction name="separator" />
+    <addaction name="actionQuit" />
+   </widget>
+   <widget class="QMenu" name="menu_Go" >
+    <property name="title" >
+     <string>&amp;Go</string>
+    </property>
+    <addaction name="separator" />
+    <addaction name="actionPrevious_Article" />
+    <addaction name="actionPrevious_Unread_Article" />
+    <addaction name="actionNext_Article" />
+    <addaction name="actionNext_Unread_Article" />
+    <addaction name="separator" />
+    <addaction name="actionPrevious_Feed" />
+    <addaction name="actionPrevious_Unread_Feed" />
+    <addaction name="actionNext_Feed" />
+    <addaction name="actionNext_Unread_Feed" />
+   </widget>
+   <widget class="QMenu" name="menuHelp" >
+    <property name="title" >
+     <string>&amp;Help</string>
+    </property>
+    <addaction name="actionAbout_uRSSus" />
+   </widget>
+   <widget class="QMenu" name="menu_View" >
+    <property name="title" >
+     <string>&amp;View</string>
+    </property>
+    <widget class="QMenu" name="menu_View_Mode" >
+     <property name="title" >
+      <string>&amp;View Mode</string>
+     </property>
+     <addaction name="actionNormal_View" />
+     <addaction name="actionCombined_View" />
+    </widget>
+    <addaction name="actionStatus_Bar" />
+    <addaction name="separator" />
+    <addaction name="actionShow_Only_Unread_Feeds" />
+    <addaction name="separator" />
+    <addaction name="actionIncrease_Font_Sizes" />
+    <addaction name="actionDecrease_Font_Sizes" />
+    <addaction name="separator" />
+    <addaction name="menu_View_Mode" />
+   </widget>
+   <widget class="QMenu" name="menu_Edit" >
+    <property name="title" >
+     <string>&amp;Edit</string>
+    </property>
+    <addaction name="actionFind" />
+    <addaction name="actionFind_Again" />
+   </widget>
+   <widget class="QMenu" name="menuArticle" >
+    <property name="title" >
+     <string>&amp;Article</string>
+    </property>
+    <addaction name="actionOpen_in_Browser" />
+    <addaction name="separator" />
+    <addaction name="actionMark_as_Important" />
+    <addaction name="actionRemove_Important_Mark" />
+    <addaction name="actionMark_as_Read" />
+    <addaction name="actionMark_as_Unread" />
+    <addaction name="actionDelete_Article" />
+   </widget>
+   <addaction name="menu_File" />
+   <addaction name="menu_Edit" />
+   <addaction name="menu_View" />
+   <addaction name="menu_Go" />
+   <addaction name="menuFeed" />
+   <addaction name="menuArticle" />
+   <addaction name="menuHelp" />
+  </widget>
+  <widget class="QStatusBar" name="statusBar" >
+   <property name="geometry" >
+    <rect>
+     <x>0</x>
+     <y>576</y>
+     <width>800</width>
+     <height>24</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QToolBar" name="filterBar" >
+   <property name="geometry" >
+    <rect>
+     <x>155</x>
+     <y>31</y>
+     <width>645</width>
+     <height>39</height>
+    </rect>
+   </property>
+   <property name="windowTitle" >
+    <string>toolBar_2</string>
+   </property>
+   <attribute name="toolBarArea" >
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak" >
+    <bool>false</bool>
+   </attribute>
+  </widget>
+  <action name="actionFetch_Feed" >
+   <property name="icon" >
+    <iconset resource="../images/icons.qrc" >
+     <normaloff>:/1downarrow.svg</normaloff>:/1downarrow.svg</iconset>
+   </property>
+   <property name="text" >
+    <string>Fetch Feed</string>
+   </property>
+   <property name="shortcut" >
+    <string>F5</string>
+   </property>
+  </action>
+  <action name="actionFetch_All_Feeds" >
+   <property name="icon" >
+    <iconset resource="../images/icons.qrc" >
+     <normaloff>:/2downarrow.svg</normaloff>:/2downarrow.svg</iconset>
+   </property>
+   <property name="text" >
+    <string>Fetch All Feeds</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+L</string>
+   </property>
+  </action>
+  <action name="actionAbort_Fetches" >
+   <property name="enabled" >
+    <bool>false</bool>
+   </property>
+   <property name="icon" >
+    <iconset resource="../images/icons.qrc" >
+     <normaloff>:/stop.svg</normaloff>:/stop.svg</iconset>
+   </property>
+   <property name="text" >
+    <string>Abort Fetches</string>
+   </property>
+   <property name="shortcut" >
+    <string>Esc</string>
+   </property>
+  </action>
+  <action name="actionMark_Feed_as_Read" >
+   <property name="icon" >
+    <iconset resource="../images/icons.qrc" >
+     <normaloff>:/apply.svg</normaloff>:/apply.svg</iconset>
+   </property>
+   <property name="text" >
+    <string>Mark Feed as Read</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+R</string>
+   </property>
+  </action>
+  <action name="actionImport_Feeds" >
+   <property name="text" >
+    <string>&amp;Import Feeds...</string>
+   </property>
+  </action>
+  <action name="actionExport_Feeds" >
+   <property name="text" >
+    <string>&amp;Export Feeds...</string>
+   </property>
+  </action>
+  <action name="actionQuit" >
+   <property name="icon" >
+    <iconset resource="../images/icons.qrc" >
+     <normaloff>:/exit.svg</normaloff>:/exit.svg</iconset>
+   </property>
+   <property name="text" >
+    <string>&amp;Quit</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+Q</string>
+   </property>
+  </action>
+  <action name="actionNext_Article" >
+   <property name="text" >
+    <string>&amp;Next Article</string>
+   </property>
+   <property name="shortcut" >
+    <string>Right</string>
+   </property>
+  </action>
+  <action name="actionNext_Unread_Article" >
+   <property name="text" >
+    <string>Ne&amp;xt Unread Article</string>
+   </property>
+   <property name="shortcut" >
+    <string>+</string>
+   </property>
+  </action>
+  <action name="actionNext_Feed" >
+   <property name="text" >
+    <string>Next &amp;Feed</string>
+   </property>
+   <property name="shortcut" >
+    <string>N</string>
+   </property>
+  </action>
+  <action name="actionNext_Unread_Feed" >
+   <property name="text" >
+    <string>N&amp;ext Unread Feed</string>
+   </property>
+   <property name="shortcut" >
+    <string>Alt++</string>
+   </property>
+  </action>
+  <action name="actionAbout_uRSSus" >
+   <property name="icon" >
+    <iconset resource="../images/icons.qrc" >
+     <normaloff>:/urssus.svg</normaloff>:/urssus.svg</iconset>
+   </property>
+   <property name="text" >
+    <string>&amp;About uRSSus...</string>
+   </property>
+  </action>
+  <action name="actionIncrease_Font_Sizes" >
+   <property name="icon" >
+    <iconset resource="../images/icons.qrc" >
+     <normaloff>:/viewmag+.svg</normaloff>:/viewmag+.svg</iconset>
+   </property>
+   <property name="text" >
+    <string>Increase Font Sizes</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl++</string>
+   </property>
+  </action>
+  <action name="actionDecrease_Font_Sizes" >
+   <property name="icon" >
+    <iconset resource="../images/icons.qrc" >
+     <normaloff>:/viewmag-.svg</normaloff>:/viewmag-.svg</iconset>
+   </property>
+   <property name="text" >
+    <string>Decrease Font Sizes</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+-</string>
+   </property>
+  </action>
+  <action name="actionStatus_Bar" >
+   <property name="checkable" >
+    <bool>true</bool>
+   </property>
+   <property name="checked" >
+    <bool>true</bool>
+   </property>
+   <property name="text" >
+    <string>Status Bar</string>
+   </property>
+  </action>
+  <action name="actionPrevious_Feed" >
+   <property name="text" >
+    <string>P&amp;revious Feed</string>
+   </property>
+   <property name="shortcut" >
+    <string>P</string>
+   </property>
+  </action>
+  <action name="actionPrevious_Unread_Feed" >
+   <property name="text" >
+    <string>Prev&amp;ious Unread Feed</string>
+   </property>
+   <property name="shortcut" >
+    <string>Alt+-</string>
+   </property>
+  </action>
+  <action name="actionPrevious_Article" >
+   <property name="text" >
+    <string>&amp;Previous Article</string>
+   </property>
+   <property name="shortcut" >
+    <string>Left</string>
+   </property>
+  </action>
+  <action name="actionPrevious_Unread_Article" >
+   <property name="text" >
+    <string>Pre&amp;vious Unread Article</string>
+   </property>
+   <property name="shortcut" >
+    <string>-</string>
+   </property>
+  </action>
+  <action name="actionFind" >
+   <property name="icon" >
+    <iconset resource="../images/icons.qrc" >
+     <normaloff>:/find.svg</normaloff>:/find.svg</iconset>
+   </property>
+   <property name="text" >
+    <string>&amp;Find</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+F</string>
+   </property>
+  </action>
+  <action name="actionFind_Again" >
+   <property name="text" >
+    <string>Find Again</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+G</string>
+   </property>
+  </action>
+  <action name="actionShow_Only_Unread_Feeds" >
+   <property name="checkable" >
+    <bool>true</bool>
+   </property>
+   <property name="text" >
+    <string>Show Only Unread Feeds</string>
+   </property>
+  </action>
+  <action name="actionOpen_Homepage" >
+   <property name="text" >
+    <string>Open Homepage</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+H</string>
+   </property>
+  </action>
+  <action name="actionDelete_Feed" >
+   <property name="icon" >
+    <iconset resource="../images/icons.qrc" >
+     <normaloff>:/editdelete.svg</normaloff>:/editdelete.svg</iconset>
+   </property>
+   <property name="text" >
+    <string>&amp;Delete Feed</string>
+   </property>
+   <property name="shortcut" >
+    <string>Alt+Del</string>
+   </property>
+  </action>
+  <action name="actionAdd_Feed" >
+   <property name="icon" >
+    <iconset resource="../images/icons.qrc" >
+     <normaloff>:/filenew.svg</normaloff>:/filenew.svg</iconset>
+   </property>
+   <property name="text" >
+    <string>Add Feed</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ins</string>
+   </property>
+  </action>
+  <action name="actionNew_Folder" >
+   <property name="icon" >
+    <iconset resource="../images/icons.qrc" >
+     <normaloff>:/folder_new.svg</normaloff>:/folder_new.svg</iconset>
+   </property>
+   <property name="text" >
+    <string>New Folder</string>
+   </property>
+   <property name="shortcut" >
+    <string>Shift+Ins</string>
+   </property>
+  </action>
+  <action name="actionEdit_Feed" >
+   <property name="icon" >
+    <iconset resource="../images/icons.qrc" >
+     <normaloff>:/edit.svg</normaloff>:/edit.svg</iconset>
+   </property>
+   <property name="text" >
+    <string>&amp;Edit Feed</string>
+   </property>
+   <property name="shortcut" >
+    <string>F2</string>
+   </property>
+  </action>
+  <action name="actionMark_as_Read" >
+   <property name="text" >
+    <string>Mark as Read</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+E</string>
+   </property>
+  </action>
+  <action name="actionMark_as_Unread" >
+   <property name="text" >
+    <string>Mark as Unread</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+U</string>
+   </property>
+  </action>
+  <action name="actionMark_as_Important" >
+   <property name="icon" >
+    <iconset resource="../images/icons.qrc" >
+     <normaloff>:/flag.svg</normaloff>:/flag.svg</iconset>
+   </property>
+   <property name="text" >
+    <string>Mark as Important</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+I</string>
+   </property>
+  </action>
+  <action name="actionDelete_Article" >
+   <property name="icon" >
+    <iconset resource="../images/icons.qrc" >
+     <normaloff>:/editdelete.svg</normaloff>:/editdelete.svg</iconset>
+   </property>
+   <property name="text" >
+    <string>Delete Article</string>
+   </property>
+   <property name="shortcut" >
+    <string>Del</string>
+   </property>
+  </action>
+  <action name="actionOpen_in_Browser" >
+   <property name="text" >
+    <string>Open in Browser</string>
+   </property>
+   <property name="shortcut" >
+    <string>Shift+Return</string>
+   </property>
+  </action>
+  <action name="actionRemove_Important_Mark" >
+   <property name="icon" >
+    <iconset resource="../images/icons.qrc" >
+     <normaloff>:/flag.svg</normaloff>:/flag.svg</iconset>
+   </property>
+   <property name="text" >
+    <string>Remove Important Mark</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+Shift+I</string>
+   </property>
+  </action>
+  <action name="actionExpire_Feed" >
+   <property name="text" >
+    <string>Expire Feed</string>
+   </property>
+  </action>
+  <action name="actionTechnorati_Top_100" >
+   <property name="text" >
+    <string>Import Technorati Top 100</string>
+   </property>
+  </action>
+  <action name="actionNormal_View" >
+   <property name="enabled" >
+    <bool>false</bool>
+   </property>
+   <property name="icon" >
+    <iconset resource="../images/icons.qrc" >
+     <normaloff>:/view_top_bottom.svg</normaloff>:/view_top_bottom.svg</iconset>
+   </property>
+   <property name="text" >
+    <string>Normal View</string>
+   </property>
+  </action>
+  <action name="actionCombined_View" >
+   <property name="icon" >
+    <iconset resource="../images/icons.qrc" >
+     <normaloff>:/view_detailed.svg</normaloff>:/view_detailed.svg</iconset>
+   </property>
+   <property name="text" >
+    <string>Combined View</string>
+   </property>
+  </action>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QWebView</class>
+   <extends>QWidget</extends>
+   <header>QtWebKit/QWebView</header>
+  </customwidget>
+ </customwidgets>
+ <resources>
+  <include location="../images/icons.qrc" />
+ </resources>
+ <connections/>
+</ui>

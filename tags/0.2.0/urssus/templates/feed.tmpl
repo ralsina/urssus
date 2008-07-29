@@ -1,0 +1,14 @@
+<table width=100%>
+<tr><td>
+<h3>#{feed.title}</h3>
+</td></tr>
+<?py if feed.description: ?>
+<tr><td>
+  #{feed.description}
+</td></tr>
+<?py #end ?>
+<?py if feed.htmlUrl: ?>
+<tr><td>
+  <a href="#{feed.htmlUrl}">#{feed.htmlUrl}</a>
+</td></tr>
+<?py #end ?>

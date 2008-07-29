@@ -1,0 +1,33 @@
+<?py for post in posts: ?>
+    <div>
+    <h3 class="post-title">#{post.title}</h3>
+    <table width=100%>
+    <tr><td>
+    <div id="commentbox">
+    <?py if post.unread: ?>
+      Mark Read&nbsp;&nbsp;
+    <?py else: ?>
+      Mark Unread&nbsp;&nbsp;
+    <?py #end ?>    
+    <?py if post.important: ?>
+      Remove Important Flag&nbsp;&nbsp;
+    <?py else: ?>
+      Mark as important
+    <?py #end ?>    
+    </div>
+    </td></tr>
+    <tr><td><b>Date:&nbsp;</b>#{post.date}</td></tr>
+    <?py if post.author: ?>
+      <tr><td><b>Author:&nbsp;</b>#{post.author}</td></tr>
+    <?py #end ?>
+    <tr><td><b>From:&nbsp;</b>#{post.feed.text}</td></tr>    
+    </table>
+    <p>
+    #{post.content}
+    <p>
+    <?py if post.link: ?>
+      <a href="#{post.link}">Complete Story</a>
+    <?py #end ?>
+    <hr>
+    </div>
+<?py #endfor ?>
