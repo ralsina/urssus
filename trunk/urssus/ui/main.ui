@@ -263,14 +263,30 @@
      <addaction name="actionWidescreen_View" />
      <addaction name="actionCombined_View" />
     </widget>
+    <widget class="QMenu" name="menuToolbars" >
+     <property name="title" >
+      <string>Toolbars</string>
+     </property>
+     <addaction name="actionMain_Toolbar" />
+     <addaction name="actionFilter_Toolbar" />
+    </widget>
+    <widget class="QMenu" name="menu_Zoom" >
+     <property name="title" >
+      <string>&amp;Zoom</string>
+     </property>
+     <addaction name="actionIncrease_Font_Sizes" />
+     <addaction name="actionDecrease_Font_Sizes" />
+     <addaction name="separator" />
+     <addaction name="actionZoom_Reset" />
+    </widget>
+    <addaction name="menuToolbars" />
     <addaction name="actionStatus_Bar" />
     <addaction name="separator" />
     <addaction name="actionShow_Only_Unread_Feeds" />
     <addaction name="separator" />
-    <addaction name="actionIncrease_Font_Sizes" />
-    <addaction name="actionDecrease_Font_Sizes" />
     <addaction name="separator" />
     <addaction name="menu_View_Mode" />
+    <addaction name="menu_Zoom" />
    </widget>
    <widget class="QMenu" name="menu_Edit" >
     <property name="title" >
@@ -448,7 +464,7 @@
      <normaloff>:/viewmag+.svg</normaloff>:/viewmag+.svg</iconset>
    </property>
    <property name="text" >
-    <string>Increase Font Sizes</string>
+    <string>Zoom &amp;In</string>
    </property>
    <property name="shortcut" >
     <string>Ctrl++</string>
@@ -460,7 +476,7 @@
      <normaloff>:/viewmag-.svg</normaloff>:/viewmag-.svg</iconset>
    </property>
    <property name="text" >
-    <string>Decrease Font Sizes</string>
+    <string>Zoom &amp;Out</string>
    </property>
    <property name="shortcut" >
     <string>Ctrl+-</string>
@@ -694,6 +710,36 @@
    </property>
    <property name="text" >
     <string>Widescreen View</string>
+   </property>
+  </action>
+  <action name="actionMain_Toolbar" >
+   <property name="checkable" >
+    <bool>true</bool>
+   </property>
+   <property name="checked" >
+    <bool>true</bool>
+   </property>
+   <property name="text" >
+    <string>Main Toolbar</string>
+   </property>
+  </action>
+  <action name="actionFilter_Toolbar" >
+   <property name="checkable" >
+    <bool>true</bool>
+   </property>
+   <property name="checked" >
+    <bool>true</bool>
+   </property>
+   <property name="text" >
+    <string>Filter Toolbar</string>
+   </property>
+  </action>
+  <action name="actionZoom_Reset" >
+   <property name="text" >
+    <string>&amp;Reset</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+0</string>
    </property>
   </action>
  </widget>
