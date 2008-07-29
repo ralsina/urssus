@@ -798,7 +798,15 @@ class MainWindow(QtGui.QMainWindow):
     v=config.getValue('ui', 'showStatus', True)
     self.ui.actionStatus_Bar.setChecked(v)
     self.on_actionStatus_Bar_triggered(v)
-    
+
+    v=config.getValue('ui', 'showMainBar', True)
+    self.ui.actionMain_Toolbar.setChecked(v)
+    self.on_actionMain_Toolbar_triggered(v)
+
+    v=config.getValue('ui', 'showFilterBar', True)
+    self.ui.actionFilter_Toolbar.setChecked(v)
+    self.on_actionFilter_Toolbar_triggered(v)
+
     v=config.getValue('ui', 'showOnlyUnreadFeeds', False)
     self.ui.actionShow_Only_Unread_Feeds.setChecked(v)
     self.on_actionShow_Only_Unread_Feeds_triggered(v)
@@ -1088,6 +1096,7 @@ class MainWindow(QtGui.QMainWindow):
       self.ui.toolBar.show()
     else:
       self.ui.toolBar.hide()
+    config.setValue('ui', 'showMainBar', self.ui.actionMain_Toolbar.isChecked())
     
   def on_actionFilter_Toolbar_triggered(self, i=None):
     if i==None: return
@@ -1095,6 +1104,7 @@ class MainWindow(QtGui.QMainWindow):
       self.ui.filterBar.show()
     else:
       self.ui.filterBar.hide()
+    config.setValue('ui', 'showFilterBar', self.ui.actionFilter_Toolbar.isChecked())
 
   def on_actionAbout_uRSSus_triggered(self, i=None):
     if i==None: return
