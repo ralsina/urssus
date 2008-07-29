@@ -260,6 +260,7 @@
       <string>&amp;View Mode</string>
      </property>
      <addaction name="actionNormal_View" />
+     <addaction name="actionWidescreen_View" />
      <addaction name="actionCombined_View" />
     </widget>
     <addaction name="actionStatus_Bar" />
@@ -681,6 +682,18 @@
    </property>
    <property name="text" >
     <string>Combined View</string>
+   </property>
+  </action>
+  <action name="actionWidescreen_View" >
+   <property name="checkable" >
+    <bool>false</bool>
+   </property>
+   <property name="icon" >
+    <iconset resource="../images/icons.qrc" >
+     <normaloff>:/view_left_right.svg</normaloff>:/view_left_right.svg</iconset>
+   </property>
+   <property name="text" >
+    <string>Widescreen View</string>
    </property>
   </action>
  </widget>
