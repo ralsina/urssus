@@ -57,7 +57,7 @@ def renderTemplate(tname, **context):
   context['escape']=escape
   context['mootools_core']=mootools_core
   context['mootools_more']=mootools_more
-#  codecs.open('x.html', 'w', 'utf-8').write(templateEngine.render(os.path.join(tmplDir,tname), context))
+  codecs.open('x.html', 'w', 'utf-8').write(templateEngine.render(os.path.join(tmplDir,tname), context))
   return templateEngine.render(os.path.join(tmplDir,tname), context)
 
 # References to background processes
