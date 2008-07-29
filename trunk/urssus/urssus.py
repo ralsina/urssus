@@ -1094,7 +1094,7 @@ class MainWindow(QtGui.QMainWindow):
         post.important=False
       elixir.session.flush()
       post.feed.curUnread=-1
-      self.updateFeedItem(post.feed)
+      self.updateFeedItem(post.feed, parents=True)
     else:
       QtGui.QDesktopServices.openUrl(url)
 
