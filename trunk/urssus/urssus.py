@@ -807,6 +807,15 @@ class MainWindow(QtGui.QMainWindow):
     self.ui.actionFilter_Toolbar.setChecked(v)
     self.on_actionFilter_Toolbar_triggered(v)
 
+    v=config.getValue('ui', 'viewMode', 'normal')
+    if v=='wide':
+      self.on_actionWidescreen_View_triggered(v)
+    elif v=='combined':
+      self.on_actionCombined_View_triggered(v)
+    else:
+      self.on_actionNormal_View_triggered(v)
+
+
     v=config.getValue('ui', 'showOnlyUnreadFeeds', False)
     self.ui.actionShow_Only_Unread_Feeds.setChecked(v)
     self.on_actionShow_Only_Unread_Feeds_triggered(v)
@@ -1202,6 +1211,7 @@ class MainWindow(QtGui.QMainWindow):
     self.ui.actionCombined_View.setEnabled(True)
     self.ui.actionWidescreen_View.setEnabled(True)
     self.open_feed(self.ui.feeds.currentIndex())
+    config.setValue('ui', 'viewMode', 'normal')
 
   def on_actionWidescreen_View_triggered(self, i=None):
     if i==None: return
@@ -1214,6 +1224,7 @@ class MainWindow(QtGui.QMainWindow):
     self.ui.actionCombined_View.setEnabled(True)
     self.ui.actionWidescreen_View.setEnabled(False)
     self.open_feed(self.ui.feeds.currentIndex())
+    config.setValue('ui', 'viewMode', 'wide')
 
   def on_actionCombined_View_triggered(self, i=None):
     if i==None: return
@@ -1225,6 +1236,7 @@ class MainWindow(QtGui.QMainWindow):
       self.ui.actionCombined_View.setEnabled(False)
       self.ui.actionWidescreen_View.setEnabled(True)
       self.open_feed(self.ui.feeds.currentIndex())
+    config.setValue('ui', 'viewMode', 'combined')
 
   def resortPosts(self):
     info ("Resorting posts")
