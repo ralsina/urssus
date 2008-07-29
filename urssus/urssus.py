@@ -745,11 +745,12 @@ class MainWindow(QtGui.QMainWindow):
     self.textFilter=''
         
     # Search widget
+    self.ui.searchBar.hide()
     self.searchWidget=SearchWidget()
-    self.searchWidget.hide()
-    self.ui.splitter.addWidget(self.searchWidget)
+    self.ui.searchBar.addWidget(self.searchWidget)
     QtCore.QObject.connect(self.searchWidget.ui.next, QtCore.SIGNAL("clicked()"), self.findText)
     QtCore.QObject.connect(self.searchWidget.ui.previous, QtCore.SIGNAL("clicked()"), self.findTextReverse)
+    QtCore.QObject.connect(self.searchWidget.ui.close, QtCore.SIGNAL("clicked()"), self.ui.searchBar.hide)
     
     # Set some properties of the Web view
     page=self.ui.view.page()
@@ -1022,7 +1023,7 @@ class MainWindow(QtGui.QMainWindow):
   
   def on_actionFind_triggered(self, i=None):
     if i==None: return
-    self.searchWidget.show()
+    self.ui.searchBar.show()
     self.searchWidget.ui.text.setFocus(QtCore.Qt.TabFocusReason)
 
   def on_actionFind_Again_triggered(self, i=None):
@@ -1207,14 +1208,14 @@ class MainWindow(QtGui.QMainWindow):
       self.ui.splitter_2.insertWidget(0, self.ui.feeds)
       self.ui.splitter_2.insertWidget(1, self.ui.posts)
       self.ui.splitter.insertWidget(0, self.ui.splitter_2)
-      self.ui.splitter.insertWidget(1, self.ui.view)
+      self.ui.splitter.insertWidget(1, self.ui.view_container)
       self.ui.splitter.show()
       self.ui.splitter_2.show()
     else:
       self.ui.centralWidget.layout().addWidget(self.ui.splitter) 
       self.ui.centralWidget.layout().addWidget(self.ui.splitter_2) 
       self.ui.splitter.insertWidget(0, self.ui.posts)
-      self.ui.splitter.insertWidget(1, self.ui.view)
+      self.ui.splitter.insertWidget(1, self.ui.view_container)
       self.ui.splitter_2.insertWidget(0, self.ui.feeds)
       self.ui.splitter_2.insertWidget(1, self.ui.splitter)
       self.ui.splitter.show()
@@ -1238,7 +1239,7 @@ class MainWindow(QtGui.QMainWindow):
       self.ui.splitter.insertWidget(0, self.ui.feeds)
       self.ui.splitter.insertWidget(1, self.ui.posts)
       self.ui.splitter_2.insertWidget(0, self.ui.splitter)
-      self.ui.splitter_2.insertWidget(1, self.ui.view)
+      self.ui.splitter_2.insertWidget(1, self.ui.view_container)
       self.ui.splitter.show()
       self.ui.splitter_2.show()
     else:
@@ -1246,7 +1247,7 @@ class MainWindow(QtGui.QMainWindow):
       self.ui.centralWidget.layout().addWidget(self.ui.splitter_2) 
       self.ui.splitter_2.insertWidget(0, self.ui.feeds)
       self.ui.splitter_2.insertWidget(1, self.ui.posts)
-      self.ui.splitter_2.insertWidget(2, self.ui.view)
+      self.ui.splitter_2.insertWidget(2, self.ui.view_container)
       self.ui.splitter.hide()
       self.ui.splitter_2.show()
 
@@ -1260,28 +1261,27 @@ class MainWindow(QtGui.QMainWindow):
   def on_actionCombined_View_triggered(self, i=None):
     if i==None: return
     info("Switch to combined view")    
-    if not self.combinedView:
-      self.combinedView=True
-      if self.ui.actionShort_Feed_List.isChecked():
-        self.ui.centralWidget.layout().addWidget(self.ui.splitter) 
-        self.ui.centralWidget.layout().addWidget(self.ui.splitter_2)
-        self.ui.splitter.insertWidget(0, self.ui.feeds)
-        self.ui.splitter.insertWidget(1, self.ui.view)
-        self.ui.splitter.show()
-        self.ui.splitter_2.hide()
-      else:
-        self.ui.centralWidget.layout().addWidget(self.ui.splitter) 
-        self.ui.centralWidget.layout().addWidget(self.ui.splitter_2)
-        self.ui.splitter_2.insertWidget(0, self.ui.feeds)
-        self.ui.splitter_2.insertWidget(1, self.ui.view)
-        self.ui.splitter.hide()
-        self.ui.splitter_2.show()
+    self.combinedView=True
+    if self.ui.actionShort_Feed_List.isChecked():
+      self.ui.centralWidget.layout().addWidget(self.ui.splitter) 
+      self.ui.centralWidget.layout().addWidget(self.ui.splitter_2)
+      self.ui.splitter.insertWidget(0, self.ui.feeds)
+      self.ui.splitter.insertWidget(1, self.ui.view_container)
+      self.ui.splitter.show()
+      self.ui.splitter_2.hide()
+    else:
+      self.ui.centralWidget.layout().addWidget(self.ui.splitter) 
+      self.ui.centralWidget.layout().addWidget(self.ui.splitter_2)
+      self.ui.splitter_2.insertWidget(0, self.ui.feeds)
+      self.ui.splitter_2.insertWidget(1, self.ui.view_container)
+      self.ui.splitter.hide()
+      self.ui.splitter_2.show()
         
-      self.ui.posts.hide()
-      self.ui.actionNormal_View.setEnabled(True)
-      self.ui.actionCombined_View.setEnabled(False)
-      self.ui.actionWidescreen_View.setEnabled(True)
-      self.open_feed(self.ui.feeds.currentIndex())
+    self.ui.posts.hide()
+    self.ui.actionNormal_View.setEnabled(True)
+    self.ui.actionCombined_View.setEnabled(False)
+    self.ui.actionWidescreen_View.setEnabled(True)
+    self.open_feed(self.ui.feeds.currentIndex())
     config.setValue('ui', 'viewMode', 'combined')
 
   def on_actionShort_Feed_List_triggered(self, i=None):

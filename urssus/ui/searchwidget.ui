@@ -94,22 +94,6 @@
  </resources>
  <connections>
   <connection>
-   <sender>close</sender>
-   <signal>clicked()</signal>
-   <receiver>Form</receiver>
-   <slot>hide()</slot>
-   <hints>
-    <hint type="sourcelabel" >
-     <x>14</x>
-     <y>16</y>
-    </hint>
-    <hint type="destinationlabel" >
-     <x>33</x>
-     <y>31</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>text</sender>
    <signal>returnPressed()</signal>
    <receiver>next</receiver>
