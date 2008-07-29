@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE Project SYSTEM "Project-4.2.dtd">
 <!-- eric4 project file for project urssus -->
-<!-- Saved: 2008-07-28, 14:39:46 -->
+<!-- Saved: 2008-07-28, 21:54:05 -->
 <!-- Copyright (C) 2008 Roberto Alsina, ralsina@netmanagers.com.ar -->
 <Project version="4.2">
   <ProgLanguage mixed="0">Python</ProgLanguage>
@@ -101,10 +101,6 @@
       <Dir>urssus</Dir>
       <Dir>ui</Dir>
       <Name>Ui_searchwidget.py</Name>
-    </Source>
-    <Source>
-      <Dir>urssus</Dir>
-      <Name>db_versions.py</Name>
     </Source>
     <Source>
       <Dir>urssus</Dir>
@@ -276,6 +272,14 @@
       <Dir>urssus</Dir>
       <Dir>images</Dir>
       <Name>viewmag-.svg</Name>
+    </Other>
+    <Other>
+      <Name>MANIFEST.in</Name>
+    </Other>
+    <Other>
+      <Dir>urssus</Dir>
+      <Dir>versioning</Dir>
+      <Name>migrate.cfg</Name>
     </Other>
   </Others>
   <MainScript>
