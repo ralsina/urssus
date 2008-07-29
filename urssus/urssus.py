@@ -1172,10 +1172,24 @@ class MainWindow(QtGui.QMainWindow):
     info("Switch to normal view")
     if self.combinedView:
       self.combinedView=False
-      self.ui.posts.show()
-      self.ui.actionNormal_View.setEnabled(False)
-      self.ui.actionCombined_View.setEnabled(True)
-      self.open_feed(self.ui.feeds.currentIndex())
+    self.ui.splitter.insertWidget(0, self.ui.posts)
+    self.ui.posts.show()
+    self.ui.actionNormal_View.setEnabled(False)
+    self.ui.actionCombined_View.setEnabled(True)
+    self.ui.actionWidescreen_View.setEnabled(True)
+    self.open_feed(self.ui.feeds.currentIndex())
+
+  def on_actionWidescreen_View_triggered(self, i=None):
+    if i==None: return
+    info("Switch to widescreen view")
+    if self.combinedView:
+      self.combinedView=False
+    self.ui.posts.show()
+    self.ui.splitter_2.insertWidget(1, self.ui.posts)
+    self.ui.actionNormal_View.setEnabled(True)
+    self.ui.actionCombined_View.setEnabled(True)
+    self.ui.actionWidescreen_View.setEnabled(False)
+    self.open_feed(self.ui.feeds.currentIndex())
 
   def on_actionCombined_View_triggered(self, i=None):
     if i==None: return
@@ -1185,6 +1199,7 @@ class MainWindow(QtGui.QMainWindow):
       self.ui.posts.hide()
       self.ui.actionNormal_View.setEnabled(True)
       self.ui.actionCombined_View.setEnabled(False)
+      self.ui.actionWidescreen_View.setEnabled(True)
       self.open_feed(self.ui.feeds.currentIndex())
 
   def resortPosts(self):
