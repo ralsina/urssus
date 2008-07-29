@@ -262,6 +262,8 @@
      <addaction name="actionNormal_View" />
      <addaction name="actionWidescreen_View" />
      <addaction name="actionCombined_View" />
+     <addaction name="separator" />
+     <addaction name="actionShort_Feed_List" />
     </widget>
     <widget class="QMenu" name="menuToolbars" >
      <property name="title" >
@@ -283,7 +285,6 @@
     <addaction name="actionStatus_Bar" />
     <addaction name="separator" />
     <addaction name="actionShow_Only_Unread_Feeds" />
-    <addaction name="separator" />
     <addaction name="separator" />
     <addaction name="menu_View_Mode" />
     <addaction name="menu_Zoom" />
@@ -740,6 +741,17 @@
    </property>
    <property name="shortcut" >
     <string>Ctrl+0</string>
+   </property>
+  </action>
+  <action name="actionShort_Feed_List" >
+   <property name="checkable" >
+    <bool>true</bool>
+   </property>
+   <property name="checked" >
+    <bool>true</bool>
+   </property>
+   <property name="text" >
+    <string>Short Feed List</string>
    </property>
   </action>
  </widget>

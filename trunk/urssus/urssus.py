@@ -807,14 +807,10 @@ class MainWindow(QtGui.QMainWindow):
     self.ui.actionFilter_Toolbar.setChecked(v)
     self.on_actionFilter_Toolbar_triggered(v)
 
-    v=config.getValue('ui', 'viewMode', 'normal')
-    if v=='wide':
-      self.on_actionWidescreen_View_triggered(v)
-    elif v=='combined':
-      self.on_actionCombined_View_triggered(v)
-    else:
-      self.on_actionNormal_View_triggered(v)
-
+    v=config.getValue('ui','shortFeedList', False)
+    self.ui.actionShort_Feed_List.setChecked(v)
+    # This will trigger the right view mode as well
+    self.on_actionShort_Feed_List_triggered(True)
 
     v=config.getValue('ui', 'showOnlyUnreadFeeds', False)
     self.ui.actionShow_Only_Unread_Feeds.setChecked(v)
@@ -1205,7 +1201,25 @@ class MainWindow(QtGui.QMainWindow):
     info("Switch to normal view")
     if self.combinedView:
       self.combinedView=False
-    self.ui.splitter.insertWidget(0, self.ui.posts)
+    if self.ui.actionShort_Feed_List.isChecked():
+      self.ui.centralWidget.layout().addWidget(self.ui.splitter) 
+      self.ui.centralWidget.layout().addWidget(self.ui.splitter_2) 
+      self.ui.splitter_2.insertWidget(0, self.ui.feeds)
+      self.ui.splitter_2.insertWidget(1, self.ui.posts)
+      self.ui.splitter.insertWidget(0, self.ui.splitter_2)
+      self.ui.splitter.insertWidget(1, self.ui.view)
+      self.ui.splitter.show()
+      self.ui.splitter_2.show()
+    else:
+      self.ui.centralWidget.layout().addWidget(self.ui.splitter) 
+      self.ui.centralWidget.layout().addWidget(self.ui.splitter_2) 
+      self.ui.splitter.insertWidget(0, self.ui.posts)
+      self.ui.splitter.insertWidget(1, self.ui.view)
+      self.ui.splitter_2.insertWidget(0, self.ui.feeds)
+      self.ui.splitter_2.insertWidget(1, self.ui.splitter)
+      self.ui.splitter.show()
+      self.ui.splitter_2.show()
+      
     self.ui.posts.show()
     self.ui.actionNormal_View.setEnabled(False)
     self.ui.actionCombined_View.setEnabled(True)
@@ -1218,8 +1232,25 @@ class MainWindow(QtGui.QMainWindow):
     info("Switch to widescreen view")
     if self.combinedView:
       self.combinedView=False
+    if self.ui.actionShort_Feed_List.isChecked():
+      self.ui.centralWidget.layout().addWidget(self.ui.splitter) 
+      self.ui.centralWidget.layout().addWidget(self.ui.splitter_2) 
+      self.ui.splitter.insertWidget(0, self.ui.feeds)
+      self.ui.splitter.insertWidget(1, self.ui.posts)
+      self.ui.splitter_2.insertWidget(0, self.ui.splitter)
+      self.ui.splitter_2.insertWidget(1, self.ui.view)
+      self.ui.splitter.show()
+      self.ui.splitter_2.show()
+    else:
+      self.ui.centralWidget.layout().addWidget(self.ui.splitter) 
+      self.ui.centralWidget.layout().addWidget(self.ui.splitter_2) 
+      self.ui.splitter_2.insertWidget(0, self.ui.feeds)
+      self.ui.splitter_2.insertWidget(1, self.ui.posts)
+      self.ui.splitter_2.insertWidget(2, self.ui.view)
+      self.ui.splitter.hide()
+      self.ui.splitter_2.show()
+
     self.ui.posts.show()
-    self.ui.splitter_2.insertWidget(1, self.ui.posts)
     self.ui.actionNormal_View.setEnabled(True)
     self.ui.actionCombined_View.setEnabled(True)
     self.ui.actionWidescreen_View.setEnabled(False)
@@ -1231,12 +1262,39 @@ class MainWindow(QtGui.QMainWindow):
     info("Switch to combined view")    
     if not self.combinedView:
       self.combinedView=True
+      if self.ui.actionShort_Feed_List.isChecked():
+        self.ui.centralWidget.layout().addWidget(self.ui.splitter) 
+        self.ui.centralWidget.layout().addWidget(self.ui.splitter_2)
+        self.ui.splitter.insertWidget(0, self.ui.feeds)
+        self.ui.splitter.insertWidget(1, self.ui.view)
+        self.ui.splitter.show()
+        self.ui.splitter_2.hide()
+      else:
+        self.ui.centralWidget.layout().addWidget(self.ui.splitter) 
+        self.ui.centralWidget.layout().addWidget(self.ui.splitter_2)
+        self.ui.splitter_2.insertWidget(0, self.ui.feeds)
+        self.ui.splitter_2.insertWidget(1, self.ui.view)
+        self.ui.splitter.hide()
+        self.ui.splitter_2.show()
+        
       self.ui.posts.hide()
       self.ui.actionNormal_View.setEnabled(True)
       self.ui.actionCombined_View.setEnabled(False)
       self.ui.actionWidescreen_View.setEnabled(True)
       self.open_feed(self.ui.feeds.currentIndex())
     config.setValue('ui', 'viewMode', 'combined')
+
+  def on_actionShort_Feed_List_triggered(self, i=None):
+    if i==None: return
+    v=config.getValue('ui', 'viewMode', 'normal')
+    if v=='wide':
+      self.on_actionWidescreen_View_triggered(v)
+    elif v=='combined':
+      self.on_actionCombined_View_triggered(v)
+    else:
+      self.on_actionNormal_View_triggered(v)
+    config.setValue('ui', 'shortFeedList', self.ui.actionShort_Feed_List.isChecked())
+    
 
   def resortPosts(self):
     info ("Resorting posts")
