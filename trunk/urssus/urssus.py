@@ -17,7 +17,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 
-import sys, os, time, urlparse, tempfile
+import sys, os, time, urlparse, tempfile, codecs
 from urllib import urlopen
 from datetime import datetime, timedelta
 
@@ -48,11 +48,16 @@ escape=tenjin.helpers.escape
 templateEngine=tenjin.Engine()
 tmplDir=os.path.join(os.path.abspath(os.path.dirname(__file__)), 'templates')
 cssFile=os.path.join(tmplDir,'style.css')
+mootools_core=os.path.join(tmplDir,'mootools-core.js')
+mootools_more=os.path.join(tmplDir,'mootools-more.js')
 
 # FIXME: when deploying need to find a decent way to locate the templates
 def renderTemplate(tname, **context):
   context['to_str']=to_str
   context['escape']=escape
+  context['mootools_core']=mootools_core
+  context['mootools_more']=mootools_more
+  codecs.open('x.html', 'w', 'utf-8').write(templateEngine.render(os.path.join(tmplDir,tname), context))
   return templateEngine.render(os.path.join(tmplDir,tname), context)
 
 # References to background processes
@@ -1075,7 +1080,25 @@ class MainWindow(QtGui.QMainWindow):
     self.ui.statusBar.showMessage(link)
 
   def on_view_linkClicked(self, url):
-    QtGui.QDesktopServices.openUrl(url)
+    # FIXME protect against injection...
+    if str(url.scheme())=='urssus':
+      [_, command, post_id]=str(url.path()).split('/')
+      print command, post_id
+      post=Post.get_by(id=post_id)
+      if command=='read':
+        post.unread=False
+      elif command=='unread':
+        post.unread=True
+      elif command=='important':
+        post.important=True
+      elif command=='unimportant':
+        post.important=False
+      elixir.session.flush()
+      post.feed.curUnread=-1
+      print post.feed.unreadCount()
+      self.updateFeedItem(post.feed)
+    else:
+      QtGui.QDesktopServices.openUrl(url)
 
   def on_view_loadStarted(self):
     self.progress.show()
@@ -1765,7 +1788,7 @@ def exportOPML(fname):
   for feed in root_feed.children:
     exportSubTree(root, feed)
   opml.outlines=root._children
-  opml.output(open(fname, 'w'))
+  opml.output(codecs.open(fname, 'w', 'utf-8'))
     
 def importOPML(fname, parent=None):
   global root_feed
