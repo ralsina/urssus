@@ -8,7 +8,7 @@ options(
           'urssus.templates', 
           'urssus.versioning', 
           'urssus.versioning.versions'],
-        version="0.1.0",
+        version="0.2.0",
         author="Roberto Alsina",
         author_email='ralsina@netmanagers.com.ar',  
         package_data = {'urssus.templates': ['*.tmpl', '*.css'],
