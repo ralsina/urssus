@@ -1545,6 +1545,8 @@ class MainWindow(QtGui.QMainWindow):
           self.updatePostItem(post)
       elixir.session.flush()
       self.updateFeedItem(item.feed, parents=True)
+      if self.combinedView:
+        self.open_feed(self.ui.feeds.currentIndex()) # To update all the actions in the page
 
   def on_actionDelete_Feed_triggered(self, i=None):
     if i==None: return
