@@ -1082,6 +1082,20 @@ class MainWindow(QtGui.QMainWindow):
       self.statusBar().hide()
     config.setValue('ui', 'showStatus', self.ui.actionStatus_Bar.isChecked())
 
+  def on_actionMain_Toolbar_triggered(self, i=None):
+    if i==None: return
+    if self.ui.actionMain_Toolbar.isChecked():
+      self.ui.toolBar.show()
+    else:
+      self.ui.toolBar.hide()
+    
+  def on_actionFilter_Toolbar_triggered(self, i=None):
+    if i==None: return
+    if self.ui.actionFilter_Toolbar.isChecked():
+      self.ui.filterBar.show()
+    else:
+      self.ui.filterBar.hide()
+
   def on_actionAbout_uRSSus_triggered(self, i=None):
     if i==None: return
     AboutDialog().exec_()
@@ -1634,6 +1648,10 @@ class MainWindow(QtGui.QMainWindow):
   def on_actionDecrease_Font_Sizes_triggered(self, i=None):
     if i==None: return
     self.ui.view.setTextSizeMultiplier(self.ui.view.textSizeMultiplier()-.2)
+
+  def on_actionZoom_Reset_triggered(self, i=None):
+    if i==None: return
+    self.ui.view.setTextSizeMultiplier(1)
 
 class FeedDelegate(QtGui.QItemDelegate):
   def __init__(self, parent=None):
