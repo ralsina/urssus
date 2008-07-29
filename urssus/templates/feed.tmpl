@@ -1,14 +1,16 @@
-<table width=100%>
-<tr><td>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<head>
+</head>
+<body>
 <h3>#{feed.title}</h3>
-</td></tr>
+<div>
 <?py if feed.description: ?>
-<tr><td>
   #{feed.description}
-</td></tr>
 <?py #end ?>
+</div>
+<div>
 <?py if feed.htmlUrl: ?>
-<tr><td>
   <a href="#{feed.htmlUrl}">#{feed.htmlUrl}</a>
-</td></tr>
 <?py #end ?>
+</div>
+</body>
