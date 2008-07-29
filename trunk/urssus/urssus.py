@@ -28,7 +28,7 @@ import config
 if sys.platform=='win32':
   # easylog and Processing on windows == broken
   def dumb(*a, **kw):
-    print a, kw
+    pass
   critical=dumb
   error=dumb
   warning=dumb
@@ -57,7 +57,7 @@ def renderTemplate(tname, **context):
   context['escape']=escape
   context['mootools_core']=mootools_core
   context['mootools_more']=mootools_more
-  codecs.open('x.html', 'w', 'utf-8').write(templateEngine.render(os.path.join(tmplDir,tname), context))
+#  codecs.open('x.html', 'w', 'utf-8').write(templateEngine.render(os.path.join(tmplDir,tname), context))
   return templateEngine.render(os.path.join(tmplDir,tname), context)
 
 # References to background processes
@@ -138,7 +138,7 @@ def initDB():
     except:
       curVer=0
     if curVer < REQUIRED_SCHEMA:
-      print "UPGRADING from %s to %s"%(curVer, REQUIRED_SCHEMA)
+#      print "UPGRADING from %s to %s"%(curVer, REQUIRED_SCHEMA)
       os.system('urssus_upgrade_db')
     
   elixir.metadata.bind = database.dbUrl
@@ -1083,7 +1083,6 @@ class MainWindow(QtGui.QMainWindow):
     # FIXME protect against injection...
     if str(url.scheme())=='urssus':
       [_, command, post_id]=str(url.path()).split('/')
-      print command, post_id
       post=Post.get_by(id=post_id)
       if command=='read':
         post.unread=False
@@ -1095,7 +1094,6 @@ class MainWindow(QtGui.QMainWindow):
         post.important=False
       elixir.session.flush()
       post.feed.curUnread=-1
-      print post.feed.unreadCount()
       self.updateFeedItem(post.feed)
     else:
       QtGui.QDesktopServices.openUrl(url)
