@@ -1660,15 +1660,24 @@ class MainWindow(QtGui.QMainWindow):
 
   def on_actionMark_Feed_as_Read_triggered(self, i=None):
     if i==None: return
+
+    def markRead(feed, window):
+      if feed.xmlUrl: # regular feed
+        for post in feed.posts:
+          if post.unread:
+            post.unread=False
+            self.updatePostItem(post)
+        elixir.session.flush()
+        feed.curUnread=-1
+        window.updateFeedItem(feed, parents=True)
+        
+      else: # A folder
+        for feed in item.feed.allFeeds():
+          markRead(feed, window)
+
     item=self.model.itemFromIndex(self.ui.feeds.currentIndex())
     if item and item.feed:
-      for post in item.feed.posts:
-        if post.unread:
-          post.unread=False
-          post.feed.curUnread-=1
-          self.updatePostItem(post)
-      elixir.session.flush()
-      self.updateFeedItem(item.feed, parents=True)
+      markRead(item.feed, self)          
       if self.combinedView:
         self.open_feed(self.ui.feeds.currentIndex()) # To update all the actions in the page
 
