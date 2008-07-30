@@ -649,7 +649,6 @@ class AboutDialog(QtGui.QDialog):
     # Set up the UI from designer
     self.ui=UI_AboutDialog()
     self.ui.setupUi(self)
-    self.setAttribute(QtCore.Qt.WA_QuitOnClose, False)
 
 class TwitterDialog(QtGui.QDialog):
   def __init__(self, parent, post):
@@ -657,7 +656,6 @@ class TwitterDialog(QtGui.QDialog):
     # Set up the UI from designer
     self.ui=UI_TwitterDialog()
     self.ui.setupUi(self)
-    self.setAttribute(QtCore.Qt.WA_QuitOnClose, False)
     self.ui.message.setPlainText('%s - %s'%(post, tiny(post.link)))
 
   def on_message_textChanged(self):
@@ -673,7 +671,6 @@ class FeedProperties(QtGui.QDialog):
     # Set up the UI from designer
     self.ui=UI_FeedPropertiesDialog()
     self.ui.setupUi(self)
-    self.setAttribute(QtCore.Qt.WA_QuitOnClose, False)
     self.ui.tabWidget.setCurrentIndex(0)
     self.feed=feed
     self.loadData()
@@ -834,9 +831,6 @@ class MainWindow(QtGui.QMainWindow):
     traymenu.addSeparator()
     traymenu.addAction(self.ui.actionQuit)
     self.tray.setContextMenu(traymenu)
-
-    # Don't close the app when this window closes
-    self.setAttribute(QtCore.Qt.WA_QuitOnClose, False)
 
   def trayActivated(self, reason=None):
     if reason == None: return
@@ -1970,6 +1964,7 @@ def main():
       # Import a OPML file into the DB so we have some data to work with
       importOPML(sys.argv[1], root_feed)
   app=QtGui.QApplication(sys.argv)
+  app.setQuitOnLastWindowClosed(False)
   window=MainWindow()
   
   # This will start the background fetcher as a side effect
