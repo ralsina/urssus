@@ -1486,6 +1486,8 @@ class MainWindow(QtGui.QMainWindow):
       while feed.parent:
         self.updateFeedItem(feed.parent, True)
         feed=feed.parent
+      # And set the systray tooltip to the unread count on root_feed
+      self.tray.setToolTip('%d unread posts'%root_feed.unreadCount())
 
   def on_posts_clicked(self, index=None, item=None):
     if item: post=item.post
