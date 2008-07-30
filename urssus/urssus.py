@@ -1260,6 +1260,7 @@ class MainWindow(QtGui.QMainWindow):
     self.ui.posts.show()
     self.ui.actionNormal_View.setEnabled(False)
     self.ui.actionCombined_View.setEnabled(True)
+    self.ui.actionFancy_View.setEnabled(True)
     self.ui.actionWidescreen_View.setEnabled(True)
     self.open_feed(self.ui.feeds.currentIndex())
     config.setValue('ui', 'viewMode', 'normal')
@@ -1290,14 +1291,16 @@ class MainWindow(QtGui.QMainWindow):
     self.ui.posts.show()
     self.ui.actionNormal_View.setEnabled(True)
     self.ui.actionCombined_View.setEnabled(True)
+    self.ui.actionFancy_View.setEnabled(True)
     self.ui.actionWidescreen_View.setEnabled(False)
     self.open_feed(self.ui.feeds.currentIndex())
     config.setValue('ui', 'viewMode', 'wide')
 
-  def on_actionCombined_View_triggered(self, i=None):
+  def on_actionCombined_View_triggered(self, i=None, template='combined.tmpl'):
     if i==None: return
     info("Switch to combined view")    
     self.combinedView=True
+    self.combinedTemplate=template
     if self.ui.actionShort_Feed_List.isChecked():
       self.ui.centralWidget.layout().addWidget(self.ui.splitter) 
       self.ui.centralWidget.layout().addWidget(self.ui.splitter_2)
@@ -1316,9 +1319,16 @@ class MainWindow(QtGui.QMainWindow):
     self.ui.posts.hide()
     self.ui.actionNormal_View.setEnabled(True)
     self.ui.actionCombined_View.setEnabled(False)
+    self.ui.actionFancy_View.setEnabled(True)
     self.ui.actionWidescreen_View.setEnabled(True)
     self.open_feed(self.ui.feeds.currentIndex())
     config.setValue('ui', 'viewMode', 'combined')
+
+  def on_actionFancy_View_triggered(self, i=None):
+    self.on_actionCombined_View_triggered(True, 'fancy.tmpl')
+    config.setValue('ui', 'viewMode', 'fancy')
+    self.ui.actionCombined_View.setEnabled(True)
+    self.ui.actionFancy_View.setEnabled(False)
 
   def on_actionShort_Feed_List_triggered(self, i=None):
     if i==None: return
@@ -1327,6 +1337,8 @@ class MainWindow(QtGui.QMainWindow):
       self.on_actionWidescreen_View_triggered(v)
     elif v=='combined':
       self.on_actionCombined_View_triggered(v)
+    elif v=='fancy':
+      self.on_actionFancy_View_triggered(v)
     else:
       self.on_actionNormal_View_triggered(v)
     config.setValue('ui', 'shortFeedList', self.ui.actionShort_Feed_List.isChecked())
@@ -1381,7 +1393,7 @@ class MainWindow(QtGui.QMainWindow):
         self.posts=self.posts.filter(self.statusFilter==True)
       # FIXME: find a way to add sorting to the UI for this (not very important)
       self.posts=self.posts.order_by(sql.desc(Post.date)).all()
-      self.ui.view.setHtml(renderTemplate('combined.tmpl',posts=self.posts))
+      self.ui.view.setHtml(renderTemplate(self.combinedTemplate,posts=self.posts))
       for post in self.posts:
         self.postItems[post.id]=item
         
@@ -1424,12 +1436,22 @@ class MainWindow(QtGui.QMainWindow):
       header.setResizeMode(1, QtGui.QHeaderView.Fixed)
       header.resizeSection(1, header.fontMetrics().width(' 8888-88-88 88:88:88 ')+4)
     
+      i=0
       for post in self.posts:
         item=QtGui.QStandardItem('%s - %s'%(decodeString(post.title), post.date))
         item.post=post
         self.ui.posts.__model.appendRow(item)
         self.postItems[post.id]=item
         self.updatePostItem(post)
+        f=self.currentFeed
+        if i%100==0:
+          # Yes, adding a few hundred items can lock the UI
+          self.statusBar().showMessage('Loaded %d of %d posts'%(i, len(self.posts)))
+          QtGui.QApplication.instance().processEvents()
+          # And maybe the user did something
+          if self.currentFeed<>f:
+            break
+        i+=1
 
       for action in actions:
         action.setEnabled(True)
