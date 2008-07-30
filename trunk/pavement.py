@@ -17,7 +17,7 @@ options(
         entry_points = {'gui_scripts': ['urssus = urssus.urssus:main'], 
                         'console_scripts': ['urssus_upgrade_db = urssus.database:main'], 
                         }, 
-        install_requires = ['SQLAlchemy==0.4.6', 'Elixir==0.5.2', 'processing', 'sqlalchemy-migrate'], 
+        install_requires = ['SQLAlchemy==0.4.6', 'Elixir==0.5.2', 'processing', 'sqlalchemy-migrate', 'simplejson'], 
         description = 'A multiplatform GUI news agregator.', 
         license = 'GPLv2', 
         keywords = 'atom rss pyqt', 
