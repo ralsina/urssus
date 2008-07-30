@@ -262,6 +262,7 @@
      <addaction name="actionNormal_View" />
      <addaction name="actionWidescreen_View" />
      <addaction name="actionCombined_View" />
+     <addaction name="actionFancy_View" />
      <addaction name="separator" />
      <addaction name="actionShort_Feed_List" />
     </widget>
@@ -774,6 +775,15 @@
    </property>
    <property name="text" >
     <string>Short Feed List</string>
+   </property>
+  </action>
+  <action name="actionFancy_View" >
+   <property name="icon" >
+    <iconset resource="../images/icons.qrc" >
+     <normaloff>:/view_detailed.svg</normaloff>:/view_detailed.svg</iconset>
+   </property>
+   <property name="text" >
+    <string>Fancy View</string>
    </property>
   </action>
  </widget>
