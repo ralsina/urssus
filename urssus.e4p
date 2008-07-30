@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE Project SYSTEM "Project-4.2.dtd">
 <!-- eric4 project file for project urssus -->
-<!-- Saved: 2008-07-28, 21:54:05 -->
+<!-- Saved: 2008-07-30, 07:14:46 -->
 <!-- Copyright (C) 2008 Roberto Alsina, ralsina@netmanagers.com.ar -->
 <Project version="4.2">
   <ProgLanguage mixed="0">Python</ProgLanguage>
@@ -128,6 +128,30 @@
       <Dir>versions</Dir>
       <Name>001_Add_initial_tables.py</Name>
     </Source>
+    <Source>
+      <Dir>urssus</Dir>
+      <Dir>templates</Dir>
+      <Name>fancy.tmpl</Name>
+    </Source>
+    <Source>
+      <Dir>urssus</Dir>
+      <Dir>templates</Dir>
+      <Name>mootools-core.js</Name>
+    </Source>
+    <Source>
+      <Dir>urssus</Dir>
+      <Dir>templates</Dir>
+      <Name>mootools-more.js</Name>
+    </Source>
+    <Source>
+      <Dir>urssus</Dir>
+      <Name>tiny.py</Name>
+    </Source>
+    <Source>
+      <Dir>urssus</Dir>
+      <Dir>ui</Dir>
+      <Name>Ui_twitterpost.py</Name>
+    </Source>
   </Sources>
   <Forms>
     <Form>
@@ -154,6 +178,11 @@
       <Dir>urssus</Dir>
       <Dir>ui</Dir>
       <Name>searchwidget.ui</Name>
+    </Form>
+    <Form>
+      <Dir>urssus</Dir>
+      <Dir>ui</Dir>
+      <Name>twitterpost.ui</Name>
     </Form>
   </Forms>
   <Translations>
