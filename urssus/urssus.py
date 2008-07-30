@@ -353,20 +353,19 @@ class Feed(elixir.Entity):
     sibs=self.parent.children
     for sib in sibs[sibs.index(self)+1:]:
       if sib.unreadCount():
-	if sib.xmlUrl:
-	  return sib
-	else:
-	  return sib.nextUnreadFeed()
-    else:
-      # Go to next uncle/greatuncle/whatever
-      parent=self.parent
-      while parent:
-	nextSib=parent.nextSibling()
-	if nextSib: return nextSib.nextUnreadFeed()
-	parent=parent.parent
+        if sib.xmlUrl:
+          return sib
+        else:
+          return sib.nextUnreadFeed()
+      else:
+        # Go to next uncle/greatuncle/whatever
+        parent=self.parent
+        while parent:
+          nextSib=parent.nextSibling()
+          if nextSib: return nextSib.nextUnreadFeed()
+          parent=parent.parent
     # There is nothing below, so go to the top and try again
     return root_feed.nextUnreadFeed()
-      
 
   def unreadCount(self):
     if self.children:
@@ -1565,7 +1564,13 @@ class MainWindow(QtGui.QMainWindow):
         self.updateFeedItem(feed.parent, True)
         feed=feed.parent
       # And set the systray tooltip to the unread count on root_feed
-      self.tray.setToolTip('%d unread posts'%root_feed.unreadCount())
+      uc=root_feed.unreadCount()
+      self.tray.setToolTip('%d unread posts'%uc)
+      if uc:
+        self.tray.setIcon(QtGui.QIcon(':/urssus-unread.svg'))
+      else:
+        self.tray.setIcon(QtGui.QIcon(':/urssus.svg'))
+        
 
   def on_posts_clicked(self, index=None, item=None):
     if item: post=item.post
