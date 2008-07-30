@@ -1570,7 +1570,6 @@ class MainWindow(QtGui.QMainWindow):
         self.tray.setIcon(QtGui.QIcon(':/urssus-unread.svg'))
       else:
         self.tray.setIcon(QtGui.QIcon(':/urssus.svg'))
-        
 
   def on_posts_clicked(self, index=None, item=None):
     if item: post=item.post
@@ -1592,6 +1591,13 @@ class MainWindow(QtGui.QMainWindow):
     else:
       self.ui.view.setHtml(renderTemplate('post.tmpl',post=post))
 
+  def on_posts_doubleClicked(self, index=None):
+    if index==None: return
+    item=self.ui.posts.model().itemFromIndex(index)
+    if item and item.post and item.post.link:
+      info("Opening %s", item.post.link)
+      QtGui.QDesktopServices.openUrl(QtCore.QUrl(item.post.link))
+    
   def on_actionExport_Feeds_triggered(self, i=None):
     if i==None: return
     fname = unicode(QtGui.QFileDialog.getSaveFileName(self, "Save as", os.getcwd(), 
