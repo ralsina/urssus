@@ -875,6 +875,12 @@ class MainWindow(QtGui.QMainWindow):
     if size:
       self.resize(*size)
 
+    splitters=config.getValue('ui', 'splitters', None)
+    if splitters:
+      self.ui.splitter.setSizes(splitters[0])
+      self.ui.splitter_2.setSizes(splitters[1])
+
+
   def getCurrentPost(self):
     index=self.ui.posts.currentIndex()
     if index.isValid():         
@@ -1648,7 +1654,8 @@ class MainWindow(QtGui.QMainWindow):
     pos=self.pos()
     config.setValue('ui', 'position', [pos.x(), pos.y()])
     size=self.size()
-    config.setValue('ui', 'size', [size.width(), size.height()])    
+    config.setValue('ui', 'size', [size.width(), size.height()])
+    config.setValue('ui', 'splitters', [self.ui.splitter.sizes(), self.ui.splitter_2.sizes()])
     QtGui.QApplication.instance().quit()
 
   def on_actionMark_Feed_as_Read_triggered(self, i=None):
