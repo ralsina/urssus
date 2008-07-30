@@ -793,6 +793,11 @@ class MainWindow(QtGui.QMainWindow):
     self.notifiedFeed=None
     QtCore.QObject.connect(self.tray, QtCore.SIGNAL("messageClicked()"), self.notificationClicked)
     QtCore.QObject.connect(self.tray, QtCore.SIGNAL("activated( QSystemTrayIcon::ActivationReason)"), self.trayActivated)
+    traymenu=QtGui.QMenu(self)
+    traymenu.addAction(self.ui.actionFetch_All_Feeds)
+    traymenu.addSeparator()
+    traymenu.addAction(self.ui.actionQuit)
+    self.tray.setContextMenu(traymenu)
 
     # Don't close the app when this window closes
     self.setAttribute(QtCore.Qt.WA_QuitOnClose, False)
