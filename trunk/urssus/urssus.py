@@ -348,20 +348,22 @@ class Feed(elixir.Entity):
           else: # Skip folders
             return child.nextUnreadFeed()
     # Then search for a sibling with unread items below this one
+    # FIXME: not really sure here
+    if not self.parent: return None
     sibs=self.parent.children
     for sib in sibs[sibs.index(self)+1:]:
       if sib.unreadCount():
-        if sib.xmlUrl:
-          return sib
-        else:
-          return sib.nextUnreadFeed()
+	if sib.xmlUrl:
+	  return sib
+	else:
+	  return sib.nextUnreadFeed()
     else:
       # Go to next uncle/greatuncle/whatever
       parent=self.parent
       while parent:
-        nextSib=parent.nextSibling()
-        if nextSib: return nextSib.nextUnreadFeed()
-        parent=parent.parent
+	nextSib=parent.nextSibling()
+	if nextSib: return nextSib.nextUnreadFeed()
+	parent=parent.parent
     # There is nothing below, so go to the top and try again
     return root_feed.nextUnreadFeed()
       
