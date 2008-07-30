@@ -1571,6 +1571,7 @@ class MainWindow(QtGui.QMainWindow):
     else:
       item.setForeground(QtGui.QColor("black"))
     item.setText(unicode(feed))
+    item.setToolTip(unicode(feed))
     if parents: # Not by default because it's slow
       # Update all ancestors too, because unread counts and such change
       while feed.parent:
