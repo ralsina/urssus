@@ -4,13 +4,16 @@
 <body>
 <h3>#{feed.title}</h3>
 <div>
+<b>Last update:</b> #{feed.lastUpdated.date()} <br>
+<?py if feed.htmlUrl: ?>
+<b>URL: </b><a href="#{feed.htmlUrl}">#{feed.htmlUrl}</a><br>
+<?py #end ?>
+</div>
+<hr>
+<div>
 <?py if feed.description: ?>
   #{feed.description}
 <?py #end ?>
 </div>
-<div>
-<?py if feed.htmlUrl: ?>
-  <a href="#{feed.htmlUrl}">#{feed.htmlUrl}</a>
-<?py #end ?>
-</div>
+
 </body>
