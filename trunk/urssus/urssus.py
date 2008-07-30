@@ -792,7 +792,17 @@ class MainWindow(QtGui.QMainWindow):
     self.tray.show()
     self.notifiedFeed=None
     QtCore.QObject.connect(self.tray, QtCore.SIGNAL("messageClicked()"), self.notificationClicked)
+    QtCore.QObject.connect(self.tray, QtCore.SIGNAL("activated( QSystemTrayIcon::ActivationReason)"), self.trayActivated)
 
+    # Don't close the app when this window closes
+    self.setAttribute(QtCore.Qt.WA_QuitOnClose, False)
+
+  def trayActivated(self, reason=None):
+    if reason == None: return
+    if reason == self.tray.Trigger:
+      self.show()
+      self.raise_()
+    
   def notificationClicked(self):
     if self.notifiedFeed:
       self.open_feed(self.ui.feeds.model().indexFromItem(self.feedItems[self.notifiedFeed.id]))
