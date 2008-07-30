@@ -1148,6 +1148,7 @@ class MainWindow(QtGui.QMainWindow):
   def unFilterPosts(self):
     self.textFilter=''
     self.filterWidget.ui.filter.setText('')
+    self.filterWidget.ui.statusCombo.setCurrentIndex(0)
     info("Text filter removed")
     self.open_feed(self.ui.feeds.currentIndex())
 
