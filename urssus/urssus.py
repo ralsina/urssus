@@ -21,6 +21,13 @@ import sys, os, time, urlparse, tempfile, codecs
 from urllib import urlopen
 from datetime import datetime, timedelta
 
+# Twitter support
+try:
+  from twitter import Twitter
+except ImportError:
+  Twitter=None
+from tiny import tiny
+
 # Configuration
 import config
 
@@ -57,7 +64,7 @@ def renderTemplate(tname, **context):
   context['escape']=escape
   context['mootools_core']=mootools_core
   context['mootools_more']=mootools_more
-  codecs.open('x.html', 'w', 'utf-8').write(templateEngine.render(os.path.join(tmplDir,tname), context))
+#  codecs.open('x.html', 'w', 'utf-8').write(templateEngine.render(os.path.join(tmplDir,tname), context))
   return templateEngine.render(os.path.join(tmplDir,tname), context)
 
 # References to background processes
@@ -124,29 +131,8 @@ def get_by_or_init(cls, if_new_set={}, **params):
 
 elixir.Entity.get_by_or_init = classmethod(get_by_or_init)
 
-root_feed=None
-
-def initDB():
-  global root_feed
-  REQUIRED_SCHEMA=1
-  # FIXME: show what we are doing on the UI
-  if not os.path.exists(database.dbfile): # Just create it
-    os.system('urssus_upgrade_db')
-  else: # May need to upgrade
-    try:
-      curVer=migrate.versioning.api.db_version(database.dbUrl, database.repo)
-    except:
-      curVer=0
-    if curVer < REQUIRED_SCHEMA:
-#      print "UPGRADING from %s to %s"%(curVer, REQUIRED_SCHEMA)
-      os.system('urssus_upgrade_db')
-    
-  elixir.metadata.bind = database.dbUrl
-  elixir.setup_all()
-  elixir.session.flush()
-  root_feed=Feed.get_by_or_init(parent=None)
-  elixir.session.flush()
-  return True
+elixir.metadata.bind = database.dbUrl
+#elixir.metadata.bind.echo = True
 
 class Post(elixir.Entity):
   elixir.using_options (tablename='posts')
@@ -167,7 +153,7 @@ class Post(elixir.Entity):
     return unicode(self.title)
 
 class Feed(elixir.Entity):
-  elixir.using_options (tablename='feeds')
+  elixir.using_options (tablename='feeds', inheritance='multi')
   htmlUrl        = elixir.Field(elixir.Text)
   xmlUrl         = elixir.Field(elixir.Text)
   title          = elixir.Field(elixir.Text)
@@ -560,6 +546,34 @@ class Feed(elixir.Entity):
         return posts[ind-1]
     return None
 
+root_feed=None
+
+
+
+def initDB():
+  global root_feed
+  REQUIRED_SCHEMA=2
+  # FIXME: show what we are doing on the UI
+  if not os.path.exists(database.dbfile): # Just create it
+    os.system('urssus_upgrade_db')
+  else: # May need to upgrade
+    try:
+      curVer=migrate.versioning.api.db_version(database.dbUrl, database.repo)
+    except:
+      curVer=0
+    if curVer < REQUIRED_SCHEMA:
+#      print "UPGRADING from %s to %s"%(curVer, REQUIRED_SCHEMA)
+      os.system('urssus_upgrade_db')
+    
+  elixir.metadata.bind = database.dbUrl
+  elixir.setup_all()
+  elixir.session.flush()
+  root_feed=Feed.get_by_or_init(parent=None)
+  elixir.session.flush()
+  return True
+
+
+
 # UI Classes
 from PyQt4 import QtGui, QtCore, QtWebKit
 from ui.Ui_main import Ui_MainWindow
@@ -567,6 +581,7 @@ from ui.Ui_about import Ui_Dialog as UI_AboutDialog
 from ui.Ui_filterwidget import Ui_Form as UI_FilterWidget
 from ui.Ui_searchwidget import Ui_Form as UI_SearchWidget
 from ui.Ui_feed_properties import Ui_Dialog as UI_FeedPropertiesDialog
+from ui.Ui_twitterpost import Ui_Dialog as UI_TwitterDialog
 
 class PostModel(QtGui.QStandardItemModel):
   def __init__(self):
@@ -634,6 +649,17 @@ class AboutDialog(QtGui.QDialog):
     # Set up the UI from designer
     self.ui=UI_AboutDialog()
     self.ui.setupUi(self)
+
+class TwitterDialog(QtGui.QDialog):
+  def __init__(self, parent, post):
+    QtGui.QDialog.__init__(self, parent)
+    # Set up the UI from designer
+    self.ui=UI_TwitterDialog()
+    self.ui.setupUi(self)
+    self.ui.message.setPlainText('%s - %s'%(post, tiny(post.link)))
+
+  def on_message_textChanged(self):
+    self.ui.counter.setText(str(140-len(unicode(self.ui.message.toPlainText()))))
 
 class TrayIcon(QtGui.QSystemTrayIcon):
   def __init__(self):
@@ -850,6 +876,27 @@ class MainWindow(QtGui.QMainWindow):
         index=self.ui.posts.model().index(index.row(), 0, index.parent())
       return self.ui.posts.model().itemFromIndex(index).post
     return None
+    
+  def on_actionPost_to_Twitter_triggered(self, i=None):
+    if i==None: return
+    info("Posting to twitter")
+    post=self.getCurrentPost()
+    if not post: return
+    if not Twitter:
+      print "Twitter module not installed"
+      # FIXME: complain, install, whatever
+      return
+    u=config.getValue('twitter', 'username', None)
+    p=config.getValue('twitter', 'password', None)
+    if not (u and p):
+      print "No user/pass for twitter"
+      # FIXME: implement configuration
+      return
+    dlg=TwitterDialog(self, post)
+    if dlg.exec_():
+      conn=Twitter(u, p)
+      conn.statuses.update(status=unicode(dlg.ui.message.toPlainText()))
+    
 
   def on_actionDelete_Article_triggered(self, i=None):
     # FIXME: handle selections
@@ -935,6 +982,8 @@ class MainWindow(QtGui.QMainWindow):
       menu.addAction(self.ui.actionMark_as_Read)
     else:
       menu.addAction(self.ui.actionMark_as_Unread)
+    menu.addAction(self.ui.actionPost_to_Twitter)
+    menu.addSeparator()
     menu.addAction(self.ui.actionDelete_Article)
     menu.exec_(QtGui.QCursor.pos())
 

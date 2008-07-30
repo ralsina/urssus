@@ -1,5 +1,6 @@
 <RCC>
   <qresource prefix="/" >
+    <file>twitter.svg</file>
     <file>view_left_right.svg</file>
     <file>view_top_bottom.svg</file>
     <file>view_detailed.svg</file>

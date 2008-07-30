@@ -307,6 +307,9 @@
     <addaction name="actionRemove_Important_Mark" />
     <addaction name="actionMark_as_Read" />
     <addaction name="actionMark_as_Unread" />
+    <addaction name="separator" />
+    <addaction name="actionPost_to_Twitter" />
+    <addaction name="separator" />
     <addaction name="actionDelete_Article" />
    </widget>
    <addaction name="menu_File" />
@@ -784,6 +787,15 @@
    </property>
    <property name="text" >
     <string>Fancy View</string>
+   </property>
+  </action>
+  <action name="actionPost_to_Twitter" >
+   <property name="icon" >
+    <iconset resource="../images/icons.qrc" >
+     <normaloff>:/twitter.svg</normaloff>:/twitter.svg</iconset>
+   </property>
+   <property name="text" >
+    <string>Post to Twitter</string>
    </property>
   </action>
  </widget>
