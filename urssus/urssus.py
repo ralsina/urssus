@@ -1386,7 +1386,7 @@ class MainWindow(QtGui.QMainWindow):
               self.ui.actionRemove_Important_Mark,  
              ]
     
-    if self.combinedView: # All items filtered, as a page
+    if self.combinedView: # CombinedView / FancyView
       info("Opening combined")
       if feed.xmlUrl: # A regular feed
         self.posts=Post.query.filter(Post.feed==feed)
@@ -1406,7 +1406,7 @@ class MainWindow(QtGui.QMainWindow):
       for action in actions:
         action.setEnabled(False)
 
-    else: # Standard View
+    else: # StandardView / Widescreen View
       info ("Opening in standard view")
       self.ui.posts.__model=PostModel()
       self.ui.posts.setModel(self.ui.posts.__model)
@@ -1446,6 +1446,7 @@ class MainWindow(QtGui.QMainWindow):
       for post in self.posts:
         item=QtGui.QStandardItem('%s - %s'%(decodeString(post.title), post.date))
         item.post=post
+        item.setToolTip('Posted at %s'%unicode(post.date))
         self.ui.posts.__model.appendRow(item)
         self.postItems[post.id]=item
         self.updatePostItem(post)
