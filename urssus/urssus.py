@@ -867,6 +867,13 @@ class MainWindow(QtGui.QMainWindow):
     v=config.getValue('ui', 'showOnlyUnreadFeeds', False)
     self.ui.actionShow_Only_Unread_Feeds.setChecked(v)
     self.on_actionShow_Only_Unread_Feeds_triggered(v)
+    
+    pos=config.getValue('ui', 'position', None)
+    if pos:
+      self.move(*pos)
+    size=config.getValue('ui', 'size', None)
+    if size:
+      self.resize(*size)
 
   def getCurrentPost(self):
     index=self.ui.posts.currentIndex()
@@ -1638,6 +1645,10 @@ class MainWindow(QtGui.QMainWindow):
       
   def on_actionQuit_triggered(self, i=None):
     if i==None: return
+    pos=self.pos()
+    config.setValue('ui', 'position', [pos.x(), pos.y()])
+    size=self.size()
+    config.setValue('ui', 'size', [size.width(), size.height()])    
     QtGui.QApplication.instance().quit()
 
   def on_actionMark_Feed_as_Read_triggered(self, i=None):
