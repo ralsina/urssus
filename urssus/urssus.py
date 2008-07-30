@@ -603,7 +603,13 @@ class PostModel(QtGui.QStandardItemModel):
       # Tricky!
       ind=self.index(index.row(), 0, index.parent())
       item=self.itemFromIndex(ind)
-      v=QtCore.QVariant(str(item.post.date))
+      
+      # Be smarter, let's see how it looks
+      now=datetime.now()
+      if item.post.date.date()==now.date(): # Today, showthe time
+        v=QtCore.QVariant(str(item.post.date.time()))
+      else:
+        v=QtCore.QVariant(str(item.post.date.date()))
     else:
       return QtCore.QVariant()
     return v
@@ -1434,7 +1440,7 @@ class MainWindow(QtGui.QMainWindow):
       header.setStretchLastSection(False)
       header.setResizeMode(0, QtGui.QHeaderView.Stretch)
       header.setResizeMode(1, QtGui.QHeaderView.Fixed)
-      header.resizeSection(1, header.fontMetrics().width(' 8888-88-88 88:88:88 ')+4)
+      header.resizeSection(1, header.fontMetrics().width(' 8888-88-88 ')+4)
     
       i=0
       for post in self.posts:
