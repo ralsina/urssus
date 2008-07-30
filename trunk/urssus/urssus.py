@@ -649,6 +649,7 @@ class AboutDialog(QtGui.QDialog):
     # Set up the UI from designer
     self.ui=UI_AboutDialog()
     self.ui.setupUi(self)
+    self.setAttribute(QtCore.Qt.WA_QuitOnClose, False)
 
 class TwitterDialog(QtGui.QDialog):
   def __init__(self, parent, post):
@@ -656,6 +657,7 @@ class TwitterDialog(QtGui.QDialog):
     # Set up the UI from designer
     self.ui=UI_TwitterDialog()
     self.ui.setupUi(self)
+    self.setAttribute(QtCore.Qt.WA_QuitOnClose, False)
     self.ui.message.setPlainText('%s - %s'%(post, tiny(post.link)))
 
   def on_message_textChanged(self):
@@ -671,6 +673,7 @@ class FeedProperties(QtGui.QDialog):
     # Set up the UI from designer
     self.ui=UI_FeedPropertiesDialog()
     self.ui.setupUi(self)
+    self.setAttribute(QtCore.Qt.WA_QuitOnClose, False)
     self.ui.tabWidget.setCurrentIndex(0)
     self.feed=feed
     self.loadData()
@@ -769,8 +772,8 @@ class MainWindow(QtGui.QMainWindow):
     self.ui.statusBar.addPermanentWidget(self.progress)
     
     # Use custom delegate to paint feed and post items
-    self.ui.feeds.setItemDelegate(FeedDelegate(self))
-    self.ui.posts.setItemDelegate(PostDelegate(self))
+    #self.ui.feeds.setItemDelegate(FeedDelegate(self))
+    #self.ui.posts.setItemDelegate(PostDelegate(self))
 
     # Article filter fields
     self.filterWidget=FilterWidget()
