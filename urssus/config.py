@@ -20,7 +20,7 @@
 
 import ConfigParser
 import os
-from demjson import JSON
+from simplejson import dumps, loads
 
 cfdir=os.path.join(os.path.expanduser('~'),'.urssus')
 cfname=os.path.join(cfdir,'config')
@@ -29,7 +29,7 @@ def getValue(section,key,default=None):
   section=section.lower()
   key=key.lower()
   try:
-    return JSON().decode(conf.get (section,key))
+    return loads(conf.get (section,key))
   except:
     return default
 
@@ -38,7 +38,7 @@ def setValue(section,key,value):
   key=str(key)
   section=section.lower()
   key=key.lower()
-  value=JSON().encode(value)
+  value=dumps(value)
   try:
     r=conf.set(section,key,value)
   except ConfigParser.NoSectionError:
