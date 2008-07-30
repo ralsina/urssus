@@ -1151,6 +1151,7 @@ class MainWindow(QtGui.QMainWindow):
     self.filterWidget.ui.statusCombo.setCurrentIndex(0)
     info("Text filter removed")
     self.open_feed(self.ui.feeds.currentIndex())
+    self.ui.view.setFocus(QtCore.Qt.TabFocusReason)
 
   def filterPosts(self):
     self.textFilter=unicode(self.filterWidget.ui.filter.text())
