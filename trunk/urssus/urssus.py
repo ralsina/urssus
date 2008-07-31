@@ -1534,6 +1534,14 @@ class MainWindow(QtGui.QMainWindow):
     else:
       item.setForeground(QtGui.QColor("black"))
       item2.setForeground(QtGui.QColor("black"))
+      
+    f=item.font()
+    if post.important or post.unread:
+      f.setBold(True)
+    else:
+      f.setBold(False)
+    item.setFont(f)
+    item2.setFont(f)
 
   def updateFeedItem(self, feed, parents=False, updating=False):
     info("Updating item for feed %d", feed.id)
@@ -1556,6 +1564,14 @@ class MainWindow(QtGui.QMainWindow):
       item.setForeground(QtGui.QColor("black"))
     item.setText(unicode(feed))
     item.setToolTip(unicode(feed))
+    
+    f=item.font()
+    if feed.unreadCount():
+      f.setBold(True)
+    else:
+      f.setBold(False)
+    item.setFont(f)
+    
     if parents: # Not by default because it's slow
       # Update all ancestors too, because unread counts and such change
       while feed.parent:
