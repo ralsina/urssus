@@ -947,7 +947,7 @@ class MainWindow(QtGui.QMainWindow):
       curPost.feed.curUnread+=1
       elixir.session.flush()
       self.updatePostItem(curPost)
-      self.updateFeedItem(curPost.feed)
+      self.updateFeedItem(curPost.feed, parents=True)
 
   def on_actionOpen_in_Browser_triggered(self, i=None):
     # FIXME: handle selections
