@@ -1,24 +1,23 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <head>
-<style type="text/css">
-  .action {visibility: hidden; background-color: #C3D4FF; padding: 4px;};
-  .post-body {border: solid #000000; width: 100%; overflow: auto; margin: 12px;};
-  .post-title {width: 100%;};
-  .title {width: 100%; padding: 12px; margin: 12px; border: solid #000000; font-weight: bold;};
-</style>
 </head>
 <body>
-<h3>#{post.title}</h3>
-<div>
+<div class="headerbox">
+<?py if post.link: ?>
+  <a href="#{post.link}"><h3>#{post.title}</h3></a>
+<?py else: ?>
+  <h3>#{post.title}</h3>
+<?py #end ?>
+</div>
+<div class="headerbox">
 <b>Date:&nbsp;</b>#{post.date}<br>
 <?py if post.author: ?>
   <tr><td><b>Author:&nbsp;</b>#{post.author}<br>
 <?py #end ?>
 </div>
-<div>
+<div style='margin-top: 1em;'>
 #{post.content}
-</div>
-<div>
+<p>
 <?py if post.link: ?>
   <a href="#{post.link}">Complete Story</a>
 <?py #end ?>

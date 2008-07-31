@@ -2,8 +2,14 @@
 <head>
 </head>
 <body>
+<div class="headerbox">
+<?py if feed.htmlUrl: ?>
+<a href="#{feed.htmlUrl}"><h3>#{feed.title}</h3></a>
+<?py else: ?>
 <h3>#{feed.title}</h3>
-<div>
+<?py #end ?>
+</div>
+<div class="headerbox">
 <b>Last update:</b> #{feed.lastUpdated.date()} <br>
 <?py if feed.htmlUrl: ?>
 <b>URL: </b><a href="#{feed.htmlUrl}">#{feed.htmlUrl}</a><br>
