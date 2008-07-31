@@ -1505,7 +1505,6 @@ class MainWindow(QtGui.QMainWindow):
       header.setResizeMode(1, QtGui.QHeaderView.Fixed)
       header.resizeSection(1, header.fontMetrics().width(' 8888-88-88 ')+4)
     
-      i=0
       for post in self.posts:
         item=QtGui.QStandardItem('%s - %s'%(decodeString(post.title), post.date))
         item.post=post
