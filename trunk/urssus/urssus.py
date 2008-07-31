@@ -1514,14 +1514,6 @@ class MainWindow(QtGui.QMainWindow):
         self.postItems[post.id]=item
         self.updatePostItem(post)
         f=self.currentFeed
-        if i%100==0:
-          # Yes, adding a few hundred items can lock the UI
-          self.statusBar().showMessage('Loaded %d of %d posts'%(i, len(self.posts)))
-          QtGui.QApplication.instance().processEvents()
-          # And maybe the user did something
-          if self.currentFeed<>f:
-            break
-        i+=1
 
       for action in actions:
         action.setEnabled(True)
