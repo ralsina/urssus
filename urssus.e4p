@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE Project SYSTEM "Project-4.2.dtd">
 <!-- eric4 project file for project urssus -->
-<!-- Saved: 2008-07-30, 07:14:46 -->
+<!-- Saved: 2008-07-30, 21:59:55 -->
 <!-- Copyright (C) 2008 Roberto Alsina, ralsina@netmanagers.com.ar -->
 <Project version="4.2">
   <ProgLanguage mixed="0">Python</ProgLanguage>
@@ -25,10 +25,6 @@
     <Source>
       <Dir>urssus</Dir>
       <Name>config.py</Name>
-    </Source>
-    <Source>
-      <Dir>urssus</Dir>
-      <Name>demjson.py</Name>
     </Source>
     <Source>
       <Dir>urssus</Dir>
