@@ -645,8 +645,8 @@ class SearchWidget(QtGui.QWidget):
     self.ui.setupUi(self)
 
 class AboutDialog(QtGui.QDialog):
-  def __init__(self):
-    QtGui.QDialog.__init__(self)
+  def __init__(self, parent):
+    QtGui.QDialog.__init__(self, parent)
     # Set up the UI from designer
     self.ui=UI_AboutDialog()
     self.ui.setupUi(self)
@@ -1210,7 +1210,7 @@ class MainWindow(QtGui.QMainWindow):
 
   def on_actionAbout_uRSSus_triggered(self, i=None):
     if i==None: return
-    AboutDialog().exec_()
+    AboutDialog(self).exec_()
     
   def updateFeedStatus(self):
     while not feedStatusQueue.empty():
