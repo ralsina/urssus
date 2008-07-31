@@ -907,7 +907,7 @@ class MainWindow(QtGui.QMainWindow):
     dlg=TwitterDialog(self, post)
     if dlg.exec_():
       conn=Twitter(u, p)
-      conn.statuses.update(status=unicode(dlg.ui.message.toPlainText()))
+      conn.statuses.update(source='urssus', status=unicode(dlg.ui.message.toPlainText()))
     
 
   def on_actionDelete_Article_triggered(self, i=None):
