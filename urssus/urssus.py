@@ -852,12 +852,11 @@ class MainWindow(QtGui.QMainWindow):
     self.on_actionStatus_Bar_triggered(v)
 
     v=config.getValue('ui', 'showMainBar', True)
+    self.ui.toolBar.setVisible(v)
     self.ui.actionMain_Toolbar.setChecked(v)
-    self.on_actionMain_Toolbar_triggered(v)
-
     v=config.getValue('ui', 'showFilterBar', True)
+    self.ui.filterBar.setVisible(v)
     self.ui.actionFilter_Toolbar.setChecked(v)
-    self.on_actionFilter_Toolbar_triggered(v)
 
     v=config.getValue('ui','shortFeedList', False)
     self.ui.actionShort_Feed_List.setChecked(v)
@@ -1203,18 +1202,10 @@ class MainWindow(QtGui.QMainWindow):
 
   def on_actionMain_Toolbar_triggered(self, i=None):
     if i==None: return
-    if self.ui.actionMain_Toolbar.isChecked():
-      self.ui.toolBar.show()
-    else:
-      self.ui.toolBar.hide()
     config.setValue('ui', 'showMainBar', self.ui.actionMain_Toolbar.isChecked())
     
   def on_actionFilter_Toolbar_triggered(self, i=None):
     if i==None: return
-    if self.ui.actionFilter_Toolbar.isChecked():
-      self.ui.filterBar.show()
-    else:
-      self.ui.filterBar.hide()
     config.setValue('ui', 'showFilterBar', self.ui.actionFilter_Toolbar.isChecked())
 
   def on_actionAbout_uRSSus_triggered(self, i=None):
