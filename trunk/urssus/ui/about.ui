@@ -28,7 +28,11 @@
    </size>
   </property>
   <property name="windowTitle" >
-   <string>Dialog</string>
+   <string>About uRSSus</string>
+  </property>
+  <property name="windowIcon" >
+   <iconset resource="../images/icons.qrc" >
+    <normaloff>:/urssus.svg</normaloff>:/urssus.svg</iconset>
   </property>
   <widget class="QWidget" name="layoutWidget" >
    <property name="geometry" >
