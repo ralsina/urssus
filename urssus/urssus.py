@@ -158,7 +158,7 @@ class Feed(elixir.Entity):
   title          = elixir.Field(elixir.Text)
   text           = elixir.Field(elixir.Text, default='')
   description    = elixir.Field(elixir.Text)
-  children       = elixir.OneToMany('Feed', inverse='parent')
+  children       = elixir.OneToMany('Feed', inverse='parent', order_by='position')
   parent         = elixir.ManyToOne('Feed')
   posts          = elixir.OneToMany('Post', order_by="-date", inverse='feed')
   lastUpdated    = elixir.Field(elixir.DateTime, default=datetime(1970,1,1))
@@ -175,6 +175,7 @@ class Feed(elixir.Entity):
   icon           = elixir.Field(elixir.Binary, deferred=True)
   # updateInterval -1 means use the app default, any other value, it's in minutes
   updateInterval = elixir.Field(elixir.Integer, default=-1)
+  position       = elixir.Field(elixir.Integer, default=0)
   curUnread      = -1
 
   def __repr__(self):
@@ -558,7 +559,7 @@ root_feed=None
 
 def initDB():
   global root_feed
-  REQUIRED_SCHEMA=2
+  REQUIRED_SCHEMA=3
   # FIXME: show what we are doing on the UI
   if not os.path.exists(database.dbfile): # Just create it
     os.system('urssus_upgrade_db')
