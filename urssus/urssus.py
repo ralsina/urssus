@@ -588,6 +588,7 @@ from ui.Ui_filterwidget import Ui_Form as UI_FilterWidget
 from ui.Ui_searchwidget import Ui_Form as UI_SearchWidget
 from ui.Ui_feed_properties import Ui_Dialog as UI_FeedPropertiesDialog
 from ui.Ui_twitterpost import Ui_Dialog as UI_TwitterDialog
+from ui.Ui_twitterauth import Ui_Dialog as UI_TwitterAuthDialog
 
 class PostModel(QtGui.QStandardItemModel):
   def __init__(self):
@@ -663,9 +664,42 @@ class TwitterDialog(QtGui.QDialog):
     self.ui=UI_TwitterDialog()
     self.ui.setupUi(self)
     self.ui.message.setPlainText('%s - %s'%(post, tiny(post.link)))
+    self.u=config.getValue('twitter', 'username', None)
+    self.p=config.getValue('twitter', 'username', None)
+    if not self.u or not self.p:
+      self.ui.ok.setEnabled(False)
+      self.ui.username.setText('Authentication not configured')      
+    else:
+      self.ui.username.setText('Posting update as: %s'%self.u)
+
+  def on_changeAuth_clicked(self, i=None):
+    if i==None: return
+    dlg=TwitterAuthDialog(self)
+    dlg.ui.username.setText(unicode(self.u))
+    if dlg.exec_():
+      self.u=unicode(dlg.ui.username.text())
+      self.p=unicode(dlg.ui.password.text())
+      if dlg.ui.saveit.isChecked():
+        config.setValue('twitter', 'username', self.u)
+        config.setValue('twitter', 'password', self.p)
+      self.ui.ok.setEnabled(True)
 
   def on_message_textChanged(self):
     self.ui.counter.setText(str(140-len(unicode(self.ui.message.toPlainText()))))
+
+  def accept(self):
+    status=unicode(self.ui.message.toPlainText())
+    conn=Twitter(self.u, self.p)
+    conn.statuses.update(source='urssus', status=status)    
+    QtGui.QDialog.accept(self)
+    
+class TwitterAuthDialog(QtGui.QDialog):
+  def __init__(self, parent):
+    QtGui.QDialog.__init__(self, parent)
+    # Set up the UI from designer
+    self.ui=UI_TwitterAuthDialog()
+    self.ui.setupUi(self)
+
 
 class TrayIcon(QtGui.QSystemTrayIcon):
   def __init__(self):
@@ -920,17 +954,9 @@ class MainWindow(QtGui.QMainWindow):
       print "Twitter module not installed"
       # FIXME: complain, install, whatever
       return
-    u=config.getValue('twitter', 'username', None)
-    p=config.getValue('twitter', 'password', None)
-    if not (u and p):
-      print "No user/pass for twitter"
-      # FIXME: implement configuration
-      return
+      
     dlg=TwitterDialog(self, post)
-    if dlg.exec_():
-      conn=Twitter(u, p)
-      conn.statuses.update(source='urssus', status=unicode(dlg.ui.message.toPlainText()))
-    
+    dlg.exec_()
 
   def on_actionDelete_Article_triggered(self, i=None):
     # FIXME: handle selections
