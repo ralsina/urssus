@@ -941,7 +941,6 @@ class MainWindow(QtGui.QMainWindow):
       self.showNormal()
     
   def on_actionShow_Menu_Bar_triggered(self, i=None):
-    print "toggle menu bar"
     if i==None: return
     if self.ui.actionShow_Menu_Bar.isChecked():
       self.ui.menuBar.show()
@@ -954,7 +953,6 @@ class MainWindow(QtGui.QMainWindow):
     post=self.getCurrentPost()
     if not post: return
     if not Twitter:
-      print "Twitter module not installed"
       # FIXME: complain, install, whatever
       return
       
@@ -2083,12 +2081,11 @@ from processing import connection
 import socket
 
 def theServer(server):
-  print "startedtheServer"
   while True:
     conn = server.accept()
     info ('connection accepted')
     # Process the message as needed
-    print conn.recv()
+    conn.recv()
     conn.close()
   server.close()
   
@@ -2102,7 +2099,6 @@ def main():
 
   # Try to serve the socket yourself
   try:
-    print "Trying to serve"
     server=connection.Listener(sockaddr, authkey='urssus')
     serverProc=processing.Process(target=theServer, args=(server, ))
     serverProc.setDaemon(True)
@@ -2110,13 +2106,11 @@ def main():
   except socket.error:
     # Already in use, so be the client
     try:
-      print "Being the client"
       conn=connection.Client(sockaddr, authkey='urssus')
       conn.send(sys.argv[1:])
       sys.exit(0)
     except socket.error: # A stale socket
       try:
-        print "Second attempt at serving"
         # Try to be the server again
         if sys.platform<>'win32':
           os.unlink(sockaddr)
