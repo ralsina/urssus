@@ -802,6 +802,10 @@ class MainWindow(QtGui.QMainWindow):
     self.ui.view.setFocus(QtCore.Qt.TabFocusReason)
     QtWebKit.QWebSettings.globalSettings().setUserStyleSheetUrl(QtCore.QUrl(cssFile))
     QtCore.QObject.connect(self.ui.view.page(), QtCore.SIGNAL(" linkHovered ( const QString & link, const QString & title, const QString & textContent )"), self.linkHovered)
+    copy_action=self.ui.view.page().action(QtWebKit.QWebPage.Copy)
+    copy_action.setIcon(QtGui.QIcon(':/editcopy.svg'))
+    self.ui.menu_Edit.insertAction(self.ui.actionFind, copy_action )
+    self.ui.menu_Edit.insertSeparator(self.ui.actionFind)
 
     # Set sorting for post list
     self.ui.posts.sortByColumn(1, QtCore.Qt.DescendingOrder)
@@ -891,7 +895,7 @@ class MainWindow(QtGui.QMainWindow):
         index=self.ui.posts.model().index(index.row(), 0, index.parent())
       return self.ui.posts.model().itemFromIndex(index).post
     return None
-    
+
   def on_actionFull_Screen_triggered(self, i=None):
     if i==None: return
     if self.ui.actionFull_Screen.isChecked():

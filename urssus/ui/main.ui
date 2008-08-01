@@ -1,7 +1,6 @@
 <ui version="4.0" >
  <class>MainWindow</class>
  <widget class="QMainWindow" name="MainWindow" >
-  <addaction name="actionShow_Menu_Bar" />
   <property name="geometry" >
    <rect>
     <x>0</x>
@@ -841,6 +840,7 @@
     <enum>Qt::WindowShortcut</enum>
    </property>
   </action>
+  <addaction name="actionShow_Menu_Bar" />
  </widget>
  <customwidgets>
   <customwidget>
