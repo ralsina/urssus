@@ -1315,7 +1315,6 @@ class MainWindow(QtGui.QMainWindow):
     
     # Internal function
     def addSubTree(parent, node):
-      QtGui.QApplication.instance().processEvents()
       nn=QtGui.QStandardItem(unicode(node))
       nn.setToolTip(unicode(node))
       parent.appendRow(nn)
@@ -1335,6 +1334,7 @@ class MainWindow(QtGui.QMainWindow):
     iroot.feed=root_feed
     self.feedItems[root_feed.id]=iroot
     for root in root_feed.children:
+      QtGui.QApplication.instance().processEvents()
       addSubTree(iroot, root)
       
     self.setEnabled(True)
@@ -2079,8 +2079,41 @@ def decodeString(s):
   u=unicode(BeautifulStoneSoup(s,convertEntities=BeautifulStoneSoup.HTML_ENTITIES ))
   return u
 
+from processing import connection
+import socket
+
+def theServer(server):
+  print "startedtheServer"
+  while True:
+    conn = server.accept()
+    info ('connection accepted')
+    # Process the message as needed
+    print conn.recv()
+    conn.close()
+  server.close()
+  
 def main():
   global root_feed
+
+  if sys.platform=='win32':
+    sockaddr=r'\\.\pipe\uRSSus'
+  else:
+    sockaddr=os.path.join(config.cfdir, 'urssus.socket')
+
+  # Try to serve the socket yourself
+  try:
+    print "Trying to serve"
+    server=connection.Listener(sockaddr, authkey='urssus')
+    serverProc=processing.Process(target=theServer, args=(server, ))
+    serverProc.setDaemon(True)
+    serverProc.start()    
+  except socket.error:
+    # Already in use, so be the client
+    print "Being the client"
+    conn=connection.Client(sockaddr, authkey='urssus')
+    conn.send(sys.argv[1:])
+    sys.exit(0)
+    
   initDB()
     
   if len(sys.argv)>1:
