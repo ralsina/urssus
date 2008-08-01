@@ -1,4 +1,4 @@
-import os
+import os, sys
 import migrate.versioning.api as migrate
 import config, sqlalchemy
 # Logging
