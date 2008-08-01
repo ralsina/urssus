@@ -1,5 +1,6 @@
 <RCC>
   <qresource prefix="/" >
+    <file>window_fullscreen.svg</file>
     <file>urssus-unread.svg</file>
     <file>twitter.svg</file>
     <file>view_left_right.svg</file>

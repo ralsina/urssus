@@ -289,6 +289,8 @@
     <addaction name="separator" />
     <addaction name="menu_View_Mode" />
     <addaction name="menu_Zoom" />
+    <addaction name="separator" />
+    <addaction name="actionFull_Screen" />
    </widget>
    <widget class="QMenu" name="menu_Edit" >
     <property name="title" >
@@ -799,6 +801,21 @@
    </property>
    <property name="text" >
     <string>Post to Twitter</string>
+   </property>
+  </action>
+  <action name="actionFull_Screen" >
+   <property name="checkable" >
+    <bool>true</bool>
+   </property>
+   <property name="icon" >
+    <iconset resource="../images/icons.qrc" >
+     <normaloff>:/window_fullscreen.svg</normaloff>:/window_fullscreen.svg</iconset>
+   </property>
+   <property name="text" >
+    <string>&amp;Full Screen</string>
+   </property>
+   <property name="shortcut" >
+    <string>F11</string>
    </property>
   </action>
  </widget>
