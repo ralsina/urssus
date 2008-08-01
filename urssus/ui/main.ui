@@ -1,6 +1,7 @@
 <ui version="4.0" >
  <class>MainWindow</class>
  <widget class="QMainWindow" name="MainWindow" >
+  <addaction name="actionShow_Menu_Bar" />
   <property name="geometry" >
    <rect>
     <x>0</x>
@@ -283,6 +284,7 @@
      <addaction name="actionZoom_Reset" />
     </widget>
     <addaction name="menuToolbars" />
+    <addaction name="actionShow_Menu_Bar" />
     <addaction name="actionStatus_Bar" />
     <addaction name="separator" />
     <addaction name="actionShow_Only_Unread_Feeds" />
@@ -816,6 +818,27 @@
    </property>
    <property name="shortcut" >
     <string>F11</string>
+   </property>
+  </action>
+  <action name="actionShow_Menu_Bar" >
+   <property name="checkable" >
+    <bool>true</bool>
+   </property>
+   <property name="checked" >
+    <bool>true</bool>
+   </property>
+   <property name="icon" >
+    <iconset resource="../images/icons.qrc" >
+     <normaloff>:/menubar.svg</normaloff>:/menubar.svg</iconset>
+   </property>
+   <property name="text" >
+    <string>Show Menu Bar</string>
+   </property>
+   <property name="shortcut" >
+    <string>Alt+M</string>
+   </property>
+   <property name="shortcutContext" >
+    <enum>Qt::WindowShortcut</enum>
    </property>
   </action>
  </widget>

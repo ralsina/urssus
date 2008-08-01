@@ -883,8 +883,7 @@ class MainWindow(QtGui.QMainWindow):
     if splitters:
       self.ui.splitter.setSizes(splitters[0])
       self.ui.splitter_2.setSizes(splitters[1])
-
-
+      
   def getCurrentPost(self):
     index=self.ui.posts.currentIndex()
     if index.isValid():         
@@ -899,6 +898,14 @@ class MainWindow(QtGui.QMainWindow):
       self.showFullScreen()
     else:
       self.showNormal()
+    
+  def on_actionShow_Menu_Bar_triggered(self, i=None):
+    print "toggle menu bar"
+    if i==None: return
+    if self.ui.actionShow_Menu_Bar.isChecked():
+      self.ui.menuBar.show()
+    else:
+      self.ui.menuBar.hide()
     
   def on_actionPost_to_Twitter_triggered(self, i=None):
     if i==None: return
