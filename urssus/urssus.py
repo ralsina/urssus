@@ -893,6 +893,13 @@ class MainWindow(QtGui.QMainWindow):
       return self.ui.posts.model().itemFromIndex(index).post
     return None
     
+  def on_actionFull_Screen_triggered(self, i=None):
+    if i==None: return
+    if self.ui.actionFull_Screen.isChecked():
+      self.showFullScreen()
+    else:
+      self.showNormal()
+    
   def on_actionPost_to_Twitter_triggered(self, i=None):
     if i==None: return
     info("Posting to twitter")
