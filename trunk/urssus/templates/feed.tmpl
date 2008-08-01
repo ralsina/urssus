@@ -3,10 +3,18 @@
 </head>
 <body>
 <div class="headerbox">
-<?py if feed.htmlUrl: ?>
-<a href="#{feed.htmlUrl}"><h3>#{feed.title}</h3></a>
+<?py if feed.title: ?>
+    <?py if feed.htmlUrl: ?>
+    <a href="#{feed.htmlUrl}"><h3>#{feed.title}</h3></a>
+    <?py else: ?>
+    <h3>#{feed.title}</h3>
+    <?py #end ?>
 <?py else: ?>
-<h3>#{feed.title}</h3>
+    <?py if feed.htmlUrl: ?>
+    <a href="#{feed.htmlUrl}"><h3>#{feed.text}</h3></a>
+    <?py else: ?>
+    <h3>#{feed.text}</h3>
+    <?py #end ?>
 <?py #end ?>
 </div>
 <div class="headerbox">
