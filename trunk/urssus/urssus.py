@@ -1312,11 +1312,18 @@ class MainWindow(QtGui.QMainWindow):
     else:
       self.ui.view.setHtml(renderTemplate('feed.tmpl', feed=item.feed))
 
+  def autoAdjustSplitters(self):
+    # Surprising splitter size prevention
+    h=self.height()
+    w=self.width()
+    self.ui.splitter.setSizes([h*.3,h*.7] )
+    self.ui.splitter_2.setSizes([w*.3,w*.7] )
+
   def on_actionNormal_View_triggered(self, i=None):
     if i==None: return
     info("Switch to normal view")
     if self.combinedView:
-      self.combinedView=False
+      self.combinedView=False      
     if self.ui.actionShort_Feed_List.isChecked():
       self.ui.centralWidget.layout().addWidget(self.ui.splitter) 
       self.ui.centralWidget.layout().addWidget(self.ui.splitter_2) 
@@ -1343,6 +1350,8 @@ class MainWindow(QtGui.QMainWindow):
     self.ui.actionWidescreen_View.setEnabled(True)
     self.open_feed(self.ui.feeds.currentIndex())
     config.setValue('ui', 'viewMode', 'normal')
+
+    self.autoAdjustSplitters()
 
   def on_actionWidescreen_View_triggered(self, i=None):
     if i==None: return
@@ -1374,6 +1383,8 @@ class MainWindow(QtGui.QMainWindow):
     self.ui.actionWidescreen_View.setEnabled(False)
     self.open_feed(self.ui.feeds.currentIndex())
     config.setValue('ui', 'viewMode', 'wide')
+
+    self.autoAdjustSplitters()
 
   def on_actionCombined_View_triggered(self, i=None, template='combined.tmpl'):
     if i==None: return
@@ -1422,7 +1433,6 @@ class MainWindow(QtGui.QMainWindow):
       self.on_actionNormal_View_triggered(v)
     config.setValue('ui', 'shortFeedList', self.ui.actionShort_Feed_List.isChecked())
     
-
   def resortPosts(self):
     info ("Resorting posts")
     if self.currentPost:
