@@ -2109,11 +2109,24 @@ def main():
     serverProc.start()    
   except socket.error:
     # Already in use, so be the client
-    print "Being the client"
-    conn=connection.Client(sockaddr, authkey='urssus')
-    conn.send(sys.argv[1:])
-    sys.exit(0)
-    
+    try:
+      print "Being the client"
+      conn=connection.Client(sockaddr, authkey='urssus')
+      conn.send(sys.argv[1:])
+      sys.exit(0)
+    except socket.error: # A stale socket
+      try:
+        print "Second attempt at serving"
+        # Try to be the server again
+        if sys.platform<>'win32':
+          os.unlink(sockaddr)
+        server=connection.Listener(sockaddr, authkey='urssus')
+        serverProc=processing.Process(target=theServer, args=(server, ))
+        serverProc.setDaemon(True)
+        serverProc.start()
+      except socket.error, e: # No idea what could be here, just run
+        print "Unknown error", e
+
   initDB()
     
   if len(sys.argv)>1:
