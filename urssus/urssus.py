@@ -2088,38 +2088,46 @@ def theServer(server):
     conn.recv()
     conn.close()
   server.close()
-  
+
+if sys.platform=='win32':
+  sockaddr=r'\\.\pipe\uRSSus'
+else:
+  sockaddr=os.path.join(config.cfdir, 'urssus.socket')
+
+def serverConn():
+  try:
+    server=connection.Listener(sockaddr, authkey='urssus')
+  except socket.error, e:
+    if e[0]==98: #Address already in use
+      return None
+  serverProc=processing.Process(target=theServer, args=(server, ))
+  serverProc.setDaemon(True)
+  serverProc.start()
+  return serverProc
+    
+def clientConn():
+  try:
+    return connection.Client(sockaddr, authkey='urssus')
+  except socket.error, e:
+    if e[0]==111: # Connection refused, stale socket
+      return None
+    else:
+      print e
+    
 def main():
   global root_feed
 
-  if sys.platform=='win32':
-    sockaddr=r'\\.\pipe\uRSSus'
-  else:
-    sockaddr=os.path.join(config.cfdir, 'urssus.socket')
-
-  # Try to serve the socket yourself
-  try:
-    server=connection.Listener(sockaddr, authkey='urssus')
-    serverProc=processing.Process(target=theServer, args=(server, ))
-    serverProc.setDaemon(True)
-    serverProc.start()    
-  except socket.error:
-    # Already in use, so be the client
-    try:
-      conn=connection.Client(sockaddr, authkey='urssus')
+  # Try to be the server
+  serverProc=serverConn()
+  if not serverProc: # Ok, be the client
+    conn=clientConn()
+    if not conn and sys.platform<>'win32' and os.path.exists(sockaddr): #Stale socket
+      # FIXME: this is a race condition :-(
+      os.unlink(sockaddr)
+      serverProc=serverConn()
+    else:
       conn.send(sys.argv[1:])
       sys.exit(0)
-    except socket.error: # A stale socket
-      try:
-        # Try to be the server again
-        if sys.platform<>'win32':
-          os.unlink(sockaddr)
-        server=connection.Listener(sockaddr, authkey='urssus')
-        serverProc=processing.Process(target=theServer, args=(server, ))
-        serverProc.setDaemon(True)
-        serverProc.start()
-      except socket.error, e: # No idea what could be here, just run
-        print "Unknown error", e
 
   initDB()
     
