@@ -569,7 +569,7 @@ def initDB():
     except:
       curVer=0
     if curVer < REQUIRED_SCHEMA:
-#      print "UPGRADING from %s to %s"%(curVer, REQUIRED_SCHEMA)
+      info ("UPGRADING from %s to %s", curVer, REQUIRED_SCHEMA)
       os.system('urssus_upgrade_db')
     
   elixir.metadata.bind = database.dbUrl
@@ -836,7 +836,6 @@ class MainWindow(QtGui.QMainWindow):
     page.setLinkDelegationPolicy(page.DelegateAllLinks)
     self.ui.view.setFocus(QtCore.Qt.TabFocusReason)
     QtWebKit.QWebSettings.globalSettings().setUserStyleSheetUrl(QtCore.QUrl(cssFile))
-    QtCore.QObject.connect(self.ui.view.page(), QtCore.SIGNAL(" linkHovered ( const QString & link, const QString & title, const QString & textContent )"), self.linkHovered)
     copy_action=self.ui.view.page().action(QtWebKit.QWebPage.Copy)
     copy_action.setIcon(QtGui.QIcon(':/editcopy.svg'))
     self.ui.menu_Edit.insertAction(self.ui.actionFind, copy_action )
@@ -847,7 +846,7 @@ class MainWindow(QtGui.QMainWindow):
 
     # Fill with feed data
     self.showOnlyUnread=False
-    self.initTree()
+    QtCore.QTimer.singleShot(0, self.initTree)
 
     # Timer to trigger status bar updates
     self.statusTimer=QtCore.QTimer()
@@ -1305,6 +1304,7 @@ class MainWindow(QtGui.QMainWindow):
       self.statusTimer.start(100)
 
   def initTree(self):
+    self.setEnabled(False)
     # Initialize the tree from the Feeds
     self.model=QtGui.QStandardItemModel()
     self.ui.feeds.setModel(self.model)
@@ -1312,6 +1312,7 @@ class MainWindow(QtGui.QMainWindow):
     
     # Internal function
     def addSubTree(parent, node):
+      QtGui.QApplication.instance().processEvents()
       nn=QtGui.QStandardItem(unicode(node))
       nn.setToolTip(unicode(node))
       parent.appendRow(nn)
@@ -1333,6 +1334,7 @@ class MainWindow(QtGui.QMainWindow):
       addSubTree(iroot, root)
       
     self.ui.feeds.expandAll()
+    self.setEnabled(True)
     
   def on_feeds_clicked(self, index):
     item=self.model.itemFromIndex(index)
@@ -1342,6 +1344,7 @@ class MainWindow(QtGui.QMainWindow):
       self.open_feed(index)
     else:
       self.ui.view.setHtml(renderTemplate('feed.tmpl', feed=item.feed))
+      QtCore.QObject.connect(self.ui.view.page(), QtCore.SIGNAL(" linkHovered ( const QString & link, const QString & title, const QString & textContent )"), self.linkHovered)
 
   def autoAdjustSplitters(self):
     # Surprising splitter size prevention
@@ -1477,6 +1480,8 @@ class MainWindow(QtGui.QMainWindow):
       self.currentPost=Post.get_by(id=cpid)
 
   def open_feed(self, index):
+    if not index.isValid():
+      return
     item=self.model.itemFromIndex(index)
     if not item: return
     self.ui.feeds.setCurrentIndex(index)
@@ -1514,6 +1519,8 @@ class MainWindow(QtGui.QMainWindow):
       # FIXME: find a way to add sorting to the UI for this (not very important)
       self.posts=self.posts.order_by(sql.desc(Post.date)).all()
       self.ui.view.setHtml(renderTemplate(self.combinedTemplate,posts=self.posts))
+      QtCore.QObject.connect(self.ui.view.page(), QtCore.SIGNAL(" linkHovered ( const QString & link, const QString & title, const QString & textContent )"), self.linkHovered)
+
       for post in self.posts:
         self.postItems[post.id]=item
         
