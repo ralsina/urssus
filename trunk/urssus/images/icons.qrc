@@ -1,5 +1,6 @@
 <RCC>
   <qresource prefix="/" >
+    <file>editcopy.svg</file>
     <file>menubar.svg</file>
     <file>window_fullscreen.svg</file>
     <file>urssus-unread.svg</file>
