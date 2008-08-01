@@ -43,7 +43,7 @@
       <property name="orientation" >
        <enum>Qt::Horizontal</enum>
       </property>
-      <widget class="QTreeView" name="feeds" >
+      <widget class="FeedTreeWidget" name="feeds" >
        <property name="focusPolicy" >
         <enum>Qt::NoFocus</enum>
        </property>
@@ -87,7 +87,7 @@
         <bool>true</bool>
        </property>
        <property name="headerHidden" >
-        <bool>true</bool>
+        <bool>false</bool>
        </property>
       </widget>
       <widget class="QSplitter" name="splitter" >
@@ -853,6 +853,11 @@
    <class>QWebView</class>
    <extends>QWidget</extends>
    <header>QtWebKit/QWebView</header>
+  </customwidget>
+  <customwidget>
+   <class>FeedTreeWidget</class>
+   <extends>QTreeView</extends>
+   <header>feedtreewidget.h</header>
   </customwidget>
  </customwidgets>
  <resources>
