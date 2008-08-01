@@ -175,7 +175,10 @@ class Feed(elixir.Entity):
   icon           = elixir.Field(elixir.Binary, deferred=True)
   # updateInterval -1 means use the app default, any other value, it's in minutes
   updateInterval = elixir.Field(elixir.Integer, default=-1)
+  # Added in schema version 3
   position       = elixir.Field(elixir.Integer, default=0)
+  # Added in schema version 4
+  is_open        = elixir.Field(elixir.Integer, default=0)
   curUnread      = -1
 
   def __repr__(self):
@@ -1325,6 +1328,7 @@ class MainWindow(QtGui.QMainWindow):
         nn.setIcon(QtGui.QIcon(":/folder.svg"))
         for child in node.children:
           addSubTree(nn, child)
+        if node.is_open: self.ui.feeds.expand(self.model.indexFromItem(nn))
       return nn
           
     iroot=self.model.invisibleRootItem()
@@ -1333,8 +1337,19 @@ class MainWindow(QtGui.QMainWindow):
     for root in root_feed.children:
       addSubTree(iroot, root)
       
-    self.ui.feeds.expandAll()
     self.setEnabled(True)
+    
+  def on_feeds_expanded(self, index):
+    item=self.model.itemFromIndex(index)
+    if not item: return
+    item.feed.is_open=True
+    elixir.session.flush()
+    
+  def on_feeds_collapsed(self, index):
+    item=self.model.itemFromIndex(index)
+    if not item: return
+    item.feed.is_open=False
+    elixir.session.flush()
     
   def on_feeds_clicked(self, index):
     item=self.model.itemFromIndex(index)
