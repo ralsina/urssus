@@ -63,7 +63,7 @@ def renderTemplate(tname, **context):
   context['escape']=escape
   context['mootools_core']=mootools_core
   context['mootools_more']=mootools_more
-#  codecs.open('x.html', 'w', 'utf-8').write(templateEngine.render(os.path.join(tmplDir,tname), context))
+  codecs.open('x.html', 'w', 'utf-8').write(templateEngine.render(os.path.join(tmplDir,tname), context))
   return templateEngine.render(os.path.join(tmplDir,tname), context)
 
 # References to background processes
@@ -559,7 +559,7 @@ root_feed=None
 
 def initDB():
   global root_feed
-  REQUIRED_SCHEMA=3
+  REQUIRED_SCHEMA=4
   # FIXME: show what we are doing on the UI
   if not os.path.exists(database.dbfile): # Just create it
     os.system('urssus_upgrade_db')
