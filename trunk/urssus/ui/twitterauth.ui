@@ -5,23 +5,62 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>353</width>
-    <height>172</height>
+    <width>392</width>
+    <height>193</height>
    </rect>
   </property>
   <property name="windowTitle" >
-   <string>Dialog</string>
+   <string>Twitter Authentication - uRSSus</string>
+  </property>
+  <property name="windowIcon" >
+   <iconset resource="../images/icons.qrc" >
+    <normaloff>:/urssus.svg</normaloff>:/urssus.svg</iconset>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout" >
    <item>
-    <widget class="QLabel" name="label" >
-     <property name="text" >
-      <string>Please enter your twitter username and password.</string>
-     </property>
-    </widget>
+    <layout class="QHBoxLayout" name="horizontalLayout" >
+     <item>
+      <widget class="QLabel" name="label_4" >
+       <property name="sizePolicy" >
+        <sizepolicy vsizetype="Fixed" hsizetype="Fixed" >
+         <horstretch>0</horstretch>
+         <verstretch>32</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="maximumSize" >
+        <size>
+         <width>32</width>
+         <height>32</height>
+        </size>
+       </property>
+       <property name="text" >
+        <string/>
+       </property>
+       <property name="pixmap" >
+        <pixmap resource="../images/icons.qrc" >:/twitter.svg</pixmap>
+       </property>
+       <property name="scaledContents" >
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="label" >
+       <property name="sizePolicy" >
+        <sizepolicy vsizetype="Preferred" hsizetype="Expanding" >
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text" >
+        <string>Please enter your twitter username and password.</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
    </item>
    <item>
-    <layout class="QFormLayout" name="formLayout" >
+    <layout class="QGridLayout" name="gridLayout" >
      <item row="0" column="0" >
       <widget class="QLabel" name="label_2" >
        <property name="text" >
@@ -46,7 +85,11 @@
       </widget>
      </item>
      <item row="1" column="1" >
-      <widget class="QLineEdit" name="password" />
+      <widget class="QLineEdit" name="password" >
+       <property name="echoMode" >
+        <enum>QLineEdit::Password</enum>
+       </property>
+      </widget>
      </item>
     </layout>
    </item>
@@ -56,6 +99,19 @@
       <string>&amp;Save in the configuration file</string>
      </property>
     </widget>
+   </item>
+   <item>
+    <spacer name="verticalSpacer" >
+     <property name="orientation" >
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0" >
+      <size>
+       <width>20</width>
+       <height>40</height>
+      </size>
+     </property>
+    </spacer>
    </item>
    <item>
     <widget class="QDialogButtonBox" name="buttonBox" >
@@ -68,8 +124,18 @@
     </widget>
    </item>
   </layout>
+  <zorder>label</zorder>
+  <zorder>saveit</zorder>
+  <zorder>buttonBox</zorder>
+  <zorder>verticalSpacer</zorder>
+  <zorder>verticalSpacer</zorder>
+  <zorder>verticalSpacer</zorder>
+  <zorder>label_4</zorder>
+  <zorder>label</zorder>
  </widget>
- <resources/>
+ <resources>
+  <include location="../images/icons.qrc" />
+ </resources>
  <connections>
   <connection>
    <sender>buttonBox</sender>
