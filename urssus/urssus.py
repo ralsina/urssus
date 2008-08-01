@@ -1996,7 +1996,7 @@ def feedUpdater(full=False):
       time.sleep(60)
       now=datetime.now()
       for feed in Feed.query.filter(Feed.xmlUrl<>None):
-        period=1800 # FIXME: make this configurable
+        period=config.getValue('options', 'defaultRefresh', 1800)
         if feed.updateInterval==0: # Update never
           continue
         elif feed.updateInterval<>-1: # not update default
