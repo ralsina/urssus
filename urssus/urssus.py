@@ -205,6 +205,12 @@ class FeedModel(QtGui.QStandardItemModel):
     v.setText(','.join(data) )
     return v
       
+  def feedFromIndex(self, index):
+    item=self.itemFromIndex(index)
+    if item:
+      return Feed.get_by(id=item.data(QtCore.Qt.UserRole).toInt()[0])
+    return None
+      
 class PostModel(QtGui.QStandardItemModel):
   def __init__(self):
     QtGui.QStandardItemModel.__init__(self)
@@ -658,8 +664,8 @@ class MainWindow(QtGui.QMainWindow):
   def on_feeds_customContextMenuRequested(self, pos=None):
     if pos==None: return
     
-    item=self.model.itemFromIndex(self.ui.feeds.currentIndex())
-    if item and item.feed:
+    feed=self.ui.feeds.model().feedFromIndex(self.ui.feeds.currentIndex())
+    if feed:
       menu=QtGui.QMenu()
       menu.addAction(self.ui.actionMark_Feed_as_Read)
       menu.addSeparator()
@@ -957,26 +963,25 @@ class MainWindow(QtGui.QMainWindow):
     self.setEnabled(True)
     
   def on_feeds_expanded(self, index):
-    item=self.model.itemFromIndex(index)
-    if not item: return
-    item.feed.is_open=True
+    feed=self.model.feedFromIndex(index)
+    if not feed: return
+    feed.is_open=True
     elixir.session.flush()
     
   def on_feeds_collapsed(self, index):
-    item=self.model.itemFromIndex(index)
-    if not item: return
-    item.feed.is_open=False
+    feed=self.model.feedFromIndex(index)
+    if not feed: return
+    feed.is_open=False
     elixir.session.flush()
     
   def on_feeds_clicked(self, index):
-    item=self.model.itemFromIndex(index)
-    if not item: return
     self.open_feed(index)
+    feed=self.ui.feeds.model().feedFromIndex(index)
+    if not feed: return
     if self.combinedView:
       self.open_feed(index)
     else:
-      self.ui.view.setHtml(renderTemplate('feed.tmpl', feed=item.feed))
-      QtCore.QObject.connect(self.ui.view.page(), QtCore.SIGNAL(" linkHovered ( const QString & link, const QString & title, const QString & textContent )"), self.linkHovered)
+      self.ui.view.setHtml(renderTemplate('feed.tmpl', feed=feed))
 
   def autoAdjustSplitters(self):
     # Surprising splitter size prevention
@@ -1114,13 +1119,12 @@ class MainWindow(QtGui.QMainWindow):
   def open_feed(self, index):
     if not index.isValid():
       return
-    item=self.model.itemFromIndex(index)
-    if not item: return
+    feed=self.ui.feeds.model().feedFromIndex(index)
+    if not feed: return
     self.ui.feeds.setCurrentIndex(index)
-    feed=item.feed
     self.currentFeed=feed
     # Scroll the feeds view so this feed is visible
-    self.ui.feeds.scrollTo(self.ui.feeds.model().indexFromItem(self.feedItems[self.currentFeed.id]))
+    self.ui.feeds.scrollTo(index)
     self.postItems={}
     self.posts=[]
     self.currentPost=None
@@ -1167,9 +1171,9 @@ class MainWindow(QtGui.QMainWindow):
 
       # Update window title
       if feed.title:
-        self.setWindowTitle("%s - uRSSus"%item.feed.title)
+        self.setWindowTitle("%s - uRSSus"%feed.title)
       elif feed.text:
-        self.setWindowTitle("%s - uRSSus"%item.feed.text)
+        self.setWindowTitle("%s - uRSSus"%feed.text)
       else:
         self.setWindowTitle("uRSSus")
       
