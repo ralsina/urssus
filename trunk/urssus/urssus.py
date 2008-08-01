@@ -82,6 +82,8 @@ statusQueue=processing.Queue()
 # [2,id,parents] means "refresh the text" (for example if you read an article, 
 #                         to update the unread count,parents updates all parents)
 # [3,id,count] means "notify on the systray icon that there are new articles here
+# [4,url] means "add feed with this url"
+# [5,fname] means "import fname which is a opml file"
 
 feedStatusQueue=processing.Queue()
 
@@ -1089,43 +1091,46 @@ class MainWindow(QtGui.QMainWindow):
       # update feed item
       self.updateFeedItem(curFeed)
 
+  def addFeed(self, url):
+    # Use Mark pilgrim / Aaron Swartz's RSS finder module
+    # FIXME: make this non-blocking somehow
+    import feedfinder
+    feed=feedfinder.feed(url)
+    if not feed:
+      QtGui.QMessageBox.critical(self, "Error - uRSSus", "Can't find a feed wit URL: %s"%url)
+      return
+    info ("Found feed: %s", feed)
+    if Feed.get_by(xmlUrl=feed):
+      # Already subscribed
+      QtGui.QMessageBox.critical(self, "Error - uRSSus", "You are already subscribed")
+      return
+    newFeed=Feed(xmlUrl=feed)
+    newFeed.updateFeedData()
+    
+    # Figure out the insertion point
+    index=self.ui.feeds.currentIndex()
+    if index.isValid():         
+      curFeed=self.ui.feeds.model().itemFromIndex(index).feed
+    else:
+      curFeed=root_feed
+    # if curFeed is a feed, add as sibling
+    if curFeed.xmlUrl:
+      newFeed.parent=curFeed.parent
+    # if curFeed is a folder, add as child
+    else:
+      newFeed.parent=curFeed
+    elixir.session.flush()
+    self.initTree()
+    self.ui.feeds.setCurrentIndex(self.ui.feeds.model().indexFromItem(self.feedItems[newFeed.id]))
+    self.on_actionEdit_Feed_triggered(True)
+
   def on_actionAdd_Feed_triggered(self, i=None):
     if i==None: return
     # Ask for feed URL
     [url, ok]=QtGui.QInputDialog.getText(self, "Add Feed - uRSSus", "&Feed URL:")
     if ok:
       url=unicode(url)
-      # Use Mark pilgrim / Aaron Swartz's RSS finder module
-      # FIXME: make this non-blocking somehow
-      import feedfinder
-      feed=feedfinder.feed(url)
-      if not feed:
-        QtGui.QMessageBox.critical(self, "Error - uRSSus", "Can't find a feed wit URL: %s"%url)
-        return
-      info ("Found feed: %s", feed)
-      if Feed.get_by(xmlUrl=feed):
-        # Already subscribed
-        QtGui.QMessageBox.critical(self, "Error - uRSSus", "You are already subscribed")
-        return
-      newFeed=Feed(xmlUrl=feed)
-      newFeed.updateFeedData()
-      
-      # Figure out the insertion point
-      index=self.ui.feeds.currentIndex()
-      if index.isValid():         
-        curFeed=self.ui.feeds.model().itemFromIndex(index).feed
-      else:
-        curFeed=root_feed
-      # if curFeed is a feed, add as sibling
-      if curFeed.xmlUrl:
-        newFeed.parent=curFeed.parent
-      # if curFeed is a folder, add as child
-      else:
-        newFeed.parent=curFeed
-      elixir.session.flush()
-      self.initTree()
-      self.ui.feeds.setCurrentIndex(self.ui.feeds.model().indexFromItem(self.feedItems[newFeed.id]))
-      self.on_actionEdit_Feed_triggered(True)
+      self.addFeed(unicode(url))
 
   def on_actionNew_Folder_triggered(self, i=None):
     if i==None: return
@@ -1265,13 +1270,20 @@ class MainWindow(QtGui.QMainWindow):
   def updateFeedStatus(self):
     while not feedStatusQueue.empty():
       data=feedStatusQueue.get()
+      
       [action, id] = data[:2]
       info("updateFeedStatus: %d %d", action, id)
       if not id in self.feedItems:
-        # This shouldn't happen, it means there is a 
-        # feed that is not in the tree
-        error( "id %s not in the tree", id)
-        sys.exit(1)
+        if action==4: # Add new feed
+          self.addFeed(id)
+          return
+        elif action==5: #OPML to import
+          importOPML(id, root_feed)
+          self.initTree()
+          return
+        else:
+          error( "id %s not in the tree", id)
+          sys.exit(1)
       feed=Feed.get_by(id=id)
       if action==0: # Mark as updating
         self.updateFeedItem(feed, updating=True)
@@ -1286,6 +1298,7 @@ class MainWindow(QtGui.QMainWindow):
       elif action==3: # Systray notification
         self.notifiedFeed=feed
         self.tray.showMessage("New Articles", "%d new articles in %s"%(data[2], feed.text) )
+        
       if self.updatesCounter>0:
         self.ui.actionAbort_Fetches.setEnabled(True)
       else:
@@ -2085,7 +2098,16 @@ def theServer(server):
     conn = server.accept()
     info ('connection accepted')
     # Process the message as needed
-    conn.recv()
+    [data]=conn.recv()
+    data=str(data)
+    # Simple protocol. We get [data].
+    # If data starts with http:// it's a feed we want to subscribe.
+    # Elif it ends with .opml or .xml it's a OPML file to import.
+    if data.lower().startswith('http://'):
+      # Pass it to the main process via feedStatusQueue
+      feedStatusQueue.put([4, data])
+    elif data.lower().endswith('.opml'):
+      feedStatusQueue.put([5, data])
     conn.close()
   server.close()
 
@@ -2130,13 +2152,16 @@ def main():
       sys.exit(0)
 
   initDB()
-    
-  if len(sys.argv)>1:
-      # Import a OPML file into the DB so we have some data to work with
-      importOPML(sys.argv[1], root_feed)
   app=QtGui.QApplication(sys.argv)
   app.setQuitOnLastWindowClosed(False)
   window=MainWindow()
+    
+  if len(sys.argv)>1:
+    if sys.argv[1].lower().startswith('http://'):
+      window.addFeed(sys.argv[1])
+    elif sys.argv[1].lower().endswith('.opml'):
+      # Import a OPML file into the DB so we have some data to work with
+      importOPML(sys.argv[1], root_feed)
   
   # This will start the background fetcher as a side effect
   window.on_actionAbort_Fetches_triggered(True)
