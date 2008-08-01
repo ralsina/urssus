@@ -58,7 +58,6 @@ cssFile=os.path.join(tmplDir,'style.css')
 mootools_core=os.path.join(tmplDir,'mootools-core.js')
 mootools_more=os.path.join(tmplDir,'mootools-more.js')
 
-# FIXME: when deploying need to find a decent way to locate the templates
 def renderTemplate(tname, **context):
   context['to_str']=to_str
   context['escape']=escape
@@ -347,23 +346,29 @@ class Feed(elixir.Entity):
             return child
           else: # Skip folders
             return child.nextUnreadFeed()
+            
+    if not self.parent: 
+      # We are the root feed, and have no children unread: there's no unread
+      return None
+
     # Then search for a sibling with unread items below this one
-    # FIXME: not really sure here
-    if not self.parent: return None
-    sibs=self.parent.children
-    for sib in sibs[sibs.index(self)+1:]:
+    
+    sib=self.nextSibling()
+    while sib:
       if sib.unreadCount():
         if sib.xmlUrl:
           return sib
         else:
           return sib.nextUnreadFeed()
-      else:
-        # Go to next uncle/greatuncle/whatever
-        parent=self.parent
-        while parent:
-          nextSib=parent.nextSibling()
-          if nextSib: return nextSib.nextUnreadFeed()
-          parent=parent.parent
+      sib=sib.nextSibling()
+
+    # Go to next uncle/greatuncle/whatever
+    parent=self.parent
+    while parent:
+      nextSib=parent.nextSibling()
+      # Parent is surely a folder
+      if nextSib: return nextSib.nextUnreadFeed()
+      parent=parent.parent
     # There is nothing below, so go to the top and try again
     return root_feed.nextUnreadFeed()
 
