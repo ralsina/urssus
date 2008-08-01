@@ -1,7 +1,21 @@
 import os
 import migrate.versioning.api as migrate
 import config, sqlalchemy
-from easylog import info
+# Logging
+if sys.platform=='win32':
+  # easylog and Processing on windows == broken
+  def dumb(*a, **kw):
+    pass
+  critical=dumb
+  error=dumb
+  warning=dumb
+  debug=dumb
+  info=dumb 
+  setLogger=dumb 
+  DEBUG=dumb
+else:
+  from easylog import critical, error, warning, debug, info, setLogger, DEBUG
+  setLogger(name='urssus', level=DEBUG)
 
 dbfile=os.path.join(config.cfdir, 'urssus.sqlite')
 dbUrl="sqlite:///%s"%dbfile
