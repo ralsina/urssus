@@ -6,15 +6,44 @@
     <x>0</x>
     <y>0</y>
     <width>400</width>
-    <height>239</height>
+    <height>242</height>
    </rect>
   </property>
   <property name="windowTitle" >
    <string>Twitter Post - uRSSus</string>
   </property>
+  <property name="windowIcon" >
+   <iconset resource="../images/icons.qrc" >
+    <normaloff>:/urssus.svg</normaloff>:/urssus.svg</iconset>
+  </property>
   <layout class="QVBoxLayout" name="verticalLayout" >
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_2" >
+     <item>
+      <widget class="QLabel" name="label_4" >
+       <property name="sizePolicy" >
+        <sizepolicy vsizetype="Fixed" hsizetype="Fixed" >
+         <horstretch>0</horstretch>
+         <verstretch>32</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="maximumSize" >
+        <size>
+         <width>32</width>
+         <height>32</height>
+        </size>
+       </property>
+       <property name="text" >
+        <string/>
+       </property>
+       <property name="pixmap" >
+        <pixmap resource="../images/icons.qrc" >:/twitter.svg</pixmap>
+       </property>
+       <property name="scaledContents" >
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
      <item>
       <widget class="QLabel" name="username" >
        <property name="sizePolicy" >
@@ -125,7 +154,9 @@ p, li { white-space: pre-wrap; }
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="../images/icons.qrc" />
+ </resources>
  <connections>
   <connection>
    <sender>ok</sender>
