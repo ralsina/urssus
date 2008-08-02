@@ -475,6 +475,11 @@ class MainWindow(QtGui.QMainWindow):
     traymenu.addSeparator()
     traymenu.addAction(self.ui.actionQuit)
     self.tray.setContextMenu(traymenu)
+    
+    # Add all menu actions to this window, so they still work when
+    # the menu bar is hidden (tricky!)
+    for action in self.ui.menuBar.actions():
+      self.addAction(action)
 
   def trayActivated(self, reason=None):
     if reason == None: return
@@ -945,6 +950,8 @@ class MainWindow(QtGui.QMainWindow):
       addSubTree(iroot, root)
       
     self.setEnabled(True)
+    self.filterWidget.setEnabled(True)
+    self.searchWidget.setEnabled(True)
     
   def on_feeds_expanded(self, index):
     feed=self.model.feedFromIndex(index)
