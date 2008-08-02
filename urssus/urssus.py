@@ -402,6 +402,8 @@ class MainWindow(QtGui.QMainWindow):
     self.currentFeed=None
     self.currentPost=None
     
+    self.combinedView=False
+    
     # Set up the UI from designer
     self.ui=Ui_MainWindow()
     self.ui.setupUi(self)
