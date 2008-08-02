@@ -4,7 +4,7 @@ import elixir as elixir
 import migrate as migrate
 import database
 from datetime import datetime
-import os, sys
+import os, sys, time
 from globals import *
 
 # Configuration
@@ -24,8 +24,31 @@ if sys.platform=='win32':
   DEBUG=dumb
 else:
   from easylog import critical, error, warning, debug, info, setLogger, DEBUG
-  setLogger(name='urssus', level=DEBUG)
+#  setLogger(name='urssus', level=DEBUG)
 
+
+
+# Some feeds put html in titles, which can't be shown in QStandardItems
+from html2text import html2text as h2t
+
+def detailToAuthor(ad):
+  '''Converts something like feedparser's author_detail into a 
+  nice string describing the author'''
+
+  if 'name' in ad:
+    author=ad['name']
+    if 'href' in ad:
+      author='<a href="%s">%s</a>'%(ad['href'], author)
+  if 'email' in ad:
+    email ='<a href="mailto:%s">%s</a>'%(ad['email'], ad['email'])
+  else:
+    email = ''
+
+  if email and author:
+    return '%s - %s'%(author, email)
+  elif email:
+    return email
+  return author
 
 # Patch from http://elixir.ematia.de/trac/wiki/Recipes/GetByOrAddPattern
 def get_by_or_init(cls, if_new_set={}, **params):
@@ -97,6 +120,19 @@ class Feed(elixir.Entity):
     if c:
       return self.text+'(%d)'%c
     return self.text
+
+  def markAsRead(self):
+    if self.xmlUrl: # regular feed
+      Post.table.update().where(Post.unread==True).where(Post.feed==self).values(unread=False).execute()
+    else: # A folder
+      for feed in item.feed.allFeeds():
+        feed.markAsRead()
+    elixir.session.flush()
+    # Put in queue for status update [parents too]
+    self.curUnread=-1
+    self.unreadCount()
+    feedStatusQueue.put([2, self.id, True])
+    
 
   def expire(self, expunge=False):
     '''Delete all posts that are too old'''
