@@ -621,6 +621,7 @@ class MainWindow(QtGui.QMainWindow):
     self.textFilter=unicode(self.filterWidget.ui.filter.text())
     info("Text filter set to: %s", self.textFilter)
     self.open_feed(self.ui.feeds.currentIndex())
+    self.ui.view.setFocus(QtCore.Qt.TabFocusReason)
 
   def linkHovered(self, link, title, content):
     # FIXME: doesn't trigger. Maybe I need to reconnect after 
