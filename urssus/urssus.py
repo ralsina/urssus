@@ -271,7 +271,7 @@ class TwitterDialog(QtGui.QDialog):
     self.ui.setupUi(self)
     self.ui.message.setPlainText('%s - %s'%(post, tiny(post.link)))
     self.u=config.getValue('twitter', 'username', None)
-    self.p=config.getValue('twitter', 'username', None)
+    self.p=config.getValue('twitter', 'password', None)
     if not self.u or not self.p:
       self.ui.ok.setEnabled(False)
       self.ui.username.setText('Authentication not configured')      
