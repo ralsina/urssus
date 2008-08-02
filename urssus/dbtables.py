@@ -5,6 +5,7 @@ import migrate as migrate
 import database
 from datetime import datetime
 import os, sys
+from globals import *
 
 # Configuration
 import config
