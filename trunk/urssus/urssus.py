@@ -962,6 +962,13 @@ class MainWindow(QtGui.QMainWindow):
 
     else: # StandardView / Widescreen View
       info ("Opening in standard view")
+      
+      # Remember current post ID
+      if self.ui.posts.model():
+        cpid=self.ui.posts.model().postFromIndex(self.ui.posts.currentIndex()).id
+      else:
+        cpid=-1000
+     
       self.ui.posts.setModel(PostModel(self.ui.posts, feed, self.textFilter, self.statusFilter))
       self.fixPostListUI()
       QtCore.QObject.connect(self.ui.posts.model(), QtCore.SIGNAL("resorted()"), self.resortPosts)
@@ -970,10 +977,14 @@ class MainWindow(QtGui.QMainWindow):
         action.setEnabled(True)
 
       self.ui.view.setHtml(renderTemplate('feed.tmpl',feed=feed))
-      # Scroll post view to the top
-      firstPost=self.ui.posts.model().posts.first()
-      if firstPost:
-        self.ui.posts.scrollTo(self.ui.posts.model().indexFromPost(firstPost))
+      
+      # Try to scroll to the same post or to the top
+      idx=self.ui.posts.model().indexFromPost(Post.get_by(id=cpid))
+      if idx.isValid():
+        self.ui.posts.scrollTo(idx, self.ui.posts.EnsureVisible)
+        self.ui.posts.setCurrentIndex(idx)
+      else:
+        self.ui.posts.scrollToTop()
 
 
   def updateFeedItem(self, feed, parents=False, updating=False):
