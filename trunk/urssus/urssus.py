@@ -31,76 +31,8 @@ except ImportError:
   Twitter=None
 from tiny import tiny
 
-# Configuration
-import config
-
-# Logging
-if sys.platform=='win32':
-  # easylog and Processing on windows == broken
-  def dumb(*a, **kw):
-    pass
-  critical=dumb
-  error=dumb
-  warning=dumb
-  debug=dumb
-  info=dumb 
-  setLogger=dumb 
-  DEBUG=dumb
-else:
-  from easylog import critical, error, warning, debug, info, setLogger, DEBUG
-  setLogger(name='urssus', level=DEBUG)
-
-# Templates
-import tenjin
-# The obvious import doesn't work for complicated reasons ;-)
-to_str=tenjin.helpers.to_str
-escape=tenjin.helpers.escape
-templateEngine=tenjin.Engine()
-tmplDir=os.path.join(os.path.abspath(os.path.dirname(__file__)), 'templates')
-cssFile=os.path.join(tmplDir,'style.css')
-mootools_core=os.path.join(tmplDir,'mootools-core.js')
-mootools_more=os.path.join(tmplDir,'mootools-more.js')
-
-def renderTemplate(tname, **context):
-  context['to_str']=to_str
-  context['escape']=escape
-  context['mootools_core']=mootools_core
-  context['mootools_more']=mootools_more
-  codecs.open('x.html', 'w', 'utf-8').write(templateEngine.render(os.path.join(tmplDir,tname), context))
-  return templateEngine.render(os.path.join(tmplDir,tname), context)
-
-# References to background processes
-import processing
-processes=[]
 
 from globals import *
-
-# Mark Pilgrim's feed parser
-import feedparser as fp
-
-# Some feeds put html in titles, which can't be shown in QStandardItems
-from html2text import html2text as h2t
-
-def detailToAuthor(ad):
-  '''Converts something like feedparser's author_detail into a 
-  nice string describing the author'''
-
-  if 'name' in ad:
-    author=ad['name']
-    if 'href' in ad:
-      author='<a href="%s">%s</a>'%(ad['href'], author)
-  if 'email' in ad:
-    email ='<a href="mailto:%s">%s</a>'%(ad['email'], ad['email'])
-  else:
-    email = ''
-
-  if email and author:
-    return '%s - %s'%(author, email)
-  elif email:
-    return email
-  return author
-
-
 
 
 # UI Classes
@@ -197,12 +129,13 @@ class FeedModel(QtGui.QStandardItemModel):
     return None
       
 class PostModel(QtGui.QStandardItemModel):
-  def __init__(self):
+  def __init__(self, feed=None):
     QtGui.QStandardItemModel.__init__(self)
     self.setColumnCount(2)
     self.setHeaderData(0, QtCore.Qt.Horizontal, QtCore.QVariant("Title"))
     self.setHeaderData(1, QtCore.Qt.Horizontal, QtCore.QVariant("Date"))
     self.sort(1, QtCore.Qt.DescendingOrder) # Date, descending
+    self.feed=feed
 
   def sortOrder(self):
     order=["title", "date"][self.sortingColumn]
@@ -1119,7 +1052,15 @@ class MainWindow(QtGui.QMainWindow):
     self.postItems={}
     self.posts=[]
     self.currentPost=None
-    
+
+    # Update window title
+    if feed.title:
+      self.setWindowTitle("%s - uRSSus"%feed.title)
+    elif feed.text:
+      self.setWindowTitle("%s - uRSSus"%feed.text)
+    else:
+      self.setWindowTitle("uRSSus")
+
     actions=[ self.ui.actionNext_Article,
               self.ui.actionNext_Unread_Article,  
               self.ui.actionPrevious_Article,  
@@ -1146,7 +1087,6 @@ class MainWindow(QtGui.QMainWindow):
       # FIXME: find a way to add sorting to the UI for this (not very important)
       self.posts=self.posts.order_by(sql.desc(Post.date)).all()
       self.ui.view.setHtml(renderTemplate(self.combinedTemplate,posts=self.posts))
-      QtCore.QObject.connect(self.ui.view.page(), QtCore.SIGNAL(" linkHovered ( const QString & link, const QString & title, const QString & textContent )"), self.linkHovered)
 
       for post in self.posts:
         self.postItems[post.id]=item
@@ -1156,17 +1096,9 @@ class MainWindow(QtGui.QMainWindow):
 
     else: # StandardView / Widescreen View
       info ("Opening in standard view")
-      self.ui.posts.__model=PostModel()
+      self.ui.posts.__model=PostModel(feed)
       self.ui.posts.setModel(self.ui.posts.__model)
       QtCore.QObject.connect(self.ui.posts.__model, QtCore.SIGNAL("resorted()"), self.resortPosts)
-
-      # Update window title
-      if feed.title:
-        self.setWindowTitle("%s - uRSSus"%feed.title)
-      elif feed.text:
-        self.setWindowTitle("%s - uRSSus"%feed.text)
-      else:
-        self.setWindowTitle("uRSSus")
       
       # Sorting according to the model
       sk=self.ui.posts.model().sortOrder()
@@ -1355,26 +1287,11 @@ class MainWindow(QtGui.QMainWindow):
 
   def on_actionMark_Feed_as_Read_triggered(self, i=None):
     if i==None: return
-
-    def markRead(feed, window):
-      if feed.xmlUrl: # regular feed
-        for post in feed.posts:
-          if post.unread:
-            post.unread=False
-            self.updatePostItem(post)
-        elixir.session.flush()
-        feed.curUnread=-1
-        window.updateFeedItem(feed, parents=True)
-        
-      else: # A folder
-        for feed in item.feed.allFeeds():
-          markRead(feed, window)
-
-    item=self.model.itemFromIndex(self.ui.feeds.currentIndex())
-    if item and item.feed:
-      markRead(item.feed, self)          
-      if self.combinedView:
-        self.open_feed(self.ui.feeds.currentIndex()) # To update all the actions in the page
+    idx=self.ui.feeds.currentIndex()
+    feed=self.ui.feeds.model().feedFromIndex(idx)
+    if feed:
+      feed.markAsRead()
+      self.open_feed(idx) # To update all the actions/items
 
   def on_actionDelete_Feed_triggered(self, i=None):
     if i==None: return
@@ -1388,7 +1305,7 @@ class MainWindow(QtGui.QMainWindow):
         parent=item.feed.parent
 
         # Clean posts list
-        self.ui.posts.setModel(PostModel())
+        self.ui.posts.setModel(PostModel(None))
         self.ui.view.setHtml('')
 
         # Trigger update on parent item
