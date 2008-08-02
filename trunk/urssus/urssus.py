@@ -284,6 +284,15 @@ class MainWindow(QtGui.QMainWindow):
     for action in self.ui.menuBar.actions():
       self.addAction(action)
 
+  def fixPostListUI(self):
+    # Fixes for post list UI
+    print "FIXING post list UI"
+    header=self.ui.posts.header()
+    header.setStretchLastSection(False)
+    header.setResizeMode(0, QtGui.QHeaderView.Stretch)
+    header.setResizeMode(1, QtGui.QHeaderView.Fixed)
+    header.resizeSection(1, header.fontMetrics().width(' 8888-88-88 ')+4)
+
   def trayActivated(self, reason=None):
     if reason == None: return
     if reason == self.tray.Trigger:
@@ -900,8 +909,8 @@ class MainWindow(QtGui.QMainWindow):
   def resortPosts(self):
     info ("Resorting posts")
     cp=self.getCurrentPost()
-    self.open_feed(self.ui.feeds.currentIndex())
     self.ui.posts.setCurrentIndex(self.ui.posts.model().indexFromPost(cp))
+    self.fixPostListUI()
 
   def open_feed(self, index):
     if not index.isValid():
@@ -954,14 +963,8 @@ class MainWindow(QtGui.QMainWindow):
     else: # StandardView / Widescreen View
       info ("Opening in standard view")
       self.ui.posts.setModel(PostModel(self.ui.posts, feed, self.textFilter, self.statusFilter))
+      self.fixPostListUI()
       QtCore.QObject.connect(self.ui.posts.model(), QtCore.SIGNAL("resorted()"), self.resortPosts)
-
-      # Fixes for post list UI
-      header=self.ui.posts.header()
-      header.setStretchLastSection(False)
-      header.setResizeMode(0, QtGui.QHeaderView.Stretch)
-      header.setResizeMode(1, QtGui.QHeaderView.Fixed)
-      header.resizeSection(1, header.fontMetrics().width(' 8888-88-88 ')+4)
 
       for action in actions:
         action.setEnabled(True)
