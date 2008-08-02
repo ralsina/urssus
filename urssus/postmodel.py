@@ -6,22 +6,29 @@ from PyQt4 import QtGui, QtCore
 class PostModel(QtGui.QStandardItemModel):
   def __init__(self, parent, feed=None, textFilter=None, statusFilter=None):
     QtGui.QStandardItemModel.__init__(self, parent)
+    self.feed=feed
+    self.textFilter=textFilter
+    self.statusFilter=statusFilter
+    self.sort(1, QtCore.Qt.DescendingOrder) # Date, descending
+ 
+  def initData(self):
+    self.clear()
     self.setColumnCount(2)
     self.setHeaderData(0, QtCore.Qt.Horizontal, QtCore.QVariant("Title"))
     self.setHeaderData(1, QtCore.Qt.Horizontal, QtCore.QVariant("Date"))
-    self.sort(1, QtCore.Qt.DescendingOrder) # Date, descending
-    self.feed=feed
+
     self.postItems={}
     
-    if feed.xmlUrl: # A regular feed
-      self.posts=Post.query.filter(Post.feed==feed)
+    if self.feed.xmlUrl: # A regular feed
+      self.posts=Post.query.filter(Post.feed==self.feed)
     else: # A folder
-      self.posts=feed.allPostsQuery()
+      self.posts=self.feed.allPostsQuery()
     # Filter by text according to the contents of self.textFilter
-    if textFilter:
-      self.posts=self.posts.filter(sql.or_(Post.title.like('%%%s%%'%textFilter), Post.content.like('%%%s%%'%textFilter)))
-    if statusFilter:
-      self.posts=self.posts.filter(statusFilter==True)
+    if self.textFilter:
+      self.posts=self.posts.filter(sql.or_(Post.title.like('%%%s%%'%self.textFilter), 
+                                           Post.content.like('%%%s%%'%self.textFilter)))
+    if self.statusFilter:
+      self.posts=self.posts.filter(self.statusFilter==True)
     self.posts=self.posts.order_by(self.sortOrder())
   
     for post in self.posts.all():
@@ -31,11 +38,13 @@ class PostModel(QtGui.QStandardItemModel):
       self.postItems[post.id]=item
       self.updateItem(post)
       item.setData(QtCore.QVariant(post.id), QtCore.Qt.UserRole)
+    self.reset()
+    self.emit(QtCore.SIGNAL("resorted()"))
  
   def indexFromPost(self, post):
-    if post.id in self.postItems:
+    if post and post.id in self.postItems:
       return self.indexFromItem(self.postItems[post.id])
-    return QtGui.QModelIndex()
+    return QtCore.QModelIndex()
     
   def postFromIndex(self, index):
     if index.column()<>0:
@@ -52,18 +61,18 @@ class PostModel(QtGui.QStandardItemModel):
 
     item=self.postItems[post.id]
     index=self.indexFromItem(item)
-    item2=self.itemFromIndex(self.index(index.row(), 1, index.parent()))
-    index2=self.indexFromItem(item2)
+    index2=self.index(index.row(), 1, index.parent())
+    item2=self.itemFromIndex(index2)
     # FIXME: respect the palette
     if post.important:
       item.setForeground(QtGui.QColor("red"))
-      item2.setForeground(QtGui.QColor("red"))
+#      item2.setForeground(QtGui.QColor("red"))
     elif post.unread:
       item.setForeground(QtGui.QColor("darkgreen"))
-      item2.setForeground(QtGui.QColor("darkgreen"))
+#      item2.setForeground(QtGui.QColor("darkgreen"))
     else:
       item.setForeground(QtGui.QColor("black"))
-      item2.setForeground(QtGui.QColor("black"))
+#      item2.setForeground(QtGui.QColor("black"))
       
     f=item.font()
     if post.important or post.unread:
@@ -71,7 +80,7 @@ class PostModel(QtGui.QStandardItemModel):
     else:
       f.setBold(False)
     item.setFont(f)
-    item2.setFont(f)
+#    item2.setFont(f)
 
   def sortOrder(self):
     order=["title", "date"][self.sortingColumn]
@@ -84,7 +93,7 @@ class PostModel(QtGui.QStandardItemModel):
     info ("Changing post model sort order to %d %d", column, order)
     self.sortingColumn=column
     self.order=order
-    self.emit(QtCore.SIGNAL("resorted()"))
+    self.initData()
 
   def data(self, index, role):
     if not index.isValid():
