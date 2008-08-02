@@ -20,9 +20,9 @@ function hideAction(action,id) {
     <a id="URSSUS-#{post.id}"></a>
     <div class="headerbox"> 
     <?py if post.link: ?>
-      <h3 class="post-title"><a href="#{post.link}">#{post.title}</a></h3>
+      <h5 class="post-title"><a href="#{post.link}">#{post.title}</a></h5>
     <?py else: ?>
-      <h3 class="post-title">#{post.title}</h3>
+      <h5 class="post-title">#{post.title}</h5>
     <?py #end ?>
     <div id="URSSUS-ACTIONS-#{post.id}" style='padding: .5em;'>
       <span id="URSSUS-READ-#{post.id}" class='action' ><a href="urssus:/read/#{post.id}" onCLick="hideAction('READ',#{post.id});showAction('UNREAD',#{post.id});">Mark Read</a></span>&nbsp;&nbsp;
