@@ -129,8 +129,8 @@ class FeedModel(QtGui.QStandardItemModel):
     return None
       
 class PostModel(QtGui.QStandardItemModel):
-  def __init__(self, feed=None):
-    QtGui.QStandardItemModel.__init__(self)
+  def __init__(self, parent, feed=None):
+    QtGui.QStandardItemModel.__init__(self, parent)
     self.setColumnCount(2)
     self.setHeaderData(0, QtCore.Qt.Horizontal, QtCore.QVariant("Title"))
     self.setHeaderData(1, QtCore.Qt.Horizontal, QtCore.QVariant("Date"))
@@ -1096,9 +1096,8 @@ class MainWindow(QtGui.QMainWindow):
 
     else: # StandardView / Widescreen View
       info ("Opening in standard view")
-      self.ui.posts.__model=PostModel(feed)
-      self.ui.posts.setModel(self.ui.posts.__model)
-      QtCore.QObject.connect(self.ui.posts.__model, QtCore.SIGNAL("resorted()"), self.resortPosts)
+      self.ui.posts.setModel(PostModel(self.ui.posts, feed))
+      QtCore.QObject.connect(self.ui.posts.model(), QtCore.SIGNAL("resorted()"), self.resortPosts)
       
       # Sorting according to the model
       sk=self.ui.posts.model().sortOrder()
@@ -1126,7 +1125,7 @@ class MainWindow(QtGui.QMainWindow):
         item=QtGui.QStandardItem('%s - %s'%(decodeString(post.title), post.date))
         item.post=post
         item.setToolTip('Posted at %s'%unicode(post.date))
-        self.ui.posts.__model.appendRow(item)
+        self.ui.posts.model().appendRow(item)
         self.postItems[post.id]=item
         self.updatePostItem(post)
         f=self.currentFeed
@@ -1330,7 +1329,6 @@ class MainWindow(QtGui.QMainWindow):
       info("Opening %s", item.feed.htmlUrl)
       QtGui.QDesktopServices.openUrl(QtCore.QUrl(item.feed.htmlUrl))
     
-
   def on_actionFetch_Feed_triggered(self, i=None):
     if i==None: return
     # Start an immediate update for the current feed
