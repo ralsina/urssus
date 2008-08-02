@@ -45,136 +45,9 @@ from ui.Ui_feed_properties import Ui_Dialog as UI_FeedPropertiesDialog
 from ui.Ui_twitterpost import Ui_Dialog as UI_TwitterDialog
 from ui.Ui_twitterauth import Ui_Dialog as UI_TwitterAuthDialog
 
-class FeedModel(QtGui.QStandardItemModel):
-  def __init__(self):
-    QtGui.QStandardItemModel.__init__(self)
-#    self.setHeaderData(0, QtCore.Qt.Horizontal, QtCore.QVariant("Title"))
-#    self.setHeaderData(1, QtCore.Qt.Horizontal, QtCore.QVariant("Unread"))
-#    self.setHeaderData(2, QtCore.Qt.Horizontal, QtCore.QVariant("Id"))
-#    
-#  def columnCount(self, parent):
-#    return 3
+from postmodel import *
+from feedmodel import * 
 
-  def supportedDropActions(self):
-    return QtCore.Qt.MoveAction
-    
-  def flags(self, index):
-    r = QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable
-    if index.isValid():
-      item=self.itemFromIndex(index)
-      id=item.data(QtCore.Qt.UserRole).toInt()[0]
-      feed=Feed.get_by(id=id)
-      if feed and not feed.xmlUrl: # a folder
-        r=r | QtCore.Qt.ItemIsDragEnabled | QtCore.Qt.ItemIsDropEnabled
-      else:
-        r=r | QtCore.Qt.ItemIsDragEnabled
-      return r
-      
-  def dropMimeData(self, data, action, row, column, parent):
-    print "DROP"
-    destIndex=self.index(row, column, parent)
-    destItem=self.itemFromIndex(destIndex)
-    if destItem:
-      beforeFeed=Feed.get_by(id=destItem.data(QtCore.Qt.UserRole).toInt()[0])
-    else:
-      beforeFeed=None
-    
-    parentItem=self.itemFromIndex(parent)
-    if parentItem:
-      parentFeed=Feed.get_by(id=parentItem.data(QtCore.Qt.UserRole).toInt()[0])
-    else:
-      parentFeed=None
-    # This all means, source should be now child of parentFeed, and be right 
-    # before beforeFeed.
-    # If beforeFeed==None, then it should be last
-    print "Dropped on ", beforeFeed, parentFeed
-    
-    # Decoding the source data
-    print list(data.formats())
-    idlist=[int(id) for id in str(data.text()).split(',')]
-    print "IDLIST:", idlist
-    for id in idlist:
-      feed=Feed.get_by(id=id)
-      if beforeFeed: #insert
-        idx=parentFeed.children.index(beforeFeed)
-        l=parentFeed.children[:idx]+[feed]+parentFeed.children[idx:]
-        i=0
-        for f in l:
-          f.position=i
-          i+=1
-      else: #append
-        feed.position=parentFeed.children[-1].position+1
-      feed.parent=parentFeed
-    elixir.session.flush()
-    return QtGui.QStandardItemModel.dropMimeData(self, data, action, row, column, parent)
-
-  def mimeTypes(self):
-    return QtCore.QStringList(['application/x-qabstractitemmodeldatalist','text/plain' ])
-    
-  def mimeData(self, indexes):
-    data=[]
-    for index in list(indexes):
-      item=self.itemFromIndex(index)
-      id=item.data(QtCore.Qt.UserRole).toInt()[0]
-      data.append(str(id))
-    v=QtGui.QStandardItemModel.mimeData(self, indexes)
-    print "DATAFORMATS1:", list(v.formats())
-    v.setText(','.join(data) )
-    return v
-      
-  def feedFromIndex(self, index):
-    item=self.itemFromIndex(index)
-    if item:
-      return Feed.get_by(id=item.data(QtCore.Qt.UserRole).toInt()[0])
-    return None
-      
-class PostModel(QtGui.QStandardItemModel):
-  def __init__(self, parent, feed=None):
-    QtGui.QStandardItemModel.__init__(self, parent)
-    self.setColumnCount(2)
-    self.setHeaderData(0, QtCore.Qt.Horizontal, QtCore.QVariant("Title"))
-    self.setHeaderData(1, QtCore.Qt.Horizontal, QtCore.QVariant("Date"))
-    self.sort(1, QtCore.Qt.DescendingOrder) # Date, descending
-    self.feed=feed
-
-  def sortOrder(self):
-    order=["title", "date"][self.sortingColumn]
-    if self.order==QtCore.Qt.DescendingOrder:
-      order=sql.desc(order)
-    info("ORDER: %s", order)
-    return order
-
-  def sort(self, column, order):
-    info ("Changing post model sort order to %d %d", column, order)
-    self.sortingColumn=column
-    self.order=order
-    self.emit(QtCore.SIGNAL("resorted()"))
-
-  def data(self, index, role):
-    if not index.isValid():
-      return QtCore.QVariant()
-      
-    if role<>QtCore.Qt.DisplayRole:
-      return QtGui.QStandardItemModel.data(self, index, role)
-    
-    if index.column()==0:
-      item=self.itemFromIndex(index)
-      v=QtCore.QVariant(unicode(item.post))
-    elif index.column()==1:
-      # Tricky!
-      ind=self.index(index.row(), 0, index.parent())
-      item=self.itemFromIndex(ind)
-      
-      # Be smarter, let's see how it looks
-      now=datetime.now()
-      if item.post.date.date()==now.date(): # Today, showthe time
-        v=QtCore.QVariant(str(item.post.date.time()))
-      else:
-        v=QtCore.QVariant(str(item.post.date.date()))
-    else:
-      return QtCore.QVariant()
-    return v
-    
 class FilterWidget(QtGui.QWidget):
   def __init__(self):
     QtGui.QWidget.__init__(self)
@@ -330,10 +203,7 @@ class MainWindow(QtGui.QMainWindow):
 
     # Internal indexes
     self.feedItems={}
-    self.postItems={}
-    self.posts=[]
     self.currentFeed=None
-    self.currentPost=None
     
     self.combinedView=False
     
@@ -462,11 +332,7 @@ class MainWindow(QtGui.QMainWindow):
       
   def getCurrentPost(self):
     index=self.ui.posts.currentIndex()
-    if index.isValid():         
-      if index.column()<>0:
-        index=self.ui.posts.model().index(index.row(), 0, index.parent())
-      return self.ui.posts.model().itemFromIndex(index).post
-    return None
+    return self.ui.posts.model().postFromIndex(index)
 
   def on_actionFull_Screen_triggered(self, i=None):
     if i==None: return
@@ -519,6 +385,9 @@ class MainWindow(QtGui.QMainWindow):
       elixir.session.flush()
       self.updatePostItem(curPost)
       self.updateFeedItem(curPost.feed)
+
+  def updatePostItem(self, post):
+    self.ui.posts.model().updateItem(post)
 
   def on_actionMark_as_Unread_triggered(self, i=None):
     # FIXME: handle selections
@@ -1030,15 +899,9 @@ class MainWindow(QtGui.QMainWindow):
     
   def resortPosts(self):
     info ("Resorting posts")
-    if self.currentPost:
-      cpid=self.currentPost.id
-      info ("cpid=%d", cpid)
-    else:
-      cpid=-1
+    cp=self.getCurrentPost()
     self.open_feed(self.ui.feeds.currentIndex())
-    if cpid in self.postItems:
-      self.ui.posts.setCurrentIndex(self.ui.posts.model().indexFromItem(self.postItems[cpid]))
-      self.currentPost=Post.get_by(id=cpid)
+    self.ui.posts.setCurrentIndex(self.ui.posts.model().indexFromPost(cp))
 
   def open_feed(self, index):
     if not index.isValid():
@@ -1049,9 +912,6 @@ class MainWindow(QtGui.QMainWindow):
     self.currentFeed=feed
     # Scroll the feeds view so this feed is visible
     self.ui.feeds.scrollTo(index)
-    self.postItems={}
-    self.posts=[]
-    self.currentPost=None
 
     # Update window title
     if feed.title:
@@ -1088,85 +948,30 @@ class MainWindow(QtGui.QMainWindow):
       self.posts=self.posts.order_by(sql.desc(Post.date)).all()
       self.ui.view.setHtml(renderTemplate(self.combinedTemplate,posts=self.posts))
 
-      for post in self.posts:
-        self.postItems[post.id]=item
-        
       for action in actions:
         action.setEnabled(False)
 
     else: # StandardView / Widescreen View
       info ("Opening in standard view")
-      self.ui.posts.setModel(PostModel(self.ui.posts, feed))
+      self.ui.posts.setModel(PostModel(self.ui.posts, feed, self.textFilter, self.statusFilter))
       QtCore.QObject.connect(self.ui.posts.model(), QtCore.SIGNAL("resorted()"), self.resortPosts)
-      
-      # Sorting according to the model
-      sk=self.ui.posts.model().sortOrder()
-      
-      if feed.xmlUrl: # A regular feed
-        self.posts=Post.query.filter(Post.feed==feed)
-      else: # A folder
-        self.posts=feed.allPostsQuery()
-      # Filter by text according to the contents of self.textFilter
-      if self.textFilter:
-        self.posts=self.posts.filter(sql.or_(Post.title.like('%%%s%%'%self.textFilter), Post.content.like('%%%s%%'%self.textFilter)))
-      if self.statusFilter:
-        self.posts=self.posts.filter(self.statusFilter==True)
-      self.posts=self.posts.order_by(sk)
-      self.posts=self.posts.all()
-    
+
       # Fixes for post list UI
       header=self.ui.posts.header()
       header.setStretchLastSection(False)
       header.setResizeMode(0, QtGui.QHeaderView.Stretch)
       header.setResizeMode(1, QtGui.QHeaderView.Fixed)
       header.resizeSection(1, header.fontMetrics().width(' 8888-88-88 ')+4)
-    
-      for post in self.posts:
-        item=QtGui.QStandardItem('%s - %s'%(decodeString(post.title), post.date))
-        item.post=post
-        item.setToolTip('Posted at %s'%unicode(post.date))
-        self.ui.posts.model().appendRow(item)
-        self.postItems[post.id]=item
-        self.updatePostItem(post)
-        f=self.currentFeed
 
       for action in actions:
         action.setEnabled(True)
 
       self.ui.view.setHtml(renderTemplate('feed.tmpl',feed=feed))
       # Scroll post view to the top
-      if self.posts:
-        self.ui.posts.scrollTo(self.ui.posts.model().indexFromItem(self.postItems[self.posts[0].id]))
+      firstPost=self.ui.posts.model().posts.first()
+      if firstPost:
+        self.ui.posts.scrollTo(self.ui.posts.model().indexFromPost(firstPost))
 
-
-  def updatePostItem(self, post):
-    if not post.id in self.postItems: #post is not being displayed
-      return
-      
-    if self.combinedView: # The post items are not visible anyway
-      return
-      
-    item=self.postItems[post.id]
-    index=self.ui.posts.model().indexFromItem(item)
-    item2=self.ui.posts.model().itemFromIndex(self.ui.posts.model().index(index.row(), 1, index.parent()))
-    # FIXME: respect the palette
-    if post.important:
-      item.setForeground(QtGui.QColor("red"))
-      item2.setForeground(QtGui.QColor("red"))
-    elif post.unread:
-      item.setForeground(QtGui.QColor("darkgreen"))
-      item2.setForeground(QtGui.QColor("darkgreen"))
-    else:
-      item.setForeground(QtGui.QColor("black"))
-      item2.setForeground(QtGui.QColor("black"))
-      
-    f=item.font()
-    if post.important or post.unread:
-      f.setBold(True)
-    else:
-      f.setBold(False)
-    item.setFont(f)
-    item2.setFont(f)
 
   def updateFeedItem(self, feed, parents=False, updating=False):
     info("Updating item for feed %d", feed.id)
@@ -1210,13 +1015,10 @@ class MainWindow(QtGui.QMainWindow):
       else:
         self.tray.setIcon(QtGui.QIcon(':/urssus.svg'))
 
-  def on_posts_clicked(self, index=None, item=None):
-    if item: post=item.post
-    else: 
-      if index.column()<>0:
-        index=self.ui.posts.model().index(index.column(), 0, index.parent())
-      post=self.ui.posts.model().itemFromIndex(index).post
-    self.currentPost=post
+  def on_posts_clicked(self, index):
+    if index.column()<>0:
+      index=self.ui.posts.model().index(index.column(), 0, index.parent())
+    post=self.ui.posts.model().postFromIndex(index)
     if post.unread:
       post.unread=False
       post.feed.curUnread-=1
@@ -1233,9 +1035,11 @@ class MainWindow(QtGui.QMainWindow):
   def on_posts_doubleClicked(self, index=None):
     if index==None: return
     item=self.ui.posts.model().itemFromIndex(index)
-    if item and item.post and item.post.link:
-      info("Opening %s", item.post.link)
-      QtGui.QDesktopServices.openUrl(QtCore.QUrl(item.post.link))
+    if item:
+      post=self.ui.posts.model().postFromIndex(index)
+      if post and post.link:
+        info("Opening %s", post.link)
+        QtGui.QDesktopServices.openUrl(QtCore.QUrl(post.link))
     
   def on_actionExport_Feeds_triggered(self, i=None):
     if i==None: return
@@ -1290,7 +1094,7 @@ class MainWindow(QtGui.QMainWindow):
     feed=self.ui.feeds.model().feedFromIndex(idx)
     if feed:
       feed.markAsRead()
-      self.open_feed(idx) # To update all the actions/items
+    self.open_feed(idx) # To update all the actions/items
 
   def on_actionDelete_Feed_triggered(self, i=None):
     if i==None: return
@@ -1304,7 +1108,7 @@ class MainWindow(QtGui.QMainWindow):
         parent=item.feed.parent
 
         # Clean posts list
-        self.ui.posts.setModel(PostModel(None))
+        self.ui.posts.setModel(None)
         self.ui.view.setHtml('')
 
         # Trigger update on parent item
@@ -1375,18 +1179,18 @@ class MainWindow(QtGui.QMainWindow):
     info( "Next Unread Article")
     if not self.currentFeed:
       self.on_actionNext_Unread_Feed_triggered(True)
-    if self.currentPost:
-      post=self.currentPost
-    elif self.posts: 
-      post=self.posts[0]
-    else: # No posts in this feed, just go the next unread feed
-      self.on_actionNext_Unread_Feed_triggered(True)
+    post=self.getCurrentPost()
+    if not post: 
+      post=self.ui.posts.model().posts.first()
+      if not post: # No posts in this feed, just go the next unread feed
+        self.on_actionNext_Unread_Feed_triggered(True)
+        return
     if post.unread: # Quirk, should redo the flow
       nextPost=post
     else:
       nextPost=self.currentFeed.nextUnreadPost(post, self.ui.posts.model().sortOrder(), self.statusFilter)
     if nextPost:
-      nextIndex=self.ui.posts.model().indexFromItem(self.postItems[nextPost.id])
+      nextIndex=self.ui.posts.model().indexFromPost(nextPost)
       self.ui.posts.setCurrentIndex(nextIndex)
       self.on_posts_clicked(index=nextIndex)
     else:
@@ -1396,15 +1200,17 @@ class MainWindow(QtGui.QMainWindow):
   def on_actionNext_Article_triggered(self, i=None, do_open=True):
     if i==None: return
     info ("Next Article")
-    if self.currentPost:
-      nextPost=self.currentFeed.nextPost(self.currentPost, self.ui.posts.model().sortOrder(), self.statusFilter)
-    elif len(self.posts):
-      nextPost=self.posts[0]
-    else: # No posts in this feed, just go the next unread feed
-      self.on_actionNext_Feed_triggered(True)
-      return
+    cp=self.getCurrentPost()
+    if cp:
+      nextPost=self.currentFeed.nextPost(cp, self.ui.posts.model().sortOrder(), self.statusFilter)
+    else:
+      nextPost=self.ui.posts.model().posts.first()
+      if not nextPost:
+        # No posts in this feed, just go the next unread feed
+        self.on_actionNext_Feed_triggered(True)
+        return
     if nextPost:
-      nextIndex=self.ui.posts.model().indexFromItem(self.postItems[nextPost.id])
+      nextIndex=self.ui.posts.model().indexFromPost(nextPost)
       self.ui.posts.setCurrentIndex(nextIndex)
       self.on_posts_clicked(index=nextIndex)
     else:
@@ -1414,17 +1220,18 @@ class MainWindow(QtGui.QMainWindow):
   def on_actionPrevious_Unread_Article_triggered(self, i=None):
     if i==None: return
     info("Previous Unread Article")
-    if self.currentPost:
-      post=self.currentPost
+    post=self.getCurrentPost()
+    if post:
       previousPost=self.currentFeed.previousUnreadPost(post, self.ui.posts.model().sortOrder(), self.statusFilter)
-    elif self.posts: # Not on a specific post, go to the last unread article
-      previousPost=self.posts[-1]
+    # Yuck!
+    elif self.ui.posts.model().posts.count(): # Not on a specific post, go to the last unread article
+      previousPost=self.ui.posts.model().posts.all()[-1]
       if not previousPost.unread:
         previousPost=self.currentFeed.previousUnreadPost(previousPost, self.ui.posts.model().sortOrder(), self.statusFilter)
     else:
       previousPost=None
     if previousPost:
-      nextIndex=self.ui.posts.model().indexFromItem(self.postItems[previousPost.id])
+      nextIndex=self.ui.posts.model().indexFromPost(previousPost)
       self.ui.posts.setCurrentIndex(nextIndex)
       self.on_posts_clicked(index=nextIndex)
     else:
@@ -1434,15 +1241,16 @@ class MainWindow(QtGui.QMainWindow):
   def on_actionPrevious_Article_triggered(self, i=None, do_open=True):
     if i==None: return
     info ("Previous Article")
-    if self.currentPost:
-      post=self.currentPost
+    post=self.getCurrentPost()
+    if post:
       previousPost=self.currentFeed.previousPost(post, self.ui.posts.model().sortOrder(), self.statusFilter)
-    elif self.posts: # Not on a specific post, go to the last article
-      previousPost=posts[-1]
+    # Yuck!
+    elif self.ui.posts.model().posts.count(): # Not on a specific post, go to the last unread article
+      previousPost=self.ui.posts.model().posts.all()[-1]
     else:
       previousPost=None
     if previousPost:
-      nextIndex=self.ui.posts.model().indexFromItem(self.postItems[previousPost.id])
+      nextIndex=self.ui.posts.model().indexFromPost(previousPost)
       self.ui.posts.setCurrentIndex(nextIndex)
       self.on_posts_clicked(index=nextIndex)
     else:
@@ -1600,11 +1408,6 @@ def feedUpdater(full=False):
             pass
           feedStatusQueue.put([1, feed.id])
 
-from BeautifulSoup import BeautifulStoneSoup 
-def decodeString(s):
-  '''Decode HTML strings so you don't get &lt; and all those things.'''
-  u=unicode(BeautifulStoneSoup(s,convertEntities=BeautifulStoneSoup.HTML_ENTITIES ))
-  return u
 
 from processing import connection
 import socket
