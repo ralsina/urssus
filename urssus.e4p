@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE Project SYSTEM "Project-4.2.dtd">
 <!-- eric4 project file for project urssus -->
-<!-- Saved: 2008-08-01, 22:25:59 -->
+<!-- Saved: 2008-08-01, 22:48:55 -->
 <!-- Copyright (C) 2008 Roberto Alsina, ralsina@netmanagers.com.ar -->
 <Project version="4.2">
   <ProgLanguage mixed="0">Python</ProgLanguage>
@@ -164,10 +164,6 @@
       <Dir>versioning</Dir>
       <Dir>versions</Dir>
       <Name>003_Add_position_column_to_feeds_table.py</Name>
-    </Source>
-    <Source>
-      <Dir>urssus</Dir>
-      <Name>feedtreewidget.py</Name>
     </Source>
     <Source>
       <Dir>urssus</Dir>
