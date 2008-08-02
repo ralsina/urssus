@@ -286,7 +286,6 @@ class MainWindow(QtGui.QMainWindow):
 
   def fixPostListUI(self):
     # Fixes for post list UI
-    print "FIXING post list UI"
     header=self.ui.posts.header()
     header.setStretchLastSection(False)
     header.setResizeMode(0, QtGui.QHeaderView.Stretch)
@@ -1191,7 +1190,7 @@ class MainWindow(QtGui.QMainWindow):
     if post.unread: # Quirk, should redo the flow
       nextPost=post
     else:
-      nextPost=self.currentFeed.nextUnreadPost(post, self.ui.posts.model().sortOrder(), self.statusFilter)
+      nextPost=self.currentFeed.nextUnreadPost(post, self.ui.posts.model().sortOrder(), self.statusFilter, self.textFilter)
     if nextPost:
       nextIndex=self.ui.posts.model().indexFromPost(nextPost)
       self.ui.posts.setCurrentIndex(nextIndex)
@@ -1205,7 +1204,8 @@ class MainWindow(QtGui.QMainWindow):
     info ("Next Article")
     cp=self.getCurrentPost()
     if cp:
-      nextPost=self.currentFeed.nextPost(cp, self.ui.posts.model().sortOrder(), self.statusFilter)
+      nextPost=self.currentFeed.nextPost(cp, self.ui.posts.model().sortOrder(), 
+                                         self.statusFilter, self.textFilter)
     else:
       nextPost=self.ui.posts.model().posts.first()
       if not nextPost:
@@ -1225,12 +1225,15 @@ class MainWindow(QtGui.QMainWindow):
     info("Previous Unread Article")
     post=self.getCurrentPost()
     if post:
-      previousPost=self.currentFeed.previousUnreadPost(post, self.ui.posts.model().sortOrder(), self.statusFilter)
+      previousPost=self.currentFeed.previousUnreadPost(post, self.ui.posts.model().sortOrder(), 
+                                                       self.statusFilter, self.textFilter)
     # Yuck!
     elif self.ui.posts.model().posts.count(): # Not on a specific post, go to the last unread article
       previousPost=self.ui.posts.model().posts.all()[-1]
       if not previousPost.unread:
-        previousPost=self.currentFeed.previousUnreadPost(previousPost, self.ui.posts.model().sortOrder(), self.statusFilter)
+        previousPost=self.currentFeed.previousUnreadPost(previousPost, 
+                                                         self.ui.posts.model().sortOrder(), 
+                                                         self.statusFilter, self.textFilter)
     else:
       previousPost=None
     if previousPost:
@@ -1246,7 +1249,8 @@ class MainWindow(QtGui.QMainWindow):
     info ("Previous Article")
     post=self.getCurrentPost()
     if post:
-      previousPost=self.currentFeed.previousPost(post, self.ui.posts.model().sortOrder(), self.statusFilter)
+      previousPost=self.currentFeed.previousPost(post, self.ui.posts.model().sortOrder(), 
+                                                 self.statusFilter, self.textFilter)
     # Yuck!
     elif self.ui.posts.model().posts.count(): # Not on a specific post, go to the last unread article
       previousPost=self.ui.posts.model().posts.all()[-1]
