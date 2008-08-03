@@ -14,11 +14,9 @@ def feedUpdater(full=False):
   else:
     while True:
       info("updater loop")
-      print "updater loop"
       time.sleep(60)
       now=datetime.now()
       for feed in Feed.query.filter(Feed.xmlUrl<>None):
-        print "testing ", feed
         period=config.getValue('options', 'defaultRefresh', 1800)
         if feed.updateInterval==0: # Update never
           continue
