@@ -148,8 +148,9 @@ class Feed(elixir.Entity):
       for post in self.posts:
         if post.important: continue # Don't delete important stuff
         # FIXME: makethis configurable
-        if (now-post.date).days>7: # Right now, keep for a week
+	if (now-post.date).days>7: # Right now, keep for a week
           post.deleted=True
+          post.unread=False
     elif self.archiveType==1: #keepall
       return
     elif self.archiveType==2: #limitCount
@@ -170,8 +171,8 @@ class Feed(elixir.Entity):
     if expunge:
       # Delete all posts with deleted==True, which are not fresh 
       # (are not in the last RSS/Atom we got)
-      for post in Post.query().filter(Post.feed==self).filter(Post.deleted==True).filter(Post.fresh==False).all():
-        post.delete()
+      Post.table.delete().where(sql.and_(Post.deleted==True,Post.fresh==False,Post.feed==self)).execute()
+
       elixir.session.flush()
       
     # Force recount

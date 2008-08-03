@@ -3,6 +3,7 @@ from globals import *
 
 # The feed updater (runs out-of-process)
 def feedUpdater(full=False):
+  initDB()
   if full:
       for feed in Feed.query.filter(Feed.xmlUrl<>None):
         feedStatusQueue.put([0, feed.id])
