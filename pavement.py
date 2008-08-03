@@ -5,6 +5,7 @@ options(
         name="uRSSus",
         packages=['urssus', 
           'urssus.ui', 
+          'urssus.util',
           'urssus.templates', 
           'urssus.versioning', 
           'urssus.versioning.versions', 
