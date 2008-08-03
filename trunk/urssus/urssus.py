@@ -802,7 +802,6 @@ class MainWindow(QtGui.QMainWindow):
         nn.setIcon(QtGui.QIcon(":/folder.svg"))
         for child in node.children:
           addSubTree(nn, child)
-        if node.is_open: self.ui.feeds.expand(self.model.indexFromItem(nn))
       return nn
           
     iroot=self.model.invisibleRootItem()
@@ -813,6 +812,11 @@ class MainWindow(QtGui.QMainWindow):
       addSubTree(iroot, root)
       
     self.ui.feeds.setModel(self.model)
+    for k in self.feedItems:
+      i=self.feedItems[k]
+      if i.feed.is_open: self.ui.feeds.expand(self.model.indexFromItem(i))
+
+
     self.setEnabled(True)
     self.filterWidget.setEnabled(True)
     self.searchWidget.setEnabled(True)
