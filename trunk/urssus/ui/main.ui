@@ -728,7 +728,7 @@
   </action>
   <action name="actionTechnorati_Top_100" >
    <property name="text" >
-    <string>Import Technorati Top 100</string>
+    <string>Import Technorati Top 10</string>
    </property>
   </action>
   <action name="actionNormal_View" >
