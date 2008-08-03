@@ -964,10 +964,10 @@ class MainWindow(QtGui.QMainWindow):
       info ("Opening in standard view")
       
       # Remember current post ID
+      cpid=-1000
       if self.ui.posts.model():
-        cpid=self.ui.posts.model().postFromIndex(self.ui.posts.currentIndex()).id
-      else:
-        cpid=-1000
+        p=self.ui.posts.model().postFromIndex(self.ui.posts.currentIndex())
+        if p: cpid=p.id
      
       self.ui.posts.setModel(PostModel(self.ui.posts, feed, self.textFilter, self.statusFilter))
       self.fixPostListUI()
