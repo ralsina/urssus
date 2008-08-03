@@ -44,6 +44,7 @@ from ui.Ui_searchwidget import Ui_Form as UI_SearchWidget
 from ui.Ui_feed_properties import Ui_Dialog as UI_FeedPropertiesDialog
 from ui.Ui_twitterpost import Ui_Dialog as UI_TwitterDialog
 from ui.Ui_twitterauth import Ui_Dialog as UI_TwitterAuthDialog
+from ui.Ui_greaderimport import Ui_Dialog as UI_GReaderDialog
 
 from postmodel import *
 from feedmodel import * 
@@ -62,6 +63,13 @@ class SearchWidget(QtGui.QWidget):
     self.ui=UI_SearchWidget()
     self.ui.setupUi(self)
 
+class GReaderDialog(QtGui.QDialog):
+  def __init__(self, parent):
+    QtGui.QDialog.__init__(self, parent)
+    # Set up the UI from designer
+    self.ui=UI_GReaderDialog()
+    self.ui.setupUi(self)
+  
 class AboutDialog(QtGui.QDialog):
   def __init__(self, parent):
     QtGui.QDialog.__init__(self, parent)
@@ -341,6 +349,49 @@ class MainWindow(QtGui.QMainWindow):
   def getCurrentPost(self):
     index=self.ui.posts.currentIndex()
     return self.ui.posts.model().postFromIndex(index)
+
+  def on_actionImport_From_Google_Reader_triggered(self, i=None):
+    if i==None: return
+    import feedfinder
+    
+    dlg=GReaderDialog(self)
+    if dlg.exec_():
+      import GoogleReader.reader as gr
+      reader=gr.GoogleReader()
+      reader.identify(unicode(dlg.ui.username.text()), 
+                      unicode(dlg.ui.password.text()))
+      reader.login()
+      subs=reader.get_subscription_list()['subscriptions']
+      for sub in subs:
+        title=sub['title']
+        id=sub['id'] # Something like feed/http://lambda-the-ultimate.org/rss.xml 
+        if id.startswith('feed/'):
+          xmlUrl=id[5:]
+        else:
+          # Don't know how to handle it
+          print sub
+          continue
+        # Treat the first category's label as a folder name.
+        cats=sub['categories']
+        if cats:
+          fname=cats[0]['label']
+        # So, with a xmlUrl and a fname, we can just create the feed
+        print "Adding: ", fname, xmlUrl
+        # See if we have the folder
+        folder=Feed.get_by_or_init(parent=root_feed, text=fname, xmlUrl=None)
+        elixir.session.flush()
+        print "fid:", folder.id
+        if Feed.get_by(xmlUrl=xmlUrl):
+          # Already subscribed
+          print "You are already subscribed to %s"%xmlUrl
+          continue
+        f=Feed.get_by(xmlUrl=xmlUrl)
+        if not f:
+          newFeed=Feed(text=title, title=title, xmlUrl=xmlUrl, parent=folder)
+#          newFeed.updateFeedData()
+      elixir.session.flush()
+      self.initTree()
+        
 
   def on_actionFull_Screen_triggered(self, i=None):
     if i==None: return
