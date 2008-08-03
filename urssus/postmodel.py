@@ -32,7 +32,7 @@ class PostModel(QtGui.QStandardItemModel):
     self.posts=self.posts.order_by(self.sortOrder())
   
     for post in self.posts.all():
-      item=QtGui.QStandardItem('%s - %s'%(decodeString(post.title), post.date))
+      item=QtGui.QStandardItem()
       item.setToolTip('Posted at %s'%unicode(post.date))
       self.appendRow(item)
       self.postItems[post.id]=item
@@ -104,7 +104,7 @@ class PostModel(QtGui.QStandardItemModel):
       return QtGui.QStandardItemModel.data(self, index, role)
     
     if index.column()==0:
-      v=QtCore.QVariant(unicode(self.postFromIndex(index)))
+      v=QtCore.QVariant(decodeString(unicode(self.postFromIndex(index))))
     elif index.column()==1:
       # Tricky!
       ind=self.index(index.row(), 0, index.parent())
