@@ -1162,8 +1162,8 @@ class MainWindow(QtGui.QMainWindow):
     size=self.size()
     config.setValue('ui', 'size', [size.width(), size.height()])
     config.setValue('ui', 'splitters', [self.ui.splitter.sizes(), self.ui.splitter_2.sizes()])
-    # Expunge all deleted posts
-    Post.table.delete(Post.deleted==True).execute()
+    # FIXME: Expunge all deleted posts
+    #Post.table.delete(Post.deleted==True).execute()
     QtGui.QApplication.instance().quit()
 
   def on_actionMark_Feed_as_Read_triggered(self, i=None):
