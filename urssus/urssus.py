@@ -348,6 +348,8 @@ class MainWindow(QtGui.QMainWindow):
       
   def getCurrentPost(self):
     index=self.ui.posts.currentIndex()
+    if not index.isValid() or not self.ui.posts.model():
+      return None
     return self.ui.posts.model().postFromIndex(index)
 
   def on_actionImport_From_Google_Reader_triggered(self, i=None):
