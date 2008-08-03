@@ -991,7 +991,11 @@ class MainWindow(QtGui.QMainWindow):
     info("Updating item for feed %d", feed.id)
     if not feed.id in self.feedItems:
       return
+      
+      
     item=self.feedItems[feed.id]
+    if feed==self.currentFeed: #It's open, re_open it
+      self.open_feed(self.model.indexFromItem(item))
     # The calls to setRowHidden cause a change in the column's width! Looks like a Qt bug to me.
     if self.showOnlyUnread:
       if feed.unreadCount()==0 and feed<>self.currentFeed: 
