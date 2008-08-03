@@ -6,6 +6,8 @@ import database
 from datetime import datetime
 import os, sys, time
 from globals import *
+from urllib import urlopen
+import urlparse
 
 # Configuration
 import config
@@ -339,19 +341,31 @@ class Feed(elixir.Entity):
     info ( "Updating feed data from: %s", self.xmlUrl)
     d=fp.parse(self.xmlUrl)
     if not self.htmlUrl:
-      self.htmlUrl=d['feed']['link']
+      if 'link' in d['feed']:
+        self.htmlUrl=d['feed']['link']
+      else:
+        # This happens, for instance, on deleted blogger blogs (everyone's clever)
+        self.htmlUrl=None
     if not self.title:
-      self.title=d['feed']['title']
-      self.text=d['feed']['title']
+      if 'title' in d: 
+        self.title=d['feed']['title']
+        self.text=d['feed']['title']
+      else:
+        # This happens, for instance, on deleted blogger blogs (everyone's clever)
+        self.title=None
+        self.text=None
     if not self.description:
       if 'info' in d['feed']:
         self.description=d['feed']['info']
       elif 'description' in d['feed']:
         self.description=d['feed']['description']
-    if not self.icon:
-      # FIXME: handle 404, 403 whatever errors
-      self.icon=urlopen(urlparse.urljoin(self.htmlUrl,'/favicon.ico')).read()
-      open('/tmp/icon.ico', 'w').write(self.icon)
+    if not self.icon and self.htmlUrl:
+      try:
+        # FIXME: handle 404, 403 whatever errors
+        self.icon=urlopen(urlparse.urljoin(self.htmlUrl,'/favicon.ico')).read()
+        open('/tmp/icon.ico', 'w').write(self.icon)
+      except:
+        pass #I am not going to care about errors here :-D
     elixir.session.flush()
 
     

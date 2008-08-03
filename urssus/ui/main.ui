@@ -233,6 +233,7 @@
     <addaction name="actionExport_Feeds" />
     <addaction name="separator" />
     <addaction name="actionTechnorati_Top_100" />
+    <addaction name="actionImport_From_Google_Reader" />
     <addaction name="separator" />
     <addaction name="actionQuit" />
    </widget>
@@ -853,6 +854,11 @@
    </property>
    <property name="shortcutContext" >
     <enum>Qt::WindowShortcut</enum>
+   </property>
+  </action>
+  <action name="actionImport_From_Google_Reader" >
+   <property name="text" >
+    <string>Import From Google Reader</string>
    </property>
   </action>
   <addaction name="actionShow_Menu_Bar" />

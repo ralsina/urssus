@@ -1,7 +1,7 @@
 import time
 import urllib
 import cookielib
-# TODO : Get rise of web package.
+## TODO : Get rise of web package.
 from web import web
 
 # TODO : Use those line when python 2.6 will be out, for now, there is no
