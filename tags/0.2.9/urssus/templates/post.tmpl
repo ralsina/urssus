@@ -1,0 +1,26 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<head>
+<title>#{post.title}</title>
+</head>
+<body>
+<div class="headerbox">
+<?py if post.link: ?>
+  <h3><a href="#{post.link}">#{post.title}</a></h3>
+<?py else: ?>
+  <h3>#{post.title}</h3>
+<?py #end ?>
+</div>
+<div class="headerbox">
+<b>Date:&nbsp;</b>#{post.date}<br>
+<?py if post.author: ?>
+  <b>Author:&nbsp;</b>#{post.author}<br>
+<?py #end ?>
+</div>
+<div style='margin-top: 1em;'>
+#{post.content}
+<p>
+<?py if post.link: ?>
+  <a href="#{post.link}">Complete Story</a>
+<?py #end ?>
+</div>
+</body>

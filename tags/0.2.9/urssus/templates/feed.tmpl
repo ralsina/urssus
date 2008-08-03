@@ -1,0 +1,33 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<head>
+</head>
+<body>
+<div class="headerbox">
+<?py if feed.title: ?>
+    <?py if feed.htmlUrl: ?>
+    <a href="#{feed.htmlUrl}"><h3>#{feed.title}</h3></a>
+    <?py else: ?>
+    <h3>#{feed.title}</h3>
+    <?py #end ?>
+<?py else: ?>
+    <?py if feed.htmlUrl: ?>
+    <a href="#{feed.htmlUrl}"><h3>#{feed.text}</h3></a>
+    <?py else: ?>
+    <h3>#{feed.text}</h3>
+    <?py #end ?>
+<?py #end ?>
+</div>
+<div class="headerbox">
+<b>Last update:</b> #{feed.lastUpdated.date()} <br>
+<?py if feed.htmlUrl: ?>
+<b>URL: </b><a href="#{feed.htmlUrl}">#{feed.htmlUrl}</a><br>
+<?py #end ?>
+</div>
+<hr>
+<div>
+<?py if feed.description: ?>
+  #{feed.description}
+<?py #end ?>
+</div>
+
+</body>
