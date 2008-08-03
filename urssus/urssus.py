@@ -1132,7 +1132,7 @@ class MainWindow(QtGui.QMainWindow):
       importOPML(fname)
       self.initTree()
       
-  def on_actionTechnorati_Top_100_triggered(self, i=None):
+  def on_actionTechnorati_Top_10_triggered(self, i=None):
     if i==None: return
     if QtGui.QMessageBox.question(None, "Technorati Top 100 - uRSSus", 
        'You are about to import Technorati\'s Top 100 feeds for today.\nClick Yes to confirm.', 
@@ -1140,8 +1140,8 @@ class MainWindow(QtGui.QMainWindow):
       
       url='http://elliottback.com/tools/top100/technorati-100-to-opml.php'
       data=urlopen(url).read()
-      # Create a 'Top 100' folder if there isn't one
-      t100=Feed.get_by_or_init(text='Top 100')
+      # Create a 'Top 10' folder if there isn't one
+      t100=Feed.get_by_or_init(text='Top 10')
       if not t100.parent:
         t100.parent=root_feed
       [h, name]=tempfile.mkstemp()
