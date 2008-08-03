@@ -1461,6 +1461,7 @@ def importOPML(fname, parent=None):
     
 def main():
   global root_feed
+  root_feed=initDB()
   app=QtGui.QApplication(sys.argv)
   app.setQuitOnLastWindowClosed(False)
   window=MainWindow()
