@@ -335,7 +335,9 @@ class Feed(elixir.Entity):
     else:
       if self.curUnread==-1:
         info ("Forcing recount in %s", self.title)
-        self.curUnread=Post.query.filter(Post.feed==self).filter(Post.unread==True).count()
+        self.curUnread=Post.query.filter(Post.feed==self)\
+                                 .filter(Post.unread==True)\
+                                 .filter(Post.deleted==False).count()
     return self.curUnread
       
   def updateFeedData(self):
@@ -462,8 +464,6 @@ class Feed(elixir.Entity):
     # Queue a notification if needed
     if posts and self.notify:
       feedStatusQueue.put([3, self.id, len(posts)])
-    
-    
 
   def getQuery(self):
     if self.xmlUrl:

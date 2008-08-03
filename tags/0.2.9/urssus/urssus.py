@@ -537,7 +537,7 @@ class MainWindow(QtGui.QMainWindow):
     info ("Expiring feed: %s", curFeed)
     curFeed.expire(expunge=True)
     # Update feed display (number of unreads may have changed)
-    self.updateFeedItem(curFeed)
+    self.updateFeedItem(curFeed,parents=True)
     # Reopen it because the post list probably changed
     self.open_feed(index)
 
