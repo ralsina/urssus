@@ -785,7 +785,6 @@ class MainWindow(QtGui.QMainWindow):
     self.setEnabled(False)
     # Initialize the tree from the Feeds
     self.model=FeedModel()
-    self.ui.feeds.setModel(self.model)
     self.feedItems={}
     
     # Internal function
@@ -813,6 +812,7 @@ class MainWindow(QtGui.QMainWindow):
       QtGui.QApplication.instance().processEvents()
       addSubTree(iroot, root)
       
+    self.ui.feeds.setModel(self.model)
     self.setEnabled(True)
     self.filterWidget.setEnabled(True)
     self.searchWidget.setEnabled(True)
