@@ -18,7 +18,7 @@ options(
         package_data = {'urssus.templates': ['*.tmpl', '*.css', '*.js'],
                         'urssus.versioning': ['*.cfg'], 
                        }, 
-        entry_points = {'gui_scripts': ['urssus = urssus.urssus:main'], 
+        entry_points = {'gui_scripts': ['urssus = urssus.main:main'], 
                         'console_scripts': ['urssus_upgrade_db = urssus.database:main'], 
                         }, 
         install_requires = ['SQLAlchemy==0.4.6', 

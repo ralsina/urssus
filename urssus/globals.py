@@ -69,3 +69,5 @@ def decodeString(s):
   '''Decode HTML strings so you don't get &lt; and all those things.'''
   u=unicode(BeautifulStoneSoup(s,convertEntities=BeautifulStoneSoup.HTML_ENTITIES ))
   return u
+
+root_feed=None
