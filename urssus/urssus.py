@@ -356,6 +356,7 @@ class MainWindow(QtGui.QMainWindow):
     
     dlg=GReaderDialog(self)
     if dlg.exec_():
+      # FIXME: progress reports, non-block...
       import GoogleReader.reader as gr
       reader=gr.GoogleReader()
       reader.identify(unicode(dlg.ui.username.text()), 
@@ -376,11 +377,9 @@ class MainWindow(QtGui.QMainWindow):
         if cats:
           fname=cats[0]['label']
         # So, with a xmlUrl and a fname, we can just create the feed
-        print "Adding: ", fname, xmlUrl
         # See if we have the folder
         folder=Feed.get_by_or_init(parent=root_feed, text=fname, xmlUrl=None)
         elixir.session.flush()
-        print "fid:", folder.id
         if Feed.get_by(xmlUrl=xmlUrl):
           # Already subscribed
           print "You are already subscribed to %s"%xmlUrl
@@ -759,7 +758,7 @@ class MainWindow(QtGui.QMainWindow):
         self.updateFeedItem(feed, updating=False, parents=True)
         self.updatesCounter-=1
       elif action==2: # Just update it
-        self.updateFeedItem(feed, data[2])
+        self.updateFeedItem(feed, data[2], can_reopen=True)
       elif action==3: # Systray notification
         self.notifiedFeed=feed
         self.tray.showMessage("New Articles", "%d new articles in %s"%(data[2], feed.text) )
@@ -1041,14 +1040,19 @@ class MainWindow(QtGui.QMainWindow):
         self.ui.posts.scrollToTop()
 
 
-  def updateFeedItem(self, feed, parents=False, updating=False):
+  def updateFeedItem(self, feed, parents=False, updating=False, can_reopen=False):
     info("Updating item for feed %d", feed.id)
     if not feed.id in self.feedItems:
       return
-      
-      
     item=self.feedItems[feed.id]
-    if feed==self.currentFeed: #It's open, re_open it
+    # This is very slow when marking folders as read
+    # because each children triggers an update of the folder
+    # and since the folder is current, that triggers
+    # a load in the QWebView and reloading all the folder's items in 
+    # the post list, etc, etc
+    # That's why we special-case the can_reopen, which only
+    # is done after a real update
+    if feed==self.currentFeed and can_reopen: #It's open, re_open it
       self.open_feed(self.model.indexFromItem(item))
     # The calls to setRowHidden cause a change in the column's width! Looks like a Qt bug to me.
     if self.showOnlyUnread:
