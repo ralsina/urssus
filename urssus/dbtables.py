@@ -81,6 +81,8 @@ class Post(elixir.Entity):
   author      = elixir.Field(elixir.Text)
   link        = elixir.Field(elixir.Text)
   deleted     = elixir.Field(elixir.Boolean, default=False)
+  # Added in schema version 5
+  fresh       = elixir.Field(elixir.Boolean, default=True)
 
   def __repr__(self):
     if '<' in self.title:
@@ -521,7 +523,7 @@ root_feed=None
 
 def initDB():
   global root_feed
-  REQUIRED_SCHEMA=4
+  REQUIRED_SCHEMA=5
   # FIXME: show what we are doing on the UI
   if not os.path.exists(database.dbfile): # Just create it
     os.system('urssus_upgrade_db')
