@@ -166,14 +166,14 @@ class Feed(elixir.Entity):
       for post in self.posts:
         if post.important: continue # Don't delete important stuff
         post.deleted=True
-        
-    elixir.session.flush()
+      
+    Post.table.update().where(Post.deleted==True).values(unread=False).execute()
     if expunge:
       # Delete all posts with deleted==True, which are not fresh 
       # (are not in the last RSS/Atom we got)
       Post.table.delete().where(sql.and_(Post.deleted==True,Post.fresh==False,Post.feed==self)).execute()
 
-      elixir.session.flush()
+    elixir.session.flush()
       
     # Force recount
     self.curUnread=-1
