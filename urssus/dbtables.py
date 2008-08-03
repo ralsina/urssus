@@ -127,7 +127,7 @@ class Feed(elixir.Entity):
     if self.xmlUrl: # regular feed
       Post.table.update().where(Post.unread==True).where(Post.feed==self).values(unread=False).execute()
     else: # A folder
-      for feed in item.feed.allFeeds():
+      for feed in self.allFeeds():
         feed.markAsRead()
     elixir.session.flush()
     # Put in queue for status update [parents too]
