@@ -348,6 +348,8 @@ class MainWindow(QtGui.QMainWindow):
       
   def getCurrentPost(self):
     index=self.ui.posts.currentIndex()
+    if not index.isValid() or not self.ui.posts.model():
+      return None
     return self.ui.posts.model().postFromIndex(index)
 
   def on_actionImport_From_Google_Reader_triggered(self, i=None):
@@ -535,7 +537,7 @@ class MainWindow(QtGui.QMainWindow):
     info ("Expiring feed: %s", curFeed)
     curFeed.expire(expunge=True)
     # Update feed display (number of unreads may have changed)
-    self.updateFeedItem(curFeed)
+    self.updateFeedItem(curFeed,parents=True)
     # Reopen it because the post list probably changed
     self.open_feed(index)
 
