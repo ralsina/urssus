@@ -44,7 +44,6 @@ else:
 # Templates
 from util import tenjin
 
-
 # The obvious import doesn't work for complicated reasons ;-)
 to_str=tenjin.helpers.to_str
 escape=tenjin.helpers.escape
