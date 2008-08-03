@@ -44,7 +44,7 @@ class Post(Entity):
 setup_all()
 
 def upgrade():
-    schema.Column('fresh', Boolean, default=True).create(Posts.table)
+    schema.Column('fresh', Boolean, default=True).create(Post.table)
 
 def downgrade():
     # Operations to reverse the above upgrade go here.
