@@ -16,13 +16,13 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-
 import sys, os, time, urlparse, tempfile, codecs
 from urllib import urlopen
 from datetime import datetime, timedelta
 from dbtables import Post, Feed, initDB
 import elixir
 import sqlalchemy as sql
+
 
 # Twitter support
 try:
@@ -33,7 +33,7 @@ from tiny import tiny
 
 
 from globals import *
-
+from feedupdater import feedUpdater
 
 # UI Classes
 from PyQt4 import QtGui, QtCore, QtWebKit
@@ -1246,12 +1246,7 @@ class MainWindow(QtGui.QMainWindow):
       feedStatusQueue.put([1, id])
     self.updateFeedStatus()
     self.updatesCounter=0
-  
-    p = processing.Process(target=feedUpdater)
-    p.setDaemon(True)
-    p.start()
-    processes.append(p)
-    
+      
   def on_actionNext_Unread_Article_triggered(self, i=None):
     if i==None: return
     info( "Next Unread Article")
@@ -1460,37 +1455,6 @@ def importOPML(fname, parent=None):
     importSubTree(parent, node)
   elixir.session.flush()
 
-# The feed updater (runs out-of-process)
-def feedUpdater(full=False):
-  if full:
-      for feed in Feed.query.filter(Feed.xmlUrl<>None):
-        feedStatusQueue.put([0, feed.id])
-        try: # we can't let this fail or it will stay marked forever;-)
-          feed.update()
-        except:
-          pass
-        feedStatusQueue.put([1, feed.id])
-  else:
-    while True:
-      info("updater loop")
-      time.sleep(60)
-      now=datetime.now()
-      for feed in Feed.query.filter(Feed.xmlUrl<>None):
-        period=config.getValue('options', 'defaultRefresh', 1800)
-        if feed.updateInterval==0: # Update never
-          continue
-        elif feed.updateInterval<>-1: # not update default
-          period=60*feed.updateInterval # convert to seconds
-        if (now-feed.lastUpdated).seconds>period:
-          info("updating because of timeout")
-          feedStatusQueue.put([0, feed.id])
-          try: # we can't let this fail or it will stay marked forever;-)
-            feed.update()
-            # While we're at it
-            feed.expire(expunge=False)
-          except:
-            pass
-          feedStatusQueue.put([1, feed.id])
     
 def main():
   global root_feed
@@ -1506,7 +1470,7 @@ def main():
       importOPML(sys.argv[1], root_feed)
   
   # This will start the background fetcher as a side effect
-  window.on_actionAbort_Fetches_triggered(True)
+#  window.on_actionAbort_Fetches_triggered(True)
   window.show()
   sys.exit(app.exec_())
   
