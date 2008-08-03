@@ -109,6 +109,9 @@ class PostModel(QtGui.QStandardItemModel):
       # Tricky!
       ind=self.index(index.row(), 0, index.parent())
       post=self.postFromIndex(ind)
+      if not post:
+        #No data
+        return QtCore.QVariant()
 
       # Be smarter, let's see how it looks
       now=datetime.now()

@@ -692,6 +692,9 @@ class MainWindow(QtGui.QMainWindow):
           importOPML(id, root_feed)
           self.initTree()
           return
+        elif action==6: #Just pop
+          self.show()
+          self.raise_()
         else:
           error( "id %s not in the tree", id)
           sys.exit(1)
@@ -1441,7 +1444,7 @@ def theServer(server):
     info ('connection accepted')
     # Process the message as needed
     d=conn.recv()
-    if isinstance(d, list):
+    if len(d)>0:
       data=str(d[0])
       # Simple protocol. We get [data].
       # If data starts with http:// it's a feed we want to subscribe.
@@ -1451,6 +1454,8 @@ def theServer(server):
         feedStatusQueue.put([4, data])
       elif data.lower().endswith('.opml'):
         feedStatusQueue.put([5, data])
+    else:
+        feedStatusQueue.put([6, None])      
     conn.close()
   server.close()
 
