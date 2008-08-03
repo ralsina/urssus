@@ -20,7 +20,7 @@ class PostModel(QtGui.QStandardItemModel):
     self.postItems={}
     
     if self.feed.xmlUrl: # A regular feed
-      self.posts=Post.query.filter(Post.feed==self.feed)
+      self.posts=Post.query.filter(Post.feed==self.feed).filter(Post.deleted==False)
     else: # A folder
       self.posts=self.feed.allPostsQuery()
     # Filter by text according to the contents of self.textFilter

@@ -168,8 +168,9 @@ class Feed(elixir.Entity):
         
     elixir.session.flush()
     if expunge:
-      # Delete all posts with deleted==True 
-      for post in Post.query().filter(Post.feed==self).filter(Post.deleted==True).all():
+      # Delete all posts with deleted==True, which are not fresh 
+      # (are not in the last RSS/Atom we got)
+      for post in Post.query().filter(Post.feed==self).filter(Post.deleted==True).filter(Post.fresh==False).all():
         post.delete()
       elixir.session.flush()
       
@@ -369,7 +370,6 @@ class Feed(elixir.Entity):
       except:
         pass #I am not going to care about errors here :-D
     elixir.session.flush()
-
     
   def update(self):
     if not self.xmlUrl: # Not a real feed
@@ -451,11 +451,18 @@ class Feed(elixir.Entity):
       except KeyError:
         debug( post )
     self.lastUpdated=datetime.now()
+
+    # Fix freshness
+    Post.table.update().values(fresh=False).execute()
+    for post in posts:
+      post.fresh=True
     elixir.session.flush()
       
     # Queue a notification if needed
     if posts and self.notify:
       feedStatusQueue.put([3, self.id, len(posts)])
+    
+    
 
   def getQuery(self):
     if self.xmlUrl:
