@@ -2,6 +2,7 @@ import os, sys, socket
 from processing import connection
 from dbtables import *
 from globals import *
+from feedupdater import feedUpdater
 
 if sys.platform=='win32':
   sockaddr=r'\\.\pipe\uRSSus'
@@ -64,8 +65,12 @@ def main():
     else:
       conn.send(sys.argv[1:])
       sys.exit(0)
-      
-      
+  
+  # Start background updater
+  p = processing.Process(target=feedUpdater)
+  p.setDaemon(True)
+  p.start()
+
   import urssus
   urssus.main()
   
