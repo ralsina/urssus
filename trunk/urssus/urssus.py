@@ -752,7 +752,7 @@ class MainWindow(QtGui.QMainWindow):
       
       [action, id] = data[:2]
       info("updateFeedStatus: %d %d", action, id)
-      if self.ui.feeds.model().hasFeed(id):
+      if not self.ui.feeds.model().hasFeed(id):
         if action==4: # Add new feed
           self.addFeed(id)
           return
