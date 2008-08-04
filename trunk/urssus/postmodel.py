@@ -112,7 +112,12 @@ class PostModel(QtGui.QStandardItemModel):
       f.setBold(False)
     item1.setFont(f)
     item2.setFont(f)
-
+    
+    # Update our post_data, too. Probably not the best way
+    # FIXME: not efficient
+    self.post_ids=[id for [id, _, _, _] in self.post_data]
+    idx=self.post_ids.index(post.id)
+    self.post_data[idx]=[post.id, unicode(post).lower(), post.date, post.unread]
 
   def sort(self, column, order):
     # Thanks pyar!
