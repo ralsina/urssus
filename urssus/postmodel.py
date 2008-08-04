@@ -58,8 +58,11 @@ class PostModel(QtGui.QStandardItemModel):
 
       item2.setData(QtCore.QVariant(unicode(post.date)), display)
       d=post.date
+      # AOL Fanhouse posts items with a time differential of milliseconds, so they sorted
+      # differently on python and Qt. If someone makesit to microseconds, this solution
+      # is borked
       qd=QtCore.QVariant(QtCore.QDateTime(QtCore.QDate(d.year, d.month, d.day), 
-                                          QtCore.QTime(d.hour, d.minute, d.second)))
+                                          QtCore.QTime(d.hour, d.minute, d.second, d.microsecond/1000)))
       item2.setData(qd, sorting)
       item2.setData(QtCore.QVariant(post.id), post_id)
       
