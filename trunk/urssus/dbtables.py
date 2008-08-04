@@ -288,7 +288,7 @@ class Feed(elixir.Entity):
         if sib.xmlUrl:
           return sib
         else:
-          return sib.previousUnreadFeed()
+          return sib.lastChild().previousUnreadFeed()
     # Then see if our parent is the answer
     if self.parent and self.parent.unreadCount():
       if self.parent.xmlUrl:
