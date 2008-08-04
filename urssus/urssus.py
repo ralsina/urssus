@@ -1239,7 +1239,7 @@ class MainWindow(QtGui.QMainWindow):
       feedStatusQueue.put([0, feed.id])
       feed.update()
       feedStatusQueue.put([1, feed.id])
-      self.open_feed(self.ui.feeds.currentIndex(idx))
+      self.open_feed(idx)
 
   def on_actionFetch_All_Feeds_triggered(self, i=None):
     if i==None: return
