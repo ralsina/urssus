@@ -307,7 +307,15 @@ class MainWindow(QtGui.QMainWindow):
     header.setStretchLastSection(False)
     header.setResizeMode(0, QtGui.QHeaderView.Stretch)
     header.setResizeMode(1, QtGui.QHeaderView.Fixed)
-    header.resizeSection(1, header.fontMetrics().width(' 8888-88-88 ')+4)
+    header.resizeSection(1, header.fontMetrics().width(' 88/88/8888 8888:88:88 ')+4)
+
+  def fixFeedListUI(self):
+    # Fixes for feed list UI
+    header=self.ui.feeds.header()
+    header.setStretchLastSection(False)
+    header.setResizeMode(0, QtGui.QHeaderView.Stretch)
+    header.setResizeMode(1, QtGui.QHeaderView.Fixed)
+    header.resizeSection(1, header.fontMetrics().width(' 8888')+4)
 
   def trayActivated(self, reason=None):
     if reason == None: return
@@ -794,52 +802,28 @@ class MainWindow(QtGui.QMainWindow):
   def initTree(self):
     self.setEnabled(False)
     # Initialize the tree from the Feeds
-    self.model=FeedModel()
-    self.feedItems={}
+    if not self.ui.feeds.model():
+      self.ui.feeds.setModel(FeedModel(self))
+    else:
+      self.ui.feeds.model().initData()
+    self.fixFeedListUI()
     
-    # Internal function
-    def addSubTree(parent, node):
-      nn=QtGui.QStandardItem(unicode(node))
-      nn.setToolTip(unicode(node))
-      parent.appendRow(nn)
-      nn.feed=node
-      nn.setData(QtCore.QVariant(node.id), QtCore.Qt.UserRole)
-      self.feedItems[node.id]=nn
-      self.updateFeedItem(node)
-      if node.xmlUrl:
-        nn.setIcon(QtGui.QIcon(":/urssus.svg"))
-      else:
-        nn.setIcon(QtGui.QIcon(":/folder.svg"))
-        for child in node.children:
-          addSubTree(nn, child)
-      return nn
-          
-    iroot=self.model.invisibleRootItem()
-    iroot.feed=root_feed
-    self.feedItems[root_feed.id]=iroot
-    for root in root_feed.children:
-      QtGui.QApplication.instance().processEvents()
-      addSubTree(iroot, root)
-      
-    self.ui.feeds.setModel(self.model)
-    for k in self.feedItems:
-      i=self.feedItems[k]
-      if i.feed.is_open: self.ui.feeds.expand(self.model.indexFromItem(i))
-      del(i.feed)
-
+    # FIXME: implement correctly
+    for feed in Feed.query().filter_by(is_open=True):
+      self.ui.feeds.expand(self.ui.feeds.model().indexFromFeed(feed))
 
     self.setEnabled(True)
     self.filterWidget.setEnabled(True)
     self.searchWidget.setEnabled(True)
     
   def on_feeds_expanded(self, index):
-    feed=self.model.feedFromIndex(index)
+    feed=self.ui.feeds.model().feedFromIndex(index)
     if not feed: return
     feed.is_open=True
     elixir.session.flush()
     
   def on_feeds_collapsed(self, index):
-    feed=self.model.feedFromIndex(index)
+    feed=self.ui.feeds.model().feedFromIndex(index)
     if not feed: return
     feed.is_open=False
     elixir.session.flush()
@@ -974,12 +958,6 @@ class MainWindow(QtGui.QMainWindow):
       self.on_actionNormal_View_triggered(v)
     config.setValue('ui', 'shortFeedList', self.ui.actionShort_Feed_List.isChecked())
     
-  def resortPosts(self):
-    info ("Resorting posts")
-    cp=self.getCurrentPost()
-    self.ui.posts.setCurrentIndex(self.ui.posts.model().indexFromPost(cp))
-    self.fixPostListUI()
-
   def open_feed(self, index):
     if not index.isValid():
       return
@@ -1039,7 +1017,6 @@ class MainWindow(QtGui.QMainWindow):
      
       self.ui.posts.setModel(PostModel(self.ui.posts, feed, self.textFilter, self.statusFilter))
       self.fixPostListUI()
-      QtCore.QObject.connect(self.ui.posts.model(), QtCore.SIGNAL("resorted()"), self.resortPosts)
 
       for action in actions:
         action.setEnabled(True)
