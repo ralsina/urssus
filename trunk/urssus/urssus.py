@@ -315,7 +315,7 @@ class MainWindow(QtGui.QMainWindow):
     header.setStretchLastSection(False)
     header.setResizeMode(0, QtGui.QHeaderView.Stretch)
     header.setResizeMode(1, QtGui.QHeaderView.Fixed)
-    header.resizeSection(1, header.fontMetrics().width(' 8888')+4)
+    header.resizeSection(1, header.fontMetrics().width(' Unread ')+4)
 
   def trayActivated(self, reason=None):
     if reason == None: return
@@ -1265,22 +1265,15 @@ class MainWindow(QtGui.QMainWindow):
     info( "Next Unread Article")
     if not self.currentFeed:
       self.on_actionNext_Unread_Feed_triggered(True)
-    post=self.getCurrentPost()
-    if not post: 
-      post=self.ui.posts.model().posts.first()
-      if not post: # No posts in this feed, just go the next unread feed
-        self.on_actionNext_Unread_Feed_triggered(True)
-        return
-    if post.unread: # Quirk, should redo the flow
-      nextPost=post
-    else:
-      nextPost=self.currentFeed.nextUnreadPost(post, self.ui.posts.model().sortOrder(), self.statusFilter, self.textFilter)
-    if nextPost:
-      nextIndex=self.ui.posts.model().indexFromPost(nextPost)
-      self.ui.posts.setCurrentIndex(nextIndex)
-      self.on_posts_clicked(index=nextIndex)
-    else:
-      # At the end of the feed, go to next unread feed
+      return
+
+    cp=self.getCurrentPost()
+    nextIdx=self.ui.posts.model().nextUnreadPostIndex(cp)
+    if nextIdx.isValid():
+      self.ui.posts.setCurrentIndex(nextIdx)
+      self.on_posts_clicked(index=nextIdx)
+      return
+    else: # Go to next feed
       self.on_actionNext_Unread_Feed_triggered(True)
       
   def on_actionNext_Article_triggered(self, i=None, do_open=True):
@@ -1302,25 +1295,17 @@ class MainWindow(QtGui.QMainWindow):
   def on_actionPrevious_Unread_Article_triggered(self, i=None):
     if i==None: return
     info("Previous Unread Article")
-    post=self.getCurrentPost()
-    if post:
-      previousPost=self.currentFeed.previousUnreadPost(post, self.ui.posts.model().sortOrder(), 
-                                                       self.statusFilter, self.textFilter)
-    # Yuck!
-    elif self.ui.posts.model().posts.count(): # Not on a specific post, go to the last unread article
-      previousPost=self.ui.posts.model().posts.all()[-1]
-      if not previousPost.unread:
-        previousPost=self.currentFeed.previousUnreadPost(previousPost, 
-                                                         self.ui.posts.model().sortOrder(), 
-                                                         self.statusFilter, self.textFilter)
-    else:
-      previousPost=None
-    if previousPost:
-      nextIndex=self.ui.posts.model().indexFromPost(previousPost)
-      self.ui.posts.setCurrentIndex(nextIndex)
-      self.on_posts_clicked(index=nextIndex)
-    else:
-      # At the beginning of the feed, go to previous feed
+    if not self.currentFeed:
+      self.on_actionPrevious_Unread_Feed_triggered(True)
+      return
+
+    cp=self.getCurrentPost()
+    nextIdx=self.ui.posts.model().previousUnreadPostIndex(cp)
+    if nextIdx.isValid():
+      self.ui.posts.setCurrentIndex(nextIdx)
+      self.on_posts_clicked(index=nextIdx)
+      return
+    else: # Go to next feed
       self.on_actionPrevious_Unread_Feed_triggered(True)
 
   def on_actionPrevious_Article_triggered(self, i=None, do_open=True):

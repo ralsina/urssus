@@ -46,7 +46,7 @@ class PostModel(QtGui.QStandardItemModel):
       # iterating what's shown, not the result
       # of self.posts.all()
       
-      self.post_data.append([post.id, unicode(post).lower(), post.date])
+      self.post_data.append([post.id, unicode(post).lower(), post.date, post.unread])
       item1=QtGui.QStandardItem()
       item1.setToolTip('%s - Posted at %s'%(unicode(post), unicode(post.date)))
       item1.setData(QtCore.QVariant(unicode(post)), display)
@@ -71,7 +71,7 @@ class PostModel(QtGui.QStandardItemModel):
  
   def indexFromPost(self, post=None, id=None):
     if not id and not post:
-      return
+      return QtCore.QModelIndex()
     if not id:
       id=post.id
     if post and post.id in self.postItems:
@@ -116,8 +116,7 @@ class PostModel(QtGui.QStandardItemModel):
     self.post_data.sort(key=operator.itemgetter(column+1), 
                         reverse=order==QtCore.Qt.DescendingOrder)
     QtGui.QStandardItemModel.sort(self, column, order)
-    self.post_ids=[id for [id, _, _] in self.post_data]
-    print self.post_data
+    self.post_ids=[id for [id, _, _, _] in self.post_data]
 
   def nextPostIndex(self, post):
     '''Takes a Post and returns the index of the following post'''
@@ -135,6 +134,33 @@ class PostModel(QtGui.QStandardItemModel):
     else:
       return self.indexFromItem(self.postItems[self.post_ids[idx+1]][0])
 
+  def nextUnreadPostIndex(self, post):
+    if not self.post_ids:
+      return QtCore.QModelIndex()
+      
+    # Create filtered lists
+    if post:
+      unread_data=[x for x in self.post_data if x[3] or x[0]==post.id]
+    else:
+      unread_data=[x for x in self.post_data if x[3]]
+    unread_ids=[id for [id, _, _, _] in unread_data]
+    
+    # And now it's pretty much like nextPostIndex
+    # FIXME: merge them
+    if not unread_ids:
+      return QtCore.QModelIndex()
+    # First, find it in our list of ids
+    if not post: 
+      idx=-1
+    else: 
+      idx=unread_ids.index(post.id)
+    if idx==-1: #current post not here, so return the first
+      return self.indexFromItem(self.postItems[unread_ids[0]][0])
+    elif idx==len(unread_ids)-1: # Last post, no next
+      return QtCore.QModelIndex()
+    else:
+      return self.indexFromItem(self.postItems[unread_ids[idx+1]][0])
+
   def previousPostIndex(self, post):
     '''Takes a Post and returns the index of the following post'''
     # First, find it in our list of ids
@@ -150,3 +176,30 @@ class PostModel(QtGui.QStandardItemModel):
       return QtCore.QModelIndex()
     else:
       return self.indexFromItem(self.postItems[self.post_ids[idx-1]][0])
+
+  def previousUnreadPostIndex(self, post):
+    if not self.post_ids:
+      return QtCore.QModelIndex()
+      
+    # Create filtered lists
+    if post:
+      unread_data=[x for x in self.post_data if x[3] or x[0]==post.id]
+    else:
+      unread_data=[x for x in self.post_data if x[3]]
+    unread_ids=[id for [id, _, _, _] in unread_data]
+    
+    # And now it's pretty much like previousPostIndex
+    # FIXME: merge them
+    if not unread_ids:
+      return QtCore.QModelIndex()
+    # First, find it in our list of ids
+    if not post: 
+      idx=-1
+    else: 
+      idx=unread_ids.index(post.id)
+    if idx==-1: #current post not here, so return the last
+      return self.indexFromItem(self.postItems[unread_ids[-1]][0])
+    elif idx==0: # First post, no previous
+      return QtCore.QModelIndex()
+    else:
+      return self.indexFromItem(self.postItems[unread_ids[idx-1]][0])
