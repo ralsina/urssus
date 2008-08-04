@@ -148,7 +148,7 @@ class Feed(elixir.Entity):
       for post in self.posts:
         if post.important: continue # Don't delete important stuff
         # FIXME: makethis configurable
-	if (now-post.date).days>7: # Right now, keep for a week
+    if (now-post.date).days>7: # Right now, keep for a week
           post.deleted=True
           post.unread=False
     elif self.archiveType==1: #keepall
@@ -453,18 +453,18 @@ class Feed(elixir.Entity):
         debug( post )
     self.lastUpdated=datetime.now()
 
-    # Fix freshness
-    Post.table.update().values(fresh=False).execute()
-    for post in posts:
-      post.fresh=True
+    if posts:
+      # Fix freshness
+      Post.table.update().values(fresh=False).execute()
+      elixir.session.flush()
+      for post in posts:
+        post.fresh=True
     elixir.session.flush()
       
     # Queue a notification if needed
     if posts and self.notify:
       feedStatusQueue.put([3, self.id, len(posts)])
     
-    
-
   def getQuery(self):
     if self.xmlUrl:
       return Post.query.filter(Post.feed==self)

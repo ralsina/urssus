@@ -3,12 +3,13 @@ from globals import *
 
 # The feed updater (runs out-of-process)
 def feedUpdater(full=False):
-  initDB()
   if full:
+      #FIXME: this hogs the DB
       for feed in Feed.query.filter(Feed.xmlUrl<>None):
         feedStatusQueue.put([0, feed.id])
         try: # we can't let this fail or it will stay marked forever;-)
           feed.update()
+          time.sleep(1)
         except:
           pass
         feedStatusQueue.put([1, feed.id])
@@ -29,7 +30,7 @@ def feedUpdater(full=False):
           try: # we can't let this fail or it will stay marked forever;-)
             feed.update()
             # While we're at it
-            feed.expire(expunge=False)
+#            feed.expire(expunge=False)
           except:
             pass
           feedStatusQueue.put([1, feed.id])

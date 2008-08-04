@@ -13,6 +13,7 @@ class PostModel(QtGui.QStandardItemModel):
  
   def initData(self):
     self.clear()
+    self.postDict={}
     self.setColumnCount(2)
     self.setHeaderData(0, QtCore.Qt.Horizontal, QtCore.QVariant("Title"))
     self.setHeaderData(1, QtCore.Qt.Horizontal, QtCore.QVariant("Date"))
@@ -31,7 +32,8 @@ class PostModel(QtGui.QStandardItemModel):
       self.posts=self.posts.filter(self.statusFilter==True)
     self.posts=self.posts.order_by(self.sortOrder())
   
-    for post in self.posts.all():
+    posts=list(self.posts.all())
+    for post in posts:
       item=QtGui.QStandardItem()
       item.setToolTip('Posted at %s'%unicode(post.date))
       self.appendRow(item)

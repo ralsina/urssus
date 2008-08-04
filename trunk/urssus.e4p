@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE Project SYSTEM "Project-4.2.dtd">
 <!-- eric4 project file for project urssus -->
-<!-- Saved: 2008-08-03, 02:43:16 -->
+<!-- Saved: 2008-08-04, 00:14:05 -->
 <!-- Copyright (C) 2008 Roberto Alsina, ralsina@netmanagers.com.ar -->
 <Project version="4.2">
   <ProgLanguage mixed="0">Python</ProgLanguage>
@@ -41,10 +41,6 @@
     <Source>
       <Dir>urssus</Dir>
       <Name>OPML.py</Name>
-    </Source>
-    <Source>
-      <Dir>urssus</Dir>
-      <Name>tenjin.py</Name>
     </Source>
     <Source>
       <Dir>urssus</Dir>
@@ -393,7 +389,7 @@
     <Name>urssus.py</Name>
   </MainScript>
   <Vcs>
-    <VcsType>PySvn</VcsType>
+    <VcsType>Subversion</VcsType>
     <VcsOptions>
       <dict>
         <key>

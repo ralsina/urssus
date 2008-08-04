@@ -11,6 +11,11 @@ class FeedModel(QtGui.QStandardItemModel):
 #    
 #  def columnCount(self, parent):
 #    return 3
+    # Cache flags
+    self.flags={}
+    
+    # Cache feeds
+    self.feedCache={}
 
   def supportedDropActions(self):
     return QtCore.Qt.MoveAction
@@ -20,11 +25,14 @@ class FeedModel(QtGui.QStandardItemModel):
     if index.isValid():
       item=self.itemFromIndex(index)
       id=item.data(QtCore.Qt.UserRole).toInt()[0]
+      if id in self.flags:
+        return self.flags[id]
       feed=Feed.get_by(id=id)
       if feed and not feed.xmlUrl: # a folder
         r=r | QtCore.Qt.ItemIsDragEnabled | QtCore.Qt.ItemIsDropEnabled
       else:
         r=r | QtCore.Qt.ItemIsDragEnabled
+      self.flags[id]=r
       return r
       
   def dropMimeData(self, data, action, row, column, parent):
@@ -82,5 +90,8 @@ class FeedModel(QtGui.QStandardItemModel):
   def feedFromIndex(self, index):
     item=self.itemFromIndex(index)
     if item:
-      return Feed.get_by(id=item.data(QtCore.Qt.UserRole).toInt()[0])
+      id=item.data(QtCore.Qt.UserRole).toInt()[0]
+      if not id in self.feedCache:
+        self.feedCache[id]=Feed.get_by(id=id)
+      return self.feedCache[id] 
     return None
