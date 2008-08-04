@@ -7,6 +7,17 @@ class FeedModel(QtGui.QStandardItemModel):
     QtGui.QStandardItemModel.__init__(self, parent)
     self.initData()
 
+  def setData(self, index, value, role):
+    if role==QtCore.Qt.EditRole:
+      # Find the feed for this index
+      item=self.itemFromIndex(index)
+      if item:
+        feed=Feed.get_by(id=item.data(QtCore.Qt.UserRole).toInt()[0])
+        feed.text=unicode(value.toString())
+        elixir.session.flush()
+    return QtGui.QStandardItemModel.setData(self, index, value, role)
+    
+
   def initData(self):
     self.setColumnCount(2)
     self.setHeaderData(0, QtCore.Qt.Horizontal, QtCore.QVariant("Title"))
