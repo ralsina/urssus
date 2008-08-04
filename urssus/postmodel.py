@@ -64,7 +64,7 @@ class PostModel(QtGui.QStandardItemModel):
  
   def indexFromPost(self, post):
     if post and post.id in self.postItems:
-      return self.indexFromItem(self.postItems[post.id])
+      return self.indexFromItem(self.postItems[post.id][0])
     return QtCore.QModelIndex()
     
   def postFromIndex(self, index):

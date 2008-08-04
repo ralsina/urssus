@@ -221,6 +221,7 @@ class MainWindow(QtGui.QMainWindow):
     self.currentFeed=None
     
     self.combinedView=False
+    self.showingFolder=False
     
     # Set up the UI from designer
     self.ui=Ui_MainWindow()
@@ -816,7 +817,6 @@ class MainWindow(QtGui.QMainWindow):
       if feed.unreadCount()>0:
         self.updateFeedItem(feed)
     
-
     self.setEnabled(True)
     self.filterWidget.setEnabled(True)
     self.searchWidget.setEnabled(True)
@@ -968,6 +968,12 @@ class MainWindow(QtGui.QMainWindow):
       return
     feed=self.ui.feeds.model().feedFromIndex(index)
     if not feed: return
+    
+    if feed.xmlUrl:
+      self.showingFolder=False
+    else:
+      self.showingFolder=True
+    
     self.ui.feeds.setCurrentIndex(index)
     self.currentFeed=feed
     # Scroll the feeds view so this feed is visible
@@ -997,8 +1003,10 @@ class MainWindow(QtGui.QMainWindow):
       info("Opening combined")
       if feed.xmlUrl: # A regular feed
         self.posts=Post.query.filter(Post.feed==feed)
+        showFeedInPosts=True
       else: # A folder
         self.posts=feed.allPostsQuery()
+        showFeedInPosts=False
       # Filter by text according to the contents of self.textFilter
       if self.textFilter:
         self.posts=self.posts.filter(sql.or_(Post.title.like('%%%s%%'%self.textFilter), Post.content.like('%%%s%%'%self.textFilter)))
@@ -1006,7 +1014,7 @@ class MainWindow(QtGui.QMainWindow):
         self.posts=self.posts.filter(self.statusFilter==True)
       # FIXME: find a way to add sorting to the UI for this (not very important)
       self.posts=self.posts.order_by(sql.desc(Post.date)).all()
-      self.ui.view.setHtml(renderTemplate(self.combinedTemplate,posts=self.posts))
+      self.ui.view.setHtml(renderTemplate(self.combinedTemplate, posts=self.posts, showFeed=showFeedInPosts))
 
       for action in actions:
         action.setEnabled(False)
@@ -1109,7 +1117,10 @@ class MainWindow(QtGui.QMainWindow):
       self.ui.statusBar.showMessage("Opening %s"%post.link)
       self.ui.view.setUrl(QtCore.QUrl(QtCore.QString(post.link)))
     else:
-      self.ui.view.setHtml(renderTemplate('post.tmpl',post=post))
+      if self.showingFolder:
+        self.ui.view.setHtml(renderTemplate('post.tmpl',post=post, showFeed=True))
+      else:
+        self.ui.view.setHtml(renderTemplate('post.tmpl',post=post, showFeed=False))
 
   def on_posts_doubleClicked(self, index=None):
     if index==None: return
