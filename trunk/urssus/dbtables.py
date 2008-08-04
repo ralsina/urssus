@@ -88,6 +88,7 @@ class Post(elixir.Entity):
   def __repr__(self):
     if not self.decoTitle:
       self.decoTitle=h2t(self.title).strip()
+    print self.decoTitle
     return self.decoTitle
     
   def titleLink(self):
@@ -450,12 +451,22 @@ class Feed(elixir.Entity):
           link=post['link']
         else:
             link=None
+            
+        # Title may be in plain title, but a title_detail is preferred
+        if 'title_detail' in post:
+          if post['title_detail'].type=='text/html':
+            title=h2t(post['title_detail'].value).strip()
+          else:
+            title=post['title_detail'].value.strip()
+        else:
+          title=post['title']
+            
         # FIXME: if I use date to check here, I get duplicates on posts where I use
         # artificial date because it's not in the feed's entry.
         # If I don't I don't re-get updated posts.
-        p = Post.get_by(feed=self, title=post['title'],post_id=post[idkey])
+        p = Post.get_by(feed=self, title=title,post_id=post[idkey])
         if not p:
-          p=Post(feed=self, date=date, title=post['title'], 
+          p=Post(feed=self, date=date, title=title, 
                  post_id=post[idkey], content=content, 
                  author=author, link=link)
           if self.markRead:
