@@ -1286,22 +1286,17 @@ class MainWindow(QtGui.QMainWindow):
   def on_actionNext_Article_triggered(self, i=None, do_open=True):
     if i==None: return
     info ("Next Article")
+    
     cp=self.getCurrentPost()
-    if cp:
-      nextPost=self.currentFeed.nextPost(cp, self.ui.posts.model().sortOrder(), 
-                                         self.statusFilter, self.textFilter)
-    else:
-      nextPost=self.ui.posts.model().posts.first()
-      if not nextPost:
-        # No posts in this feed, just go the next unread feed
-        self.on_actionNext_Feed_triggered(True)
-        return
-    if nextPost:
-      nextIndex=self.ui.posts.model().indexFromPost(nextPost)
-      self.ui.posts.setCurrentIndex(nextIndex)
-      self.on_posts_clicked(index=nextIndex)
-    else:
-      # At the end of the feed, go to next unread feed
+
+    # First ask the post list's model
+    nextIdx=self.ui.posts.model().nextPostIndex(cp)
+    
+    if nextIdx.isValid():
+      self.ui.posts.setCurrentIndex(nextIdx)
+      self.on_posts_clicked(index=nextIdx)
+      return
+    else: # Go to next feed
       self.on_actionNext_Feed_triggered(True)
 
   def on_actionPrevious_Unread_Article_triggered(self, i=None):
