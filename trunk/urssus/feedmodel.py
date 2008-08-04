@@ -3,19 +3,46 @@ from dbtables import *
 from PyQt4 import QtGui, QtCore
 
 class FeedModel(QtGui.QStandardItemModel):
-  def __init__(self):
-    QtGui.QStandardItemModel.__init__(self)
-#    self.setHeaderData(0, QtCore.Qt.Horizontal, QtCore.QVariant("Title"))
-#    self.setHeaderData(1, QtCore.Qt.Horizontal, QtCore.QVariant("Unread"))
-#    self.setHeaderData(2, QtCore.Qt.Horizontal, QtCore.QVariant("Id"))
-#    
-#  def columnCount(self, parent):
-#    return 3
-    # Cache flags
+  def __init__(self, parent):
+    QtGui.QStandardItemModel.__init__(self, parent)
+    self.initData()
+
+
+  def initData(self):
+    self.setColumnCount(2)
+    self.setHeaderData(0, QtCore.Qt.Horizontal, QtCore.QVariant("Title"))
+    self.setHeaderData(1, QtCore.Qt.Horizontal, QtCore.QVariant("Unread"))
     self.flags={}
-    
-    # Cache feeds
+    self.feedItems={}
     self.feedCache={}
+    
+    # Internal function
+    def addSubTree(parentItem, feed):
+      item1=QtGui.QStandardItem(unicode(feed))
+      item1.setToolTip(unicode(feed))
+      item1.setData(QtCore.QVariant(feed.id), QtCore.Qt.UserRole)
+      
+      item2=QtGui.QStandardItem(unicode(feed.unreadCount()))
+      item2.setToolTip(unicode(feed.unreadCount()))
+      item2.setData(QtCore.QVariant(feed.id), QtCore.Qt.UserRole)
+      
+      parentItem.appendRow([item1, item2])
+
+      self.feedItems[feed.id]=[item1, item2]
+      if feed.xmlUrl:
+        item1.setIcon(QtGui.QIcon(":/urssus.svg"))
+      else:
+        item1.setIcon(QtGui.QIcon(":/folder.svg"))
+        for child in feed.children:
+          addSubTree(item1, child)
+          
+    iroot=self.invisibleRootItem()
+    iroot.feed=root_feed
+    self.feedItems[root_feed.id]=iroot
+    for root in root_feed.children:
+      addSubTree(iroot, root)
+
+    self.reset()
 
   def supportedDropActions(self):
     return QtCore.Qt.MoveAction
@@ -94,7 +121,5 @@ class FeedModel(QtGui.QStandardItemModel):
     item=self.itemFromIndex(index)
     if item:
       id=item.data(QtCore.Qt.UserRole).toInt()[0]
-      if not id in self.feedCache:
-        self.feedCache[id]=Feed.get_by(id=id)
-      return self.feedCache[id] 
+      return Feed.get_by(id=id)
     return None
