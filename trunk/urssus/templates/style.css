@@ -36,7 +36,7 @@ h3 a:link { color: #3f4f5c; text-decoration: none; }
 
 h3 a:visited { color: #3f4f5c; text-decoration: none; }
 
-h3 a:hover, a:active { color: #FFFFFF; }
+h3 a:hover, a:active { color: #3f4f5c; text-decoration: none;  }
 
 /* Html Elements */
 
