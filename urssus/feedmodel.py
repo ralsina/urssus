@@ -37,7 +37,7 @@ class FeedModel(QtGui.QStandardItemModel):
           
     iroot=self.invisibleRootItem()
     iroot.feed=root_feed
-    self.feedItems[root_feed.id]=iroot
+    self.feedItems[root_feed.id]=[iroot, None]
     for root in root_feed.children:
       addSubTree(iroot, root)
 
@@ -115,6 +115,9 @@ class FeedModel(QtGui.QStandardItemModel):
     print "DATAFORMATS1:", list(v.formats())
     v.setText(','.join(data) )
     return v
+      
+  def hasFeed(self, id):
+    return id in self.feedItems
       
   def feedFromIndex(self, index):
     item=self.itemFromIndex(index)
