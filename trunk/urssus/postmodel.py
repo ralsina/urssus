@@ -9,6 +9,8 @@ class PostModel(QtGui.QStandardItemModel):
     self.feed=feed
     self.textFilter=textFilter
     self.statusFilter=statusFilter
+    self.setSortRole(QtCore.Qt.UserRole)
+    self.initData()
     self.sort(1, QtCore.Qt.DescendingOrder) # Date, descending
  
   def initData(self):
@@ -30,16 +32,27 @@ class PostModel(QtGui.QStandardItemModel):
                                            Post.content.like('%%%s%%'%self.textFilter)))
     if self.statusFilter:
       self.posts=self.posts.filter(self.statusFilter==True)
-    self.posts=self.posts.order_by(self.sortOrder())
+#    self.posts=self.posts.order_by(self.sortOrder())
   
     posts=list(self.posts.all())
     for post in posts:
-      item=QtGui.QStandardItem()
-      item.setToolTip('Posted at %s'%unicode(post.date))
-      self.appendRow(item)
-      self.postItems[post.id]=item
+      item1=QtGui.QStandardItem()
+      item1.setToolTip('%s - Posted at %s'%(unicode(post), unicode(post.date)))
+      item1.setData(QtCore.QVariant(unicode(post)), QtCore.Qt.DisplayRole)
+      item1.setData(QtCore.QVariant(unicode(post)), QtCore.Qt.UserRole)
+      item1.setData(QtCore.QVariant(post.id), QtCore.Qt.UserRole+1)
+
+      item2=QtGui.QStandardItem()
+      item2.setData(QtCore.QVariant(unicode(post.date)), QtCore.Qt.DisplayRole)
+      item2.setToolTip('%s - Posted at %s'%(unicode(post), unicode(post.date)))
+      d=post.date
+      qd=QtCore.QVariant(QtCore.QDateTime(QtCore.QDate(d.year, d.month, d.day), 
+                                          QtCore.QTime(d.hour, d.minute, d.second)))
+      item2.setData(qd, QtCore.Qt.UserRole)
+      
+      self.postItems[post.id]=[item1, item2]
+      self.appendRow([item1, item2])
       self.updateItem(post)
-      item.setData(QtCore.QVariant(post.id), QtCore.Qt.UserRole)
     self.reset()
     self.emit(QtCore.SIGNAL("resorted()"))
  
@@ -60,67 +73,22 @@ class PostModel(QtGui.QStandardItemModel):
   def updateItem(self, post):
     if not post.id in self.postItems: #post is not being displayed
       return
-
-    item=self.postItems[post.id]
-    index=self.indexFromItem(item)
-    index2=self.index(index.row(), 1, index.parent())
-    item2=self.itemFromIndex(index2)
+    item1, item2=self.postItems[post.id]
     # FIXME: respect the palette
     if post.important:
-      item.setForeground(QtGui.QColor("red"))
-#      item2.setForeground(QtGui.QColor("red"))
+      item1.setForeground(QtGui.QColor("red"))
+      item2.setForeground(QtGui.QColor("red"))
     elif post.unread:
-      item.setForeground(QtGui.QColor("darkgreen"))
-#      item2.setForeground(QtGui.QColor("darkgreen"))
+      item1.setForeground(QtGui.QColor("darkgreen"))
+      item2.setForeground(QtGui.QColor("darkgreen"))
     else:
-      item.setForeground(QtGui.QColor("black"))
-#      item2.setForeground(QtGui.QColor("black"))
+      item1.setForeground(QtGui.QColor("black"))
+      item2.setForeground(QtGui.QColor("black"))
       
-    f=item.font()
+    f=item1.font()
     if post.important or post.unread:
       f.setBold(True)
     else:
       f.setBold(False)
-    item.setFont(f)
-#    item2.setFont(f)
-
-  def sortOrder(self):
-    order=["title", "date"][self.sortingColumn]
-    if self.order==QtCore.Qt.DescendingOrder:
-      order=sql.desc(order)
-    info("ORDER: %s", order)
-    return order
-
-  def sort(self, column, order):
-    info ("Changing post model sort order to %d %d", column, order)
-    self.sortingColumn=column
-    self.order=order
-    self.initData()
-
-  def data(self, index, role):
-    if not index.isValid():
-      return QtCore.QVariant()
-      
-    # Parent class handles icon/font/etc.
-    if role<>QtCore.Qt.DisplayRole:
-      return QtGui.QStandardItemModel.data(self, index, role)
-    
-    if index.column()==0:
-      v=QtCore.QVariant(decodeString(unicode(self.postFromIndex(index))))
-    elif index.column()==1:
-      # Tricky!
-      ind=self.index(index.row(), 0, index.parent())
-      post=self.postFromIndex(ind)
-      if not post:
-        #No data
-        return QtCore.QVariant()
-
-      # Be smarter, let's see how it looks
-      now=datetime.now()
-      if post.date.date()==now.date(): # Today, showthe time
-        v=QtCore.QVariant(str(post.date.time()))
-      else:
-        v=QtCore.QVariant(str(post.date.date()))
-    else:
-      return QtCore.QVariant()
-    return v
+    item1.setFont(f)
+    item2.setFont(f)
