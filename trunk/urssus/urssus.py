@@ -218,7 +218,6 @@ class MainWindow(QtGui.QMainWindow):
     QtGui.QMainWindow.__init__(self)
 
     # Internal indexes
-    self.feedItems={}
     self.currentFeed=None
     
     self.combinedView=False
@@ -325,7 +324,7 @@ class MainWindow(QtGui.QMainWindow):
     
   def notificationClicked(self):
     if self.notifiedFeed:
-      self.open_feed(self.ui.feeds.model().indexFromItem(self.feedItems[self.notifiedFeed.id]))
+      self.open_feed(self.ui.feeds.model().indexFromFeed(self.notifiedFeed))
       self.activateWindow()
       self.raise_()
 
@@ -599,7 +598,7 @@ class MainWindow(QtGui.QMainWindow):
       newFeed.parent=curFeed
     elixir.session.flush()
     self.initTree()
-    self.ui.feeds.setCurrentIndex(self.ui.feeds.model().indexFromItem(self.feedItems[newFeed.id]))
+    self.ui.feeds.setCurrentIndex(self.ui.feeds.model().indexFromFeed(newFeed.id))
     self.on_actionEdit_Feed_triggered(True)
 
   def on_actionAdd_Feed_triggered(self, i=None):
@@ -630,7 +629,7 @@ class MainWindow(QtGui.QMainWindow):
         newFolder.parent=curFeed
       elixir.session.flush()
       self.initTree()
-      self.ui.feeds.setCurrentIndex(self.ui.feeds.model().indexFromItem(self.feedItems[newFolder.id]))
+      self.ui.feeds.setCurrentIndex(self.ui.feeds.model().indexFromFeed(newFolder))
 
   def on_actionShow_Only_Unread_Feeds_triggered(self, checked=None):
     if checked==None: return
@@ -752,7 +751,7 @@ class MainWindow(QtGui.QMainWindow):
       
       [action, id] = data[:2]
       info("updateFeedStatus: %d %d", action, id)
-      if not id in self.feedItems:
+      if self.ui.feeds.model().hasFeed(id):
         if action==4: # Add new feed
           self.addFeed(id)
           return
@@ -807,10 +806,16 @@ class MainWindow(QtGui.QMainWindow):
     else:
       self.ui.feeds.model().initData()
     self.fixFeedListUI()
-    
-    # FIXME: implement correctly
+
+    # Open all required folders
     for feed in Feed.query().filter_by(is_open=True):
       self.ui.feeds.expand(self.ui.feeds.model().indexFromFeed(feed))
+
+    # Update all the feeds that have unread posts
+    for feed in Feed.query():
+      if feed.unreadCount()>0:
+        self.updateFeedItem(feed)
+    
 
     self.setEnabled(True)
     self.filterWidget.setEnabled(True)
@@ -1034,9 +1039,18 @@ class MainWindow(QtGui.QMainWindow):
 
   def updateFeedItem(self, feed, parents=False, updating=False, can_reopen=False):
     info("Updating item for feed %d", feed.id)
-    if not feed.id in self.feedItems:
+    model=self.ui.feeds.model()
+    
+    if not model:
       return
-    item=self.feedItems[feed.id]
+      
+    index=model.indexFromFeed(feed)
+    
+    if not index.isValid():
+      return # Weird, but a feed was added behind our backs or something
+
+    item=self.ui.feeds.model().itemFromIndex(index)
+      
     # This is very slow when marking folders as read
     # because each children triggers an update of the folder
     # and since the folder is current, that triggers
@@ -1044,18 +1058,20 @@ class MainWindow(QtGui.QMainWindow):
     # the post list, etc, etc
     # That's why we special-case the can_reopen, which only
     # is done after a real update
+
     if feed==self.currentFeed and can_reopen: #It's open, re_open it
-      self.open_feed(self.model.indexFromItem(item))
+      self.open_feed(index)
+      
     # The calls to setRowHidden cause a change in the column's width! Looks like a Qt bug to me.
     if self.showOnlyUnread:
       if feed.unreadCount()==0 and feed<>self.currentFeed: 
         # Hide feeds with no unread items
-        self.ui.feeds.setRowHidden(item.row(), self.model.indexFromItem(item.parent()), True)
+        self.ui.feeds.setRowHidden(item.row(), index.parent(), True)
       else:
-        self.ui.feeds.setRowHidden(item.row(), self.model.indexFromItem(item.parent()), False)
+        self.ui.feeds.setRowHidden(item.row(), index.parent(), False)
     else:
-      if self.ui.feeds.isRowHidden(item.row(), self.model.indexFromItem(item.parent())):
-        self.ui.feeds.setRowHidden(item.row(), self.model.indexFromItem(item.parent()), False)
+      if self.ui.feeds.isRowHidden(item.row(), index.parent()):
+        self.ui.feeds.setRowHidden(item.row(), index.parent(), False)
     if updating:
       item.setForeground(QtGui.QColor("darkgrey"))
     else:
