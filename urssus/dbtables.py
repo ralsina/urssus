@@ -33,6 +33,18 @@ else:
 # Some feeds put html in titles, which can't be shown in QStandardItems
 from html2text import html2text as h2t
 
+def detailToTitle(td):
+  '''Converts something like feedparser's title_detail into a 
+  nice text or html string.'''
+  # Title may be in plain title, but a title_detail is preferred
+  if td.type=='text/html':
+    title=h2t(td.value).strip().replace('\n', '')
+  else:
+    title=td.value.strip()
+    
+  print "DTT:", title
+  return title
+
 def detailToAuthor(ad):
   '''Converts something like feedparser's author_detail into a 
   nice string describing the author'''
@@ -125,7 +137,7 @@ class Feed(elixir.Entity):
   is_open        = elixir.Field(elixir.Integer, default=0)
   curUnread      = -1
   # Added in schema version 6
-  subtitle       = Field(Text, default='')
+  subtitle       = elixir.Field(elixir.Text, default='')
 
   def __repr__(self):
     return self.text
@@ -352,26 +364,42 @@ class Feed(elixir.Entity):
         self.curUnread=Post.query.filter(Post.feed==self).filter(Post.unread==True).count()
     return self.curUnread
       
-  def updateFeedData(self):
+  def updateFeedData(self, parsedFeed):
+    # Fills blanks in feed data from parsedFeed
     # assumes this feed has a xmlUrl, fetches any missing data from it
     if not self.xmlUrl: # Nowhere to fetch data from
       return
-    info ( "Updating feed data from: %s", self.xmlUrl)
-    d=fp.parse(self.xmlUrl)
+      
+    # See if we have all data:
+    if self.htmlUrl and self.title and self.subtitle and self.description:
+      return
+    
+    d=parsedFeed
+    
     if not self.htmlUrl:
       if 'link' in d['feed']:
         self.htmlUrl=d['feed']['link']
       else:
         # This happens, for instance, on deleted blogger blogs (everyone's clever)
         self.htmlUrl=None
+        
     if not self.title:
-      if 'title' in d: 
-        self.title=d['feed']['title']
-        self.text=d['feed']['title']
+      if 'title_detail' in d['feed']: 
+        self.title=detailToTitle(d['feed']['title_detail'])
       else:
-        # This happens, for instance, on deleted blogger blogs (everyone's clever)
-        self.title=None
-        self.text=None
+        self.title=d['feed']['title']
+    else:
+      # This happens, for instance, on deleted blogger blogs (everyone's clever)
+      self.title=''
+
+    if not self.subtitle:
+      if 'subtitle_detail' in d['feed']: 
+        self.subtitle=detailToTitle(d['feed']['subtitle_detail'])
+      elif 'subtitle' in d['feed']:
+        self.subtitle=d['feed']['subtitle']
+      else:
+        self.subtitle=''
+
     if not self.description:
       if 'info' in d['feed']:
         self.description=d['feed']['info']
@@ -455,13 +483,10 @@ class Feed(elixir.Entity):
             
         # Title may be in plain title, but a title_detail is preferred
         if 'title_detail' in post:
-          if post['title_detail'].type=='text/html':
-            title=h2t(post['title_detail'].value).strip()
-          else:
-            title=post['title_detail'].value.strip()
+          title=detailToTitle(post['title_detail'])
         else:
           title=post['title']
-            
+          
         # FIXME: if I use date to check here, I get duplicates on posts where I use
         # artificial date because it's not in the feed's entry.
         # If I don't I don't re-get updated posts.
@@ -476,6 +501,7 @@ class Feed(elixir.Entity):
       except KeyError:
         debug( post )
     self.lastUpdated=datetime.now()
+    self.updateFeedData(d)
 
     if posts:
       # Fix freshness
