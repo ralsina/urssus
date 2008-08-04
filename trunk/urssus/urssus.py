@@ -1346,7 +1346,7 @@ class MainWindow(QtGui.QMainWindow):
     if self.currentFeed:
       prevFeed=self.currentFeed.previousFeed()
       if prevFeed and prevFeed<>root_feed: # The root feed has no UI
-        self.open_feed(self.ui.feeds.model().indexFromFeed(prevFeed.id))
+        self.open_feed(self.ui.feeds.model().indexFromFeed(prevFeed))
     # No current feed, so what's the meaning of "previous feed"?
 
   def on_actionNext_Unread_Feed_triggered(self, i=None):
