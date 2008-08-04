@@ -30,7 +30,7 @@ def feedUpdater(full=False):
           try: # we can't let this fail or it will stay marked forever;-)
             feed.update()
             # While we're at it
-#            feed.expire(expunge=False)
+            feed.expire(expunge=False)
           except:
             pass
           feedStatusQueue.put([1, feed.id])
