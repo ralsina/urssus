@@ -1168,8 +1168,8 @@ class MainWindow(QtGui.QMainWindow):
     size=self.size()
     config.setValue('ui', 'size', [size.width(), size.height()])
     config.setValue('ui', 'splitters', [self.ui.splitter.sizes(), self.ui.splitter_2.sizes()])
-    Post.table.delete(sql.and_(Post.deleted==True, Post.fresh==False)).execute()
     QtGui.QApplication.instance().quit()
+    Post.table.delete(sql.and_(Post.deleted==True, Post.fresh==False)).execute()
 
   def on_actionMark_Feed_as_Read_triggered(self, i=None):
     if i==None: return
@@ -1463,7 +1463,6 @@ def importOPML(fname, parent=None):
     
 def main():
   global root_feed
-  root_feed=initDB()
   app=QtGui.QApplication(sys.argv)
   app.setQuitOnLastWindowClosed(False)
   window=MainWindow()
@@ -1480,5 +1479,3 @@ def main():
   window.show()
   sys.exit(app.exec_())
   
-if __name__ == "__main__":
-  main()
