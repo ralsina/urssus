@@ -603,7 +603,7 @@ class MainWindow(QtGui.QMainWindow):
       # Figure out the insertion point
       index=self.ui.feeds.currentIndex()
       if index.isValid():         
-        curFeed=self.itemFromIndex(index).feed
+        curFeed=self.ui.feeds.model().feedFromIndex(index)
       else:
         curFeed=root_feed
       # if curFeed is a feed, add as sibling
