@@ -124,7 +124,15 @@ class TwitterAuthDialog(QtGui.QDialog):
 class TrayIcon(QtGui.QSystemTrayIcon):
   def __init__(self):
     QtGui.QSystemTrayIcon.__init__ (self,QtGui.QIcon(":/urssus.svg"))
- 
+  def updateIcon(self):
+    uc=root_feed.unreadCount()
+    self.setToolTip('%d unread posts'%uc)
+    if uc:
+      self.setIcon(QtGui.QIcon(':/urssus-unread.svg'))
+    else:
+      self.setIcon(QtGui.QIcon(':/urssus.svg'))
+
+
 class FeedProperties(QtGui.QDialog):
   def __init__(self, feed):
     QtGui.QDialog.__init__(self)
@@ -281,6 +289,7 @@ class MainWindow(QtGui.QMainWindow):
     self.notifiedFeed=None
     QtCore.QObject.connect(self.tray, QtCore.SIGNAL("messageClicked()"), self.notificationClicked)
     QtCore.QObject.connect(self.tray, QtCore.SIGNAL("activated( QSystemTrayIcon::ActivationReason)"), self.trayActivated)
+    self.tray.updateIcon()
     traymenu=QtGui.QMenu(self)
     traymenu.addAction(self.ui.actionFetch_All_Feeds)
     traymenu.addSeparator()
@@ -571,7 +580,7 @@ class MainWindow(QtGui.QMainWindow):
     # Figure out the insertion point
     index=self.ui.feeds.currentIndex()
     if index.isValid():         
-      curFeed=self.ui.feeds.model().itemFromIndex(index).feed
+      curFeed=self.ui.feeds.model().feedFromIndex(index)
     else:
       curFeed=root_feed
     # if curFeed is a feed, add as sibling
@@ -816,6 +825,7 @@ class MainWindow(QtGui.QMainWindow):
     for k in self.feedItems:
       i=self.feedItems[k]
       if i.feed.is_open: self.ui.feeds.expand(self.model.indexFromItem(i))
+      del(i.feed)
 
 
     self.setEnabled(True)
@@ -1089,12 +1099,7 @@ class MainWindow(QtGui.QMainWindow):
         self.updateFeedItem(feed.parent, True)
         feed=feed.parent
       # And set the systray tooltip to the unread count on root_feed
-      uc=root_feed.unreadCount()
-      self.tray.setToolTip('%d unread posts'%uc)
-      if uc:
-        self.tray.setIcon(QtGui.QIcon(':/urssus-unread.svg'))
-      else:
-        self.tray.setIcon(QtGui.QIcon(':/urssus.svg'))
+      self.tray.updateIcon()
 
   def on_posts_clicked(self, index):
     if index.column()<>0:
@@ -1182,12 +1187,13 @@ class MainWindow(QtGui.QMainWindow):
     if i==None: return
     index=self.ui.feeds.currentIndex()
     item=self.model.itemFromIndex(index)
-    if item and item.feed:
-      info( "Deleting %s", item.feed)
+    feed=self.ui.feeds.model().feedFromIndex(index)
+    if feed:
+      info( "Deleting %s", feed)
       if QtGui.QMessageBox.question(None, "Delete Feed - uRSSus", 
-         'Are you sure you want to delete "%s"'%item.feed, 
-         QtGui.QMessageBox.Yes | QtGui.QMessageBox.No, QtGui.QMessageBox.No ) == QtGui.QMessageBox.Yes:
-        parent=item.feed.parent
+           'Are you sure you want to delete "%s"'%feed, 
+           QtGui.QMessageBox.Yes | QtGui.QMessageBox.No, QtGui.QMessageBox.No ) == QtGui.QMessageBox.Yes:
+        parent=feed.parent
 
         # Clean posts list
         self.ui.posts.setModel(None)
@@ -1196,35 +1202,36 @@ class MainWindow(QtGui.QMainWindow):
         # Trigger update on parent item
         parent.curUnread=-1
         # I really, really shouldn't have to do this. But it doesn'twork if I don't so...
-        parent.children.remove(item.feed)
+        parent.children.remove(feed)
         self.updateFeedItem(parent, parents=True)
 
         # No feed current
         self.ui.feeds.setCurrentIndex(QtCore.QModelIndex())
         self.currentFeed=None
 
-        del(self.feedItems[item.feed.id])
-        item.feed.delete()
+        del(self.feedItems[feed.id])
+        feed.delete()
         self.ui.feeds.model().removeRow(index.row(), index.parent())
         elixir.session.flush()
         
   def on_actionOpen_Homepage_triggered(self, i=None):
     if i==None: return
-    item=self.model.itemFromIndex(self.ui.feeds.currentIndex())
-    if item and item.feed and item.feed.htmlUrl:
-      info("Opening %s", item.feed.htmlUrl)
-      QtGui.QDesktopServices.openUrl(QtCore.QUrl(item.feed.htmlUrl))
+    feed=self.ui.feeds.model().feedFromIndex(self.ui.feeds.currentIndex())
+    if feed and feed.htmlUrl:
+      info("Opening %s", feed.htmlUrl)
+      QtGui.QDesktopServices.openUrl(QtCore.QUrl(feed.htmlUrl))
     
   def on_actionFetch_Feed_triggered(self, i=None):
     if i==None: return
     # Start an immediate update for the current feed
-    item=self.model.itemFromIndex(self.ui.feeds.currentIndex())
-    if item and item.feed:
+    idx=self.ui.feeds.currentIndex()
+    feed=self.model.feedFromIndex(idx)
+    if feed:
       # FIXME: move to out-of-process
-      feedStatusQueue.put([0, item.feed.id])
-      item.feed.update()
-      feedStatusQueue.put([1, item.feed.id])
-      self.open_feed(self.ui.feeds.currentIndex())
+      feedStatusQueue.put([0, feed.id])
+      feed.update()
+      feedStatusQueue.put([1, feed.id])
+      self.open_feed(self.ui.feeds.currentIndex(idx))
 
   def on_actionFetch_All_Feeds_triggered(self, i=None):
     if i==None: return
