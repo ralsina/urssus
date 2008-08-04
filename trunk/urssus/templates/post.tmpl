@@ -4,13 +4,12 @@
 </head>
 <body>
 <div class="headerbox">
-<?py if post.link: ?>
-  <h3><a href="#{post.link}">#{post.title}</a></h3>
-<?py else: ?>
-  <h3>#{post.title}</h3>
-<?py #end ?>
+<h3>#{post.titleLink()}</h3>
 </div>
 <div class="headerbox">
+<?py if showFeed: ?>
+  <b>Feed:&nbsp;</b>#{post.feed.titleLink()}<br>
+<?py #end ?>
 <b>Date:&nbsp;</b>#{post.date}<br>
 <?py if post.author: ?>
   <b>Author:&nbsp;</b>#{post.author}<br>

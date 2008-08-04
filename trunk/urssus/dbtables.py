@@ -88,6 +88,11 @@ class Post(elixir.Entity):
     if '<' in self.title:
       return h2t(self.title).strip()
     return unicode(self.title)
+    
+  def titleLink(self):
+    if self.link:
+      return '<a href="%s">%s</a>'%(self.link, self.title)
+    return self.title
 
 class Feed(elixir.Entity):
   elixir.using_options (tablename='feeds', inheritance='multi')
@@ -124,6 +129,15 @@ class Feed(elixir.Entity):
     if c:
       return self.text+'(%d)'%c
     return self.text
+
+  def titleLink(self):
+    if self.title:
+      title=self.title
+    else:
+      title=self.text
+    if self.htmlUrl:
+      return '<a href="%s">%s</a>'%(self.htmlUrl, title)
+    return title
 
   def markAsRead(self):
     if self.xmlUrl: # regular feed

@@ -19,11 +19,7 @@ function hideAction(action,id) {
     <div id="URSSUS-POST-#{post.id}" >
     <a id="URSSUS-#{post.id}"></a>
     <div class="headerbox"> 
-    <?py if post.link: ?>
-      <h5 class="post-title"><a href="#{post.link}">#{post.title}</a></h5>
-    <?py else: ?>
-      <h5 class="post-title">#{post.title}</h5>
-    <?py #end ?>
+    <h5 class="post-title">#{post.titleLink()}</a></h5>
     <div id="URSSUS-ACTIONS-#{post.id}" style='padding: .5em;'>
       <span id="URSSUS-READ-#{post.id}" class='action' ><a href="urssus:/read/#{post.id}" onCLick="hideAction('READ',#{post.id});showAction('UNREAD',#{post.id});">Mark Read</a></span>&nbsp;&nbsp;
       <span id="URSSUS-UNREAD-#{post.id}" class='action' ><a href="urssus:/unread/#{post.id}" onCLick="showAction('READ',#{post.id});hideAction('UNREAD',#{post.id});">Mark Unread</a></span>&nbsp;&nbsp;
@@ -44,6 +40,9 @@ function hideAction(action,id) {
     </script> 
     </div>
     <div class="headerbox" id="URSSUS-DATA-#{post.id}" style="margin-top: .5em;">
+    <?py if showFeed: ?>
+      <b>Feed:&nbsp</b>#{post.feed.titleLink()}<br>
+    <?py #end ?>
     <b>Date:&nbsp;</b>#{post.date}<br>
     <?py if post.author: ?>
       <b>Author:&nbsp;</b>#{post.author}<br>
