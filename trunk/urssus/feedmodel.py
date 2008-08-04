@@ -7,7 +7,6 @@ class FeedModel(QtGui.QStandardItemModel):
     QtGui.QStandardItemModel.__init__(self, parent)
     self.initData()
 
-
   def initData(self):
     self.setColumnCount(2)
     self.setHeaderData(0, QtCore.Qt.Horizontal, QtCore.QVariant("Title"))
@@ -123,3 +122,9 @@ class FeedModel(QtGui.QStandardItemModel):
       id=item.data(QtCore.Qt.UserRole).toInt()[0]
       return Feed.get_by(id=id)
     return None
+    
+  def indexFromFeed(self, feed):
+    if feed.id in self.feedItems:
+      return self.indexFromItem(self.feedItems[feed.id][0])
+    else:
+      return QtCore.QModelIndex()
