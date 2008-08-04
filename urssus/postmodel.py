@@ -121,14 +121,32 @@ class PostModel(QtGui.QStandardItemModel):
 
   def nextPostIndex(self, post):
     '''Takes a Post and returns the index of the following post'''
+    if not self.post_ids:
+      return QtCore.QModelIndex()
     # First, find it in our list of ids
     if not post: 
       idx=-1
     else: 
       idx=self.post_ids.index(post.id)
-    if idx==-1: #current post not here, so return the firstVisibleLine
+    if idx==-1: #current post not here, so return the first
       return self.indexFromItem(self.postItems[self.post_ids[0]][0])
     elif idx==len(self.post_ids)-1: # Last post, no next
       return QtCore.QModelIndex()
     else:
       return self.indexFromItem(self.postItems[self.post_ids[idx+1]][0])
+
+  def previousPostIndex(self, post):
+    '''Takes a Post and returns the index of the following post'''
+    # First, find it in our list of ids
+    if not self.post_ids:
+      return QtCore.QModelIndex()
+    if not post: 
+      idx=-1
+    else: 
+      idx=self.post_ids.index(post.id)
+    if idx==-1: #current post not here, so return the last
+      return self.indexFromItem(self.postItems[self.post_ids[-1]][0])
+    elif idx==0: # First post, no previous
+      return QtCore.QModelIndex()
+    else:
+      return self.indexFromItem(self.postItems[self.post_ids[idx-1]][0])

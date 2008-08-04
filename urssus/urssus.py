@@ -1325,22 +1325,18 @@ class MainWindow(QtGui.QMainWindow):
 
   def on_actionPrevious_Article_triggered(self, i=None, do_open=True):
     if i==None: return
-    info ("Previous Article")
-    post=self.getCurrentPost()
-    if post:
-      previousPost=self.currentFeed.previousPost(post, self.ui.posts.model().sortOrder(), 
-                                                 self.statusFilter, self.textFilter)
-    # Yuck!
-    elif self.ui.posts.model().posts.count(): # Not on a specific post, go to the last unread article
-      previousPost=self.ui.posts.model().posts.all()[-1]
-    else:
-      previousPost=None
-    if previousPost:
-      nextIndex=self.ui.posts.model().indexFromPost(previousPost)
-      self.ui.posts.setCurrentIndex(nextIndex)
-      self.on_posts_clicked(index=nextIndex)
-    else:
-      # At the beginning of the feed, go to previous feed
+    info ("Next Article")
+    
+    cp=self.getCurrentPost()
+
+    # First ask the post list's model
+    nextIdx=self.ui.posts.model().previousPostIndex(cp)
+    
+    if nextIdx.isValid():
+      self.ui.posts.setCurrentIndex(nextIdx)
+      self.on_posts_clicked(index=nextIdx)
+      return
+    else: # Go to next feed
       self.on_actionPrevious_Feed_triggered(True)
 
   def on_actionNext_Unread_Feed_triggered(self, i=None):
