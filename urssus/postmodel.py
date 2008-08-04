@@ -1,7 +1,7 @@
 from globals import *
 from dbtables import *
 from PyQt4 import QtGui, QtCore
-
+import operator
 
 # Roles used in the items
 sorting=QtCore.Qt.UserRole
@@ -20,7 +20,8 @@ class PostModel(QtGui.QStandardItemModel):
 
   def initData(self):
     self.clear()
-    self.postDict={}
+    self.post_data=[]
+    self.post_ids=[]
     self.setColumnCount(2)
     self.setHeaderData(0, QtCore.Qt.Horizontal, QtCore.QVariant("Title"))
     self.setHeaderData(1, QtCore.Qt.Horizontal, QtCore.QVariant("Date"))
@@ -40,6 +41,12 @@ class PostModel(QtGui.QStandardItemModel):
   
     posts=list(self.posts.all())
     for post in posts:
+      # Keep references to posts instead of posts, to 
+      # avoid stale data. nextPost/etc are about
+      # iterating what's shown, not the result
+      # of self.posts.all()
+      
+      self.post_data.append([post.id, unicode(post).lower(), post.date])
       item1=QtGui.QStandardItem()
       item1.setToolTip('%s - Posted at %s'%(unicode(post), unicode(post.date)))
       item1.setData(QtCore.QVariant(unicode(post)), display)
@@ -62,9 +69,13 @@ class PostModel(QtGui.QStandardItemModel):
       
     self.reset()
  
-  def indexFromPost(self, post):
+  def indexFromPost(self, post=None, id=None):
+    if not id and not post:
+      return
+    if not id:
+      id=post.id
     if post and post.id in self.postItems:
-      return self.indexFromItem(self.postItems[post.id][0])
+      return self.indexFromItem(self.postItems[id][0])
     return QtCore.QModelIndex()
     
   def postFromIndex(self, index):
@@ -98,3 +109,26 @@ class PostModel(QtGui.QStandardItemModel):
       f.setBold(False)
     item1.setFont(f)
     item2.setFont(f)
+
+
+  def sort(self, column, order):
+    # Thanks pyar!
+    self.post_data.sort(key=operator.itemgetter(column+1), 
+                        reverse=order==QtCore.Qt.DescendingOrder)
+    QtGui.QStandardItemModel.sort(self, column, order)
+    self.post_ids=[id for [id, _, _] in self.post_data]
+    print self.post_data
+
+  def nextPostIndex(self, post):
+    '''Takes a Post and returns the index of the following post'''
+    # First, find it in our list of ids
+    if not post: 
+      idx=-1
+    else: 
+      idx=self.post_ids.index(post.id)
+    if idx==-1: #current post not here, so return the firstVisibleLine
+      return self.indexFromItem(self.postItems[self.post_ids[0]][0])
+    elif idx==len(self.post_ids)-1: # Last post, no next
+      return QtCore.QModelIndex()
+    else:
+      return self.indexFromItem(self.postItems[self.post_ids[idx+1]][0])
