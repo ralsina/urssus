@@ -43,6 +43,12 @@ class FeedModel(QtGui.QStandardItemModel):
 
     self.reset()
 
+  def removeRow(self, row, parent):
+    # Remove the feed from the DB
+    feed=self.feedFromIndex(self.index(row, 0, parent))
+    feed.delete()
+    return QtGui.QStandardItemModel.removeRow(self, row, parent)
+
   def supportedDropActions(self):
     return QtCore.Qt.MoveAction
     

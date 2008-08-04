@@ -1148,8 +1148,8 @@ class MainWindow(QtGui.QMainWindow):
       
   def on_actionTechnorati_Top_10_triggered(self, i=None):
     if i==None: return
-    if QtGui.QMessageBox.question(None, "Technorati Top 100 - uRSSus", 
-       'You are about to import Technorati\'s Top 100 feeds for today.\nClick Yes to confirm.', 
+    if QtGui.QMessageBox.question(None, "Technorati Top 10 - uRSSus", 
+       'You are about to import Technorati\'s Top 10 feeds for today.\nClick Yes to confirm.', 
        QtGui.QMessageBox.Yes | QtGui.QMessageBox.No, QtGui.QMessageBox.No ) == QtGui.QMessageBox.Yes:
       
       url='http://elliottback.com/tools/top100/technorati-100-to-opml.php'
@@ -1166,7 +1166,7 @@ class MainWindow(QtGui.QMainWindow):
       importOPML(name, parent=t100)
       os.unlink(name)
       self.initTree()
-      self.ui.feeds.setCurrentIndex(self.ui.feeds.model().indexFromItem(self.feedItems[t100.id]))
+      self.ui.feeds.setCurrentIndex(self.ui.feeds.model().indexFromFeed(t100))
     
       
   def on_actionQuit_triggered(self, i=None):
@@ -1190,7 +1190,7 @@ class MainWindow(QtGui.QMainWindow):
   def on_actionDelete_Feed_triggered(self, i=None):
     if i==None: return
     index=self.ui.feeds.currentIndex()
-    item=self.model.itemFromIndex(index)
+    item=self.ui.feeds.model().itemFromIndex(index)
     feed=self.ui.feeds.model().feedFromIndex(index)
     if feed:
       info( "Deleting %s", feed)
@@ -1212,8 +1212,6 @@ class MainWindow(QtGui.QMainWindow):
         # No feed current
         self.ui.feeds.setCurrentIndex(QtCore.QModelIndex())
         self.currentFeed=None
-
-        del(self.feedItems[feed.id])
         feed.delete()
         self.ui.feeds.model().removeRow(index.row(), index.parent())
         elixir.session.flush()
@@ -1229,7 +1227,7 @@ class MainWindow(QtGui.QMainWindow):
     if i==None: return
     # Start an immediate update for the current feed
     idx=self.ui.feeds.currentIndex()
-    feed=self.model.feedFromIndex(idx)
+    feed=self.ui.feeds.model().feedFromIndex(idx)
     if feed:
       # FIXME: move to out-of-process
       feedStatusQueue.put([0, feed.id])
@@ -1257,8 +1255,8 @@ class MainWindow(QtGui.QMainWindow):
     processes=[]
     
     # Mark all feeds as not updating
-    for id in self.feedItems:
-      feedStatusQueue.put([1, id])
+    for feed in Feed.query():
+      feedStatusQueue.put([1, feed.id])
     self.updateFeedStatus()
     self.updatesCounter=0
       
@@ -1358,7 +1356,7 @@ class MainWindow(QtGui.QMainWindow):
     else:
       nextFeed=root_feed.nextUnreadFeed()
     if nextFeed:
-      self.open_feed(self.ui.feeds.model().indexFromItem(self.feedItems[nextFeed.id]))
+      self.open_feed(self.ui.feeds.model().indexFromFeed(nextFeed))
 
   def on_actionNext_Feed_triggered(self, i=None):
     if i==None: return
@@ -1368,7 +1366,7 @@ class MainWindow(QtGui.QMainWindow):
     else:
       nextFeed=root_feed.nextFeed()
     if nextFeed:
-      self.open_feed(self.ui.feeds.model().indexFromItem(self.feedItems[nextFeed.id]))
+      self.open_feed(self.ui.feeds.model().indexFromFeed(nextFeed))
 
   def on_actionPrevious_Feed_triggered(self, i=None):
     if i==None: return
@@ -1376,7 +1374,7 @@ class MainWindow(QtGui.QMainWindow):
     if self.currentFeed:
       prevFeed=self.currentFeed.previousFeed()
       if prevFeed and prevFeed<>root_feed: # The root feed has no UI
-        self.open_feed(self.ui.feeds.model().indexFromItem(self.feedItems[prevFeed.id]))
+        self.open_feed(self.ui.feeds.model().indexFromFeed(prevFeed.id))
     # No current feed, so what's the meaning of "previous feed"?
 
 
@@ -1385,7 +1383,7 @@ class MainWindow(QtGui.QMainWindow):
     if self.currentFeed:
       prevFeed=self.currentFeed.previousUnreadFeed()
       if prevFeed and prevFeed<>root_feed: # The root feed has no UI
-        self.open_feed(self.ui.feeds.model().indexFromItem(self.feedItems[prevFeed.id]))
+        self.open_feed(self.ui.feeds.model().indexFromFeed(prevFeed))
     # No current feed, so what's the meaning of "previous unread feed"?
       
   def on_actionIncrease_Font_Sizes_triggered(self, i=None):

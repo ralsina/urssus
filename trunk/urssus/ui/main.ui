@@ -232,7 +232,7 @@
     <addaction name="actionImport_Feeds" />
     <addaction name="actionExport_Feeds" />
     <addaction name="separator" />
-    <addaction name="actionTechnorati_Top_100" />
+    <addaction name="actionTechnorati_Top_10" />
     <addaction name="actionImport_From_Google_Reader" />
     <addaction name="separator" />
     <addaction name="actionQuit" />
@@ -726,7 +726,7 @@
     <string>Expire Feed</string>
    </property>
   </action>
-  <action name="actionTechnorati_Top_100" >
+  <action name="actionTechnorati_Top_10" >
    <property name="text" >
     <string>Import Technorati Top 10</string>
    </property>
