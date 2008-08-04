@@ -40,9 +40,7 @@ def detailToTitle(td):
   if td.type=='text/html':
     title=h2t(td.value).strip().replace('\n', '')
   else:
-    title=td.value.strip()
-    
-  print "DTT:", title
+    title=td.value.strip()    
   return title
 
 def detailToAuthor(ad):
@@ -95,8 +93,6 @@ class Post(elixir.Entity):
   deleted     = elixir.Field(elixir.Boolean, default=False)
   # Added in schema version 5
   fresh       = elixir.Field(elixir.Boolean, default=True)
-  # Added in schema version 7
-  subtitle       = elixir.Field(elixir.Text, default='')
 
   decoTitle    = ''
 
@@ -484,11 +480,12 @@ class Feed(elixir.Entity):
         else:
             link=None
             
-        # Title may be in plain title, but a title_detail is preferred
+        # Titles may be in plain title, but a title_detail is preferred
         if 'title_detail' in post:
           title=detailToTitle(post['title_detail'])
         else:
           title=post['title']
+
           
         # FIXME: if I use date to check here, I get duplicates on posts where I use
         # artificial date because it's not in the feed's entry.
@@ -528,7 +525,7 @@ root_feed=None
 
 def initDB():
   global root_feed
-  REQUIRED_SCHEMA=7
+  REQUIRED_SCHEMA=6
   # FIXME: show what we are doing on the UI
   if not os.path.exists(database.dbfile): # Just create it
     os.system('urssus_upgrade_db')
