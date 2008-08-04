@@ -95,6 +95,9 @@ class Post(elixir.Entity):
   deleted     = elixir.Field(elixir.Boolean, default=False)
   # Added in schema version 5
   fresh       = elixir.Field(elixir.Boolean, default=True)
+  # Added in schema version 7
+  subtitle       = elixir.Field(elixir.Text, default='')
+
   decoTitle    = ''
 
   def __repr__(self):
@@ -525,7 +528,7 @@ root_feed=None
 
 def initDB():
   global root_feed
-  REQUIRED_SCHEMA=6
+  REQUIRED_SCHEMA=7
   # FIXME: show what we are doing on the UI
   if not os.path.exists(database.dbfile): # Just create it
     os.system('urssus_upgrade_db')
