@@ -87,8 +87,7 @@ class Post(elixir.Entity):
 
   def __repr__(self):
     if not self.decoTitle:
-      self.decoTitle=h2t(self.title).strip()
-    print self.decoTitle
+      self.decoTitle=h2t(self.title).strip().replace('\n', '')
     return self.decoTitle
     
   def titleLink(self):
