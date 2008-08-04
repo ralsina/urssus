@@ -3,16 +3,21 @@ from dbtables import *
 from PyQt4 import QtGui, QtCore
 
 
+# Roles used in the items
+sorting=QtCore.Qt.UserRole
+display=QtCore.Qt.DisplayRole
+post_id=QtCore.Qt.UserRole+1
+
 class PostModel(QtGui.QStandardItemModel):
   def __init__(self, parent, feed=None, textFilter=None, statusFilter=None):
     QtGui.QStandardItemModel.__init__(self, parent)
     self.feed=feed
     self.textFilter=textFilter
     self.statusFilter=statusFilter
-    self.setSortRole(QtCore.Qt.UserRole)
+    self.setSortRole(sorting)
     self.initData()
     self.sort(1, QtCore.Qt.DescendingOrder) # Date, descending
- 
+
   def initData(self):
     self.clear()
     self.postDict={}
@@ -32,29 +37,30 @@ class PostModel(QtGui.QStandardItemModel):
                                            Post.content.like('%%%s%%'%self.textFilter)))
     if self.statusFilter:
       self.posts=self.posts.filter(self.statusFilter==True)
-#    self.posts=self.posts.order_by(self.sortOrder())
   
     posts=list(self.posts.all())
     for post in posts:
       item1=QtGui.QStandardItem()
       item1.setToolTip('%s - Posted at %s'%(unicode(post), unicode(post.date)))
-      item1.setData(QtCore.QVariant(unicode(post)), QtCore.Qt.DisplayRole)
-      item1.setData(QtCore.QVariant(unicode(post)), QtCore.Qt.UserRole)
-      item1.setData(QtCore.QVariant(post.id), QtCore.Qt.UserRole+1)
+      item1.setData(QtCore.QVariant(unicode(post)), display)
+      item1.setData(QtCore.QVariant(unicode(post).lower()), sorting)
+      item1.setData(QtCore.QVariant(post.id), post_id)
 
       item2=QtGui.QStandardItem()
-      item2.setData(QtCore.QVariant(unicode(post.date)), QtCore.Qt.DisplayRole)
       item2.setToolTip('%s - Posted at %s'%(unicode(post), unicode(post.date)))
+
+      item2.setData(QtCore.QVariant(unicode(post.date)), display)
       d=post.date
       qd=QtCore.QVariant(QtCore.QDateTime(QtCore.QDate(d.year, d.month, d.day), 
                                           QtCore.QTime(d.hour, d.minute, d.second)))
-      item2.setData(qd, QtCore.Qt.UserRole)
+      item2.setData(qd, sorting)
+      item2.setData(QtCore.QVariant(post.id), post_id)
       
       self.postItems[post.id]=[item1, item2]
       self.appendRow([item1, item2])
       self.updateItem(post)
+      
     self.reset()
-    self.emit(QtCore.SIGNAL("resorted()"))
  
   def indexFromPost(self, post):
     if post and post.id in self.postItems:
@@ -66,7 +72,7 @@ class PostModel(QtGui.QStandardItemModel):
       index=self.index(index.row(), 0, index.parent())      
     item=self.itemFromIndex(index)
     if item:
-      id=item.data(QtCore.Qt.UserRole).toInt()[0]
+      id=item.data(post_id).toInt()[0]
       return Post.get_by(id=id)
     return None
 
