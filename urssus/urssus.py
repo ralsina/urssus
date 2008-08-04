@@ -1324,16 +1324,6 @@ class MainWindow(QtGui.QMainWindow):
     else: # Go to next feed
       self.on_actionPrevious_Feed_triggered(True)
 
-  def on_actionNext_Unread_Feed_triggered(self, i=None):
-    if i==None: return
-    info("Next unread feed")
-    if self.currentFeed:
-      nextFeed=self.currentFeed.nextUnreadFeed()
-    else:
-      nextFeed=root_feed.nextUnreadFeed()
-    if nextFeed:
-      self.open_feed(self.ui.feeds.model().indexFromFeed(nextFeed))
-
   def on_actionNext_Feed_triggered(self, i=None):
     if i==None: return
     info("Next Feed")
@@ -1353,9 +1343,19 @@ class MainWindow(QtGui.QMainWindow):
         self.open_feed(self.ui.feeds.model().indexFromFeed(prevFeed.id))
     # No current feed, so what's the meaning of "previous feed"?
 
+  def on_actionNext_Unread_Feed_triggered(self, i=None):
+    if i==None: return
+    info("Next unread feed")
+    if self.currentFeed:
+      nextFeed=self.currentFeed.nextUnreadFeed()
+    else:
+      nextFeed=root_feed.nextUnreadFeed()
+    if nextFeed:
+      self.open_feed(self.ui.feeds.model().indexFromFeed(nextFeed))
 
   def on_actionPrevious_Unread_Feed_triggered(self, i=None):
     if i==None: return
+    info("Previous unread feed")
     if self.currentFeed:
       prevFeed=self.currentFeed.previousUnreadFeed()
       if prevFeed and prevFeed<>root_feed: # The root feed has no UI
