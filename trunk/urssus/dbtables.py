@@ -83,15 +83,16 @@ class Post(elixir.Entity):
   deleted     = elixir.Field(elixir.Boolean, default=False)
   # Added in schema version 5
   fresh       = elixir.Field(elixir.Boolean, default=True)
+  decoTitle    = ''
 
   def __repr__(self):
-    if '<' in self.title:
-      return h2t(self.title).strip()
-    return unicode(self.title)
+    if not self.decoTitle:
+      self.decoTitle=h2t(self.title).strip()
+    return self.decoTitle
     
   def titleLink(self):
     if self.link:
-      return '<a href="%s">%s</a>'%(self.link, self.title)
+      return '<a href="%s">%s</a>'%(self.link, unicode(self))
     return self.title
 
 class Feed(elixir.Entity):
