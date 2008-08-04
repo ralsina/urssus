@@ -21,9 +21,11 @@ class FeedModel(QtGui.QStandardItemModel):
       item1.setToolTip(unicode(feed))
       item1.setData(QtCore.QVariant(feed.id), QtCore.Qt.UserRole)
       
-      item2=QtGui.QStandardItem(unicode(feed.unreadCount()))
+      item2=QtGui.QStandardItem(unicode(feed.unreadCount() or ''))
       item2.setToolTip(unicode(feed.unreadCount()))
       item2.setData(QtCore.QVariant(feed.id), QtCore.Qt.UserRole)
+      item2.setTextAlignment(QtCore.Qt.AlignRight)
+      
       
       parentItem.appendRow([item1, item2])
 

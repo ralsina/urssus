@@ -125,9 +125,6 @@ class Feed(elixir.Entity):
   curUnread      = -1
 
   def __repr__(self):
-    c=self.unreadCount()
-    if c:
-      return self.text+'(%d)'%c
     return self.text
 
   def titleLink(self):
@@ -485,61 +482,61 @@ class Feed(elixir.Entity):
     else:
       return self.allPostsQuery()
 
-  def nextPost(self, post, order, required=None, textFilter=''):
-    '''Returns next post in this feed after "post" or None'''
-    posts=self.getQuery()
-    if required:
-      posts=posts.filter(sql.or_(Post.id==post.id, required==True))
-    if textFilter:
-      posts=posts.filter(sql.or_(Post.id==post.id,Post.title.like('%%%s%%'%textFilter), Post.content.like('%%%s%%'%textFilter)))
-    posts=posts.order_by(order).all()
-    if posts:
-      ind=posts.index(post)
-      if ind+1<len(posts):
-        return posts[ind+1]
-    return None
-
-  def nextUnreadPost(self, post, order, required=None, textFilter=''):
-    '''Returns next unread post after "post" in this feed or None'''
-    posts=self.getQuery().filter(sql.or_(Post.unread==True, Post.id==post.id))
-    if required:
-      posts=posts.filter(sql.or_(Post.id==post.id, required==True))
-    if textFilter:
-      posts=posts.filter(sql.or_(Post.id==post.id,Post.title.like('%%%s%%'%textFilter), Post.content.like('%%%s%%'%textFilter)))
-    posts=posts.order_by(order).all()    
-    if posts:
-      ind=posts.index(post)
-      if ind+1<len(posts):
-        return posts[ind+1]
-    return None
-
-  def previousPost(self, post, order, required=None, textFilter=''):
-    '''Returns previous post in this feed or None'''
-    posts=self.getQuery()
-    if required:
-      posts=posts.filter(sql.or_(Post.id==post.id, required==True))
-    if textFilter:
-      posts=posts.filter(sql.or_(Post.id==post.id,Post.title.like('%%%s%%'%textFilter), Post.content.like('%%%s%%'%textFilter)))
-    posts=posts.order_by(order).all()
-    if posts:
-      ind=posts.index(post)
-      if ind>0:
-        return posts[ind-1]
-    return None
-
-  def previousUnreadPost(self, post, order, required=None, textFilter=''):
-    '''Returns previous post in this feed or None'''
-    posts=self.getQuery().filter(sql.or_(Post.unread==True, Post.id==post.id))
-    if required:
-      posts=posts.filter(sql.or_(Post.id==post.id, required==True))
-    if textFilter:
-      posts=posts.filter(sql.or_(Post.id==post.id,Post.title.like('%%%s%%'%textFilter), Post.content.like('%%%s%%'%textFilter)))
-    posts=posts.order_by(order).all()
-    if posts:
-      ind=posts.index(post)
-      if ind>0:
-        return posts[ind-1]
-    return None
+#  def nextPost(self, post, order, required=None, textFilter=''):
+#    '''Returns next post in this feed after "post" or None'''
+#    posts=self.getQuery()
+#    if required:
+#      posts=posts.filter(sql.or_(Post.id==post.id, required==True))
+#    if textFilter:
+#      posts=posts.filter(sql.or_(Post.id==post.id,Post.title.like('%%%s%%'%textFilter), Post.content.like('%%%s%%'%textFilter)))
+#    posts=posts.order_by(order).all()
+#    if posts:
+#      ind=posts.index(post)
+#      if ind+1<len(posts):
+#        return posts[ind+1]
+#    return None
+#
+#  def nextUnreadPost(self, post, order, required=None, textFilter=''):
+#    '''Returns next unread post after "post" in this feed or None'''
+#    posts=self.getQuery().filter(sql.or_(Post.unread==True, Post.id==post.id))
+#    if required:
+#      posts=posts.filter(sql.or_(Post.id==post.id, required==True))
+#    if textFilter:
+#      posts=posts.filter(sql.or_(Post.id==post.id,Post.title.like('%%%s%%'%textFilter), Post.content.like('%%%s%%'%textFilter)))
+#    posts=posts.order_by(order).all()    
+#    if posts:
+#      ind=posts.index(post)
+#      if ind+1<len(posts):
+#        return posts[ind+1]
+#    return None
+#
+#  def previousPost(self, post, order, required=None, textFilter=''):
+#    '''Returns previous post in this feed or None'''
+#    posts=self.getQuery()
+#    if required:
+#      posts=posts.filter(sql.or_(Post.id==post.id, required==True))
+#    if textFilter:
+#      posts=posts.filter(sql.or_(Post.id==post.id,Post.title.like('%%%s%%'%textFilter), Post.content.like('%%%s%%'%textFilter)))
+#    posts=posts.order_by(order).all()
+#    if posts:
+#      ind=posts.index(post)
+#      if ind>0:
+#        return posts[ind-1]
+#    return None
+#
+#  def previousUnreadPost(self, post, order, required=None, textFilter=''):
+#    '''Returns previous post in this feed or None'''
+#    posts=self.getQuery().filter(sql.or_(Post.unread==True, Post.id==post.id))
+#    if required:
+#      posts=posts.filter(sql.or_(Post.id==post.id, required==True))
+#    if textFilter:
+#      posts=posts.filter(sql.or_(Post.id==post.id,Post.title.like('%%%s%%'%textFilter), Post.content.like('%%%s%%'%textFilter)))
+#    posts=posts.order_by(order).all()
+#    if posts:
+#      ind=posts.index(post)
+#      if ind>0:
+#        return posts[ind-1]
+#    return None
 
 root_feed=None
 
