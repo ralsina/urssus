@@ -68,7 +68,10 @@ class FeedModel(QtGui.QStandardItemModel):
           f.position=i
           i+=1
       else: #append
-        feed.position=parentFeed.children[-1].position+1
+        if parentFeed.children:
+          feed.position=parentFeed.children[-1].position+1
+        else:
+          feed.position=0
       feed.parent=parentFeed
     elixir.session.flush()
     return QtGui.QStandardItemModel.dropMimeData(self, data, action, row, column, parent)

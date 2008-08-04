@@ -544,8 +544,7 @@ class MainWindow(QtGui.QMainWindow):
   def on_actionEdit_Feed_triggered(self, i=None):
     if i==None: return
     index=self.ui.feeds.currentIndex()
-    if index.isValid():         
-      curFeed=self.ui.feeds.model().itemFromIndex(index).feed
+    curFeed=self.ui.feeds.model().feedFromIndex(index)
     info ("Editing feed: %s", curFeed)
 
     editDlg=FeedProperties(curFeed)
