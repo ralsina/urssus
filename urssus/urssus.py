@@ -1058,6 +1058,7 @@ class MainWindow(QtGui.QMainWindow):
       return # Weird, but a feed was added behind our backs or something
 
     item=self.ui.feeds.model().itemFromIndex(index)
+    item2=self.ui.feeds.model().itemFromIndex(self.ui.feeds.model().index(index.row(), 1, index.parent()))
       
     # This is very slow when marking folders as read
     # because each children triggers an update of the folder
@@ -1082,10 +1083,14 @@ class MainWindow(QtGui.QMainWindow):
         self.ui.feeds.setRowHidden(item.row(), index.parent(), False)
     if updating:
       item.setForeground(QtGui.QColor("darkgrey"))
+      item2.setForeground(QtGui.QColor("darkgrey"))
     else:
       item.setForeground(QtGui.QColor("black"))
+      item2.setForeground(QtGui.QColor("black"))
     item.setText(unicode(feed))
+    item2.setText(unicode(feed.unreadCount() or ''))
     item.setToolTip(unicode(feed))
+    item2.setToolTip(unicode(feed))
     
     f=item.font()
     if feed.unreadCount():
@@ -1093,6 +1098,7 @@ class MainWindow(QtGui.QMainWindow):
     else:
       f.setBold(False)
     item.setFont(f)
+    item2.setFont(f)
     
     if parents: # Not by default because it's slow
       # Update all ancestors too, because unread counts and such change
