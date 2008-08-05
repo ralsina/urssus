@@ -417,6 +417,7 @@ class Feed(elixir.Entity):
     if not self.xmlUrl: # Not a real feed
       # FIXME: should update all children?
       return
+    feedStatusQueue.put([0, self.id])
     if self.title:
       statusQueue.put(u"Updating: "+ self.title)
     d=fp.parse(self.xmlUrl)
@@ -510,10 +511,17 @@ class Feed(elixir.Entity):
       for post in posts:
         post.fresh=True
     elixir.session.flush()
-      
+
+    if posts:
+      # Mark feed UI for updating
+      self.curUnread=-1
+      self.unreadCount()
+      feedStatusQueue.put([2, self.id])
+
     # Queue a notification if needed
     if posts and self.notify:
       feedStatusQueue.put([3, self.id, len(posts)])
+    feedStatusQueue.put([1, self.id])
     
   def getQuery(self):
     if self.xmlUrl:
