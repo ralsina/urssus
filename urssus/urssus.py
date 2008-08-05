@@ -1039,10 +1039,8 @@ class MainWindow(QtGui.QMainWindow):
       if model and model.feed==self.currentFeed and \
          str(model.textFilter)==str(self.textFilter) and \
          str(model.statusFilter)==str(self.statusFilter):
-        print "updating"
         self.ui.posts.model().initData(update=True)
       else:
-        print "new model"
         self.ui.posts.setModel(PostModel(self.ui.posts, feed, self.textFilter, self.statusFilter))
       self.fixPostListUI()
 
