@@ -98,11 +98,12 @@ class PostModel(QtGui.QStandardItemModel):
     marks what's on the feed. UI should call this one, usually'''''
     for d in self.post_data:
       if d[3]:
-        d[3]=False
-        post=Post.get_by(id=d[0])
-        post.unread=False
-        post.feed.curUnread=-1
-        self.updateItem(post)
+        if d[3]:
+          d[3]=False
+          post=Post.get_by(id=d[0])        
+          post.unread=False
+          post.feed.curUnread=-1
+          self.updateItem(post)
     elixir.session.flush()
     self.reset()
 

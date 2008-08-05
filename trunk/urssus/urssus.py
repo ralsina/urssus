@@ -968,13 +968,11 @@ class MainWindow(QtGui.QMainWindow):
       self.on_actionNormal_View_triggered(v)
     config.setValue('ui', 'shortFeedList', self.ui.actionShort_Feed_List.isChecked())
 
-
   def updateListedFeedItem(self):
     '''This connects to the post list model's reset signal, so we can update
     the feed item when the model data changes'''
     
     feed=Feed.get_by(id=self.ui.posts.model().feed_id)
-    print "Updating item for ", feed
     self.updateFeedItem(feed)
 
   def open_feed(self, index):
@@ -1014,6 +1012,9 @@ class MainWindow(QtGui.QMainWindow):
              ]
     
     if self.combinedView: # CombinedView / FancyView
+      # Lose the model in self.ui.posts
+      self.ui.posts.setModel(None)
+    
       info("Opening combined")
       if feed.xmlUrl: # A regular feed
         self.posts=Post.query.filter(Post.feed==feed)
@@ -1205,7 +1206,7 @@ class MainWindow(QtGui.QMainWindow):
       feed=self.ui.feeds.model().feedFromIndex(idx)
       if feed:
         feed.markAsRead()
-      self.open_feed(idx) # To update all the actions/items
+        self.open_feed(idx) # To update all the actions/items
 
   def on_actionDelete_Feed_triggered(self, i=None):
     if i==None: return
