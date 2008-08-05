@@ -39,7 +39,7 @@ class PostModel(QtGui.QStandardItemModel):
     if feed.xmlUrl: # A regular feed
       self.posts=Post.query.filter(Post.feed==feed).filter(Post.deleted==False)
     else: # A folder
-      self.posts=feed.allPostsQuery()
+      self.posts=feed.allPostsQuery().filter(Post.deleted==False)
     # Filter by text according to the contents of self.textFilter
     if self.textFilter:
       self.posts=self.posts.filter(sql.or_(Post.title.like('%%%s%%'%self.textFilter), 
