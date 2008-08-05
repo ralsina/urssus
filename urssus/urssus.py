@@ -1440,9 +1440,6 @@ def importOPML(fname, parent=None):
              description=node.get('description'), 
              parent=parent
              )
-        # Add any missing stuff (mainly icons, I guess)
-        # Kills performance, though
-        # f.updateFeedData()
     else: # Let's guess it's a folder
       f=Feed.get_by_or_init(text=node.get('text'), parent=parent)
       for child in node.getchildren():
