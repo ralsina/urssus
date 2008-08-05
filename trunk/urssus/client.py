@@ -16,10 +16,17 @@ def clientConn():
   except socket.error, e:
     print e
     if e[0]==111: # Connection refused, stale socket
-      return None
+      if sys.platform<>'win32':
+        os.unlink(sockaddr)
+        return None
+      sys.exit(15)
 
 
 def main():
+  conn=clientConn()
+  if not conn:
+    # Try one more because of the stale socket chance
+    pass
   conn=clientConn()
   if not conn: # Start the app
     # FIXME: this is a race condition :-(

@@ -1,6 +1,7 @@
 from dbtables import *
 from globals import *
-
+import sys
+  
 # The feed updater (runs out-of-process)
 def feedUpdater(full=False):
   if full:
