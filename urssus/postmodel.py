@@ -18,15 +18,19 @@ class PostModel(QtGui.QStandardItemModel):
     self.initData()
     self.sort(1, QtCore.Qt.DescendingOrder) # Date, descending
 
-  def initData(self):
-    self.clear()
-    self.post_data=[]
-    self.post_ids=[]
-    self.setColumnCount(2)
-    self.setHeaderData(0, QtCore.Qt.Horizontal, QtCore.QVariant("Title"))
-    self.setHeaderData(1, QtCore.Qt.Horizontal, QtCore.QVariant("Date"))
-
-    self.postItems={}
+  def initData(self, update=False):
+    '''Sets data from the feedDB. If update==True, data is just added, not 
+    replaced.
+    '''
+    
+    if not update:
+      self.clear()
+      self.post_data=[]
+      self.post_ids=[]
+      self.setColumnCount(2)
+      self.setHeaderData(0, QtCore.Qt.Horizontal, QtCore.QVariant("Title"))
+      self.setHeaderData(1, QtCore.Qt.Horizontal, QtCore.QVariant("Date"))
+      self.postItems={}
     
     if self.feed.xmlUrl: # A regular feed
       self.posts=Post.query.filter(Post.feed==self.feed).filter(Post.deleted==False)
@@ -46,32 +50,42 @@ class PostModel(QtGui.QStandardItemModel):
       # iterating what's shown, not the result
       # of self.posts.all()
       
-      self.post_data.append([post.id, unicode(post).lower(), post.date, post.unread])
-      item1=QtGui.QStandardItem()
-      item1.setToolTip('%s - Posted at %s'%(unicode(post), unicode(post.date)))
-      item1.setData(QtCore.QVariant(unicode(post)), display)
-      item1.setData(QtCore.QVariant(unicode(post).lower()), sorting)
-      item1.setData(QtCore.QVariant(post.id), post_id)
+      if post.id in self.post_ids: #Existing post, update
+        # FIXME: implement update fully
+        self.post_data[self.post_ids.index(post.id)][3]=post.unread
+        self.updateItem(post)
+      else:
+        # New post, add
+        
+        self.post_data.append([post.id, unicode(post).lower(), post.date, post.unread])
+        item1=QtGui.QStandardItem()
+        item1.setToolTip('%s - Posted at %s'%(unicode(post), unicode(post.date)))
+        item1.setData(QtCore.QVariant(unicode(post)), display)
+        item1.setData(QtCore.QVariant(unicode(post).lower()), sorting)
+        item1.setData(QtCore.QVariant(post.id), post_id)
 
-      item2=QtGui.QStandardItem()
-      item2.setToolTip('%s - Posted at %s'%(unicode(post), unicode(post.date)))
+        item2=QtGui.QStandardItem()
+        item2.setToolTip('%s - Posted at %s'%(unicode(post), unicode(post.date)))
 
-      item2.setData(QtCore.QVariant(unicode(post.date)), display)
-      d=post.date
-      # AOL Fanhouse posts items with a time differential of milliseconds, so they sorted
-      # differently on python and Qt. If someone makesit to microseconds, this solution
-      # is borked
-      qd=QtCore.QVariant(QtCore.QDateTime(QtCore.QDate(d.year, d.month, d.day), 
-                                          QtCore.QTime(d.hour, d.minute, d.second, d.microsecond/1000)))
-      item2.setData(qd, sorting)
-      item2.setData(QtCore.QVariant(post.id), post_id)
+        item2.setData(QtCore.QVariant(unicode(post.date)), display)
+        d=post.date
+        # AOL Fanhouse posts items with a time differential of milliseconds, so they sorted
+        # differently on python and Qt. If someone makesit to microseconds, this solution
+        # is borked
+        qd=QtCore.QVariant(QtCore.QDateTime(QtCore.QDate(d.year, d.month, d.day), 
+                                            QtCore.QTime(d.hour, d.minute, d.second, d.microsecond/1000)))
+        item2.setData(qd, sorting)
+        item2.setData(QtCore.QVariant(post.id), post_id)
       
-      self.postItems[post.id]=[item1, item2]
-      self.appendRow([item1, item2])
-      self.updateItem(post)
+        self.postItems[post.id]=[item1, item2]
+        self.appendRow([item1, item2])
+        self.updateItem(post)
       
     self.reset()
  
+    if update: # New data, resort
+      self.sort(*self.lastSort)
+      
   def indexFromPost(self, post=None, id=None):
     if not id and not post:
       return QtCore.QModelIndex()
@@ -125,6 +139,7 @@ class PostModel(QtGui.QStandardItemModel):
                         reverse=order==QtCore.Qt.DescendingOrder)
     QtGui.QStandardItemModel.sort(self, column, order)
     self.post_ids=[id for [id, _, _, _] in self.post_data]
+    self.lastSort=(column, order)
 
   def nextPostIndex(self, post):
     '''Takes a Post and returns the index of the following post'''
