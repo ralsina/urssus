@@ -501,15 +501,12 @@ class Feed(elixir.Entity):
         # If I don't I don't re-get updated posts.
         p = Post.get_by(feed=self, title=title,post_id=post[idkey])
         if not p:
-          print "Adding post", title
           p=Post(feed=self, date=date, title=title, 
                  post_id=post[idkey], content=content, 
                  author=author, link=link)
           if self.markRead:
             p.unread=False
           posts.append(p)
-        else:
-          print "Not adding post", title
       except KeyError:
         debug( post )
     self.lastUpdated=datetime.now()
