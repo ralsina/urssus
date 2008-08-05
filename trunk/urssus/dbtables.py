@@ -173,7 +173,7 @@ class Feed(elixir.Entity):
       for post in self.posts:
         if post.important: continue # Don't delete important stuff
         # FIXME: makethis configurable
-    if (now-post.date).days>7: # Right now, keep for a week
+        if (now-post.date).days>7: # Right now, keep for a week
           post.deleted=True
           post.unread=False
     elif self.archiveType==1: #keepall
@@ -360,7 +360,7 @@ class Feed(elixir.Entity):
     else:
       if self.curUnread==-1:
         info ("Forcing recount in %s", self.title)
-        self.curUnread=Post.query.filter(Post.feed==self).filter(Post.unread==True).count()
+        self.curUnread=Post.query.filter(Post.feed==self).filter(Post.deleted==False).filter(Post.unread==True).count()
     return self.curUnread
       
   def updateFeedData(self, parsedFeed):
