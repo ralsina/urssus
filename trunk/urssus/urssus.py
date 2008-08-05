@@ -800,7 +800,7 @@ class MainWindow(QtGui.QMainWindow):
           self.raise_()
         else:
           error( "id %s not in the tree", id)
-          sys.exit(1)
+          return
       feed=Feed.get_by(id=id)
       if action==0: # Mark as updating
         self.updateFeedItem(feed, updating=True)
