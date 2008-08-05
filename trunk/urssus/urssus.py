@@ -461,7 +461,7 @@ class MainWindow(QtGui.QMainWindow):
       curPost.feed.curUnread-=1 
       elixir.session.flush()
       self.updatePostItem(curPost)
-      self.updateFeedItem(curPost.feed)
+      self.updateFeedItem(curPost.feed, parents=True)
 
   def updatePostItem(self, post):
     self.ui.posts.model().updateItem(post)
@@ -550,13 +550,16 @@ class MainWindow(QtGui.QMainWindow):
     if i==None: return
     index=self.ui.feeds.currentIndex()
     if index.isValid():         
-      curFeed=self.ui.feeds.model().itemFromIndex(index).feed
+      curFeed=self.ui.feeds.model().feedFromIndex(index)
     info ("Expiring feed: %s", curFeed)
     curFeed.expire(expunge=True)
     # Update feed display (number of unreads may have changed)
-    self.updateFeedItem(curFeed,parents=True)
-    # Reopen it because the post list probably changed
+    # This would trigger a merge with the post list, but since
+    # the user actively expired it, we force a new postmodel
+    # and reopen the feed
+    self.ui.posts.setModel(None)
     self.open_feed(index)
+    self.updateFeedItem(curFeed,parents=True)
 
   def on_actionEdit_Feed_triggered(self, i=None):
     if i==None: return
