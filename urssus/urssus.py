@@ -1173,7 +1173,7 @@ class MainWindow(QtGui.QMainWindow):
       self.ui.statusBar.showMessage("Opening %s"%post.link)
       self.ui.view.setUrl(QtCore.QUrl(QtCore.QString(post.link)))
     else:
-      if self.showingFolder or config.getValue('decoration', 'alwaysShowFeed', False) == True:
+      if self.showingFolder or config.getValue('ui', 'alwaysShowFeed', False) == True:
         self.ui.view.setHtml(renderTemplate('post.tmpl',post=post, showFeed=True))
       else:
         self.ui.view.setHtml(renderTemplate('post.tmpl',post=post, showFeed=False))
