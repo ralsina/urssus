@@ -4,7 +4,6 @@ from globals import *
 # The feed updater (runs out-of-process)
 def feedUpdater(full=False):
   if full:
-      #FIXME: this hogs the DB
       for feed in Feed.query.filter(Feed.xmlUrl<>None):
         feedStatusQueue.put([0, feed.id])
         try: # we can't let this fail or it will stay marked forever;-)
