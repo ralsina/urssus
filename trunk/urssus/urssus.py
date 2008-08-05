@@ -967,7 +967,16 @@ class MainWindow(QtGui.QMainWindow):
     else:
       self.on_actionNormal_View_triggered(v)
     config.setValue('ui', 'shortFeedList', self.ui.actionShort_Feed_List.isChecked())
+
+
+  def updateListedFeedItem(self):
+    '''This connects to the post list model's reset signal, so we can update
+    the feed item when the model data changes'''
     
+    feed=Feed.get_by(id=self.ui.posts.model().feed_id)
+    print "Updating item for ", feed
+    self.updateFeedItem(feed)
+
   def open_feed(self, index):
     if not index.isValid():
       return
@@ -1027,37 +1036,34 @@ class MainWindow(QtGui.QMainWindow):
     else: # StandardView / Widescreen View
       info ("Opening in standard view")
       
-      # Remember current post ID
-      cpid=-1000
+      # Remember current post
       if self.ui.posts.model():
-        p=self.ui.posts.model().postFromIndex(self.ui.posts.currentIndex())
-        if p: cpid=p.id
+        post=self.ui.posts.model().postFromIndex(self.ui.posts.currentIndex())
+      else:
+        post=None
 
       model=self.ui.posts.model()
       # The == are weird because sqlalchemy reimplementes the == operator for
       # model.statusFilter
-      if model and model.feed==self.currentFeed and \
-         str(model.textFilter)==str(self.textFilter) and \
-         str(model.statusFilter)==str(self.statusFilter):
+      if model and model.feed_id==self.currentFeed.id and \
+            str(model.textFilter)==str(self.textFilter) and \
+            str(model.statusFilter)==str(self.statusFilter):
         self.ui.posts.model().initData(update=True)
       else:
         self.ui.posts.setModel(PostModel(self.ui.posts, feed, self.textFilter, self.statusFilter))
+        QtCore.QObject.connect(self.ui.posts.model(), QtCore.SIGNAL("modelReset()"), self.updateListedFeedItem)
       self.fixPostListUI()
 
-      for action in actions:
-        action.setEnabled(True)
-
-      
       # Try to scroll to the same post or to the top
-      idx=self.ui.posts.model().indexFromPost(Post.get_by(id=cpid))
-      if idx.isValid():
+      if post and self.ui.posts.model().hasPost(post):
+        idx=self.ui.posts.model().indexFromPost(post)
         self.ui.posts.scrollTo(idx, self.ui.posts.EnsureVisible)
         self.ui.posts.setCurrentIndex(idx)
-        self.on_posts_clicked(idx)
       else:
         self.ui.view.setHtml(renderTemplate('feed.tmpl',feed=feed))
         self.ui.posts.scrollToTop()
-
+      for action in actions:
+        action.setEnabled(True)
 
   def updateFeedItem(self, feed, parents=False, updating=False, can_reopen=False):
     info("Updating item for feed %d", feed.id)
@@ -1073,18 +1079,7 @@ class MainWindow(QtGui.QMainWindow):
 
     item=self.ui.feeds.model().itemFromIndex(index)
     item2=self.ui.feeds.model().itemFromIndex(self.ui.feeds.model().index(index.row(), 1, index.parent()))
-      
-    # This is very slow when marking folders as read
-    # because each children triggers an update of the folder
-    # and since the folder is current, that triggers
-    # a load in the QWebView and reloading all the folder's items in 
-    # the post list, etc, etc
-    # That's why we special-case the can_reopen, which only
-    # is done after a real update
-
-    if feed==self.currentFeed and can_reopen: #It's open, re_open it
-      self.open_feed(index)
-      
+  
     # The calls to setRowHidden cause a change in the column's width! Looks like a Qt bug to me.
     if self.showOnlyUnread:
       if feed.unreadCount()==0 and feed<>self.currentFeed: 
@@ -1201,11 +1196,16 @@ class MainWindow(QtGui.QMainWindow):
 
   def on_actionMark_Feed_as_Read_triggered(self, i=None):
     if i==None: return
-    idx=self.ui.feeds.currentIndex()
-    feed=self.ui.feeds.model().feedFromIndex(idx)
-    if feed:
-      feed.markAsRead()
-    self.open_feed(idx) # To update all the actions/items
+
+    # See if we are displaying a feed using the post list
+    if self.ui.posts.model():
+      self.ui.posts.model().markRead()
+    else: # Mark as read a feed from the tree
+      idx=self.ui.feeds.currentIndex()
+      feed=self.ui.feeds.model().feedFromIndex(idx)
+      if feed:
+        feed.markAsRead()
+      self.open_feed(idx) # To update all the actions/items
 
   def on_actionDelete_Feed_triggered(self, i=None):
     if i==None: return
