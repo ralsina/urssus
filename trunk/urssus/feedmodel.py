@@ -66,10 +66,10 @@ class FeedModel(QtGui.QStandardItemModel):
           addSubTree(item1, child)
           
     iroot=self.invisibleRootItem()
-    iroot.feed=root_feed
     self.feedItems[root_feed.id]=[iroot, None]
-    for root in root_feed.children:
-      addSubTree(iroot, root)
+    addSubTree(iroot, root_feed)
+#    for root in root_feed.children:
+#      addSubTree(iroot, root)
 
     self.reset()
 

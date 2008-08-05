@@ -542,5 +542,6 @@ def initDB():
   elixir.setup_all()
   elixir.session.flush()
   root_feed=Feed.get_by_or_init(parent=None)
+  root_feed.text='All Feeds'
   elixir.session.flush()
   return root_feed
