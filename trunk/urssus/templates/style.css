@@ -40,19 +40,19 @@ h3 a:hover, a:active { color: #3f4f5c; text-decoration: none;  }
 
 /* Html Elements */
 
-h1, h2, h3, h4, h5, h6 { font-weight: normal; margin: 10px 0; padding: 0; }
+h1, h2, h3, h4, h5, h6 { font-weight: bold; margin: 10px 0; padding: 0; }
 
-h1 { font-size: 36px; color: #293138;}
+h1 { font-size: 16px; color: #293138;}
 
-h2 { font-size: 28px; color: #353F47;}
+h2 { font-size: 14px; color: #353F47;}
 
 .post-title h2 {color: #3f4f5c; font-weight:bold; text-transform: uppercase; margin-bottom:5px;}
 
-h3 { font-size: 24px; color: #3f4f5c;}
+h3 { font-size: 12px; color: #3f4f5c;}
 
-h4 { font-size: 20px; color: #3f4f5c; }
+h4 { font-size: 12px; color: #3f4f5c; }
 
-h5 { font-size: 16px; color: #3f4f5c;}
+h5 { font-size: 12px; color: #3f4f5c;}
 
 h6 
 { 

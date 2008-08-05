@@ -19,7 +19,7 @@ function hideAction(action,id) {
     <div id="URSSUS-POST-#{post.id}" >
     <a id="URSSUS-#{post.id}"></a>
     <div class="headerbox"> 
-    <h5 class="post-title">#{post.titleLink()}</a></h5>
+    <h2 class="post-title">#{post.titleLink()}</a></h2>
     <div id="URSSUS-ACTIONS-#{post.id}" style='padding: .5em;'>
       <span id="URSSUS-READ-#{post.id}" class='action' ><a href="urssus:/read/#{post.id}" onCLick="hideAction('READ',#{post.id});showAction('UNREAD',#{post.id});">Mark Read</a></span>&nbsp;&nbsp;
       <span id="URSSUS-UNREAD-#{post.id}" class='action' ><a href="urssus:/unread/#{post.id}" onCLick="showAction('READ',#{post.id});hideAction('UNREAD',#{post.id});">Mark Unread</a></span>&nbsp;&nbsp;
