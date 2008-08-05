@@ -1,6 +1,5 @@
 import os, sys, socket
 from processing import connection
-from dbtables import *
 from globals import *
 from feedupdater import feedUpdater
 
@@ -44,7 +43,6 @@ def theServer(server):
 
 def main():
   global root_feed
-  root_feed=initDB()
 
   # Try to be the server
   serverProc=serverConn()
@@ -52,6 +50,8 @@ def main():
     # FIXME: Assume another copy is running
     sys.exit(1)
   
+  import dbtables
+  root_feed=dbtables.initDB()
   # Start background updater
   p = processing.Process(target=feedUpdater)
   p.setDaemon(True)
