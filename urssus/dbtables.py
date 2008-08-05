@@ -172,11 +172,11 @@ class Feed(elixir.Entity):
     if self.archiveType==0: # Default archive config
       # FIXME: make that 7 (days) configurable
       cutoff=now-timedelta(7, 0, 0)
-      Post.table.update().where(sql.and_(Post.important==False, 
-                                         Post.fresh==False, 
+      Post.table.update().where(sql.and_(Post.important==False,  
                                          Post.feed==self, 
                                          Post.date<cutoff)).\
                           values(deleted=True).execute()
+      elixir.session.flush()
     elif self.archiveType==1: #keepall
       # Tested ;-)
       return
@@ -186,20 +186,21 @@ class Feed(elixir.Entity):
       for post in self.posts[self.limitCount:]:
         if post.important: continue # Don't delete important stuff
         post.deleted=True
+      elixir.session.flush()
     elif self.archiveType==3: #limitDays
       # Tested
       cutoff=now-timedelta(self.limitDays, 0, 0)
       Post.table.update().where(sql.and_(Post.important==False, 
-                                         Post.fresh==False, 
                                          Post.date<cutoff)).\
                           values(deleted=True).execute()
+      elixir.session.flush()
     elif self.archiveType==4: #no archiving
       # Tested
       Post.table.update().where(sql.and_(Post.important==False, 
                                          Post.feed==self)).\
                           values(deleted=True).execute()
+      elixir.session.flush()
         
-    elixir.session.flush()
     if expunge:
       # Delete all posts with deleted==True, which are not fresh 
       # (are not in the last RSS/Atom we got)
@@ -500,12 +501,15 @@ class Feed(elixir.Entity):
         # If I don't I don't re-get updated posts.
         p = Post.get_by(feed=self, title=title,post_id=post[idkey])
         if not p:
+          print "Adding post", title
           p=Post(feed=self, date=date, title=title, 
                  post_id=post[idkey], content=content, 
                  author=author, link=link)
           if self.markRead:
             p.unread=False
           posts.append(p)
+        else:
+          print "Not adding post", title
       except KeyError:
         debug( post )
     self.lastUpdated=datetime.now()
