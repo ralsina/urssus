@@ -18,5 +18,9 @@
   #{feed.description}
 <?py #end ?>
 </div>
-
+<div>
+<p>
+<b>Articles:&nbsp;</b>#{len(feed.posts)}<br>
+<b>Unread:&nbsp;</b>#{feed.unreadCount()}<br>
+</div>
 </body>
