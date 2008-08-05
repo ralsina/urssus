@@ -401,6 +401,7 @@ class MainWindow(QtGui.QMainWindow):
         elixir.session.flush()
         if Feed.get_by(xmlUrl=xmlUrl):
           # Already subscribed
+          # FIXME: implement progress reports
           print "You are already subscribed to %s"%xmlUrl
           continue
         f=Feed.get_by(xmlUrl=xmlUrl)
@@ -577,9 +578,10 @@ class MainWindow(QtGui.QMainWindow):
       QtGui.QMessageBox.critical(self, "Error - uRSSus", "Can't find a feed wit URL: %s"%url)
       return
     info ("Found feed: %s", feed)
-    if Feed.get_by(xmlUrl=feed):
+    f=Feed.get_by(xmlUrl=feed)
+    if f:
       # Already subscribed
-      QtGui.QMessageBox.critical(self, "Error - uRSSus", "You are already subscribed")
+      QtGui.QMessageBox.critical(self, "Error - uRSSus", 'You are already subscribed to "%s"'%f)
       return
     newFeed=Feed(xmlUrl=feed)
     newFeed.update()
@@ -600,7 +602,9 @@ class MainWindow(QtGui.QMainWindow):
       newFeed.parent=curFeed
     elixir.session.flush()
     self.initTree()
-    self.ui.feeds.setCurrentIndex(self.ui.feeds.model().indexFromFeed(newFeed))
+    idx=self.ui.feeds.model().indexFromFeed(newFeed)
+    self.ui.feeds.setCurrentIndex(idx)
+    self.open_feed(idx)
     self.on_actionEdit_Feed_triggered(True)
 
   def on_actionAdd_Feed_triggered(self, i=None):
