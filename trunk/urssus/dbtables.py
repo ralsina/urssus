@@ -3,7 +3,7 @@ import sqlalchemy as sql
 import elixir as elixir
 import migrate as migrate
 import database
-from datetime import datetime
+from datetime import datetime, timedelta
 import os, sys, time
 from globals import *
 from urllib import urlopen
@@ -170,25 +170,34 @@ class Feed(elixir.Entity):
     # 3 = use limitDays, 4 = no archiving
     now=datetime.now()
     if self.archiveType==0: # Default archive config
-      for post in self.posts:
-        if post.important: continue # Don't delete important stuff
-        # FIXME: makethis configurable
-        if (now-post.date).days>7: # Right now, keep for a week
-          post.deleted=True
-          post.unread=False
+      # FIXME: make that 7 (days) configurable
+      cutoff=now-timedelta(7, 0, 0)
+      Post.table.update().where(sql.and_(Post.important==False, 
+                                         Post.fresh==False, 
+                                         Post.feed==self, 
+                                         Post.date<cutoff)).\
+                          values(deleted=True).execute()
     elif self.archiveType==1: #keepall
+      # Tested ;-)
       return
     elif self.archiveType==2: #limitCount
+      # FIXME: implement quicker!
+      # Doesn't seem to work
       for post in self.posts[self.limitCount:]:
         if post.important: continue # Don't delete important stuff
         post.deleted=True
     elif self.archiveType==3: #limitDays
-      for post in self.posts:
-        if post.important: continue # Don't delete important stuff
-        if (now-post.date).days>self.limitDays: # Right now, keep for a week
-          post.deleted=True
+      # Tested
+      cutoff=now-timedelta(self.limitDays, 0, 0)
+      Post.table.update().where(sql.and_(Post.important==False, 
+                                         Post.fresh==False, 
+                                         Post.date<cutoff)).\
+                          values(deleted=True).execute()
     elif self.archiveType==4: #no archiving
-      Post.table.delete().where(sql.and_(Post.important==False, Post.feed==self)).execute()
+      # Tested
+      Post.table.update().where(sql.and_(Post.important==False, 
+                                         Post.feed==self)).\
+                          values(deleted=True).execute()
         
     elixir.session.flush()
     if expunge:
