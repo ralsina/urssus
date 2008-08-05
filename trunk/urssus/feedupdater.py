@@ -1,5 +1,6 @@
 from globals import *
-import sys, time
+import sys, time, datetime
+import elixir
   
 def updateOne(feed):
   feed.update()
@@ -21,7 +22,7 @@ def feedUpdater(full=False):
     while True:
       info("updater loop")
       time.sleep(60)
-      now=datetime.now()
+      now=datetime.datetime.now()
       for feed in dbtables.Feed.query.filter(dbtables.Feed.xmlUrl<>None):
         period=config.getValue('options', 'defaultRefresh', 1800)
         if feed.updateInterval==0: # Update never
