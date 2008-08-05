@@ -2,8 +2,19 @@ from globals import *
 from dbtables import *
 from PyQt4 import QtGui, QtCore
 
+# constants
+draggable = QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsDragEnabled
+droppable = QtCore.Qt.ItemIsDropEnabled
+editable  = QtCore.Qt.ItemIsEditable
+
+folderflags=draggable|droppable
+feedflags=draggable
+
 class FeedModel(QtGui.QStandardItemModel):
   def __init__(self, parent):
+    self.flags={}
+    self.feedItems={}
+    self.feedCache={}
     QtGui.QStandardItemModel.__init__(self, parent)
     self.initData()
 
@@ -22,20 +33,26 @@ class FeedModel(QtGui.QStandardItemModel):
     self.setColumnCount(2)
     self.setHeaderData(0, QtCore.Qt.Horizontal, QtCore.QVariant("Title"))
     self.setHeaderData(1, QtCore.Qt.Horizontal, QtCore.QVariant("Unread"))
-    self.flags={}
-    self.feedItems={}
-    self.feedCache={}
     
     # Internal function
     def addSubTree(parentItem, feed):
       item1=QtGui.QStandardItem(unicode(feed))
       item1.setToolTip(unicode(feed))
       item1.setData(QtCore.QVariant(feed.id), QtCore.Qt.UserRole)
+      if feed.xmlUrl:
+        item1.setFlags(feedflags|editable)
+      else:
+        item1.setFlags(folderflags|editable)
+        
       
       item2=QtGui.QStandardItem(unicode(feed.unreadCount() or ''))
       item2.setToolTip(unicode(feed.unreadCount()))
       item2.setData(QtCore.QVariant(feed.id), QtCore.Qt.UserRole)
       item2.setTextAlignment(QtCore.Qt.AlignRight)
+      if feed.xmlUrl:
+        item2.setFlags(feedflags &~ QtCore.Qt.ItemIsDropEnabled)
+      else:
+        item2.setFlags(folderflags &~ QtCore.Qt.ItemIsDropEnabled)
       
       
       parentItem.appendRow([item1, item2])
@@ -64,22 +81,7 @@ class FeedModel(QtGui.QStandardItemModel):
 
   def supportedDropActions(self):
     return QtCore.Qt.MoveAction
-    
-  def flags(self, index):
-    r = QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable
-    if index.isValid():
-      item=self.itemFromIndex(index)
-      id=item.data(QtCore.Qt.UserRole).toInt()[0]
-      if id in self.flags:
-        return self.flags[id]
-      feed=Feed.get_by(id=id)
-      if feed and not feed.xmlUrl: # a folder
-        r=r | QtCore.Qt.ItemIsDragEnabled | QtCore.Qt.ItemIsDropEnabled
-      else:
-        r=r | QtCore.Qt.ItemIsDragEnabled
-      self.flags[id]=r
-      return r
-      
+  
   def dropMimeData(self, data, action, row, column, parent):
     print "DROP"
     destIndex=self.index(row, column, parent)
