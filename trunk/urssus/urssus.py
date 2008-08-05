@@ -1083,7 +1083,9 @@ class MainWindow(QtGui.QMainWindow):
     if self.ui.posts.model() and self.ui.posts.model().feed_id==feed.id:
       # This may call updateFeedItem, so avoid loops
       QtCore.QObject.disconnect(self.ui.posts.model(), QtCore.SIGNAL("modelReset()"), self.updateListedFeedItem)
+      pidx=self.ui.posts.currentIndex()
       self.ui.posts.model().initData(update=True)
+      self.ui.posts.setCurrentIndex(pidx)
       QtCore.QObject.connect(self.ui.posts.model(), QtCore.SIGNAL("modelReset()"), self.updateListedFeedItem)
 
     item=self.ui.feeds.model().itemFromIndex(index)
@@ -1134,8 +1136,8 @@ class MainWindow(QtGui.QMainWindow):
       post.unread=False
       post.feed.curUnread-=1
       elixir.session.flush()
-    self.updateFeedItem(post.feed, parents=True)
-    self.updatePostItem(post)
+      self.updateFeedItem(post.feed, parents=True)
+      self.updatePostItem(post)
     if post.feed.loadFull and post.link:
       # If I pass post.link, it crashes if I click something else quickly
       self.ui.statusBar.showMessage("Opening %s"%post.link)
