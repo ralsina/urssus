@@ -1,6 +1,5 @@
-from dbtables import *
 from globals import *
-import sys
+import sys, time
   
 def updateOne(feed):
   feed.update()
@@ -8,8 +7,9 @@ def updateOne(feed):
   
 # The feed updater (runs out-of-process)
 def feedUpdater(full=False):
+  import dbtables
   if full:
-      for feed in Feed.query.filter(Feed.xmlUrl<>None):
+      for feed in dbtables.Feed.query.filter(dbtables.Feed.xmlUrl<>None):
 #        feedStatusQueue.put([0, feed.id])
         try: # we can't let this fail or it will stay marked forever;-)
           feed.update()
@@ -22,7 +22,7 @@ def feedUpdater(full=False):
       info("updater loop")
       time.sleep(60)
       now=datetime.now()
-      for feed in Feed.query.filter(Feed.xmlUrl<>None):
+      for feed in dbtables.Feed.query.filter(dbtables.Feed.xmlUrl<>None):
         period=config.getValue('options', 'defaultRefresh', 1800)
         if feed.updateInterval==0: # Update never
           continue
