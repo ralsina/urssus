@@ -50,7 +50,6 @@ def main():
   serverProc=serverConn()
   if not serverProc:
     # FIXME: Assume another copy is running
-    os.system('urssus_client')
     sys.exit(1)
   
   # Start background updater
