@@ -320,8 +320,11 @@ class MainWindow(QtGui.QMainWindow):
   def trayActivated(self, reason=None):
     if reason == None: return
     if reason == self.tray.Trigger:
-      self.show()
-      self.raise_()
+      if config.getValue('behavir', 'hideOnTrayClick', True) == True and self.isVisible():
+        self.hide()
+      else:
+        self.show()
+        self.raise_()
     
   def notificationClicked(self):
     if self.notifiedFeed:
@@ -1205,6 +1208,10 @@ class MainWindow(QtGui.QMainWindow):
     size=self.size()
     config.setValue('ui', 'size', [size.width(), size.height()])
     config.setValue('ui', 'splitters', [self.ui.splitter.sizes(), self.ui.splitter_2.sizes()])
+    
+    # TODO: move saving this config value to app settings when will be done
+    config.setValue('behavir', 'hideOnTrayClick', config.getValue('behavir', 'hideOnTrayClick', True))
+    
     QtGui.QApplication.instance().quit()
     Post.table.delete(sql.and_(Post.deleted==True, Post.fresh==False)).execute()
 
