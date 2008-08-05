@@ -1,5 +1,7 @@
 import os, sys, codecs
 
+VERSION='0.2.10'
+
 import processing
 
 # A queue where subprocesses can put status messages, so 
