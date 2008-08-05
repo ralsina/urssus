@@ -406,7 +406,6 @@ class MainWindow(QtGui.QMainWindow):
         f=Feed.get_by(xmlUrl=xmlUrl)
         if not f:
           newFeed=Feed(text=title, title=title, xmlUrl=xmlUrl, parent=folder)
-#          newFeed.updateFeedData()
       elixir.session.flush()
       self.initTree()
         
@@ -583,7 +582,9 @@ class MainWindow(QtGui.QMainWindow):
       QtGui.QMessageBox.critical(self, "Error - uRSSus", "You are already subscribed")
       return
     newFeed=Feed(xmlUrl=feed)
-    newFeed.updateFeedData()
+    newFeed.update()
+    # To show it on the tree
+    newFeed.text=newFeed.title
     
     # Figure out the insertion point
     index=self.ui.feeds.currentIndex()
@@ -599,7 +600,7 @@ class MainWindow(QtGui.QMainWindow):
       newFeed.parent=curFeed
     elixir.session.flush()
     self.initTree()
-    self.ui.feeds.setCurrentIndex(self.ui.feeds.model().indexFromFeed(newFeed.id))
+    self.ui.feeds.setCurrentIndex(self.ui.feeds.model().indexFromFeed(newFeed))
     self.on_actionEdit_Feed_triggered(True)
 
   def on_actionAdd_Feed_triggered(self, i=None):
