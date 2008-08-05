@@ -20,14 +20,6 @@ def serverConn():
   serverProc.start()
   return serverProc
     
-def clientConn():
-  try:
-    return connection.Client(sockaddr, authkey='urssus')
-  except socket.error, e:
-    if e[0]==111: # Connection refused, stale socket
-      return None
-    else:
-      print e
 
 def theServer(server):
   while True:
@@ -56,15 +48,10 @@ def main():
 
   # Try to be the server
   serverProc=serverConn()
-  if not serverProc: # Ok, be the client
-    conn=clientConn()
-    if not conn and sys.platform<>'win32' and os.path.exists(sockaddr): #Stale socket
-      # FIXME: this is a race condition :-(
-      os.unlink(sockaddr)
-      serverProc=serverConn()
-    else:
-      conn.send(sys.argv[1:])
-      sys.exit(0)
+  if not serverProc:
+    # FIXME: Assume another copy is running
+    os.system('urssus_client')
+    sys.exit(1)
   
   # Start background updater
   p = processing.Process(target=feedUpdater)
