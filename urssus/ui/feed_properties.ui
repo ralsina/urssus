@@ -214,6 +214,9 @@
            <property name="suffix" >
             <string> days</string>
            </property>
+           <property name="maximum" >
+            <number>999</number>
+           </property>
           </widget>
          </item>
          <item row="4" column="0" colspan="2" >
