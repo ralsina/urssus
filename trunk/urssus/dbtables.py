@@ -38,7 +38,7 @@ def detailToTitle(td):
   nice text or html string.'''
   # Title may be in plain title, but a title_detail is preferred
   if td.type=='text/html':
-    title=h2t(td.value).strip().replace('\n', '')
+    title=h2t(td.value).strip().replace('\n', ' ')
   else:
     title=td.value.strip()    
   return title
@@ -98,7 +98,7 @@ class Post(elixir.Entity):
 
   def __repr__(self):
     if not self.decoTitle:
-      self.decoTitle=h2t(self.title).strip().replace('\n', '')
+      self.decoTitle=h2t(self.title).strip().replace('\n', ' ')
     return self.decoTitle
     
   def titleLink(self):
