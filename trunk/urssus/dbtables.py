@@ -28,7 +28,7 @@ else:
   from easylog import critical, error, warning, debug, info, setLogger, DEBUG
 #  setLogger(name='urssus', level=DEBUG)
 
-
+from feedupdater import updateOne
 
 # Some feeds put html in titles, which can't be shown in QStandardItems
 from html2text import html2text as h2t

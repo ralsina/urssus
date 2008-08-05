@@ -16,7 +16,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-import sys, os, time, urlparse, tempfile, codecs
+import sys, os, time, urlparse, tempfile, codecs, traceback
 from urllib import urlopen
 from datetime import datetime, timedelta
 from dbtables import Post, Feed, initDB
@@ -45,6 +45,7 @@ from ui.Ui_feed_properties import Ui_Dialog as UI_FeedPropertiesDialog
 from ui.Ui_twitterpost import Ui_Dialog as UI_TwitterDialog
 from ui.Ui_twitterauth import Ui_Dialog as UI_TwitterAuthDialog
 from ui.Ui_greaderimport import Ui_Dialog as UI_GReaderDialog
+from ui.Ui_bugdialog import Ui_Dialog as UI_BugDialog
 
 from postmodel import *
 from feedmodel import * 
@@ -69,6 +70,26 @@ class GReaderDialog(QtGui.QDialog):
     # Set up the UI from designer
     self.ui=UI_GReaderDialog()
     self.ui.setupUi(self)
+
+class BugDialog(QtGui.QDialog):
+  def __init__(self):
+    QtGui.QDialog.__init__(self)
+    # Set up the UI from designer
+    self.ui=UI_BugDialog()
+    self.ui.setupUi(self)
+
+def my_excepthook(exc_type, exc_value, exc_traceback):
+  if exc_type<>KeyboardInterrupt:
+    msg = ' '.join(traceback.format_exception(exc_type,
+                                              exc_value,
+                                              exc_traceback,20))
+    dlg=BugDialog()
+    dlg.ui.report.setText('''Version: %s\n\n%s'''%(VERSION, msg))
+    dlg.exec_()
+  # Call the default exception handler if you want
+  sys.__excepthook__(exc_type, exc_value, exc_traceback)
+
+
   
 class AboutDialog(QtGui.QDialog):
   def __init__(self, parent):
@@ -320,7 +341,7 @@ class MainWindow(QtGui.QMainWindow):
   def trayActivated(self, reason=None):
     if reason == None: return
     if reason == self.tray.Trigger:
-      if config.getValue('behavir', 'hideOnTrayClick', True) == True and self.isVisible():
+      if config.getValue('ui', 'hideOnTrayClick', True) == True and self.isVisible():
         self.hide()
       else:
         self.show()
@@ -372,9 +393,12 @@ class MainWindow(QtGui.QMainWindow):
       return None
     return self.ui.posts.model().postFromIndex(index)
 
+  def on_actionReport_Bug_triggered(self, i=None):
+    if i==None: return
+    QtGui.QDesktopServices.openUrl(QtCore.QUrl('http://code.google.com/p/urssus/issues/entry?template=Defect%20report%20from%20user'))
+
   def on_actionImport_From_Google_Reader_triggered(self, i=None):
     if i==None: return
-    import feedfinder
     
     dlg=GReaderDialog(self)
     if dlg.exec_():
@@ -1208,10 +1232,6 @@ class MainWindow(QtGui.QMainWindow):
     size=self.size()
     config.setValue('ui', 'size', [size.width(), size.height()])
     config.setValue('ui', 'splitters', [self.ui.splitter.sizes(), self.ui.splitter_2.sizes()])
-    
-    # TODO: move saving this config value to app settings when will be done
-    config.setValue('behavir', 'hideOnTrayClick', config.getValue('behavir', 'hideOnTrayClick', True))
-    
     QtGui.QApplication.instance().quit()
     Post.table.delete(sql.and_(Post.deleted==True, Post.fresh==False)).execute()
 
@@ -1271,9 +1291,9 @@ class MainWindow(QtGui.QMainWindow):
     feed=self.ui.feeds.model().feedFromIndex(idx)
     if feed:
       # FIXME: move to out-of-process
-      feed.update()
-#      self.open_feed(idx)
-
+      p=processing.Process(target=updateOne, args=(feed, ))
+      p.setDaemon(True)
+      p.start()
   def on_actionFetch_All_Feeds_triggered(self, i=None):
     if i==None: return
     global processes
@@ -1485,6 +1505,8 @@ def main():
   global root_feed
   app=QtGui.QApplication(sys.argv)
   app.setQuitOnLastWindowClosed(False)
+  # Not enabled yet, because I need to implement a web app to handle it
+#  sys.excepthook = my_excepthook
   window=MainWindow()
     
   if len(sys.argv)>1:

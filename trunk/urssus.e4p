@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE Project SYSTEM "Project-4.2.dtd">
 <!-- eric4 project file for project urssus -->
-<!-- Saved: 2008-08-04, 18:47:12 -->
+<!-- Saved: 2008-08-05, 14:04:55 -->
 <!-- Copyright (C) 2008 Roberto Alsina, ralsina@netmanagers.com.ar -->
 <Project version="4.2">
   <ProgLanguage mixed="0">Python</ProgLanguage>
@@ -17,10 +17,6 @@
     <Source>
       <Dir>urssus</Dir>
       <Name>__init__.py</Name>
-    </Source>
-    <Source>
-      <Dir>urssus</Dir>
-      <Name>BeautifulSoup.py</Name>
     </Source>
     <Source>
       <Dir>urssus</Dir>
@@ -233,6 +229,15 @@
       <Dir>versions</Dir>
       <Name>005_Add_column_fresh_to_posts_table.py</Name>
     </Source>
+    <Source>
+      <Dir>urssus</Dir>
+      <Name>client.py</Name>
+    </Source>
+    <Source>
+      <Dir>urssus</Dir>
+      <Dir>ui</Dir>
+      <Name>Ui_bugdialog.py</Name>
+    </Source>
   </Sources>
   <Forms>
     <Form>
@@ -274,6 +279,11 @@
       <Dir>urssus</Dir>
       <Dir>ui</Dir>
       <Name>greaderimport.ui</Name>
+    </Form>
+    <Form>
+      <Dir>urssus</Dir>
+      <Dir>ui</Dir>
+      <Name>bugdialog.ui</Name>
     </Form>
   </Forms>
   <Translations>

@@ -1,7 +1,6 @@
 import os, sys, socket
 from processing import connection
 from globals import *
-from feedupdater import feedUpdater
 
 if sys.platform=='win32':
   sockaddr=r'\\.\pipe\uRSSus'
@@ -51,9 +50,10 @@ def main():
     sys.exit(1)
   
   import dbtables
+  import feedupdater
   root_feed=dbtables.initDB()
   # Start background updater
-  p = processing.Process(target=feedUpdater)
+  p = processing.Process(target=feedupdater.feedUpdater)
   p.setDaemon(True)
   p.start()
 
