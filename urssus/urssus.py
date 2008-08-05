@@ -1032,10 +1032,17 @@ class MainWindow(QtGui.QMainWindow):
       if self.ui.posts.model():
         p=self.ui.posts.model().postFromIndex(self.ui.posts.currentIndex())
         if p: cpid=p.id
-        
-      if self.ui.posts.model() and self.ui.posts.model().feed==self.currentFeed:
+
+      model=self.ui.posts.model()
+      # The == are weird because sqlalchemy reimplementes the == operator for
+      # model.statusFilter
+      if model and model.feed==self.currentFeed and \
+         str(model.textFilter)==str(self.textFilter) and \
+         str(model.statusFilter)==str(self.statusFilter):
+        print "updating"
         self.ui.posts.model().initData(update=True)
       else:
+        print "new model"
         self.ui.posts.setModel(PostModel(self.ui.posts, feed, self.textFilter, self.statusFilter))
       self.fixPostListUI()
 
