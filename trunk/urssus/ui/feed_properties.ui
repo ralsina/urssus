@@ -16,15 +16,15 @@
    <item>
     <widget class="QTabWidget" name="tabWidget" >
      <property name="currentIndex" >
-      <number>0</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="general" >
       <property name="geometry" >
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>365</width>
-        <height>200</height>
+        <width>371</width>
+        <height>211</height>
        </rect>
       </property>
       <attribute name="title" >
@@ -152,8 +152,8 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>365</width>
-        <height>200</height>
+        <width>371</width>
+        <height>211</height>
        </rect>
       </property>
       <attribute name="title" >
@@ -193,6 +193,9 @@
            </property>
            <property name="suffix" >
             <string> articles</string>
+           </property>
+           <property name="maximum" >
+            <number>99999</number>
            </property>
           </widget>
          </item>
