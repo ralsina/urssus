@@ -2,6 +2,10 @@ from dbtables import *
 from globals import *
 import sys
   
+def updateOne(feed):
+  feed.update()
+  elixir.session.flush()  
+  
 # The feed updater (runs out-of-process)
 def feedUpdater(full=False):
   if full:

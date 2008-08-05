@@ -257,6 +257,8 @@
      <string>&amp;Help</string>
     </property>
     <addaction name="actionAbout_uRSSus" />
+    <addaction name="separator" />
+    <addaction name="actionReport_Bug" />
    </widget>
    <widget class="QMenu" name="menu_View" >
     <property name="title" >
@@ -859,6 +861,15 @@
   <action name="actionImport_From_Google_Reader" >
    <property name="text" >
     <string>Import From Google Reader</string>
+   </property>
+  </action>
+  <action name="actionReport_Bug" >
+   <property name="icon" >
+    <iconset resource="../images/icons.qrc" >
+     <normaloff>:/bug.svg</normaloff>:/bug.svg</iconset>
+   </property>
+   <property name="text" >
+    <string>Report Bug</string>
    </property>
   </action>
   <addaction name="actionShow_Menu_Bar" />
