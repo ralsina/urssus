@@ -569,7 +569,7 @@ class MainWindow(QtGui.QMainWindow):
 
     editDlg=FeedProperties(curFeed)
     if editDlg.exec_():
-      # update feed item
+      # update feed item, no parents
       self.updateFeedItem(curFeed)
 
   def addFeed(self, url):
