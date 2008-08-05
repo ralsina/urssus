@@ -1027,21 +1027,25 @@ class MainWindow(QtGui.QMainWindow):
       if self.ui.posts.model():
         p=self.ui.posts.model().postFromIndex(self.ui.posts.currentIndex())
         if p: cpid=p.id
-     
-      self.ui.posts.setModel(PostModel(self.ui.posts, feed, self.textFilter, self.statusFilter))
+        
+      if self.ui.posts.model() and self.ui.posts.model().feed==self.currentFeed:
+        self.ui.posts.model().initData(update=True)
+      else:
+        self.ui.posts.setModel(PostModel(self.ui.posts, feed, self.textFilter, self.statusFilter))
       self.fixPostListUI()
 
       for action in actions:
         action.setEnabled(True)
 
-      self.ui.view.setHtml(renderTemplate('feed.tmpl',feed=feed))
       
       # Try to scroll to the same post or to the top
       idx=self.ui.posts.model().indexFromPost(Post.get_by(id=cpid))
       if idx.isValid():
         self.ui.posts.scrollTo(idx, self.ui.posts.EnsureVisible)
         self.ui.posts.setCurrentIndex(idx)
+        self.on_posts_clicked(idx)
       else:
+        self.ui.view.setHtml(renderTemplate('feed.tmpl',feed=feed))
         self.ui.posts.scrollToTop()
 
 
