@@ -11,31 +11,35 @@ post_id=QtCore.Qt.UserRole+1
 class PostModel(QtGui.QStandardItemModel):
   def __init__(self, parent, feed=None, textFilter=None, statusFilter=None):
     QtGui.QStandardItemModel.__init__(self, parent)
-    self.feed=feed
+    self.feed_id=feed.id
     self.textFilter=textFilter
     self.statusFilter=statusFilter
     self.setSortRole(sorting)
-    self.initData()
+    self._clear()
     self.sort(1, QtCore.Qt.DescendingOrder) # Date, descending
+    self.initData(feed)
 
+  def _clear(self):
+    self.clear()
+    self.post_data=[]
+    self.post_ids=[]
+    self.setColumnCount(2)
+    self.setHeaderData(0, QtCore.Qt.Horizontal, QtCore.QVariant("Title"))
+    self.setHeaderData(1, QtCore.Qt.Horizontal, QtCore.QVariant("Date"))
+    self.postItems={}
+    
   def initData(self, update=False):
     '''Sets data from the feedDB. If update==True, data is just added, not 
     replaced.
     '''
+    feed=Feed.get_by(id=self.feed_id)
+    if not feed or not update:
+      self._clear()
     
-    if not update:
-      self.clear()
-      self.post_data=[]
-      self.post_ids=[]
-      self.setColumnCount(2)
-      self.setHeaderData(0, QtCore.Qt.Horizontal, QtCore.QVariant("Title"))
-      self.setHeaderData(1, QtCore.Qt.Horizontal, QtCore.QVariant("Date"))
-      self.postItems={}
-    
-    if self.feed.xmlUrl: # A regular feed
-      self.posts=Post.query.filter(Post.feed==self.feed).filter(Post.deleted==False)
+    if feed.xmlUrl: # A regular feed
+      self.posts=Post.query.filter(Post.feed==feed).filter(Post.deleted==False)
     else: # A folder
-      self.posts=self.feed.allPostsQuery()
+      self.posts=feed.allPostsQuery()
     # Filter by text according to the contents of self.textFilter
     if self.textFilter:
       self.posts=self.posts.filter(sql.or_(Post.title.like('%%%s%%'%self.textFilter), 
@@ -57,7 +61,6 @@ class PostModel(QtGui.QStandardItemModel):
         self.updateItem(post)
       else:
         # New post, add
-        
         self.post_data.append([post.id, unicode(post).lower(), post.date, post.unread])
         item1=QtGui.QStandardItem()
         item1.setToolTip('%s - Posted at %s'%(unicode(post), unicode(post.date)))
@@ -86,7 +89,23 @@ class PostModel(QtGui.QStandardItemModel):
  
     if update: # New data, resort
       self.sort(*self.lastSort)
-      
+
+  def hasPost(self, post):
+    return post.id in self.postItems
+
+  def markRead(self):
+    '''Marks as read what's shown by the model, as opposite to Feed.markAsRead, which
+    marks what's on the feed. UI should call this one, usually'''''
+    for d in self.post_data:
+      if d[3]:
+        d[3]=False
+        post=Post.get_by(id=d[0])
+        post.unread=False
+        post.feed.curUnread=-1
+        self.updateItem(post)
+    elixir.session.flush()
+    self.reset()
+
   def indexFromPost(self, post=None, id=None):
     if not id and not post:
       return QtCore.QModelIndex()
