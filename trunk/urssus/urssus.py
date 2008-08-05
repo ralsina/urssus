@@ -778,10 +778,10 @@ class MainWindow(QtGui.QMainWindow):
       elif action==1: # Mark as finished updating
         # Force recount after update
         feed.curUnread=-1
-        self.updateFeedItem(feed, updating=False, parents=True)
+        self.updateFeedItem(feed, updating=False)
         self.updatesCounter-=1
-      elif action==2: # Just update it
-        self.updateFeedItem(feed, data[2], can_reopen=True)
+      elif action==2: # Update it, may have new posts, so all parents
+        self.updateFeedItem(feed, parents=True, can_reopen=True)
       elif action==3: # Systray notification
         self.notifiedFeed=feed
         self.tray.showMessage("New Articles", "%d new articles in %s"%(data[2], feed.text) )
@@ -1068,6 +1068,7 @@ class MainWindow(QtGui.QMainWindow):
 
   def updateFeedItem(self, feed, parents=False, updating=False, can_reopen=False):
     info("Updating item for feed %d", feed.id)
+    
     model=self.ui.feeds.model()
     
     if not model:
@@ -1077,6 +1078,13 @@ class MainWindow(QtGui.QMainWindow):
     
     if not index.isValid():
       return # Weird, but a feed was added behind our backs or something
+
+    # If we are updating the current feed, update the post list, too
+    if self.ui.posts.model() and self.ui.posts.model().feed_id==feed.id:
+      # This may call updateFeedItem, so avoid loops
+      QtCore.QObject.disconnect(self.ui.posts.model(), QtCore.SIGNAL("modelReset()"), self.updateListedFeedItem)
+      self.ui.posts.model().initData(update=True)
+      QtCore.QObject.connect(self.ui.posts.model(), QtCore.SIGNAL("modelReset()"), self.updateListedFeedItem)
 
     item=self.ui.feeds.model().itemFromIndex(index)
     item2=self.ui.feeds.model().itemFromIndex(self.ui.feeds.model().index(index.row(), 1, index.parent()))
@@ -1251,10 +1259,8 @@ class MainWindow(QtGui.QMainWindow):
     feed=self.ui.feeds.model().feedFromIndex(idx)
     if feed:
       # FIXME: move to out-of-process
-      feedStatusQueue.put([0, feed.id])
       feed.update()
-      feedStatusQueue.put([1, feed.id])
-      self.open_feed(idx)
+#      self.open_feed(idx)
 
   def on_actionFetch_All_Feeds_triggered(self, i=None):
     if i==None: return

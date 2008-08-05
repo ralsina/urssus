@@ -6,13 +6,13 @@ import sys
 def feedUpdater(full=False):
   if full:
       for feed in Feed.query.filter(Feed.xmlUrl<>None):
-        feedStatusQueue.put([0, feed.id])
+#        feedStatusQueue.put([0, feed.id])
         try: # we can't let this fail or it will stay marked forever;-)
           feed.update()
           time.sleep(1)
         except:
           pass
-        feedStatusQueue.put([1, feed.id])
+#        feedStatusQueue.put([1, feed.id])
   else:
     while True:
       info("updater loop")
@@ -26,11 +26,11 @@ def feedUpdater(full=False):
           period=60*feed.updateInterval # convert to seconds
         if (now-feed.lastUpdated).seconds>period:
           info("updating because of timeout")
-          feedStatusQueue.put([0, feed.id])
+#          feedStatusQueue.put([0, feed.id])
           try: # we can't let this fail or it will stay marked forever;-)
             feed.update()
             # While we're at it
             feed.expire(expunge=False)
           except:
             pass
-          feedStatusQueue.put([1, feed.id])
+#          feedStatusQueue.put([1, feed.id])
