@@ -188,9 +188,7 @@ class Feed(elixir.Entity):
         if (now-post.date).days>self.limitDays: # Right now, keep for a week
           post.deleted=True
     elif self.archiveType==4: #no archiving
-      for post in self.posts:
-        if post.important: continue # Don't delete important stuff
-        post.deleted=True
+      Post.table.delete().where(sql.and_(Post.important==False, Post.feed==self)).execute()
         
     elixir.session.flush()
     if expunge:
