@@ -1,4 +1,4 @@
-import os, sys, codecs
+import os, sys, codecs, datetime, time
 
 VERSION='0.2.10'
 
@@ -46,6 +46,10 @@ else:
 # Templates
 from util import tenjin
 
+# To convert UTC times (returned by feedparser) to local times
+def utc2local(dt):
+  return dt-datetime.timedelta(seconds=time.timezone)
+
 # The obvious import doesn't work for complicated reasons ;-)
 to_str=tenjin.helpers.to_str
 escape=tenjin.helpers.escape
@@ -60,6 +64,7 @@ def renderTemplate(tname, **context):
   context['escape']=escape
   context['mootools_core']=mootools_core
   context['mootools_more']=mootools_more
+  context['utx2local']=utc2local
   codecs.open('x.html', 'w', 'utf-8').write(templateEngine.render(os.path.join(tmplDir,tname), context))
   return templateEngine.render(os.path.join(tmplDir,tname), context)
 

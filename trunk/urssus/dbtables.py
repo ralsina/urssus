@@ -3,7 +3,6 @@ import sqlalchemy as sql
 import elixir as elixir
 import migrate as migrate
 import database
-from datetime import datetime, timedelta
 import os, sys, time
 from globals import *
 from urllib import urlopen
@@ -116,7 +115,7 @@ class Feed(elixir.Entity):
   children       = elixir.OneToMany('Feed', inverse='parent', order_by='position')
   parent         = elixir.ManyToOne('Feed')
   posts          = elixir.OneToMany('Post', order_by="-date", inverse='feed')
-  lastUpdated    = elixir.Field(elixir.DateTime, default=datetime(1970,1,1))
+  lastUpdated    = elixir.Field(elixir.DateTime, default=datetime.datetime(1970,1,1))
   loadFull       = elixir.Field(elixir.Boolean, default=False)
   # meaning of archiveType:
   # 0 = use default, 1 = keepall, 2 = use limitCount
@@ -168,7 +167,7 @@ class Feed(elixir.Entity):
     # meaning of archiveType:
     # 0 = use default, 1 = keepall, 2 = use limitCount
     # 3 = use limitDays, 4 = no archiving
-    now=datetime.now()
+    now=datetime.datetime.now()
     if self.archiveType==0: # Default archive config
       # FIXME: make that 7 (days) configurable
       cutoff=now-timedelta(7, 0, 0)
@@ -442,9 +441,9 @@ class Feed(elixir.Entity):
         else:
           dkey=None
         if dkey and post[dkey]:
-          date=datetime.fromtimestamp(time.mktime(post[dkey]))
+          date=datetime.datetime.fromtimestamp(time.mktime(post[dkey]))
         else:
-          date=datetime.now()
+          date=datetime.datetime.now()
         
         # So can the "unique ID for this entry"
         if 'id' in post:
@@ -509,7 +508,7 @@ class Feed(elixir.Entity):
           posts.append(p)
       except KeyError:
         debug( post )
-    self.lastUpdated=datetime.now()
+    self.lastUpdated=datetime.datetime.now()
     self.updateFeedData(d)
 
     if posts:

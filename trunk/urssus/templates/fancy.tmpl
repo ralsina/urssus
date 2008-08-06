@@ -68,7 +68,7 @@ window.addEvent('domready', function() {
     <?py if showFeed: ?>
       <b>Feed:&nbsp</b>#{post.feed.titleLink()}<br>
     <?py #end ?>
-    <b>Date:&nbsp;</b>#{post.date}<br>
+    <b>Date:&nbsp;</b>#{utc2local(post.date)}<br>
     <?py if post.author: ?>
         <b>Author:&nbsp;</b>#{post.author}<br>
     <?py #end ?>
