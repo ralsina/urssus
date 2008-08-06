@@ -273,6 +273,7 @@ class MainWindow(QtGui.QMainWindow):
     # Completion with history
     # FIXME: make persistent? Not sure
     self.searchHistory=[]
+    self.filterHistory=[]
 
     # Set some properties of the Web view
     page=self.ui.view.page()
@@ -695,10 +696,10 @@ class MainWindow(QtGui.QMainWindow):
     if not text in self.searchHistory:
       self.searchHistory.append(text)
       self.searchHistory=self.searchHistory[-20:]
-      completer=QtGui.QCompleter(self.searchHistory, self.searchWidget.ui.text)
-      completer.setCaseSensitivity(QtCore.Qt.CaseInsensitive)
-      self.searchWidget.ui.text.setCompleter(completer)
-
+      self.searchCompleter=QtGui.QCompleter(self.searchHistory, self.searchWidget.ui.text)
+      self.searchCompleter.setCaseSensitivity(QtCore.Qt.CaseInsensitive)
+      self.searchWidget.ui.text.setCompleter(self.searchCompleter)
+      
   def findText(self):
     text=unicode(self.searchWidget.ui.text.text())
     self.updateSearchHistory(text)      
@@ -737,8 +738,18 @@ class MainWindow(QtGui.QMainWindow):
     self.open_feed(self.ui.feeds.currentIndex())
     self.ui.view.setFocus(QtCore.Qt.TabFocusReason)
 
+  def updateFilterHistory(self, text):
+    if not text in self.filterHistory:
+      self.filterHistory.append(text)
+      self.filterHistory=self.filterHistory[-20:]
+      self.filterCompleter=QtGui.QCompleter(self.filterHistory, 
+                                            self)
+      self.filterCompleter.setCaseSensitivity(QtCore.Qt.CaseInsensitive)
+      self.filterWidget.ui.filter.setCompleter(self.filterCompleter)
+
   def filterPosts(self):
     self.textFilter=unicode(self.filterWidget.ui.filter.text())
+    self.updateFilterHistory(self.textFilter)
     info("Text filter set to: %s", self.textFilter)
     self.open_feed(self.ui.feeds.currentIndex())
     self.ui.view.setFocus(QtCore.Qt.TabFocusReason)
