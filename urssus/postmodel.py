@@ -47,8 +47,8 @@ class PostModel(QtGui.QStandardItemModel):
     if self.statusFilter:
       self.posts=self.posts.filter(self.statusFilter==True)
   
-    # FIXME: make limit configurable
-    posts=self.posts.order_by(sql.desc('date')).limit(1000)
+    maxposts=config.getValue('options', 'maxPostsDisplayed', 1000)
+    posts=self.posts.order_by(sql.desc('date')).limit(maxposts)
     for post in posts:
       # Keep references to posts instead of posts, to 
       # avoid stale data. nextPost/etc are about

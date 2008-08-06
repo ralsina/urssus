@@ -101,6 +101,7 @@ options = {
   }, 
   'options': {
     'defaultRefresh'      : ['int', 1800, "How often feeds should be refreshed by default (in seconds).", 300, None ], 
+    'maxPostsDisplayed'   : ['int', 1000, "Limit the display to this many posts. If set too high, opening 'All Feeds' may take forever", 0, None]
   }, 
   'twitter':{
     'username': ['string', None, 'Your Twitter user name.' ], 
