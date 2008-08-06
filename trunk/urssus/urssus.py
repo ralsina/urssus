@@ -132,7 +132,7 @@ class ConfigDialog(QtGui.QDialog):
           text.setText(config.getValue(sectionKey, optionKey, option[1]))          
           olayout.addWidget(label)
           olayout.addWidget(text)
-          self.values[sectionKey+'/'+optionKey]=[spin, lambda(spin): unicode(text.text())]
+          self.values[sectionKey+'/'+optionKey]=[text, lambda(text): unicode(text.text())]
 
         elif option[0]=='password':
           label=QtGui.QLabel(optionKey+":")
@@ -141,7 +141,7 @@ class ConfigDialog(QtGui.QDialog):
           text.setText(config.getValue(sectionKey, optionKey, option[1]))          
           olayout.addWidget(label)
           olayout.addWidget(text)
-          self.values[sectionKey+'/'+optionKey]=[spin, lambda(spin): unicode(text.text())]
+          self.values[sectionKey+'/'+optionKey]=[text, lambda(text): unicode(text.text())]
 
         help=QtGui.QLabel(option[2])
         help.setWordWrap(True)
