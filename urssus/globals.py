@@ -21,9 +21,6 @@ statusQueue=processing.Queue()
 
 feedStatusQueue=processing.Queue()
 
-# Mark Pilgrim's feed parser
-import feedparser as fp
-
 # Configuration
 import config
 
