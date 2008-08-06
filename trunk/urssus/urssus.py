@@ -46,6 +46,7 @@ from ui.Ui_twitterpost import Ui_Dialog as UI_TwitterDialog
 from ui.Ui_twitterauth import Ui_Dialog as UI_TwitterAuthDialog
 from ui.Ui_greaderimport import Ui_Dialog as UI_GReaderDialog
 from ui.Ui_bugdialog import Ui_Dialog as UI_BugDialog
+from ui.Ui_configdialog import Ui_Dialog as UI_ConfigDialog
 
 from postmodel import *
 from feedmodel import * 
@@ -77,6 +78,93 @@ class BugDialog(QtGui.QDialog):
     # Set up the UI from designer
     self.ui=UI_BugDialog()
     self.ui.setupUi(self)
+
+class ConfigDialog(QtGui.QDialog):
+  def __init__(self, parent):
+    QtGui.QDialog.__init__(self, parent)
+    # Set up the UI from designer
+    self.ui=UI_ConfigDialog()
+    self.ui.setupUi(self)
+    
+    sections=config.options.keys()
+    sections.sort()
+    pages=[]
+    
+    self.values={}
+    
+    for sectionKey in sections:
+      section=config.options[sectionKey]
+      # Create a page widget for this section:
+      page=QtGui.QScrollArea()
+      layout=QtGui.QVBoxLayout()
+      # And put autowidgets in it
+      options=section.keys()
+      options.sort()
+      for optionKey in options:
+        olayout=QtGui.QHBoxLayout()
+        option=section[optionKey]
+        
+        if option[0]=='bool':
+          cb=QtGui.QCheckBox(optionKey)
+          cb.setChecked(config.getValue(sectionKey, optionKey, option[1]))
+          olayout.addWidget(cb)
+          self.values[sectionKey+'/'+optionKey]=[cb, lambda(cb): cb.isChecked()]
+          
+        elif option[0]=='int':
+          label=QtGui.QLabel(optionKey+":")
+          spin=QtGui.QSpinBox()
+          if option[3] is not None:
+            spin.setMinimum(option[3])
+          else:
+            spin.setMinimum(-99999)
+          if option[4] is not None:
+            spin.setMaximum(option[4])
+          else:
+            spin.setMaximum(99999)
+          spin.setValue(config.getValue(sectionKey, optionKey, option[1]))
+          olayout.addWidget(label)
+          olayout.addWidget(spin)
+          self.values[sectionKey+'/'+optionKey]=[spin, lambda(spin): spin.value()]
+          
+        elif option[0]=='string':
+          label=QtGui.QLabel(optionKey+":")
+          text=QtGui.QLineEdit()
+          text.setText(config.getValue(sectionKey, optionKey, option[1]))          
+          olayout.addWidget(label)
+          olayout.addWidget(text)
+          self.values[sectionKey+'/'+optionKey]=[spin, lambda(spin): unicode(text.text())]
+
+        elif option[0]=='password':
+          label=QtGui.QLabel(optionKey+":")
+          text=QtGui.QLineEdit()
+          text.setEchoMode(QtGui.QLineEdit.Password)
+          text.setText(config.getValue(sectionKey, optionKey, option[1]))          
+          olayout.addWidget(label)
+          olayout.addWidget(text)
+          self.values[sectionKey+'/'+optionKey]=[spin, lambda(spin): unicode(text.text())]
+
+        help=QtGui.QLabel(option[2])
+        help.setWordWrap(True)
+        olayout.addWidget(help)
+        layout.addLayout(olayout)
+        layout.addStretch(1)
+      page.setLayout(layout)      
+      pages.append(page)
+
+    for page, name in zip(pages,sections) :
+      # Make a tab out of it
+      self.ui.tabs.addTab(page, name)
+    self.ui.tabs.setCurrentIndex(1)
+    self.ui.tabs.removeTab(0)
+
+    
+
+  def accept(self):
+    for k in self.values:
+      sec, opt=k.split('/')
+      widget, l = self.values[k]
+      config.setValue(sec, opt, l(widget))
+    QtGui.QDialog.accept(self)
 
 def my_excepthook(exc_type, exc_value, exc_traceback):
   if exc_type<>KeyboardInterrupt:
@@ -398,6 +486,11 @@ class MainWindow(QtGui.QMainWindow):
   def on_actionReport_Bug_triggered(self, i=None):
     if i==None: return
     QtGui.QDesktopServices.openUrl(QtCore.QUrl('http://code.google.com/p/urssus/issues/entry?template=Defect%20report%20from%20user'))
+
+  def on_actionPreferences_triggered(self, i=None):
+    if i==None: return
+    dlg=ConfigDialog(self)
+    dlg.exec_()
 
   def on_actionImport_From_Google_Reader_triggered(self, i=None):
     if i==None: return
