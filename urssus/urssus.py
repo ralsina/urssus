@@ -239,8 +239,6 @@ class MainWindow(QtGui.QMainWindow):
     QtGui.QMainWindow.__init__(self)
 
     # Internal indexes
-    self.currentFeed=None
-    
     self.combinedView=False
     self.showingFolder=False
     
@@ -1045,7 +1043,6 @@ class MainWindow(QtGui.QMainWindow):
       self.showingFolder=True
     
     self.ui.feeds.setCurrentIndex(index)
-    self.currentFeed=feed
     # Scroll the feeds view so this feed is visible
     self.ui.feeds.scrollTo(index)
 
@@ -1104,7 +1101,7 @@ class MainWindow(QtGui.QMainWindow):
       model=self.ui.posts.model()
       # The == are weird because sqlalchemy reimplementes the == operator for
       # model.statusFilter
-      if model and model.feed_id==self.currentFeed.id and \
+      if model and model.feed_id==feed.id and \
             str(model.textFilter)==str(self.textFilter) and \
             str(model.statusFilter)==str(self.statusFilter):
         self.ui.posts.model().initData(update=True)
@@ -1123,6 +1120,10 @@ class MainWindow(QtGui.QMainWindow):
         self.ui.posts.scrollToTop()
       for action in actions:
         action.setEnabled(True)
+
+  def currentFeed(self):
+    '''The feed linked to the current index in self.ui.feeds'''
+    return self.ui.feeds.model().feedFromIndex(self.ui.feeds.currentIndex())
 
   def updateFeedItem(self, feed, parents=False, updating=False, can_reopen=False):
     info("Updating item for feed %d", feed.id)
@@ -1151,7 +1152,7 @@ class MainWindow(QtGui.QMainWindow):
   
     # The calls to setRowHidden cause a change in the column's width! Looks like a Qt bug to me.
     if self.showOnlyUnread:
-      if feed.unreadCount()==0 and feed<>self.currentFeed: 
+      if feed.unreadCount()==0 and feed<>self.currentFeed(): 
         # Hide feeds with no unread items
         self.ui.feeds.setRowHidden(item.row(), index.parent(), True)
       else:
@@ -1300,7 +1301,6 @@ class MainWindow(QtGui.QMainWindow):
 
         # No feed current
         self.ui.feeds.setCurrentIndex(QtCore.QModelIndex())
-        self.currentFeed=None
         feed.delete()
         self.ui.feeds.model().removeRow(index.row(), index.parent())
         elixir.session.flush()
@@ -1350,10 +1350,9 @@ class MainWindow(QtGui.QMainWindow):
   def on_actionNext_Unread_Article_triggered(self, i=None):
     if i==None: return
     info( "Next Unread Article")
-    if not self.currentFeed:
+    if not self.ui.posts.model(): # Not showing a feed
       self.on_actionNext_Unread_Feed_triggered(True)
       return
-
     cp=self.getCurrentPost()
     nextIdx=self.ui.posts.model().nextUnreadPostIndex(cp)
     if nextIdx.isValid():
@@ -1382,7 +1381,7 @@ class MainWindow(QtGui.QMainWindow):
   def on_actionPrevious_Unread_Article_triggered(self, i=None):
     if i==None: return
     info("Previous Unread Article")
-    if not self.currentFeed:
+    if not self.ui.posts.model(): # Not showing a feed
       self.on_actionPrevious_Unread_Feed_triggered(True)
       return
 
@@ -1400,7 +1399,6 @@ class MainWindow(QtGui.QMainWindow):
     info ("Next Article")
     
     cp=self.getCurrentPost()
-
     # First ask the post list's model
     nextIdx=self.ui.posts.model().previousPostIndex(cp)
     
@@ -1414,40 +1412,42 @@ class MainWindow(QtGui.QMainWindow):
   def on_actionNext_Feed_triggered(self, i=None):
     if i==None: return
     info("Next Feed")
-    if self.currentFeed:
-      nextFeed=self.currentFeed.nextFeed()
-    else:
-      nextFeed=root_feed.nextFeed()
+    feed=self.currentFeed() or root_feed
+    nextFeed=feed.nextFeed()
     if nextFeed:
       self.open_feed(self.ui.feeds.model().indexFromFeed(nextFeed))
 
   def on_actionPrevious_Feed_triggered(self, i=None):
     if i==None: return
     info("Previous Feed")
-    if self.currentFeed:
-      prevFeed=self.currentFeed.previousFeed()
+    f=self.currentFeed()
+    if f:
+      prevFeed=f.previousFeed()
       if prevFeed and prevFeed<>root_feed: # The root feed has no UI
         self.open_feed(self.ui.feeds.model().indexFromFeed(prevFeed))
-    # No current feed, so what's the meaning of "previous feed"?
-
+    else:
+      # No current feed, so what's the meaning of "previous feed"?
+      pass
+      
   def on_actionNext_Unread_Feed_triggered(self, i=None):
     if i==None: return
     info("Next unread feed")
-    if self.currentFeed:
-      nextFeed=self.currentFeed.nextUnreadFeed()
-    else:
-      nextFeed=root_feed.nextUnreadFeed()
+    f=self.currentFeed() or root_feed
+    nextFeed=f.nextUnreadFeed()
     if nextFeed:
       self.open_feed(self.ui.feeds.model().indexFromFeed(nextFeed))
 
   def on_actionPrevious_Unread_Feed_triggered(self, i=None):
     if i==None: return
     info("Previous unread feed")
-    if self.currentFeed:
-      prevFeed=self.currentFeed.previousUnreadFeed()
+    f=self.currentFeed()
+    if f:
+      prevFeed=f.previousUnreadFeed()
       if prevFeed and prevFeed<>root_feed: # The root feed has no UI
         self.open_feed(self.ui.feeds.model().indexFromFeed(prevFeed))
-    # No current feed, so what's the meaning of "previous unread feed"?
+    else:
+      # No current feed, so what's the meaning of "previous unread feed"?
+      pass
       
   def on_actionIncrease_Font_Sizes_triggered(self, i=None):
     if i==None: return
