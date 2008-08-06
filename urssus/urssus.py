@@ -603,7 +603,11 @@ class MainWindow(QtGui.QMainWindow):
     # Use Mark pilgrim / Aaron Swartz's RSS finder module
     # FIXME: make this non-blocking somehow
     import feedfinder
-    feed=feedfinder.feed(url)
+    try:
+      feed=feedfinder.feed(url)
+    except feedfinder.TimeoutError, e:
+      QtGui.QMessageBox.critical(self, 'Error - uRSSus', 'Timeout downloading %s'%url )      
+      return
     if not feed:
       QtGui.QMessageBox.critical(self, "Error - uRSSus", "Can't find a feed wit URL: %s"%url)
       return
