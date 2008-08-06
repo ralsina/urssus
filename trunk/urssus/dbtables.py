@@ -170,7 +170,7 @@ class Feed(elixir.Entity):
     now=datetime.datetime.now()
     if self.archiveType==0: # Default archive config
       # FIXME: make that 7 (days) configurable
-      cutoff=now-timedelta(7, 0, 0)
+      cutoff=now-datetime.timedelta(7, 0, 0)
       Post.table.update().where(sql.and_(Post.important==False,  
                                          Post.feed==self, 
                                          Post.date<cutoff)).\
@@ -188,7 +188,7 @@ class Feed(elixir.Entity):
       elixir.session.flush()
     elif self.archiveType==3: #limitDays
       # Tested
-      cutoff=now-timedelta(self.limitDays, 0, 0)
+      cutoff=now-datetime.timedelta(self.limitDays, 0, 0)
       Post.table.update().where(sql.and_(Post.important==False, 
                                          Post.date<cutoff)).\
                           values(deleted=True).execute()
