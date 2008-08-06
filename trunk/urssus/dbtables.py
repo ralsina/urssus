@@ -8,6 +8,9 @@ from globals import *
 from urllib import urlopen
 import urlparse
 
+# Mark Pilgrim's Feed Parser
+import feedparser as fp
+
 # Configuration
 import config
 
@@ -427,7 +430,7 @@ class Feed(elixir.Entity):
     feedStatusQueue.put([0, self.id])
     if self.title:
       statusQueue.put(u"Updating: "+ self.title)
-    d=fp.parse(self.xmlUrl)
+    d=fp.parse(self.xmlUrl,  agent='uRSSus/%s +http://urssus.googlecode.com/'%VERSION)
     posts=[]
     for post in d['entries']:
       try:
