@@ -427,10 +427,13 @@ class Feed(elixir.Entity):
     if not self.xmlUrl: # Not a real feed
       # FIXME: should update all children?
       return
+      
+    # FIXME: should update less often: http://www.feedparser.org/docs/http-etag.html
     feedStatusQueue.put([0, self.id])
     if self.title:
-      statusQueue.put(u"Updating: "+ self.title)
+      statusQueue.put(u"Updating: "+ self.title
     d=fp.parse(self.xmlUrl)
+    # FIXME handle errors/redirects according to http://www.feedparser.org/docs/http-redirect.html 
     posts=[]
     for post in d['entries']:
       try:
