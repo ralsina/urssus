@@ -30,6 +30,7 @@ class FeedModel(QtGui.QStandardItemModel):
     
 
   def initData(self):
+    self.clear()
     self.setColumnCount(2)
     self.setHeaderData(0, QtCore.Qt.Horizontal, QtCore.QVariant("Title"))
     self.setHeaderData(1, QtCore.Qt.Horizontal, QtCore.QVariant("Unread"))
