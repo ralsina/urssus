@@ -308,6 +308,8 @@
     </property>
     <addaction name="actionFind" />
     <addaction name="actionFind_Again" />
+    <addaction name="separator" />
+    <addaction name="actionPreferences" />
    </widget>
    <widget class="QMenu" name="menuArticle" >
     <property name="title" >
@@ -876,6 +878,15 @@
    </property>
    <property name="text" >
     <string>Report Bug</string>
+   </property>
+  </action>
+  <action name="actionPreferences" >
+   <property name="icon" >
+    <iconset resource="../images/icons.qrc" >
+     <normaloff>:/configure.svg</normaloff>:/configure.svg</iconset>
+   </property>
+   <property name="text" >
+    <string>Preferences...</string>
    </property>
   </action>
   <addaction name="actionShow_Menu_Bar" />

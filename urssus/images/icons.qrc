@@ -1,5 +1,6 @@
 <RCC>
   <qresource prefix="/" >
+    <file>configure.svg</file>
     <file>bug.svg</file>
     <file>editcopy.svg</file>
     <file>menubar.svg</file>
