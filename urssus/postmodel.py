@@ -71,8 +71,8 @@ class PostModel(QtGui.QStandardItemModel):
         item2=QtGui.QStandardItem()
         item2.setToolTip('%s - Posted at %s'%(unicode(post), unicode(post.date)))
 
-        item2.setData(QtCore.QVariant(unicode(post.date)), display)
-        d=post.date
+        item2.setData(QtCore.QVariant(unicode(utc2local(post.date))), display)
+        d=utc2local(post.date)
         # AOL Fanhouse posts items with a time differential of milliseconds, so they sorted
         # differently on python and Qt. If someone makesit to microseconds, this solution
         # is borked
