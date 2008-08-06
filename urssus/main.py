@@ -51,7 +51,7 @@ def main():
   
   import dbtables
   import feedupdater
-  root_feed=dbtables.initDB()
+  dbtables.initDB()
   # Start background updater
   p = processing.Process(target=feedupdater.feedUpdater)
   p.setDaemon(True)

@@ -72,4 +72,3 @@ def renderTemplate(tname, **context):
 import processing
 processes=[]
 
-root_feed=None
