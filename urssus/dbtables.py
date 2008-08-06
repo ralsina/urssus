@@ -431,7 +431,7 @@ class Feed(elixir.Entity):
     # FIXME: should update less often: http://www.feedparser.org/docs/http-etag.html
     feedStatusQueue.put([0, self.id])
     if self.title:
-      statusQueue.put(u"Updating: "+ self.title
+      statusQueue.put(u"Updating: "+ self.title)
     d=fp.parse(self.xmlUrl)
     # FIXME handle errors/redirects according to http://www.feedparser.org/docs/http-redirect.html 
     posts=[]
