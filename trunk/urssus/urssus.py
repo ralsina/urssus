@@ -270,7 +270,10 @@ class MainWindow(QtGui.QMainWindow):
     QtCore.QObject.connect(self.searchWidget.ui.previous, QtCore.SIGNAL("clicked()"), self.findTextReverse)
     QtCore.QObject.connect(self.searchWidget.ui.close, QtCore.SIGNAL("clicked()"), self.ui.searchBar.hide)
     QtCore.QObject.connect(self.searchWidget.ui.close, QtCore.SIGNAL("clicked()"), self.ui.view.setFocus)
-    
+    # Completion with history
+    # FIXME: make persistent? Not sure
+    self.searchHistory=[]
+
     # Set some properties of the Web view
     page=self.ui.view.page()
     page.setLinkDelegationPolicy(page.DelegateAllLinks)
@@ -688,8 +691,17 @@ class MainWindow(QtGui.QMainWindow):
     if i==None: return
     self.findText()
 
+  def updateSearchHistory(self, text):
+    if not text in self.searchHistory:
+      self.searchHistory.append(text)
+      self.searchHistory=self.searchHistory[-20:]
+      completer=QtGui.QCompleter(self.searchHistory, self.searchWidget.ui.text)
+      completer.setCaseSensitivity(QtCore.Qt.CaseInsensitive)
+      self.searchWidget.ui.text.setCompleter(completer)
+
   def findText(self):
     text=unicode(self.searchWidget.ui.text.text())
+    self.updateSearchHistory(text)      
     if self.searchWidget.ui.matchCase.isChecked():
       self.ui.view.findText(text, QtWebKit.QWebPage.FindCaseSensitively)
     else:  
@@ -697,6 +709,7 @@ class MainWindow(QtGui.QMainWindow):
 
   def findTextReverse(self):
     text=unicode(self.searchWidget.ui.text.text())
+    self.updateSearchHistory(text)
     if self.searchWidget.ui.matchCase.isChecked():
       self.ui.view.findText(text, QtWebKit.QWebPage.FindBackward | QtWebKit.QWebPage.FindCaseSensitively)
     else:  
