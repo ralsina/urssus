@@ -172,7 +172,7 @@ class Feed(elixir.Entity):
     # 3 = use limitDays, 4 = no archiving
     now=datetime.datetime.now()
     if self.archiveType==0: # Default archive config
-      # FIXME: make that 7 (days) configurable
+      days=config.getValue('options', 'defaultExpiration', 7)
       cutoff=now-datetime.timedelta(7, 0, 0)
       Post.table.update().where(sql.and_(Post.important==False,  
                                          Post.feed==self, 
