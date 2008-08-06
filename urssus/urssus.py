@@ -1003,7 +1003,7 @@ class MainWindow(QtGui.QMainWindow):
     the feed item when the model data changes'''
     
     feed=Feed.get_by(id=self.ui.posts.model().feed_id)
-    self.updateFeedItem(feed)
+    self.updateFeedItem(feed, parents=True)
 
   def open_feed(self, index):
     if not index.isValid():
