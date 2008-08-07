@@ -47,6 +47,15 @@ setup_all()
 def upgrade():
   # This doesn't work for some reason :-(
   # Feed.table.update().where(Feed.lastModified==None).values(lastModified=datetime.datetime(1970,1,1)).execute()
-  for feed in Feed.query():
-    if not feed.lastModified:
-      feed.lastModified=datetime.datetime(1970,1,1)
+
+  # And this doesn'twork, either
+  # for feed in Feed.query():
+  #   if not feed.lastModified:
+  #     feed.lastModified=datetime.datetime(1970,1,1)
+
+    from urssus import database
+    from sqlite3 import dbapi2 as sqlite
+
+    con = sqlite.connect(database.dbfile)
+    cur=con.cursor()
+    cur.execute("""UPDATE feeds SET "last-modified"='1970-01-01 00:00:00.0' WHERE "last-modified" IS NULL """)
