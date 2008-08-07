@@ -435,7 +435,12 @@ class Feed(elixir.Entity):
     feedStatusQueue.put([0, self.id])
     if self.title:
       statusQueue.put(u"Updating: "+ self.title)
-      
+
+    if self.lastModified:
+      mod=self.lastModified.timetuple()
+    else:
+      mod=datetime.datetime(1970, 1, 1).timetuple()
+
     d=fp.parse(self.xmlUrl, etag=self.etag, modified=self.lastModified.timetuple())
     if d.status==304 and not forced: # No need to fetch
       feedStatusQueue.put([1, self.id])
