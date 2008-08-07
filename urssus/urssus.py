@@ -85,71 +85,69 @@ class ConfigDialog(QtGui.QDialog):
     # Set up the UI from designer
     self.ui=UI_ConfigDialog()
     self.ui.setupUi(self)
-    
-    sections=config.options.keys()
-    sections.sort()
     pages=[]
-    
+    sections=[]
     self.values={}
-    
-    for sectionKey in sections:
-      section=config.options[sectionKey]
-      # Create a page widget for this section:
+
+    for sectionName, options in config.options:
+      # Create a page widget/layout for this section:
       page=QtGui.QScrollArea()
-      layout=QtGui.QVBoxLayout()
-      # And put autowidgets in it
-      options=section.keys()
-      options.sort()
-      for optionKey in options:
-        olayout=QtGui.QHBoxLayout()
-        option=section[optionKey]
-        
-        if option[0]=='bool':
-          cb=QtGui.QCheckBox(optionKey)
-          cb.setChecked(config.getValue(sectionKey, optionKey, option[1]))
-          olayout.addWidget(cb)
-          self.values[sectionKey+'/'+optionKey]=[cb, lambda(cb): cb.isChecked()]
+      layout=QtGui.QGridLayout()
+      row=-2
+      for optionName, definition in options:
+        row+=2
+        if definition[0]=='bool':
+          cb=QtGui.QCheckBox(optionName)
+          cb.setChecked(config.getValue(sectionName, optionName, definition[1]))
+          layout.addWidget(cb, row, 0, 1, 2)
+          self.values[sectionName+'/'+optionName]=[cb, lambda(cb): cb.isChecked()]
+
           
-        elif option[0]=='int':
-          label=QtGui.QLabel(optionKey+":")
+        elif definition[0]=='int':
+          label=QtGui.QLabel(optionName+":")
+          label.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignVCenter)
           spin=QtGui.QSpinBox()
-          if option[3] is not None:
-            spin.setMinimum(option[3])
+          if definition[3] is not None:
+            spin.setMinimum(definition[3])
           else:
             spin.setMinimum(-99999)
-          if option[4] is not None:
-            spin.setMaximum(option[4])
+          if definition[4] is not None:
+            spin.setMaximum(definition[4])
           else:
             spin.setMaximum(99999)
-          spin.setValue(config.getValue(sectionKey, optionKey, option[1]))
-          olayout.addWidget(label)
-          olayout.addWidget(spin)
-          self.values[sectionKey+'/'+optionKey]=[spin, lambda(spin): spin.value()]
+          spin.setValue(config.getValue(sectionName, optionName, definition[1]))
+          layout.addWidget(label, row, 0, 1, 1)
+          layout.addWidget(spin, row, 1, 1, 1)
+          self.values[sectionName+'/'+optionName]=[spin, lambda(spin): spin.value()]
           
-        elif option[0]=='string':
-          label=QtGui.QLabel(optionKey+":")
+        elif definition[0]=='string':
+          label=QtGui.QLabel(optionName+":")
+          label.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignVCenter)
           text=QtGui.QLineEdit()
-          text.setText(config.getValue(sectionKey, optionKey, option[1]))          
-          olayout.addWidget(label)
-          olayout.addWidget(text)
-          self.values[sectionKey+'/'+optionKey]=[text, lambda(text): unicode(text.text())]
+          text.setText(config.getValue(sectionName, optionName, definition[1]))          
+          layout.addWidget(label, row, 0, 1, 1)
+          layout.addWidget(text, row, 1, 1, 1)
+          self.values[sectionName+'/'+optionName]=[text, lambda(text): unicode(text.text())]
 
-        elif option[0]=='password':
-          label=QtGui.QLabel(optionKey+":")
+        elif definition[0]=='password':
+          label=QtGui.QLabel(optionName+":")
+          label.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignVCenter)
           text=QtGui.QLineEdit()
           text.setEchoMode(QtGui.QLineEdit.Password)
-          text.setText(config.getValue(sectionKey, optionKey, option[1]))          
-          olayout.addWidget(label)
-          olayout.addWidget(text)
-          self.values[sectionKey+'/'+optionKey]=[text, lambda(text): unicode(text.text())]
+          text.setText(config.getValue(sectionName, optionName, definition[1]))          
+          layout.addWidget(label, row, 0, 1, 1)
+          layout.addWidget(text, row, 1, 1, 1)
+          self.values[sectionName+'/'+optionName]=[text, lambda(text): unicode(text.text())]
 
-        help=QtGui.QLabel(option[2])
+        help=QtGui.QLabel(definition[2])
         help.setWordWrap(True)
-        olayout.addWidget(help)
-        layout.addLayout(olayout)
-        layout.addStretch(1)
+        layout.addWidget(help, row, 2, 1, 1)
+        separator=QtGui.QFrame()
+        separator.setFrameStyle(QtGui.QFrame.HLine|QtGui.QFrame.Plain)
+        layout.addWidget(separator, row+1, 0, 1, 3)
       page.setLayout(layout)      
       pages.append(page)
+      sections.append(sectionName)
 
     for page, name in zip(pages,sections) :
       # Make a tab out of it
