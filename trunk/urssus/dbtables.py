@@ -438,10 +438,12 @@ class Feed(elixir.Entity):
       
     d=fp.parse(self.xmlUrl, etag=self.etag, modified=self.lastModified.timetuple())
     if d.status==304 and not forced: # No need to fetch
+      feedStatusQueue.put([1, self.id])
       return
     if d.status==301: # Permanent redirect
       self.xmlUrl=d.href
     if d.status==410: # Feed deleted. FIXME: tell the user and stop trying!
+      feedStatusQueue.put([1, self.id])
       return
       
     if 'modified' in d:
