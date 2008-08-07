@@ -139,7 +139,11 @@ class Feed(elixir.Entity):
   curUnread      = -1
   # Added in schema version 6
   subtitle       = elixir.Field(elixir.Text, default='')
-
+  # Added in schema version 7
+  etag           = elixir.Field(elixir.Text, default='')
+  # Added in schema version 7
+  last-modified  = elixir.Field(elixir.DateTime, default=datetime.datetime(1970,1,1))
+  
   def __repr__(self):
     return self.text
 
@@ -546,7 +550,7 @@ root_feed=None
 
 def initDB():
   global root_feed
-  REQUIRED_SCHEMA=6
+  REQUIRED_SCHEMA=8
   # FIXME: show what we are doing on the UI
   if not os.path.exists(database.dbfile): # Just create it
     os.system('urssus_upgrade_db')
