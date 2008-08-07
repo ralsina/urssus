@@ -230,9 +230,8 @@ class Feed(elixir.Entity):
   def allPostsQuery(self):
     '''Returns a query that should give you all the posts contained in this folder's children
     down to any level. Required for aggregate feeds, I'm afraid'''
-    af=self.allFeeds()
-    ored=sql.or_(*[Post.feed==f for f in af])
-    return Post.query().filter(ored)
+    af=[feed.id for feed in self.allFeeds()]
+    return Post.query.filter(Post.table._columns.get('feed_id').in_(af))
 
   def allPosts(self):
     '''This is used if you want all posts in this feed as well as in its childrens.
