@@ -142,7 +142,7 @@ class Feed(elixir.Entity):
   # Added in schema version 7
   etag           = elixir.Field(elixir.Text, default='')
   # Added in schema version 7
-  last-modified  = elixir.Field(elixir.DateTime, default=datetime.datetime(1970,1,1))
+  lastModified   = elixir.Field(elixir.DateTime, colname="last-modified", default=datetime.datetime(1970,1,1))
   
   def __repr__(self):
     return self.text
@@ -427,17 +427,29 @@ class Feed(elixir.Entity):
         pass #I am not going to care about errors here :-D
     elixir.session.flush()
     
-  def update(self):
+  def update(self, forced=False):
     if not self.xmlUrl: # Not a real feed
       # FIXME: should update all children?
       return
       
-    # FIXME: should update less often: http://www.feedparser.org/docs/http-etag.html
     feedStatusQueue.put([0, self.id])
     if self.title:
       statusQueue.put(u"Updating: "+ self.title)
-    d=fp.parse(self.xmlUrl)
-    # FIXME handle errors/redirects according to http://www.feedparser.org/docs/http-redirect.html 
+      
+    print "fetching with", self.etag, self.lastModified
+    d=fp.parse(self.xmlUrl, etag=self.etag, modified=self.lastModified.timetuple())
+    if d.status==304 and not forced: # No need to fetch
+      return
+    if d.status==301: # Permanent redirect
+      self.xmlUrl=d.href
+    if d.status==410: # Feed deleted. FIXME: tell the user and stop trying!
+      return
+      
+    if 'modified' in d:
+      self.lastModified=datetime.datetime(*d['modified'][:6])
+    if 'etag' in d:
+      self.etag=d['etag']
+
     posts=[]
     for post in d['entries']:
       try:
