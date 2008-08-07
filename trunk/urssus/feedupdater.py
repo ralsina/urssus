@@ -23,8 +23,11 @@ def feedUpdater(full=False):
       info("updater loop")
       time.sleep(60)
       now=datetime.datetime.now()
-      for feed in dbtables.Feed.query.filter(dbtables.Feed.xmlUrl<>None):
-        period=config.getValue('options', 'defaultRefresh', 1800)
+      period=config.getValue('options', 'defaultRefresh', 1800)
+      ids=[feed.id for feed in dbtables.Feed.query.filter(dbtables.Feed.xmlUrl<>None)]
+      for id in ids :
+        time.sleep(1)
+        feed=Feed.get_by(id=id)
         if feed.updateInterval==0: # Update never
           continue
         elif feed.updateInterval<>-1: # not update default
@@ -33,7 +36,6 @@ def feedUpdater(full=False):
           info("updating because of timeout")
           try:
             feed.update()
-            # While we're at it
-            feed.expire(expunge=False)
+            # feed.expire(expunge=False)
           except:
             pass
