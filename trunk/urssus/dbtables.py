@@ -450,10 +450,6 @@ class Feed(elixir.Entity):
       self.xmlUrl=d.href
     if d.status==410: # Feed deleted. FIXME: tell the user and stop trying!
       return
-    if 'modified' in d:
-      self.lastModified=datetime.datetime(*d['modified'][:6])
-    if 'etag' in d:
-      self.etag=d['etag']
 
     posts=[]
     for post in d['entries']:
@@ -537,6 +533,10 @@ class Feed(elixir.Entity):
         debug( post )
     self.lastUpdated=datetime.datetime.now()
     self.updateFeedData(d)
+    if 'modified' in d:
+      self.lastModified=datetime.datetime(*d['modified'][:6])
+    if 'etag' in d:
+      self.etag=d['etag']
 
     if posts:
       # Fix freshness
