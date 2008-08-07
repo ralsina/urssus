@@ -1,6 +1,7 @@
 from globals import *
 import sys, time, datetime
 import elixir
+from dbtables import Feed
   
 def updateOne(feed):
   feed.update(forced=True)
