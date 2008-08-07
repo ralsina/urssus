@@ -31,11 +31,9 @@ def feedUpdater(full=False):
           period=60*feed.updateInterval # convert to seconds
         if (now-feed.lastUpdated).seconds>period:
           info("updating because of timeout")
-#          feedStatusQueue.put([0, feed.id])
-          try: # we can't let this fail or it will stay marked forever;-)
+          try:
             feed.update()
             # While we're at it
             feed.expire(expunge=False)
           except:
             pass
-#          feedStatusQueue.put([1, feed.id])

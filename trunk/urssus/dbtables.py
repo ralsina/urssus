@@ -428,24 +428,28 @@ class Feed(elixir.Entity):
     elixir.session.flush()
     
   def update(self, forced=False):
+    feedStatusQueue.put([0, self.id])
+    try:
+      self.real_update(forced)
+    except: # FIXME: reraise
+      pass
+    feedStatusQueue.put([1, self.id])
+    
+  def real_update(self, forced=False):
     if not self.xmlUrl: # Not a real feed
       # FIXME: should update all children?
       return
       
-    feedStatusQueue.put([0, self.id])
     if self.title:
       statusQueue.put(u"Updating: "+ self.title)
-
     d=fp.parse(self.xmlUrl, etag=self.etag, modified=self.lastModified.timetuple())
+    
     if d.status==304 and not forced: # No need to fetch
-      feedStatusQueue.put([1, self.id])
       return
     if d.status==301: # Permanent redirect
       self.xmlUrl=d.href
     if d.status==410: # Feed deleted. FIXME: tell the user and stop trying!
-      feedStatusQueue.put([1, self.id])
       return
-      
     if 'modified' in d:
       self.lastModified=datetime.datetime(*d['modified'][:6])
     if 'etag' in d:
@@ -551,7 +555,6 @@ class Feed(elixir.Entity):
     # Queue a notification if needed
     if posts and self.notify:
       feedStatusQueue.put([3, self.id, len(posts)])
-    feedStatusQueue.put([1, self.id])
     
   def getQuery(self):
     if self.xmlUrl:
