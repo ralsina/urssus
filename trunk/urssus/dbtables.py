@@ -436,7 +436,6 @@ class Feed(elixir.Entity):
     if self.title:
       statusQueue.put(u"Updating: "+ self.title)
       
-    print "fetching with", self.etag, self.lastModified
     d=fp.parse(self.xmlUrl, etag=self.etag, modified=self.lastModified.timetuple())
     if d.status==304 and not forced: # No need to fetch
       return
