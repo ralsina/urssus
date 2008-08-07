@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE Project SYSTEM "Project-4.2.dtd">
 <!-- eric4 project file for project urssus -->
-<!-- Saved: 2008-08-06, 14:08:31 -->
+<!-- Saved: 2008-08-07, 11:04:25 -->
 <!-- Copyright (C) 2008 Roberto Alsina, ralsina@netmanagers.com.ar -->
 <Project version="4.2">
   <ProgLanguage mixed="0">Python</ProgLanguage>
@@ -242,6 +242,12 @@
       <Dir>urssus</Dir>
       <Dir>ui</Dir>
       <Name>Ui_configdialog.py</Name>
+    </Source>
+    <Source>
+      <Dir>urssus</Dir>
+      <Dir>versioning</Dir>
+      <Dir>versions</Dir>
+      <Name>007_Add_columns_for_etag_and_last-modified_to_feeds.py</Name>
     </Source>
   </Sources>
   <Forms>

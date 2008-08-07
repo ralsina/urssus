@@ -3,7 +3,7 @@ import sys, time, datetime
 import elixir
   
 def updateOne(feed):
-  feed.update()
+  feed.update(forced=True)
   elixir.session.flush()  
   
 # The feed updater (runs out-of-process)
