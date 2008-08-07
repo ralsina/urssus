@@ -72,7 +72,7 @@ Configuration options definitions, used to build an automatic config dialog
 
 Do NOT just use them in the sources, define them
 here, then use them in the sources.
-It's a dict of dicts, first level is keyed by
+It's a list of lists, first level is keyed by
 section, second level by option.
 
 Do not include things that are not reasonably editable (for example, the widths
@@ -80,33 +80,43 @@ of the splitters) or will be overwritten when quitting the app, thus having
 no visible effect (window size), or are already "configurable" by choosing them
 from the menu (example: showMainBar, viewMode)
 
-So options[section][option] gives you the definition.
+
+The options variable is a list of sections.
+A section is a list: (sectionName,options)
+Options are a list of Option.
+An option is (OptionName, definition)
 
 Definitions are as follow:
-    
-['string',    default, help]
-['password',  default, help]
-['int',       default, help, min,max] (min==None is no minimum, and the same for max)
-['strlist',   default, help]
-['intlist',   default, help]
-['bool',      default, help]
-['choice',    default, help, ['opt1',...,'optn']]
+
+('string',    default, help)
+('password',  default, help)
+('int',       default, help, min,max) # (min==None is no minimum, and the same for max)
+('strlist',   default, help)
+('intlist',   default, help)
+('bool',      default, help)
+('choice',    default, help, ('opt1',...,'optn'))
 
 '''
 
-options = {
-  'ui': {
-    'alwaysShowFeed'      : ['bool', False, "Always show a link to the post's feed when diplaying a post"], 
-    'hideOnTrayClick'     : ['bool', True, "Hide the main window when clicking on the tray icon"], 
-  }, 
-  'options': {
-    'defaultRefresh'      : ['int', 1800, "How often feeds should be refreshed by default (in seconds).", 300, None ], 
-    'maxPostsDisplayed'   : ['int', 1000, "Limit the display to this many posts. If set too high, opening 'All Feeds' may take forever", 0, None], 
-    'defaultExpiration'   : ['int',    7, "How long should articles be kept by default. (In days)", 0, 9999], 
-  }, 
-  'twitter':{
-    'username': ['string', None, 'Your Twitter user name.' ], 
-    'password': ['password', None, 'Your Twitter password.' ], 
-  }, 
-}
+options = (
+  ('ui', 
+    (
+      ('alwaysShowFeed',  ('bool', False, "Always show a link to the post's feed when displaying a post")), 
+      ('hideOnTrayClick', ('bool', True, "Hide the main window when clicking on the tray icon")), 
+    )
+  ), 
+  ('options', 
+    (
+      ('defaultRefresh'      ,  ('int', 1800, "How often feeds should be refreshed by default (in seconds).", 300, None )), 
+      ('maxPostsDisplayed'   ,  ('int', 1000, "Limit the display to this many posts. If set too high, opening 'All Feeds' may take forever", 0, None)), 
+      ('defaultExpiration'   ,  ('int',    7, "How long should articles be kept by default. (In days)", 0, 9999)), 
+    )
+  ), 
+  ('twitter',
+    (
+      ('username',  ('string', None, 'Your Twitter user name.' )), 
+      ('password',  ('password', None, 'Your Twitter password.' )), 
+    )
+  )
+)
 
