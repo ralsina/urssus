@@ -436,11 +436,6 @@ class Feed(elixir.Entity):
     if self.title:
       statusQueue.put(u"Updating: "+ self.title)
 
-    if self.lastModified:
-      mod=self.lastModified.timetuple()
-    else:
-      mod=datetime.datetime(1970, 1, 1).timetuple()
-
     d=fp.parse(self.xmlUrl, etag=self.etag, modified=self.lastModified.timetuple())
     if d.status==304 and not forced: # No need to fetch
       feedStatusQueue.put([1, self.id])
@@ -568,7 +563,7 @@ root_feed=None
 
 def initDB():
   global root_feed
-  REQUIRED_SCHEMA=8
+  REQUIRED_SCHEMA=9
   # FIXME: show what we are doing on the UI
   if not os.path.exists(database.dbfile): # Just create it
     os.system('urssus_upgrade_db')
