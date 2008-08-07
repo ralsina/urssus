@@ -53,9 +53,10 @@ def upgrade():
   #   if not feed.lastModified:
   #     feed.lastModified=datetime.datetime(1970,1,1)
 
-    from urssus import database
-    from sqlite3 import dbapi2 as sqlite
-
-    con = sqlite.connect(database.dbfile)
-    cur=con.cursor()
-    cur.execute("""UPDATE feeds SET "last-modified"='1970-01-01 00:00:00.0' WHERE "last-modified" IS NULL """)
+  from urssus import database
+  from sqlite3 import dbapi2 as sqlite
+  
+  con = sqlite.connect(database.dbfile)
+  cur=con.cursor()
+  cur.execute("""UPDATE feeds SET "last-modified"='1970-01-01 00:00:00.0' WHERE "last-modified" IS NULL """)
+  con.commit()
