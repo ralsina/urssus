@@ -48,6 +48,8 @@ from ui.Ui_greaderimport import Ui_Dialog as UI_GReaderDialog
 from ui.Ui_bugdialog import Ui_Dialog as UI_BugDialog
 from ui.Ui_configdialog import Ui_Dialog as UI_ConfigDialog
 
+from processdialog import ProcessDialog
+
 from postmodel import *
 from feedmodel import * 
 
@@ -694,45 +696,65 @@ class MainWindow(QtGui.QMainWindow):
 
   def addFeed(self, url):
     # Use Mark pilgrim / Aaron Swartz's RSS finder module
-    # FIXME: make this non-blocking somehow
+    
+    # This takes a few seconds, because we need to fetch the feed and parse it
+    # So, start a background process, show a dialog, and make the user wait
+    dlg=ProcessDialog(self, callable=self.realAddFeed, args=[url, ])
+    if dlg.exec_():
+      # Retrieve the feed
+      newFeed=Feed.get_by(id=dlg.result)
+      # Figure out the insertion point
+      index=self.ui.feeds.currentIndex()
+      if index.isValid():         
+        curFeed=self.ui.feeds.model().feedFromIndex(index)
+      else:
+        curFeed=root_feed
+      # if curFeed is a feed, add as sibling
+      if curFeed.xmlUrl:
+        newFeed.parent=curFeed.parent
+      # if curFeed is a folder, add as child
+      else:
+        newFeed.parent=curFeed
+      elixir.session.flush()
+      self.initTree()
+      idx=self.ui.feeds.model().indexFromFeed(newFeed)
+      self.ui.feeds.setCurrentIndex(idx)
+      self.open_feed(idx)
+      self.on_actionEdit_Feed_triggered(True)
+    
+  def realAddFeed(self, url, output):
+    _info   = lambda(msg): output.put([0, msg])
+    _error  = lambda(msg): output.put([2, msg])
+    _return = lambda(msg): output.put([100, msg])
+      
     import feedfinder
     try:
+      _info('Searching for a feed in %s'%url)
       feed=feedfinder.feed(url)
     except feedfinder.TimeoutError, e:
-      QtGui.QMessageBox.critical(self, 'Error - uRSSus', 'Timeout downloading %s'%url )      
+      _error('Timeout downloading %s'%url )      
       return
     if not feed:
-      QtGui.QMessageBox.critical(self, "Error - uRSSus", "Can't find a feed wit URL: %s"%url)
+      _error("Can't find a feed wit URL: %s"%url)
       return
-    info ("Found feed: %s", feed)
+    _info ("Found feed: %s"%feed)
+    _info ("Checking if you are subscribed")
     f=Feed.get_by(xmlUrl=feed)
     if f:
       # Already subscribed
-      QtGui.QMessageBox.critical(self, "Error - uRSSus", 'You are already subscribed to "%s"'%f)
+      ff=unicode(f) or f.xmlUrl 
+      _error('You are already subscribed to "%s"'%f)
       return
+    _info ('Creating feed in the database')
     newFeed=Feed(xmlUrl=feed)
+    _info ('Fetching feed information')
     newFeed.update()
     # To show it on the tree
     newFeed.text=newFeed.title
-    
-    # Figure out the insertion point
-    index=self.ui.feeds.currentIndex()
-    if index.isValid():         
-      curFeed=self.ui.feeds.model().feedFromIndex(index)
-    else:
-      curFeed=root_feed
-    # if curFeed is a feed, add as sibling
-    if curFeed.xmlUrl:
-      newFeed.parent=curFeed.parent
-    # if curFeed is a folder, add as child
-    else:
-      newFeed.parent=curFeed
     elixir.session.flush()
-    self.initTree()
-    idx=self.ui.feeds.model().indexFromFeed(newFeed)
-    self.ui.feeds.setCurrentIndex(idx)
-    self.open_feed(idx)
-    self.on_actionEdit_Feed_triggered(True)
+    _info ('done')
+    _return (newFeed.id)
+    
 
   def on_actionAdd_Feed_triggered(self, i=None):
     if i==None: return

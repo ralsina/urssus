@@ -438,10 +438,15 @@ class Feed(elixir.Entity):
     if not self.xmlUrl: # Not a real feed
       # FIXME: should update all children?
       return
+
+    if self.lastModified:
+      mod=self.lastModified
+    else:
+      mod=datetime.datetime(1970, 1, 1)
       
     if self.title:
       statusQueue.put(u"Updating: "+ self.title)
-    d=fp.parse(self.xmlUrl, etag=self.etag, modified=self.lastModified.timetuple())
+    d=fp.parse(self.xmlUrl, etag=self.etag, modified=mod.timetuple())
     
     if d.status==304 and not forced: # No need to fetch
       return

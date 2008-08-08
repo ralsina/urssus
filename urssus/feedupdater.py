@@ -43,6 +43,7 @@ def feedUpdater(full=False):
 
 def main():
   initDB()
+  elixir.metadata.bind.echo = True
   feedUpdater(full=len(sys.argv)>1)
   
 

@@ -10,7 +10,11 @@
    </rect>
   </property>
   <property name="windowTitle" >
-   <string>Dialog</string>
+   <string>Feed Properties - uRSSus</string>
+  </property>
+  <property name="windowIcon" >
+   <iconset resource="../images/icons.qrc" >
+   <normaloff>:/urssus.svg</normaloff>:/urssus.svg</iconset>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_2" >
    <item>
