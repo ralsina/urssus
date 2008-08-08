@@ -1,0 +1,64 @@
+IMPORTANT
+=========
+
+
+Licensing
+---------
+
+Urssus is licensed under the GPL v2 (read COPYING).
+
+The included icons are form the Reinhardt KDE icon set, and they are licensed
+under the LGPL (read COPYING.LGPL).
+
+The image of a bear is Creative Commons, used with permission and attribution.
+
+Different modules have different licenses and authors, read each if you need to 
+find out, but they all should be GPL-compatible.
+
+Installation
+------------
+
+Hopefully:
+
+  python setup.py installed
+  
+If that doesn't work, get paver and try:
+
+  paver install
+  
+If that doesn't work, email me at ralsina@netmanagers.com.ar ;-)
+
+Requirements
+------------
+
+* It needs PyQt 4.4.0 or later. Anything earlier will NOT work.
+
+* It should get everything it needs from PyPI.python.org except for PyQt
+
+* If you try it on windows, get simplejson 1.9.0 because 1.9.1 doesn't seem to build:
+
+  easy_install simplejson==1.9.0 
+
+* I have only tested this with Elixir 0.5.2, SQLAlchemy 0.4.6 and Migrate 0.4.5
+
+* If you got this from SVN and not a source tarball, you are missing files.
+
+  You can generate them using setup.py:
+
+    python setup.py compile_resource compile_ui
+    
+  Or, if you have paver installed:
+  
+    paver compile_resource compile_ui
+
+  Those commands require a working PyQt 4.4 (at least) developing environment.
+
+If you have no idea what I'm talking about, use a package instead of SVN ;-)
+
+Help wanted
+-----------
+
+I really want to make uRSSus work well on Windows and Mac. If you know python
+in those platforms, I would love to hear from you.
+
+Please contact me at ralsina@netmanagers.com.ar
