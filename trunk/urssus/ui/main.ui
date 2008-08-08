@@ -690,7 +690,7 @@
   <action name="actionMark_as_Important" >
    <property name="icon" >
     <iconset resource="../images/icons.qrc" >
-     <normaloff>:/flag.svg</normaloff>:/flag.svg</iconset>
+     <normaloff>:/star.svg</normaloff>:/star.svg</iconset>
    </property>
    <property name="text" >
     <string>Mark as Important</string>
@@ -722,7 +722,7 @@
   <action name="actionRemove_Important_Mark" >
    <property name="icon" >
     <iconset resource="../images/icons.qrc" >
-     <normaloff>:/flag.svg</normaloff>:/flag.svg</iconset>
+     <normaloff>:/star2.svg</normaloff>:/star2.svg</iconset>
    </property>
    <property name="text" >
     <string>Remove Important Mark</string>

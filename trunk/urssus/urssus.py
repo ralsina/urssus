@@ -414,11 +414,15 @@ class MainWindow(QtGui.QMainWindow):
 
   def fixPostListUI(self):
     # Fixes for post list UI
+    print "fixing posts ui"
     header=self.ui.posts.header()
     header.setStretchLastSection(False)
-    header.setResizeMode(0, QtGui.QHeaderView.Stretch)
-    header.setResizeMode(1, QtGui.QHeaderView.Fixed)
-    header.resizeSection(1, header.fontMetrics().width(' 88/88/8888 8888:88:88 ')+4)
+    header.setResizeMode(0, QtGui.QHeaderView.Fixed)
+    header.resizeSection(0, 24)
+    header.setResizeMode(1, QtGui.QHeaderView.Stretch)
+    header.setResizeMode(2, QtGui.QHeaderView.Fixed)
+    header.resizeSection(2, header.fontMetrics().width(' 88/88/8888 8888:88:88 ')+4)
+    header.setResizeMode(3, QtGui.QHeaderView.Stretch)
 
   def fixFeedListUI(self):
     # Fixes for feed list UI
@@ -1234,6 +1238,9 @@ class MainWindow(QtGui.QMainWindow):
         self.ui.posts.setModel(PostModel(self.ui.posts, feed, self.textFilter, self.statusFilter))
         QtCore.QObject.connect(self.ui.posts.model(), QtCore.SIGNAL("modelReset()"), self.updateListedFeedItem)
         QtCore.QObject.connect(self.ui.posts.model(), QtCore.SIGNAL("dropped(PyQt_PyObject)"), self.updateTree)
+        header=self.ui.posts.header()
+        # Don't show feed column yet
+        header.hideSection(3)
       self.fixPostListUI()
 
       # Try to scroll to the same post or to the top
@@ -1313,10 +1320,11 @@ class MainWindow(QtGui.QMainWindow):
       self.tray.updateIcon()
 
   def on_posts_clicked(self, index):
-    if index.column()<>0:
-      index=self.ui.posts.model().index(index.column(), 0, index.parent())
     post=self.ui.posts.model().postFromIndex(index)
     if post: #post may go away if you changed feeds very quickly
+      if index.column()==0: # Star icon
+        post.important=~post.important
+        self.updatePostItem(post)
       if post.unread: 
         post.unread=False
         post.feed.curUnread-=1
