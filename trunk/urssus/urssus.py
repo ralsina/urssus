@@ -687,6 +687,9 @@ class MainWindow(QtGui.QMainWindow):
     if i==None: return
     index=self.ui.feeds.currentIndex()
     curFeed=self.ui.feeds.model().feedFromIndex(index)
+    if not curFeed.xmlUrl:
+      self.ui.feeds.edit(index)
+      return
     info ("Editing feed: %s", curFeed)
 
     editDlg=FeedProperties(curFeed)

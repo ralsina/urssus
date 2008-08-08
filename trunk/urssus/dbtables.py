@@ -1,4 +1,5 @@
 # DB Classes
+from __future__ import with_statement
 import sqlalchemy as sql
 import elixir as elixir
 import migrate as migrate
@@ -7,6 +8,7 @@ import os, sys, time
 from globals import *
 from urllib import urlopen
 import urlparse
+
 
 # Mark Pilgrim's Feed Parser
 import feedparser as fp
@@ -436,8 +438,9 @@ class Feed(elixir.Entity):
     
   def real_update(self, forced=False):
     if not self.xmlUrl: # Not a real feed
-      # FIXME: should update all children?
-      return
+      af=self.allFeeds()
+      for f in af:
+        f.update()
 
     if self.lastModified:
       mod=self.lastModified
@@ -547,24 +550,19 @@ class Feed(elixir.Entity):
     posts=[post.id for post in posts]
 
     if posts:
-      elixir.session.begin()
-      try:
+      with elixir.session.begin():
         # Fix freshness
         Post.table.update().where(sql.except_(Post.table.select(Post.id.in_(posts)))).values(fresh=False)
         elixir.session.commit()
-      except:
-        elixir.session.rollback()
-    elixir.session.flush()
 
-    if posts:
       # Mark feed UI for updating
       self.curUnread=-1
       self.unreadCount()
       feedStatusQueue.put([2, self.id])
 
-    # Queue a notification if needed
-    if posts and self.notify:
-      feedStatusQueue.put([3, self.id, len(posts)])
+      # Queue a notification if needed
+      if self.notify:
+        feedStatusQueue.put([3, self.id, len(posts)])
     
   def getQuery(self):
     if self.xmlUrl:
