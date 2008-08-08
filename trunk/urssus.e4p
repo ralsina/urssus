@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE Project SYSTEM "Project-4.2.dtd">
 <!-- eric4 project file for project urssus -->
-<!-- Saved: 2008-08-07, 12:31:18 -->
+<!-- Saved: 2008-08-07, 23:14:55 -->
 <!-- Copyright (C) 2008 Roberto Alsina, ralsina@netmanagers.com.ar -->
 <Project version="4.2">
   <ProgLanguage mixed="0">Python</ProgLanguage>
@@ -247,12 +247,6 @@
       <Dir>urssus</Dir>
       <Dir>versioning</Dir>
       <Dir>versions</Dir>
-      <Name>007_Add_columns_for_etag_and_last-modified_to_feeds.py</Name>
-    </Source>
-    <Source>
-      <Dir>urssus</Dir>
-      <Dir>versioning</Dir>
-      <Dir>versions</Dir>
       <Name>008_Add_columns_for_etag_and_last-modified_to_feeds.py</Name>
     </Source>
     <Source>
@@ -260,6 +254,15 @@
       <Dir>versioning</Dir>
       <Dir>versions</Dir>
       <Name>009_Set_defaults_in_last-modified_column_if_needed.py</Name>
+    </Source>
+    <Source>
+      <Dir>urssus</Dir>
+      <Name>processdialog.py</Name>
+    </Source>
+    <Source>
+      <Dir>urssus</Dir>
+      <Dir>ui</Dir>
+      <Name>Ui_runprocess.py</Name>
     </Source>
   </Sources>
   <Forms>
@@ -312,6 +315,11 @@
       <Dir>urssus</Dir>
       <Dir>ui</Dir>
       <Name>configdialog.ui</Name>
+    </Form>
+    <Form>
+      <Dir>urssus</Dir>
+      <Dir>ui</Dir>
+      <Name>runprocess.ui</Name>
     </Form>
   </Forms>
   <Translations>
@@ -438,6 +446,9 @@
       <Dir>urssus</Dir>
       <Dir>versioning</Dir>
       <Name>migrate.cfg</Name>
+    </Other>
+    <Other>
+      <Name>README</Name>
     </Other>
   </Others>
   <MainScript>
