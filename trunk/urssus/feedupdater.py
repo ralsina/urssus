@@ -28,7 +28,7 @@ def feedUpdater(full=False):
       ids=[feed.id for feed in dbtables.Feed.query.filter(dbtables.Feed.xmlUrl<>None)]
       for id in ids :
         time.sleep(1)
-        feed=Feed.get_by(id=id)
+        feed=dbtables.Feed.get_by(id=id)
         if feed.updateInterval==0: # Update never
           continue
         elif feed.updateInterval<>-1: # not update default
