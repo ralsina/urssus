@@ -543,12 +543,18 @@ class Feed(elixir.Entity):
       self.etag=d['etag']
 
     if posts:
-      # Fix freshness
-      Post.table.update().values(fresh=False).execute()
-      elixir.session.flush()
-      for post in posts:
-        post.fresh=True
+      elixir.session.begin()
+      try:
+        # Fix freshness
+        Post.table.update().values(fresh=False).execute()
+        for post in posts:
+          post.fresh=True
+        elixir.session.commit()
+      except:
+        elixir.session.rollback()
     elixir.session.flush()
+    # Silly way to release the posts objects
+    posts=[1 for post in posts]
 
     if posts:
       # Mark feed UI for updating
