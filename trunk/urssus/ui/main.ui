@@ -889,6 +889,36 @@
     <string>Preferences...</string>
    </property>
   </action>
+  <action name="actionShowStarredColumn" >
+   <property name="checkable" >
+    <bool>true</bool>
+   </property>
+   <property name="checked" >
+    <bool>true</bool>
+   </property>
+   <property name="text" >
+    <string>Starred</string>
+   </property>
+  </action>
+  <action name="actionShowFeedColumn" >
+   <property name="checkable" >
+    <bool>true</bool>
+   </property>
+   <property name="text" >
+    <string>Feed</string>
+   </property>
+  </action>
+  <action name="actionShowDateColumn" >
+   <property name="checkable" >
+    <bool>true</bool>
+   </property>
+   <property name="checked" >
+    <bool>true</bool>
+   </property>
+   <property name="text" >
+    <string>Date</string>
+   </property>
+  </action>
   <addaction name="actionShow_Menu_Bar" />
  </widget>
  <customwidgets>

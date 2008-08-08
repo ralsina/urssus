@@ -77,7 +77,6 @@ class PostModel(QtGui.QStandardItemModel):
         
         item2=QtGui.QStandardItem()
         item2.setToolTip('%s - Posted at %s'%(unicode(post), unicode(post.date)))
-        item3=QtGui.QStandardItem()
         item2.setData(QtCore.QVariant(unicode(utc2local(post.date))), display)
         d=utc2local(post.date)
         # AOL Fanhouse posts items with a time differential of milliseconds, so they sorted
@@ -87,7 +86,11 @@ class PostModel(QtGui.QStandardItemModel):
                                             QtCore.QTime(d.hour, d.minute, d.second, d.microsecond/1000)))
         item2.setData(qd, sorting)
         item2.setData(QtCore.QVariant(post.id), post_id)
-      
+
+        item3=QtGui.QStandardItem()
+        item3.setData(QtCore.QVariant(unicode(post.feed)), display)
+        item3.setData(QtCore.QVariant(unicode(post.feed).lower()), sorting)
+
         self.postItems[post.id]=[item0, item1, item2, item3]
         self.appendRow([item0, item1, item2, item3])
         self.updateItem(post)
