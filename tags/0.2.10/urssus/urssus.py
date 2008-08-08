@@ -1656,7 +1656,7 @@ def main():
   app=QtGui.QApplication(sys.argv)
   app.setQuitOnLastWindowClosed(False)
   # Not enabled yet, because I need to implement a web app to handle it
-  sys.excepthook = my_excepthook
+  #sys.excepthook = my_excepthook
   window=MainWindow()
     
   if len(sys.argv)>1:
