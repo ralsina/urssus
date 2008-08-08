@@ -60,7 +60,7 @@ class PostModel(QtGui.QStandardItemModel):
       if post.id in self.post_ids: #Existing post, update
         # FIXME: implement update fully
         self.post_data[self.post_ids.index(post.id)][5]=post.unread
-        self.post_data[self.post_ids.index(post.id)][3]=post.important
+        self.post_data[self.post_ids.index(post.id)][4]=post.important
         self.updateItem(post)
       else:
         # New post, add
@@ -107,9 +107,9 @@ class PostModel(QtGui.QStandardItemModel):
     '''Marks as read what's shown by the model, as opposite to Feed.markAsRead, which
     marks what's on the feed. UI should call this one, usually'''''
     for d in self.post_data:
-      if d[3]:
-        if d[3]:
-          d[3]=False
+      if d[5]:
+        if d[5]:
+          d[5]=False
           post=Post.get_by(id=d[0])        
           post.unread=False
           post.feed.curUnread=-1
