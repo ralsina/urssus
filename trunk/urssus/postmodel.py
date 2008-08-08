@@ -16,7 +16,7 @@ class PostModel(QtGui.QStandardItemModel):
     self.statusFilter=statusFilter
     self.setSortRole(sorting)
     self._clear()
-    self.sort(1, QtCore.Qt.DescendingOrder) # Date, descending
+    self.sort(2, QtCore.Qt.DescendingOrder) # Date, descending
     self.initData(feed)
 
   def _clear(self):
