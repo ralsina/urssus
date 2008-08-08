@@ -23,9 +23,11 @@ class PostModel(QtGui.QStandardItemModel):
     self.clear()
     self.post_data=[]
     self.post_ids=[]
-    self.setColumnCount(2)
-    self.setHeaderData(0, QtCore.Qt.Horizontal, QtCore.QVariant("Title"))
-    self.setHeaderData(1, QtCore.Qt.Horizontal, QtCore.QVariant("Date"))
+    self.setColumnCount(4)
+    self.setHeaderData(0, QtCore.Qt.Horizontal, QtCore.QVariant(""))
+    self.setHeaderData(1, QtCore.Qt.Horizontal, QtCore.QVariant("Title"))
+    self.setHeaderData(2, QtCore.Qt.Horizontal, QtCore.QVariant("Date"))
+    self.setHeaderData(3, QtCore.Qt.Horizontal, QtCore.QVariant("Feed"))
     self.postItems={}
     
   def initData(self, update=False):
@@ -57,20 +59,25 @@ class PostModel(QtGui.QStandardItemModel):
       
       if post.id in self.post_ids: #Existing post, update
         # FIXME: implement update fully
-        self.post_data[self.post_ids.index(post.id)][3]=post.unread
+        self.post_data[self.post_ids.index(post.id)][5]=post.unread
+        self.post_data[self.post_ids.index(post.id)][3]=post.important
         self.updateItem(post)
       else:
         # New post, add
-        self.post_data.append([post.id, unicode(post).lower(), post.date, post.unread])
+        self.post_data.append([post.id, unicode(post).lower(), post.date,
+                               unicode(post.feed).lower(), post.important, post.unread])
+        item0=QtGui.QStandardItem()
+        item0.setData(QtCore.QVariant(post.important), sorting)
+
         item1=QtGui.QStandardItem()
         item1.setToolTip('%s - Posted at %s'%(unicode(post), unicode(post.date)))
         item1.setData(QtCore.QVariant(unicode(post)), display)
         item1.setData(QtCore.QVariant(unicode(post).lower()), sorting)
         item1.setData(QtCore.QVariant(post.id), post_id)
-
+        
         item2=QtGui.QStandardItem()
         item2.setToolTip('%s - Posted at %s'%(unicode(post), unicode(post.date)))
-
+        item3=QtGui.QStandardItem()
         item2.setData(QtCore.QVariant(unicode(utc2local(post.date))), display)
         d=utc2local(post.date)
         # AOL Fanhouse posts items with a time differential of milliseconds, so they sorted
@@ -81,8 +88,8 @@ class PostModel(QtGui.QStandardItemModel):
         item2.setData(qd, sorting)
         item2.setData(QtCore.QVariant(post.id), post_id)
       
-        self.postItems[post.id]=[item1, item2]
-        self.appendRow([item1, item2])
+        self.postItems[post.id]=[item0, item1, item2, item3]
+        self.appendRow([item0, item1, item2, item3])
         self.updateItem(post)
       
     self.reset()
@@ -117,8 +124,8 @@ class PostModel(QtGui.QStandardItemModel):
     return QtCore.QModelIndex()
     
   def postFromIndex(self, index):
-    if index.column()<>0:
-      index=self.index(index.row(), 0, index.parent())      
+    if index.column()<>1:
+      index=self.index(index.row(), 1, index.parent())      
     item=self.itemFromIndex(index)
     if item:
       id=item.data(post_id).toInt()[0]
@@ -128,17 +135,18 @@ class PostModel(QtGui.QStandardItemModel):
   def updateItem(self, post):
     if not post.id in self.postItems: #post is not being displayed
       return
-    item1, item2=self.postItems[post.id]
+    item0, item1, item2, item3=self.postItems[post.id]
     # FIXME: respect the palette
     if post.important:
-      item1.setForeground(QtGui.QColor("red"))
-      item2.setForeground(QtGui.QColor("red"))
+      item0.setIcon(QtGui.QIcon(':/star.svg'))
     elif post.unread:
       item1.setForeground(QtGui.QColor("darkgreen"))
       item2.setForeground(QtGui.QColor("darkgreen"))
+      item0.setIcon(QtGui.QIcon(':/star2.svg'))
     else:
       item1.setForeground(QtGui.QColor("black"))
       item2.setForeground(QtGui.QColor("black"))
+      item0.setIcon(QtGui.QIcon(':/star2.svg'))
       
     f=item1.font()
     if post.important or post.unread:
@@ -150,16 +158,16 @@ class PostModel(QtGui.QStandardItemModel):
     
     # Update our post_data, too. Probably not the best way
     # FIXME: not efficient
-    self.post_ids=[id for [id, _, _, _] in self.post_data]
+    self.post_ids=[id for [id, _, _, _, _, _] in self.post_data]
     idx=self.post_ids.index(post.id)
-    self.post_data[idx]=[post.id, unicode(post).lower(), post.date, post.unread]
+    self.post_data[idx]=[post.id, unicode(post).lower(), post.date,unicode(post.feed).lower(),post.important,post.unread]
 
   def sort(self, column, order):
     # Thanks pyar!
     self.post_data.sort(key=operator.itemgetter(column+1), 
                         reverse=order==QtCore.Qt.DescendingOrder)
     QtGui.QStandardItemModel.sort(self, column, order)
-    self.post_ids=[id for [id, _, _, _] in self.post_data]
+    self.post_ids=[id for [id, _, _, _, _, _] in self.post_data]
     self.lastSort=(column, order)
 
   def nextPostIndex(self, post):
@@ -184,10 +192,10 @@ class PostModel(QtGui.QStandardItemModel):
       
     # Create filtered lists
     if post:
-      unread_data=[x for x in self.post_data if x[3] or x[0]==post.id]
+      unread_data=[x for x in self.post_data if x[5] or x[0]==post.id]
     else:
-      unread_data=[x for x in self.post_data if x[3]]
-    unread_ids=[id for [id, _, _, _] in unread_data]
+      unread_data=[x for x in self.post_data if x[5]]
+    unread_ids=[id for [id, _, _, _, _, _] in unread_data]
     
     # And now it's pretty much like nextPostIndex
     # FIXME: merge them
@@ -227,10 +235,10 @@ class PostModel(QtGui.QStandardItemModel):
       
     # Create filtered lists
     if post:
-      unread_data=[x for x in self.post_data if x[3] or x[0]==post.id]
+      unread_data=[x for x in self.post_data if x[5] or x[0]==post.id]
     else:
-      unread_data=[x for x in self.post_data if x[3]]
-    unread_ids=[id for [id, _, _, _] in unread_data]
+      unread_data=[x for x in self.post_data if x[5]]
+    unread_ids=[id for [id, _, _, _, _, _] in unread_data]
     
     # And now it's pretty much like previousPostIndex
     # FIXME: merge them
