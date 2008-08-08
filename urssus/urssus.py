@@ -1265,7 +1265,7 @@ class MainWindow(QtGui.QMainWindow):
   
     # The calls to setRowHidden cause a change in the column's width! Looks like a Qt bug to me.
     if self.showOnlyUnread:
-      if feed.unreadCount()==0 and feed<>self.currentFeed(): 
+      if feed.unreadCount()==0 and feed<>self.currentFeed() and feed.parent: 
         # Hide feeds with no unread items
         self.ui.feeds.setRowHidden(item.row(), index.parent(), True)
       else:
