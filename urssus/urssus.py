@@ -126,7 +126,7 @@ class ConfigDialog(QtGui.QDialog):
           label=QtGui.QLabel(optionName+":")
           label.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignVCenter)
           text=QtGui.QLineEdit()
-          text.setText(config.getValue(sectionName, optionName, definition[1]))          
+          text.setText(unicode(config.getValue(sectionName, optionName, definition[1])))          
           layout.addWidget(label, row, 0, 1, 1)
           layout.addWidget(text, row, 1, 1, 1)
           self.values[sectionName+'/'+optionName]=[text, lambda(text): unicode(text.text())]
@@ -136,7 +136,7 @@ class ConfigDialog(QtGui.QDialog):
           label.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignVCenter)
           text=QtGui.QLineEdit()
           text.setEchoMode(QtGui.QLineEdit.Password)
-          text.setText(config.getValue(sectionName, optionName, definition[1]))          
+          text.setText(unicode(config.getValue(sectionName, optionName, definition[1])))          
           layout.addWidget(label, row, 0, 1, 1)
           layout.addWidget(text, row, 1, 1, 1)
           self.values[sectionName+'/'+optionName]=[text, lambda(text): unicode(text.text())]
@@ -1267,9 +1267,8 @@ class MainWindow(QtGui.QMainWindow):
     item=self.ui.feeds.model().itemFromIndex(index)
     item2=self.ui.feeds.model().itemFromIndex(self.ui.feeds.model().index(index.row(), 1, index.parent()))
   
-    # The calls to setRowHidden cause a change in the column's width! Looks like a Qt bug to me.
     if self.showOnlyUnread:
-      if feed.unreadCount()==0 and feed<>self.currentFeed() and feed.parent: 
+      if feed.unreadCount()==0 and feed<>self.currentFeed() and feed.xmlUrl: 
         # Hide feeds with no unread items
         self.ui.feeds.setRowHidden(item.row(), index.parent(), True)
       else:
