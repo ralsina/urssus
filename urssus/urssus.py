@@ -373,6 +373,10 @@ class MainWindow(QtGui.QMainWindow):
 
     # Set sorting for post list
     self.ui.posts.sortByColumn(1, QtCore.Qt.DescendingOrder)
+    # Set custom context menu hook in post list header
+    header=self.ui.posts.header()
+    header.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
+    QtCore.QObject.connect(header, QtCore.SIGNAL("customContextMenuRequested(const QPoint)"), self.postHeaderContextMenu)
 
     # Fill with feed data
     self.showOnlyUnread=False
@@ -422,7 +426,23 @@ class MainWindow(QtGui.QMainWindow):
     header.setResizeMode(1, QtGui.QHeaderView.Stretch)
     header.setResizeMode(2, QtGui.QHeaderView.Fixed)
     header.resizeSection(2, header.fontMetrics().width(' 88/88/8888 8888:88:88 ')+4)
-    header.setResizeMode(3, QtGui.QHeaderView.Stretch)
+    header.setResizeMode(3, QtGui.QHeaderView.Interactive)
+    starred, feed, date=config.getValue('ui', 'visiblePostColumns', [True, False, True])
+    self.ui.actionShowStarredColumn.setChecked(starred)
+    self.ui.actionShowFeedColumn.setChecked(feed)
+    self.ui.actionShowDateColumn.setChecked(date)
+    if starred:
+      header.showSection(0)
+    else:
+      header.hideSection(0)
+    if feed:
+      header.showSection(3)
+    else:
+      header.hideSection(3)
+    if date:
+      header.showSection(2)
+    else:
+      header.hideSection(2)
 
   def fixFeedListUI(self):
     # Fixes for feed list UI
@@ -431,6 +451,11 @@ class MainWindow(QtGui.QMainWindow):
     header.setResizeMode(0, QtGui.QHeaderView.Stretch)
     header.setResizeMode(1, QtGui.QHeaderView.Fixed)
     header.resizeSection(1, header.fontMetrics().width(' Unread ')+4)
+    
+  def savePostColumns(self):
+    config.setValue('ui', 'visiblePostColumns', [self.ui.actionShowStarredColumn.isChecked(), 
+                                                 self.ui.actionShowFeedColumn.isChecked(), 
+                                                 self.ui.actionShowDateColumn.isChecked()])
 
   def trayActivated(self, reason=None):
     if reason == None: return
@@ -486,6 +511,33 @@ class MainWindow(QtGui.QMainWindow):
     if not index.isValid() or not self.ui.posts.model():
       return None
     return self.ui.posts.model().postFromIndex(index)
+
+  def on_actionShowStarredColumn_triggered(self, checked=None):
+    if checked==None:return
+    header=self.ui.posts.header()      
+    if checked:
+      header.showSection(0)
+    else:
+      header.hideSection(0)
+    self.savePostColumns()
+
+  def on_actionShowFeedColumn_triggered(self, checked=None):
+    if checked==None:return
+    header=self.ui.posts.header()      
+    if checked:
+      header.showSection(3)
+    else:
+      header.hideSection(3)
+    self.savePostColumns()
+
+  def on_actionShowDateColumn_triggered(self, checked=None):
+    if checked==None:return
+    header=self.ui.posts.header()      
+    if checked:
+      header.showSection(2)
+    else:
+      header.hideSection(2)
+    self.savePostColumns()
 
   def on_actionReport_Bug_triggered(self, i=None):
     if i==None: return
@@ -635,6 +687,13 @@ class MainWindow(QtGui.QMainWindow):
     elixir.session.flush()
     self.updatePostItem(curPost)
 
+  def postHeaderContextMenu(self, pos):
+    if pos==None: return
+    menu=QtGui.QMenu()
+    menu.addAction(self.ui.actionShowStarredColumn)
+    menu.addAction(self.ui.actionShowDateColumn)
+    menu.addAction(self.ui.actionShowFeedColumn)
+    menu.exec_(QtGui.QCursor.pos())
 
   def on_posts_customContextMenuRequested(self, pos=None):
     # FIXME: handle selections
