@@ -11,31 +11,15 @@ import urlparse
 
 
 # Mark Pilgrim's Feed Parser
-import feedparser as fp
+from util import feedparser as fp
 fp.USER_AGENT = 'uRSSus/%s +http://urssus.googlecode.com/'%VERSION
 # Configuration
 import config
 
-# Logging
-if sys.platform=='win32':
-  # easylog and Processing on windows == broken
-  def dumb(*a, **kw):
-    pass
-  critical=dumb
-  error=dumb
-  warning=dumb
-  debug=dumb
-  info=dumb 
-  setLogger=dumb 
-  DEBUG=dumb
-else:
-  from easylog import critical, error, warning, debug, info, setLogger, DEBUG
-#  setLogger(name='urssus', level=DEBUG)
-
 from feedupdater import updateOne
 
 # Some feeds put html in titles, which can't be shown in QStandardItems
-from html2text import html2text as h2t
+from util.html2text import html2text as h2t
 
 def detailToTitle(td):
   '''Converts something like feedparser's title_detail into a 
