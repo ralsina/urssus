@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE Project SYSTEM "Project-4.2.dtd">
 <!-- eric4 project file for project urssus -->
-<!-- Saved: 2008-08-07, 23:14:55 -->
+<!-- Saved: 2008-08-08, 13:32:25 -->
 <!-- Copyright (C) 2008 Roberto Alsina, ralsina@netmanagers.com.ar -->
 <Project version="4.2">
   <ProgLanguage mixed="0">Python</ProgLanguage>
@@ -21,22 +21,6 @@
     <Source>
       <Dir>urssus</Dir>
       <Name>config.py</Name>
-    </Source>
-    <Source>
-      <Dir>urssus</Dir>
-      <Name>easylog.py</Name>
-    </Source>
-    <Source>
-      <Dir>urssus</Dir>
-      <Name>feedfinder.py</Name>
-    </Source>
-    <Source>
-      <Dir>urssus</Dir>
-      <Name>feedparser.py</Name>
-    </Source>
-    <Source>
-      <Dir>urssus</Dir>
-      <Name>OPML.py</Name>
     </Source>
     <Source>
       <Dir>urssus</Dir>
@@ -133,10 +117,6 @@
     </Source>
     <Source>
       <Dir>urssus</Dir>
-      <Name>tiny.py</Name>
-    </Source>
-    <Source>
-      <Dir>urssus</Dir>
       <Dir>ui</Dir>
       <Name>Ui_twitterpost.py</Name>
     </Source>
@@ -177,31 +157,6 @@
       <Dir>urssus</Dir>
       <Dir>ui</Dir>
       <Name>Ui_greaderimport.py</Name>
-    </Source>
-    <Source>
-      <Dir>urssus</Dir>
-      <Dir>GoogleReader</Dir>
-      <Name>object.py</Name>
-    </Source>
-    <Source>
-      <Dir>urssus</Dir>
-      <Dir>GoogleReader</Dir>
-      <Name>__init__.py</Name>
-    </Source>
-    <Source>
-      <Dir>urssus</Dir>
-      <Dir>GoogleReader</Dir>
-      <Name>reader.py</Name>
-    </Source>
-    <Source>
-      <Dir>urssus</Dir>
-      <Dir>GoogleReader</Dir>
-      <Name>const.py</Name>
-    </Source>
-    <Source>
-      <Dir>urssus</Dir>
-      <Dir>GoogleReader</Dir>
-      <Name>feed.py</Name>
     </Source>
     <Source>
       <Dir>urssus</Dir>
@@ -263,6 +218,113 @@
       <Dir>urssus</Dir>
       <Dir>ui</Dir>
       <Name>Ui_runprocess.py</Name>
+    </Source>
+    <Source>
+      <Dir>urssus</Dir>
+      <Dir>util</Dir>
+      <Name>easylog.py</Name>
+    </Source>
+    <Source>
+      <Dir>urssus</Dir>
+      <Dir>util</Dir>
+      <Name>tiny.py</Name>
+    </Source>
+    <Source>
+      <Dir>urssus</Dir>
+      <Dir>util</Dir>
+      <Name>__init__.py</Name>
+    </Source>
+    <Source>
+      <Dir>urssus</Dir>
+      <Dir>util</Dir>
+      <Name>feedparser.py</Name>
+    </Source>
+    <Source>
+      <Dir>urssus</Dir>
+      <Dir>util</Dir>
+      <Name>OPML.py</Name>
+    </Source>
+    <Source>
+      <Dir>urssus</Dir>
+      <Dir>util</Dir>
+      <Name>feedfinder.py</Name>
+    </Source>
+    <Source>
+      <Dir>urssus</Dir>
+      <Dir>util</Dir>
+      <Name>html2text.py</Name>
+    </Source>
+    <Source>
+      <Dir>urssus</Dir>
+      <Dir>util</Dir>
+      <Name>tenjin.py</Name>
+    </Source>
+    <Source>
+      <Dir>urssus</Dir>
+      <Dir>util</Dir>
+      <Dir>GoogleReader</Dir>
+      <Name>object.py</Name>
+    </Source>
+    <Source>
+      <Dir>urssus</Dir>
+      <Dir>util</Dir>
+      <Dir>GoogleReader</Dir>
+      <Name>__init__.py</Name>
+    </Source>
+    <Source>
+      <Dir>urssus</Dir>
+      <Dir>util</Dir>
+      <Dir>GoogleReader</Dir>
+      <Name>reader.py</Name>
+    </Source>
+    <Source>
+      <Dir>urssus</Dir>
+      <Dir>util</Dir>
+      <Dir>GoogleReader</Dir>
+      <Name>const.py</Name>
+    </Source>
+    <Source>
+      <Dir>urssus</Dir>
+      <Dir>util</Dir>
+      <Dir>GoogleReader</Dir>
+      <Name>feed.py</Name>
+    </Source>
+    <Source>
+      <Dir>urssus</Dir>
+      <Dir>util</Dir>
+      <Dir>GoogleReader</Dir>
+      <Dir>web</Dir>
+      <Name>web.py</Name>
+    </Source>
+    <Source>
+      <Dir>urssus</Dir>
+      <Dir>util</Dir>
+      <Dir>GoogleReader</Dir>
+      <Dir>web</Dir>
+      <Name>__init__.py</Name>
+    </Source>
+    <Source>
+      <Dir>urssus</Dir>
+      <Dir>util</Dir>
+      <Dir>GoogleReader</Dir>
+      <Dir>web</Dir>
+      <Name>SSLproxy.py</Name>
+    </Source>
+    <Source>
+      <Dir>urssus</Dir>
+      <Dir>util</Dir>
+      <Dir>GoogleReader</Dir>
+      <Dir>web</Dir>
+      <Dir>resolvUrl</Dir>
+      <Name>__init__.py</Name>
+    </Source>
+    <Source>
+      <Dir>urssus</Dir>
+      <Dir>util</Dir>
+      <Dir>GoogleReader</Dir>
+      <Dir>web</Dir>
+      <Dir>resolvUrl</Dir>
+      <Name>resolvUrl.py</Name>
     </Source>
   </Sources>
   <Forms>

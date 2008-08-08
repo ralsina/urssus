@@ -29,7 +29,7 @@ try:
   from twitter import Twitter
 except ImportError:
   Twitter=None
-from tiny import tiny
+from util.tiny import tiny
 
 
 from globals import *
@@ -498,7 +498,7 @@ class MainWindow(QtGui.QMainWindow):
     dlg=GReaderDialog(self)
     if dlg.exec_():
       # FIXME: progress reports, non-block...
-      import GoogleReader.reader as gr
+      import util.GoogleReader.reader as gr
       reader=gr.GoogleReader()
       reader.identify(unicode(dlg.ui.username.text()), 
                       unicode(dlg.ui.password.text()))
@@ -731,7 +731,7 @@ class MainWindow(QtGui.QMainWindow):
     _error  = lambda(msg): output.put([2, msg])
     _return = lambda(msg): output.put([100, msg])
       
-    import feedfinder
+    import util.feedfinder as feedfinder
     try:
       _info('Searching for a feed in %s'%url)
       feed=feedfinder.feed(url)
@@ -1593,7 +1593,7 @@ class PostDelegate(QtGui.QItemDelegate):
     QtGui.QItemDelegate.__init__(self, parent)
   
 def exportOPML(fname):
-  from OPML import Outline, OPML
+  from util.OPML import Outline, OPML
   from cgi import escape
   def exportSubTree(parent, node):
     if not node.children:

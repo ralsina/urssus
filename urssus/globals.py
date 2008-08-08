@@ -37,7 +37,7 @@ if sys.platform=='win32':
   setLogger=dumb 
   DEBUG=dumb
 else:
-  from easylog import critical, error, warning, debug, info, setLogger, DEBUG
+  from util.easylog import critical, error, warning, debug, info, setLogger, DEBUG
   setLogger(name='urssus', level=DEBUG)
 
 # Templates
