@@ -145,10 +145,12 @@ class PostModel(QtGui.QStandardItemModel):
     elif post.unread:
       item1.setForeground(QtGui.QColor("darkgreen"))
       item2.setForeground(QtGui.QColor("darkgreen"))
+      item3.setForeground(QtGui.QColor("darkgreen"))
       item0.setIcon(QtGui.QIcon(':/star2.svg'))
     else:
       item1.setForeground(QtGui.QColor("black"))
       item2.setForeground(QtGui.QColor("black"))
+      item3.setForeground(QtGui.QColor("black"))
       item0.setIcon(QtGui.QIcon(':/star2.svg'))
       
     f=item1.font()
@@ -158,6 +160,7 @@ class PostModel(QtGui.QStandardItemModel):
       f.setBold(False)
     item1.setFont(f)
     item2.setFont(f)
+    item3.setFont(f)
     
     # Update our post_data, too. Probably not the best way
     # FIXME: not efficient
