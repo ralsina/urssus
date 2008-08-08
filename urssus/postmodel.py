@@ -123,7 +123,7 @@ class PostModel(QtGui.QStandardItemModel):
     if not id:
       id=post.id
     if post and post.id in self.postItems:
-      return self.indexFromItem(self.postItems[id][0])
+      return self.indexFromItem(self.postItems[id][1])
     return QtCore.QModelIndex()
     
   def postFromIndex(self, index):
@@ -186,11 +186,11 @@ class PostModel(QtGui.QStandardItemModel):
     else: 
       idx=self.post_ids.index(post.id)
     if idx==-1: #current post not here, so return the first
-      return self.indexFromItem(self.postItems[self.post_ids[0]][0])
+      return self.indexFromItem(self.postItems[self.post_ids[0]][1])
     elif idx==len(self.post_ids)-1: # Last post, no next
       return QtCore.QModelIndex()
     else:
-      return self.indexFromItem(self.postItems[self.post_ids[idx+1]][0])
+      return self.indexFromItem(self.postItems[self.post_ids[idx+1]][1])
 
   def nextUnreadPostIndex(self, post):
     if not self.post_ids:
@@ -213,11 +213,11 @@ class PostModel(QtGui.QStandardItemModel):
     else: 
       idx=unread_ids.index(post.id)
     if idx==-1: #current post not here, so return the first
-      return self.indexFromItem(self.postItems[unread_ids[0]][0])
+      return self.indexFromItem(self.postItems[unread_ids[0]][1])
     elif idx==len(unread_ids)-1: # Last post, no next
       return QtCore.QModelIndex()
     else:
-      return self.indexFromItem(self.postItems[unread_ids[idx+1]][0])
+      return self.indexFromItem(self.postItems[unread_ids[idx+1]][1])
 
   def previousPostIndex(self, post):
     '''Takes a Post and returns the index of the following post'''
@@ -229,11 +229,11 @@ class PostModel(QtGui.QStandardItemModel):
     else: 
       idx=self.post_ids.index(post.id)
     if idx==-1: #current post not here, so return the last
-      return self.indexFromItem(self.postItems[self.post_ids[-1]][0])
+      return self.indexFromItem(self.postItems[self.post_ids[-1]][1])
     elif idx==0: # First post, no previous
       return QtCore.QModelIndex()
     else:
-      return self.indexFromItem(self.postItems[self.post_ids[idx-1]][0])
+      return self.indexFromItem(self.postItems[self.post_ids[idx-1]][1])
 
   def previousUnreadPostIndex(self, post):
     if not self.post_ids:
@@ -256,8 +256,8 @@ class PostModel(QtGui.QStandardItemModel):
     else: 
       idx=unread_ids.index(post.id)
     if idx==-1: #current post not here, so return the last
-      return self.indexFromItem(self.postItems[unread_ids[-1]][0])
+      return self.indexFromItem(self.postItems[unread_ids[-1]][1])
     elif idx==0: # First post, no previous
       return QtCore.QModelIndex()
     else:
-      return self.indexFromItem(self.postItems[unread_ids[idx-1]][0])
+      return self.indexFromItem(self.postItems[unread_ids[idx-1]][1])
