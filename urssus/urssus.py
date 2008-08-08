@@ -693,6 +693,7 @@ class MainWindow(QtGui.QMainWindow):
     if editDlg.exec_():
       # update feed item, no parents
       self.updateFeedItem(curFeed)
+    self.open_feed(index)
 
   def addFeed(self, url):
     # Use Mark pilgrim / Aaron Swartz's RSS finder module
@@ -1438,6 +1439,8 @@ class MainWindow(QtGui.QMainWindow):
       p=processing.Process(target=updateOne, args=(feed, ))
       p.setDaemon(True)
       p.start()
+      self.open_feed(idx)
+      
   def on_actionFetch_All_Feeds_triggered(self, i=None):
     if i==None: return
     global processes

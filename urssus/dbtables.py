@@ -582,8 +582,15 @@ def initDB():
     if curVer < REQUIRED_SCHEMA:
       info ("UPGRADING from %s to %s", curVer, REQUIRED_SCHEMA)
       os.system('urssus_upgrade_db')
+
+  import sqlite3
+  def connect():
+    conn = sqlite3.connect(database.dbfile)
+    conn.isolation_level = "IMMEDIATE"
+    return conn
+  engine = sql.create_engine(database.dbUrl, creator=connect) 
     
-  elixir.metadata.bind = database.dbUrl
+  elixir.metadata.bind = engine
   elixir.setup_all()
   elixir.session.flush()
   root_feed=Feed.get_by_or_init(parent=None)
