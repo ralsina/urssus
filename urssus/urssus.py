@@ -502,35 +502,37 @@ class MainWindow(QtGui.QMainWindow):
       reader=gr.GoogleReader()
       reader.identify(unicode(dlg.ui.username.text()), 
                       unicode(dlg.ui.password.text()))
-      reader.login()
-      subs=reader.get_subscription_list()['subscriptions']
-      for sub in subs:
-        title=sub['title']
-        id=sub['id'] # Something like feed/http://lambda-the-ultimate.org/rss.xml 
-        if id.startswith('feed/'):
-          xmlUrl=id[5:]
-        else:
-          # Don't know how to handle it
-          print sub
-          continue
-        # Treat the first category's label as a folder name.
-        cats=sub['categories']
-        if cats:
-          fname=cats[0]['label']
-        # So, with a xmlUrl and a fname, we can just create the feed
-        # See if we have the folder
-        folder=Feed.get_by_or_init(parent=root_feed, text=fname, xmlUrl=None)
+      if not reader.login():
+        QtGui.QMessageBox.critical(self, 'Error - uRSSus', 'Error logging into Google Reader' )
+      else:
+        subs=reader.get_subscription_list()['subscriptions']
+        for sub in subs:
+          title=sub['title']
+          id=sub['id'] # Something like feed/http://lambda-the-ultimate.org/rss.xml 
+          if id.startswith('feed/'):
+            xmlUrl=id[5:]
+          else:
+            # Don't know how to handle it
+            print sub
+            continue
+          # Treat the first category's label as a folder name.
+          cats=sub['categories']
+          if cats:
+            fname=cats[0]['label']
+          # So, with a xmlUrl and a fname, we can just create the feed
+          # See if we have the folder
+          folder=Feed.get_by_or_init(parent=root_feed, text=fname, xmlUrl=None)
+          elixir.session.flush()
+          if Feed.get_by(xmlUrl=xmlUrl):
+            # Already subscribed
+            # FIXME: implement progress reports
+            print "You are already subscribed to %s"%xmlUrl
+            continue
+          f=Feed.get_by(xmlUrl=xmlUrl)
+          if not f:
+            newFeed=Feed(text=title, title=title, xmlUrl=xmlUrl, parent=folder)
         elixir.session.flush()
-        if Feed.get_by(xmlUrl=xmlUrl):
-          # Already subscribed
-          # FIXME: implement progress reports
-          print "You are already subscribed to %s"%xmlUrl
-          continue
-        f=Feed.get_by(xmlUrl=xmlUrl)
-        if not f:
-          newFeed=Feed(text=title, title=title, xmlUrl=xmlUrl, parent=folder)
-      elixir.session.flush()
-      self.initTree()
+        self.initTree()
         
 
   def on_actionFull_Screen_triggered(self, i=None):
