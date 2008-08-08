@@ -384,13 +384,6 @@ class MainWindow(QtGui.QMainWindow):
     QtCore.QObject.connect(self.statusTimer, QtCore.SIGNAL("timeout()"), self.updateStatusBar)
     self.statusTimer.start(0)
     
-    # Timer to mark feeds as busy/updated/whatever
-    self.feedStatusTimer=QtCore.QTimer()
-    self.feedStatusTimer.setSingleShot(True)
-    QtCore.QObject.connect(self.feedStatusTimer, QtCore.SIGNAL("timeout()"), self.updateFeedStatus)
-    self.feedStatusTimer.start(0)
-    self.updatesCounter=0
-
     # Load user preferences
     self.loadPreferences()
 
@@ -411,6 +404,13 @@ class MainWindow(QtGui.QMainWindow):
     # the menu bar is hidden (tricky!)
     for action in self.ui.menuBar.actions():
       self.addAction(action)
+
+    # Timer to mark feeds as busy/updated/whatever
+    self.feedStatusTimer=QtCore.QTimer()
+    self.feedStatusTimer.setSingleShot(True)
+    QtCore.QObject.connect(self.feedStatusTimer, QtCore.SIGNAL("timeout()"), self.updateFeedStatus)
+    self.feedStatusTimer.start(1000)
+    self.updatesCounter=0
 
   def fixPostListUI(self):
     # Fixes for post list UI
@@ -1381,8 +1381,10 @@ class MainWindow(QtGui.QMainWindow):
   def on_actionMark_Feed_as_Read_triggered(self, i=None):
     if i==None: return
 
-    # See if we are displaying a feed using the post list
-    if self.ui.posts.model():
+    idx=self.ui.feeds.currentIndex()
+    feed=self.ui.feeds.model().feedFromIndex(idx)
+    # See if we are displaying the feed using the post list
+    if self.ui.posts.model() and self.ui.posts.model().feed_id==feed.id:
       self.ui.posts.model().markRead()
     else: # Mark as read a feed from the tree
       idx=self.ui.feeds.currentIndex()
