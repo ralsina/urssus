@@ -372,7 +372,7 @@ class MainWindow(QtGui.QMainWindow):
     self.ui.menu_Edit.insertSeparator(self.ui.actionFind)
 
     # Set sorting for post list
-    self.ui.posts.sortByColumn(1, QtCore.Qt.DescendingOrder)
+    self.ui.posts.sortByColumn(2, QtCore.Qt.DescendingOrder)
     # Set custom context menu hook in post list header
     header=self.ui.posts.header()
     header.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
