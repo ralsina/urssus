@@ -22,7 +22,6 @@ def feedUpdater(full=False):
   else:
     while True:
       info("updater loop")
-      time.sleep(60)
       now=datetime.datetime.now()
       period=config.getValue('options', 'defaultRefresh', 1800)
       ids=[feed.id for feed in dbtables.Feed.query.filter(dbtables.Feed.xmlUrl<>None)]
@@ -40,3 +39,12 @@ def feedUpdater(full=False):
             # feed.expire(expunge=False)
           except:
             pass
+      time.sleep(60)
+
+def main():
+  initDB()
+  feedUpdater(full=len(sys.argv)>1)
+  
+
+if __name__ == "__main__":
+  main()
