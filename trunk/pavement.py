@@ -52,11 +52,11 @@ def sdist():
   """Overrides sdist to make sure that our setup.py is generated."""
   pass
 
-@task
-@needs(['compile_resource','compile_ui', 'setuptools.command.install'])
-def install():
-  """Generate UI and icon resourcebefore installing."""
-  pass
+#@task
+#@needs(['compile_resource','compile_ui', 'setuptools.command.install'])
+#def install():
+#  """Generate UI and icon resourcebefore installing."""
+#  pass
 
   
 uidir=os.path.join('urssus', 'ui')
