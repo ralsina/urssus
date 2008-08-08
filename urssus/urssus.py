@@ -979,6 +979,12 @@ class MainWindow(QtGui.QMainWindow):
     else:
       self.statusTimer.start(100)
 
+  def updateTree(self, feed):
+    self.initTree()
+    idx=self.ui.feeds.model().indexFromFeed(feed)
+    self.ui.feeds.setCurrentIndex(idx)
+    self.open_feed(idx)
+
   def initTree(self):
     self.setEnabled(False)
     # Initialize the tree from the Feeds
@@ -1227,6 +1233,7 @@ class MainWindow(QtGui.QMainWindow):
       else:
         self.ui.posts.setModel(PostModel(self.ui.posts, feed, self.textFilter, self.statusFilter))
         QtCore.QObject.connect(self.ui.posts.model(), QtCore.SIGNAL("modelReset()"), self.updateListedFeedItem)
+        QtCore.QObject.connect(self.ui.posts.model(), QtCore.SIGNAL("dropped(PyQt_PyObject)"), self.updateTree)
       self.fixPostListUI()
 
       # Try to scroll to the same post or to the top

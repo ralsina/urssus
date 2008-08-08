@@ -13,7 +13,7 @@ feedflags=draggable
 class FeedModel(QtGui.QStandardItemModel):
   def __init__(self, parent):
     self.flags={}
-    self.feedItems={}
+    self.feedIndex={}
     self.feedCache={}
     QtGui.QStandardItemModel.__init__(self, parent)
     self.initData()
@@ -58,7 +58,7 @@ class FeedModel(QtGui.QStandardItemModel):
       
       parentItem.appendRow([item1, item2])
 
-      self.feedItems[feed.id]=[item1, item2]
+      self.feedIndex[feed.id]=[self.indexFromItem(item1), self.indexFromItem(item2)]
       if feed.xmlUrl:
         item1.setIcon(QtGui.QIcon(":/urssus.svg"))
       else:
@@ -67,7 +67,7 @@ class FeedModel(QtGui.QStandardItemModel):
           addSubTree(item1, child)
           
     iroot=self.invisibleRootItem()
-    self.feedItems[root_feed.id]=[iroot, None]
+    self.feedIndex[root_feed.id]=[self.indexFromItem(iroot), QtCore.QModelIndex()]
     addSubTree(iroot, root_feed)
 #    for root in root_feed.children:
 #      addSubTree(iroot, root)
@@ -107,6 +107,7 @@ class FeedModel(QtGui.QStandardItemModel):
     idlist=[int(id) for id in str(data.text()).split(',')]
     print "IDLIST:", idlist
     for id in idlist:
+      # Do feed housekeeping
       feed=Feed.get_by(id=id)
       if beforeFeed: #insert
         idx=parentFeed.children.index(beforeFeed)
@@ -121,7 +122,9 @@ class FeedModel(QtGui.QStandardItemModel):
         else:
           feed.position=0
       feed.parent=parentFeed
+
     elixir.session.flush()
+    self.emit(QtCore.SIGNAL("dropped(PyQt_PyObject)"), feed)
     return QtGui.QStandardItemModel.dropMimeData(self, data, action, row, column, parent)
 
   def mimeTypes(self):
@@ -139,7 +142,7 @@ class FeedModel(QtGui.QStandardItemModel):
     return v
       
   def hasFeed(self, id):
-    return id in self.feedItems
+    return id in self.feedIndex
       
   def feedFromIndex(self, index):
     item=self.itemFromIndex(index)
@@ -149,7 +152,7 @@ class FeedModel(QtGui.QStandardItemModel):
     return None
     
   def indexFromFeed(self, feed):
-    if feed.id in self.feedItems:
-      return self.indexFromItem(self.feedItems[feed.id][0])
+    if feed.id in self.feedIndex:
+      return self.feedIndex[feed.id][0]      
     else:
       return QtCore.QModelIndex()
