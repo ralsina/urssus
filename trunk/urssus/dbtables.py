@@ -542,19 +542,19 @@ class Feed(elixir.Entity):
     if 'etag' in d:
       self.etag=d['etag']
 
+    # Silly way to release the posts objects
+    # we don't need anymore
+    posts=[post.id for post in posts]
+
     if posts:
       elixir.session.begin()
       try:
         # Fix freshness
-        Post.table.update().values(fresh=False).execute()
-        for post in posts:
-          post.fresh=True
+        Post.table.update().where(sql.except_(Post.table.select(Post.id.in_(posts)))).values(fresh=False)
         elixir.session.commit()
       except:
         elixir.session.rollback()
     elixir.session.flush()
-    # Silly way to release the posts objects
-    posts=[1 for post in posts]
 
     if posts:
       # Mark feed UI for updating
