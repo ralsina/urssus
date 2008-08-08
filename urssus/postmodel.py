@@ -142,16 +142,16 @@ class PostModel(QtGui.QStandardItemModel):
     # FIXME: respect the palette
     if post.important:
       item0.setIcon(QtGui.QIcon(':/star.svg'))
-    elif post.unread:
+    if post.unread:
+      item0.setIcon(QtGui.QIcon(':/star2.svg'))
       item1.setForeground(QtGui.QColor("darkgreen"))
       item2.setForeground(QtGui.QColor("darkgreen"))
       item3.setForeground(QtGui.QColor("darkgreen"))
-      item0.setIcon(QtGui.QIcon(':/star2.svg'))
     else:
+      item0.setIcon(QtGui.QIcon(':/star2.svg'))
       item1.setForeground(QtGui.QColor("black"))
       item2.setForeground(QtGui.QColor("black"))
       item3.setForeground(QtGui.QColor("black"))
-      item0.setIcon(QtGui.QIcon(':/star2.svg'))
       
     f=item1.font()
     if post.important or post.unread:
