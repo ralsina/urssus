@@ -1406,7 +1406,7 @@ class MainWindow(QtGui.QMainWindow):
     post=self.ui.posts.model().postFromIndex(index)
     if post: #post may go away if you changed feeds very quickly
       if index.column()==0: # Star icon
-        post.important=~post.important
+        post.important= not post.important
         elixir.session.flush()
         self.updatePostItem(post)
       if post.unread: 
