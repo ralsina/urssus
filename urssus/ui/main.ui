@@ -9,6 +9,43 @@
     <height>600</height>
    </rect>
   </property>
+  <property name="palette" >
+   <palette>
+    <active>
+     <colorrole role="Highlight" >
+      <brush brushstyle="SolidPattern" >
+       <color alpha="255" >
+        <red>65</red>
+        <green>141</green>
+        <blue>212</blue>
+       </color>
+      </brush>
+     </colorrole>
+    </active>
+    <inactive>
+     <colorrole role="Highlight" >
+      <brush brushstyle="SolidPattern" >
+       <color alpha="255" >
+        <red>65</red>
+        <green>141</green>
+        <blue>212</blue>
+       </color>
+      </brush>
+     </colorrole>
+    </inactive>
+    <disabled>
+     <colorrole role="Highlight" >
+      <brush brushstyle="SolidPattern" >
+       <color alpha="255" >
+        <red>214</red>
+        <green>213</green>
+        <blue>211</blue>
+       </color>
+      </brush>
+     </colorrole>
+    </disabled>
+   </palette>
+  </property>
   <property name="windowTitle" >
    <string>uRSSus</string>
   </property>
