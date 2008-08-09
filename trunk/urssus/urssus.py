@@ -1805,8 +1805,7 @@ def main():
       # Import a OPML file into the DB so we have some data to work with
       importOPML(sys.argv[1], root_feed)
   
-  # This will start the background fetcher as a side effect
-#  window.on_actionAbort_Fetches_triggered(True)
-  window.show()
+  if not config.getValue('ui', 'startOnTray', False):
+    window.show()
   sys.exit(app.exec_())
   
