@@ -16,7 +16,8 @@ class PostModel(QtGui.QStandardItemModel):
     self.statusFilter=statusFilter
     self.setSortRole(sorting)
     self._clear()
-    self.sort(2, QtCore.Qt.DescendingOrder) # Date, descending
+    column,order = config.getValue('ui','postSorting',[2,QtCore.Qt.DescendingOrder])
+    self.sort(column,order) # Date, descending
     self.initData(feed)
 
   def _clear(self):
@@ -171,12 +172,14 @@ class PostModel(QtGui.QStandardItemModel):
   colkey=[5, 1, 2, 3]
 
   def sort(self, column, order):
+    order = [QtCore.Qt.AscendingOrder,QtCore.Qt.DescendingOrder][order]
     # Thanks pyar!
     self.post_data.sort(key=operator.itemgetter(self.colkey[column]), 
                         reverse=order==QtCore.Qt.DescendingOrder)
     QtGui.QStandardItemModel.sort(self, column, order)
     self.post_ids=[id for [id, _, _, _, _, _] in self.post_data]
     self.lastSort=(column, order)
+    config.setValue('ui','postSorting',[column,order])
 
   def nextPostIndex(self, post):
     '''Takes a Post and returns the index of the following post'''
