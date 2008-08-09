@@ -5,12 +5,12 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>407</width>
-    <height>194</height>
+    <width>384</width>
+    <height>165</height>
    </rect>
   </property>
   <property name="windowTitle" >
-   <string>Google News Feed - uRSSus</string>
+   <string>New Feed - uRSSus</string>
   </property>
   <property name="windowIcon" >
    <iconset resource="../images/icons.qrc" >
@@ -18,11 +18,37 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout" >
    <item>
+    <layout class="QHBoxLayout" name="horizontalLayout" >
+     <item>
+      <widget class="QLabel" name="label_2" >
+       <property name="text" >
+        <string>Feed Type:</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QComboBox" name="feedType" >
+       <item>
+        <property name="text" >
+         <string>Regular Feed</string>
+        </property>
+       </item>
+       <item>
+        <property name="text" >
+         <string>Google News Feed</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
     <widget class="QLabel" name="label" >
      <property name="text" >
-      <string>You can create a feed with articles gathered from thousands of newspapers, blogs and sites, thanks to Google News. 
-
-Just type below one or more words related to your interest. (for example: sailing)</string>
+      <string/>
+     </property>
+     <property name="textFormat" >
+      <enum>Qt::RichText</enum>
      </property>
      <property name="wordWrap" >
       <bool>true</bool>
@@ -30,7 +56,20 @@ Just type below one or more words related to your interest. (for example: sailin
     </widget>
    </item>
    <item>
-    <widget class="QLineEdit" name="keywords" />
+    <spacer name="verticalSpacer_2" >
+     <property name="orientation" >
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0" >
+      <size>
+       <width>20</width>
+       <height>20</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item>
+    <widget class="QLineEdit" name="data" />
    </item>
    <item>
     <spacer name="verticalSpacer" >
