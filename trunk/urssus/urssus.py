@@ -385,6 +385,10 @@ class MainWindow(QtGui.QMainWindow):
     page.setLinkDelegationPolicy(page.DelegateAllLinks)
     self.ui.view.setFocus(QtCore.Qt.TabFocusReason)
     QtWebKit.QWebSettings.globalSettings().setUserStyleSheetUrl(QtCore.QUrl(cssFile))
+    QtWebKit.QWebSettings.globalSettings().setAttribute(QtWebKit.QWebSettings.PluginsEnabled, True)
+    
+    QtWebKit.QWebSettings.globalSettings().setWebGraphic(QtWebKit.QWebSettings.MissingImageGraphic, QtGui.QPixmap(':/file_broken.svg').scaledToHeight(24))
+    
     copy_action=self.ui.view.page().action(QtWebKit.QWebPage.Copy)
     copy_action.setIcon(QtGui.QIcon(':/editcopy.svg'))
     self.ui.menu_Edit.insertAction(self.ui.actionFind, copy_action )
@@ -1412,6 +1416,7 @@ class MainWindow(QtGui.QMainWindow):
           self.ui.view.setHtml(renderTemplate('post.tmpl',post=post, showFeed=True))
         else:
           self.ui.view.setHtml(renderTemplate('post.tmpl',post=post, showFeed=False))
+      # FIXME: maybe add a processEvents so the user can see the page as the rest happens?
       if index.column()==0: # Star icon
         post.important= not post.important
         elixir.session.flush()
