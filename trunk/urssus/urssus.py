@@ -442,7 +442,6 @@ class MainWindow(QtGui.QMainWindow):
 
   def fixPostListUI(self):
     # Fixes for post list UI
-    print "fixing posts ui"
     header=self.ui.posts.header()
     header.setStretchLastSection(False)
     header.setResizeMode(0, QtGui.QHeaderView.Fixed)
@@ -543,7 +542,6 @@ class MainWindow(QtGui.QMainWindow):
   def savePostColumnPosition(self, logical, vfrom, vto):
     header=self.ui.posts.header()
     pos=[ header.visualIndex(logical) for logical in xrange(0, 5)]
-    print "sectionmoved", logical, vfrom, vto
     config.setValue('ui', 'postColumnPosition', pos)
     
   def getCurrentPost(self):
