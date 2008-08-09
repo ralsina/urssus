@@ -144,11 +144,11 @@ class Feed(elixir.Entity):
 
   def markAsRead(self):
     if self.xmlUrl: # regular feed
-      Post.table.update().where(Post.unread==True).where(Post.feed==self).values(unread=False).execute()
+      with elixir.session.begin():
+        Post.table.update().where(Post.unread==True).where(Post.feed==self).values(unread=False).execute()
     else: # A folder
       for feed in self.allFeeds():
         feed.markAsRead()
-    elixir.session.flush()
     # Put in queue for status update [parents too]
     self.curUnread=-1
     self.unreadCount()
@@ -164,41 +164,42 @@ class Feed(elixir.Entity):
     if self.archiveType==0: # Default archive config
       days=config.getValue('options', 'defaultExpiration', 7)
       cutoff=now-datetime.timedelta(7, 0, 0)
-      Post.table.update().where(sql.and_(Post.important==False,  
+      with elixir.session.begin():
+        Post.table.update().where(sql.and_(Post.important==False,  
                                          Post.feed==self, 
                                          Post.date<cutoff)).\
-                          values(deleted=True).execute()
-      elixir.session.flush()
+                            values(deleted=True).execute()
     elif self.archiveType==1: #keepall
       # Tested ;-)
       return
     elif self.archiveType==2: #limitCount
       # FIXME: implement quicker!
       # Doesn't seem to work
-      for post in self.posts[self.limitCount:]:
-        if post.important: continue # Don't delete important stuff
-        post.deleted=True
-      elixir.session.flush()
+      with elixir.session.begin():
+        for post in self.posts[self.limitCount:]:
+          if post.important: continue # Don't delete important stuff
+          post.deleted=True
     elif self.archiveType==3: #limitDays
       # Tested
       cutoff=now-datetime.timedelta(self.limitDays, 0, 0)
-      Post.table.update().where(sql.and_(Post.important==False, 
-                                         Post.date<cutoff)).\
-                          values(deleted=True).execute()
-      elixir.session.flush()
+      with elixir.session.begin():
+        Post.table.update().where(sql.and_(Post.important==False, 
+                                          Post.date<cutoff)).\
+                            values(deleted=True).execute()
     elif self.archiveType==4: #no archiving
       # Tested
-      Post.table.update().where(sql.and_(Post.important==False, 
-                                         Post.feed==self)).\
-                          values(deleted=True).execute()
-      elixir.session.flush()
+      with elixir.session.begin():
+        Post.table.update().where(sql.and_(Post.important==False, 
+                                          Post.feed==self)).\
+                            values(deleted=True).execute()
         
     if expunge:
       # Delete all posts with deleted==True, which are not fresh 
       # (are not in the last RSS/Atom we got)
-      Post.table.delete().where(sql.and_(Post.deleted==True,Post.fresh==False,Post.feed==self)).execute()
-
-      elixir.session.flush()
+      with elixir.session.begin():
+        Post.table.delete().where(sql.and_(Post.deleted==True,
+                                           Post.fresh==False,
+                                           Post.feed==self)).execute()
       
     # Force recount
     self.curUnread=-1
@@ -580,7 +581,6 @@ def initDB():
     
   elixir.metadata.bind = engine
   elixir.setup_all()
-  elixir.session.flush()
-  root_feed=Feed.get_by_or_init(parent=None)
-  root_feed.text='All Feeds'
-  elixir.session.flush()
+  with elixir.session.begin():
+    root_feed=Feed.get_by_or_init(parent=None)
+    root_feed.text='All Feeds'
