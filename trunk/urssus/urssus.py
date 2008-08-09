@@ -23,6 +23,8 @@ from dbtables import Post, Feed, initDB
 import elixir
 import sqlalchemy as sql
 
+from htmlentitydefs import name2codepoint as n2cp
+import re
 
 # Twitter support
 try:
@@ -1430,10 +1432,10 @@ class MainWindow(QtGui.QMainWindow):
         self.ui.statusBar.showMessage("Opening %s"%post.link)
         self.ui.view.setUrl(QtCore.QUrl(QtCore.QString(post.link)))
       else:
-        if self.showingFolder or config.getValue('ui', 'alwaysShowFeed', False) == True:
-          self.ui.view.setHtml(renderTemplate('post.tmpl',post=post, showFeed=True))
-        else:
-          self.ui.view.setHtml(renderTemplate('post.tmpl',post=post, showFeed=False))
+        showFeed = self.showingFolder or config.getValue('ui', 'alwaysShowFeed', False) == True
+        if not self.showingFolder:
+          post.content = decode_htmlentities(post.content)
+        self.ui.view.setHtml(renderTemplate('post.tmpl',post=post, showFeed=showFeed))
       # FIXME: maybe add a processEvents so the user can see the page as the rest happens?
       if index.column()==0: # Star icon
         post.important= not post.important
@@ -1770,6 +1772,22 @@ def importOPML(fname, parent=None):
   for node in tree.find('//body').getchildren():
     importSubTree(parent, node)
   elixir.session.flush()
+
+# TODO: move substitute_entity and decode_htmlentities to utils module
+def substitute_entity(match):
+  ent = match.group(2)
+  if match.group(1) == "#":
+    return unichr(int(ent))
+  else:
+    cp = n2cp.get(ent)
+    if cp:
+      return unichr(cp)
+    else:
+      return match.group()
+
+def decode_htmlentities(string):
+  entity_re = re.compile("&(#?)(\d{1,5}|\w{1,8});")
+  return entity_re.subn(substitute_entity, string)[0]
 
     
 def main():
