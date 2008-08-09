@@ -168,9 +168,11 @@ class PostModel(QtGui.QStandardItemModel):
     idx=self.post_ids.index(post.id)
     self.post_data[idx]=[post.id, unicode(post).lower(), post.date,unicode(post.feed).lower(),post.important,post.unread]
 
+  colkey=[5, 1, 2, 3]
+
   def sort(self, column, order):
     # Thanks pyar!
-    self.post_data.sort(key=operator.itemgetter(column+1), 
+    self.post_data.sort(key=operator.itemgetter(self.colkey[column]), 
                         reverse=order==QtCore.Qt.DescendingOrder)
     QtGui.QStandardItemModel.sort(self, column, order)
     self.post_ids=[id for [id, _, _, _, _, _] in self.post_data]
