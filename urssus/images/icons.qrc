@@ -1,5 +1,6 @@
 <RCC>
   <qresource prefix="/" >
+    <file>file_broken.svg</file>
     <file>star2.svg</file>
     <file>star.svg</file>
     <file>configure.svg</file>
