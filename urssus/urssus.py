@@ -1403,6 +1403,15 @@ class MainWindow(QtGui.QMainWindow):
   def on_posts_clicked(self, index):
     post=self.ui.posts.model().postFromIndex(index)
     if post: #post may go away if you changed feeds very quickly
+      if post.feed.loadFull and post.link:
+        # If I pass post.link, it crashes if I click something else quickly
+        self.ui.statusBar.showMessage("Opening %s"%post.link)
+        self.ui.view.setUrl(QtCore.QUrl(QtCore.QString(post.link)))
+      else:
+        if self.showingFolder or config.getValue('ui', 'alwaysShowFeed', False) == True:
+          self.ui.view.setHtml(renderTemplate('post.tmpl',post=post, showFeed=True))
+        else:
+          self.ui.view.setHtml(renderTemplate('post.tmpl',post=post, showFeed=False))
       if index.column()==0: # Star icon
         post.important= not post.important
         elixir.session.flush()
@@ -1413,16 +1422,7 @@ class MainWindow(QtGui.QMainWindow):
         elixir.session.flush()
         self.updateFeedItem(post.feed, parents=True)
         self.updatePostItem(post)
-      if post.feed.loadFull and post.link:
-        # If I pass post.link, it crashes if I click something else quickly
-        self.ui.statusBar.showMessage("Opening %s"%post.link)
-        self.ui.view.setUrl(QtCore.QUrl(QtCore.QString(post.link)))
-      else:
-        if self.showingFolder or config.getValue('ui', 'alwaysShowFeed', False) == True:
-          self.ui.view.setHtml(renderTemplate('post.tmpl',post=post, showFeed=True))
-        else:
-          self.ui.view.setHtml(renderTemplate('post.tmpl',post=post, showFeed=False))
-
+ 
   def on_posts_doubleClicked(self, index=None):
     if index==None: return
     item=self.ui.posts.model().itemFromIndex(index)
