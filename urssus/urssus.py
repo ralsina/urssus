@@ -400,7 +400,8 @@ class MainWindow(QtGui.QMainWindow):
     header=self.ui.posts.header()
     header.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
     QtCore.QObject.connect(header, QtCore.SIGNAL("customContextMenuRequested(const QPoint)"), self.postHeaderContextMenu)
-
+    QtCore.QObject.connect(header, QtCore.SIGNAL("sectionMoved ( int, int, int)"), 
+                                   self.savePostColumnPosition)
     # Fill with feed data
     self.showOnlyUnread=False
     QtCore.QTimer.singleShot(0, self.initTree)
@@ -450,6 +451,7 @@ class MainWindow(QtGui.QMainWindow):
     header.setResizeMode(2, QtGui.QHeaderView.Fixed)
     header.resizeSection(2, header.fontMetrics().width(' 88/88/8888 8888:88:88 ')+4)
     header.setResizeMode(3, QtGui.QHeaderView.Interactive)
+    self.loadPostColumnPosition()
     starred, feed, date=config.getValue('ui', 'visiblePostColumns', [True, False, True])
     self.ui.actionShowStarredColumn.setChecked(starred)
     self.ui.actionShowFeedColumn.setChecked(feed)
@@ -528,7 +530,22 @@ class MainWindow(QtGui.QMainWindow):
     if splitters:
       self.ui.splitter.setSizes(splitters[0])
       self.ui.splitter_2.setSizes(splitters[1])
+
+  def loadPostColumnPosition(self):
+    positions=config.getValue('ui', 'postColumnPosition', [0, 1, 2, 3, 4])
+    colPos=zip([0, 1, 2, 3, 4], positions)
+    colPos.sort(key=operator.itemgetter(1))
+    header=self.ui.posts.header()
+    # Gack!
+    for logical, visual in colPos:
+      header.moveSection(header.visualIndex(logical), visual)
       
+  def savePostColumnPosition(self, logical, vfrom, vto):
+    header=self.ui.posts.header()
+    pos=[ header.visualIndex(logical) for logical in xrange(0, 5)]
+    print "sectionmoved", logical, vfrom, vto
+    config.setValue('ui', 'postColumnPosition', pos)
+    
   def getCurrentPost(self):
     index=self.ui.posts.currentIndex()
     if not index.isValid() or not self.ui.posts.model():
@@ -1042,6 +1059,7 @@ class MainWindow(QtGui.QMainWindow):
       elif action==1: # Mark as finished updating
         # Force recount after update
         feed.curUnread=-1
+        feed.unreadCount()
         self.updateFeedItem(feed, updating=False)
         self.updatesCounter-=1
       elif action==2: # Update it, may have new posts, so all parents
