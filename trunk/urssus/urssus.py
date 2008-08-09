@@ -17,7 +17,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 import sys, os, time, urlparse, tempfile, codecs, traceback
-from urllib import urlopen
+from urllib import urlopen, quote
 from datetime import datetime, timedelta
 from dbtables import Post, Feed, initDB
 import elixir
@@ -47,6 +47,7 @@ from ui.Ui_twitterauth import Ui_Dialog as UI_TwitterAuthDialog
 from ui.Ui_greaderimport import Ui_Dialog as UI_GReaderDialog
 from ui.Ui_bugdialog import Ui_Dialog as UI_BugDialog
 from ui.Ui_configdialog import Ui_Dialog as UI_ConfigDialog
+from ui.Ui_newfeed import Ui_Dialog as UI_NewFeedDialog
 
 from processdialog import ProcessDialog
 
@@ -73,6 +74,24 @@ class GReaderDialog(QtGui.QDialog):
     # Set up the UI from designer
     self.ui=UI_GReaderDialog()
     self.ui.setupUi(self)
+
+class NewFeedDialog(QtGui.QDialog):
+  def __init__(self, parent):
+    QtGui.QDialog.__init__(self, parent)
+    # Set up the UI from designer
+    self.ui=UI_NewFeedDialog()
+    self.ui.setupUi(self)
+    self.ui.label.setText(self.help[0])
+    
+  help=['''Enter the URL of the site you want to add as a feed.''', 
+        '''Enter keywords to create a customized Google News feed.<p> 
+        For example, <i>"premier league"</i> if you are interested in english football.'''
+       ]
+    
+  def on_feedType_activated(self, index=None):
+    if index==None: return
+    if type(index) is not int: return
+    self.ui.label.setText(self.help[index])
 
 class BugDialog(QtGui.QDialog):
   def __init__(self):
@@ -828,9 +847,14 @@ class MainWindow(QtGui.QMainWindow):
   def on_actionAdd_Feed_triggered(self, i=None):
     if i==None: return
     # Ask for feed URL
-    [url, ok]=QtGui.QInputDialog.getText(self, "Add Feed - uRSSus", "&Feed URL:")
-    if ok:
-      url=unicode(url)
+    dlg=NewFeedDialog(self)
+    if dlg.exec_():
+      idx=dlg.ui.feedType.currentIndex()
+      data=unicode(dlg.ui.data.text())
+      if idx==0: # Regular Feed
+        url=unicode(url)
+      elif idx==1: # Google News Feed
+        url='http://news.google.com/news?q=%s&output=atom'%quote(data)
       self.addFeed(unicode(url))
 
   def on_actionNew_Folder_triggered(self, i=None):

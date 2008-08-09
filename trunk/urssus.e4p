@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE Project SYSTEM "Project-4.2.dtd">
 <!-- eric4 project file for project urssus -->
-<!-- Saved: 2008-08-08, 13:32:25 -->
+<!-- Saved: 2008-08-08, 22:44:27 -->
 <!-- Copyright (C) 2008 Roberto Alsina, ralsina@netmanagers.com.ar -->
 <Project version="4.2">
   <ProgLanguage mixed="0">Python</ProgLanguage>
@@ -326,6 +326,11 @@
       <Dir>resolvUrl</Dir>
       <Name>resolvUrl.py</Name>
     </Source>
+    <Source>
+      <Dir>urssus</Dir>
+      <Dir>ui</Dir>
+      <Name>Ui_newfeed.py</Name>
+    </Source>
   </Sources>
   <Forms>
     <Form>
@@ -382,6 +387,11 @@
       <Dir>urssus</Dir>
       <Dir>ui</Dir>
       <Name>runprocess.ui</Name>
+    </Form>
+    <Form>
+      <Dir>urssus</Dir>
+      <Dir>ui</Dir>
+      <Name>newfeed.ui</Name>
     </Form>
   </Forms>
   <Translations>
