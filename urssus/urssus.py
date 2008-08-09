@@ -851,11 +851,9 @@ class MainWindow(QtGui.QMainWindow):
     if dlg.exec_():
       idx=dlg.ui.feedType.currentIndex()
       data=unicode(dlg.ui.data.text())
-      if idx==0: # Regular Feed
-        url=unicode(url)
-      elif idx==1: # Google News Feed
-        url='http://news.google.com/news?q=%s&output=atom'%quote(data)
-      self.addFeed(unicode(url))
+      if idx==1: # Google News Feed
+        data='http://news.google.com/news?q=%s&output=atom'%quote(data)
+      self.addFeed(unicode(data))
 
   def on_actionNew_Folder_triggered(self, i=None):
     if i==None: return
