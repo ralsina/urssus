@@ -1436,7 +1436,7 @@ class MainWindow(QtGui.QMainWindow):
         if not self.showingFolder:
           post.content = decode_htmlentities(post.content)
         self.ui.view.setHtml(renderTemplate('post.tmpl',post=post, showFeed=showFeed))
-      # FIXME: maybe add a processEvents so the user can see the page as the rest happens?
+      QtGui.QApplication.instance().processEvents()
       if index.column()==0: # Star icon
         post.important= not post.important
         elixir.session.flush()
