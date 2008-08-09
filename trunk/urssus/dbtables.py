@@ -101,9 +101,9 @@ class Feed(elixir.Entity):
   title          = elixir.Field(elixir.Text)
   text           = elixir.Field(elixir.Text, default='')
   description    = elixir.Field(elixir.Text)
-  children       = elixir.OneToMany('Feed', inverse='parent', order_by='position')
+  children       = elixir.OneToMany('Feed', inverse='parent', order_by='position', cascade="delete")
   parent         = elixir.ManyToOne('Feed')
-  posts          = elixir.OneToMany('Post', order_by="-date", inverse='feed')
+  posts          = elixir.OneToMany('Post', order_by="-date", inverse='feed', cascade="delete,delete-orphan")
   lastUpdated    = elixir.Field(elixir.DateTime, default=datetime.datetime(1970,1,1))
   loadFull       = elixir.Field(elixir.Boolean, default=False)
   # meaning of archiveType:
