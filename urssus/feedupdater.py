@@ -1,5 +1,5 @@
 from globals import *
-import sys, time, datetime
+import sys, time, datetime, random
 import elixir
 import sqlalchemy as sql
 from dbtables import *
@@ -20,8 +20,8 @@ def feedUpdater():
     info("updater loop")
     now=datetime.datetime.now()
     period=config.getValue('options', 'defaultRefresh', 1800)
-    cutoff=now-datetime.timedelta(0, 0, period)
-    if (now-lastCheck).seconds>90: # Time to see if a feed needs updating
+    cutoff=now-datetime.timedelta(0, 0, period+random.randint(-60, 60))
+    if (now-lastCheck).seconds>30: # Time to see if a feed needs updating
       # Feeds with custom check periods
       now_stamp=time.mktime(now.timetuple())
       for feed in dbtables.Feed.query.filter(sql.and_(dbtables.Feed.updateInterval<>-1, 
@@ -34,9 +34,11 @@ def feedUpdater():
         except:
           pass
       # Feeds with default check period
+      # Limit to 5 feeds so they get progressively out-of-sync and you don't have a glut of
+      # feeds updating all at the same time
       for feed in dbtables.Feed.query.filter(sql.and_(dbtables.Feed.updateInterval==-1, 
                                                       dbtables.Feed.lastUpdated < cutoff)).\
-                                                      filter(dbtables.Feed.xmlUrl<>None):
+                                                      filter(dbtables.Feed.xmlUrl<>None).limit(5):
         try:
           feed.update()
           # feed.expire(expunge=False)
@@ -47,7 +49,7 @@ def feedUpdater():
 
 def main():
   initDB()
-  elixir.metadata.bind.echo = True
+#  elixir.metadata.bind.echo = True
   feedUpdater()
   
 
