@@ -29,7 +29,6 @@ def feedUpdater():
                                                     dbtables.Feed.updateInterval*60<now_stamp)).\
                             filter(dbtables.Feed.xmlUrl<>None):
         try:
-          print 1, feed 
           feed.update()
           # feed.expire(expunge=False)
         except:
@@ -42,7 +41,6 @@ def feedUpdater():
                                                       filter(dbtables.Feed.xmlUrl<>None).\
                                                       order_by(dbtables.Feed.lastUpdated).limit(5):
         try:
-          print 2, feed 
           feed.update()
           # feed.expire(expunge=False)
         except:
