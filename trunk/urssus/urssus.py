@@ -102,6 +102,7 @@ class BugDialog(QtGui.QDialog):
     self.ui=UI_BugDialog()
     self.ui.setupUi(self)
 
+
 class ConfigDialog(QtGui.QDialog):
   def __init__(self, parent):
     QtGui.QDialog.__init__(self, parent)
@@ -115,6 +116,7 @@ class ConfigDialog(QtGui.QDialog):
     for sectionName, options in config.options:
       # Create a page widget/layout for this section:
       page=QtGui.QScrollArea()
+      innerpage=QtGui.QFrame()
       layout=QtGui.QGridLayout()
       row=-2
       for optionName, definition in options:
@@ -124,8 +126,6 @@ class ConfigDialog(QtGui.QDialog):
           cb.setChecked(config.getValue(sectionName, optionName, definition[1]))
           layout.addWidget(cb, row, 0, 1, 2)
           self.values[sectionName+'/'+optionName]=[cb, lambda(cb): cb.isChecked()]
-
-          
         elif definition[0]=='int':
           label=QtGui.QLabel(optionName+":")
           label.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignVCenter)
@@ -168,7 +168,10 @@ class ConfigDialog(QtGui.QDialog):
         separator=QtGui.QFrame()
         separator.setFrameStyle(QtGui.QFrame.HLine|QtGui.QFrame.Plain)
         layout.addWidget(separator, row+1, 0, 1, 3)
-      page.setLayout(layout)      
+      innerpage.setLayout(layout)
+      innerpage.adjustSize()
+      page.resize(QtCore.QSize(innerpage.width()+5, page.height()))
+      page.setWidget(innerpage)
       pages.append(page)
       sections.append(sectionName)
 
