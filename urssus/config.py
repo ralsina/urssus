@@ -114,11 +114,5 @@ options = (
       ('fetchOnStartup'      ,  ('bool', False, "Fetch all feeds on startup.")), 
     )
   ), 
-  ('twitter',
-    (
-      ('username',  ('string', None, 'Your Twitter user name.' )), 
-      ('password',  ('password', None, 'Your Twitter password.' )), 
-    )
-  )
 )
 
