@@ -45,7 +45,7 @@ from ui.Ui_filterwidget import Ui_Form as UI_FilterWidget
 from ui.Ui_searchwidget import Ui_Form as UI_SearchWidget
 from ui.Ui_feed_properties import Ui_Dialog as UI_FeedPropertiesDialog
 from ui.Ui_twitterpost import Ui_Dialog as UI_TwitterDialog
-from ui.Ui_twitterauth import Ui_Dialog as UI_TwitterAuthDialog
+from ui.Ui_fancyauth import Ui_Dialog as UI_FancyAuthDialog
 from ui.Ui_greaderimport import Ui_Dialog as UI_GReaderDialog
 from ui.Ui_bugdialog import Ui_Dialog as UI_BugDialog
 from ui.Ui_configdialog import Ui_Dialog as UI_ConfigDialog
@@ -227,7 +227,7 @@ class TwitterDialog(QtGui.QDialog):
 
   def on_changeAuth_clicked(self, i=None):
     if i==None: return
-    dlg=TwitterAuthDialog(self)
+    dlg=FancyAuthDialog(self, 'Twitter', QtGui.QPixmap(':/twitter.svg'))
     dlg.ui.username.setText(unicode(self.u))
     if dlg.exec_():
       self.u=unicode(dlg.ui.username.text())
@@ -246,13 +246,15 @@ class TwitterDialog(QtGui.QDialog):
     conn.statuses.update(source='urssus', status=status)    
     QtGui.QDialog.accept(self)
     
-class TwitterAuthDialog(QtGui.QDialog):
-  def __init__(self, parent):
+class FancyAuthDialog(QtGui.QDialog):
+  def __init__(self, parent, service_name, icon):
     QtGui.QDialog.__init__(self, parent)
     # Set up the UI from designer
-    self.ui=UI_TwitterAuthDialog()
+    self.ui=UI_FancyAuthDialog()
     self.ui.setupUi(self)
-
+    self.setWindowTitle('%s Authentication - uRSSus'%service_name)
+    self.ui.label.setText('Please enter your %s username and password'%service_name)
+    self.ui.icon.setPixmap(icon or QtGui.QPixmap(':/urssus.svg'))
 
 class TrayIcon(QtGui.QSystemTrayIcon):
   def __init__(self):
@@ -556,6 +558,28 @@ class MainWindow(QtGui.QMainWindow):
     if not index.isValid() or not self.ui.posts.model():
       return None
     return self.ui.posts.model().postFromIndex(index)
+
+  def on_actionSync_Bookmarks_To_Web_triggered(self, i=None):
+    if i==None: return
+    # Start with del.icio.us, we'll make it configurable later
+    u=config.getValue('del.icio.us', 'username', '')
+    p=config.getValue('del.icio.us', 'password', '')
+    if not u or not p:
+      dlg=FancyAuthDialog(self, 'Del.icio.us', None)
+      dlg.ui.username.setText(unicode(u))
+      dlg.ui.password.setText(unicode(p))
+      if dlg.exec_():
+        u=unicode(dlg.ui.username.text())
+        p=unicode(dlg.ui.password.text())
+        if dlg.ui.saveit.isChecked():
+          config.setValue('del.icio.us', 'username',u)
+          config.setValue('del.icio.us', 'password',p)
+      else:
+        return
+    import util.deliciousapi as api
+    dapi=api.DeliciousAPI()
+    print dapi.get_user(u, p).bookmarks
+    
 
   def on_actionShowStarredColumn_triggered(self, checked=None):
     if checked==None:return
