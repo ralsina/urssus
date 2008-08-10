@@ -1575,7 +1575,7 @@ class MainWindow(QtGui.QMainWindow):
     global processes
     # Start an immediate update for all feeds
     statusQueue.put("fetching all feeds")
-    p = processing.Process(target=feedUpdater, args=(True, ))
+    p=processing.Process(target=updateOneNice, args=(root_feed, ))
     p.setDaemon(True)
     p.start()
     processes.append(p)
