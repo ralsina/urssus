@@ -21,6 +21,10 @@ statusQueue=processing.Queue()
 
 feedStatusQueue=processing.Queue()
 
+# A queue where you put the feeds that you want fetched.
+# To fetch "All feeds" just pass the root feed.
+feedUpdateQueue=processing.Queue()
+
 # Configuration
 import config
 

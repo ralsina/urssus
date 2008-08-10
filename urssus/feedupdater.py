@@ -1,6 +1,7 @@
 from globals import *
 import sys, time, datetime
 import elixir
+import sqlalchemy as sql
 from dbtables import *
   
 def updateOne(feed):
@@ -8,43 +9,41 @@ def updateOne(feed):
   elixir.session.flush()  
   
 # The feed updater (runs out-of-process)
-def feedUpdater(full=False):
+def feedUpdater():
   import dbtables
-  if full:
-      for feed in dbtables.Feed.query.filter(dbtables.Feed.xmlUrl<>None):
-#        feedStatusQueue.put([0, feed.id])
-        try: # we can't let this fail or it will stay marked forever;-)
+  lastCheck=datetime.datetime(1970, 1, 1)
+  while True:
+    info("updater loop")
+    now=datetime.datetime.now()
+    period=config.getValue('options', 'defaultRefresh', 1800)
+    cutoff=now-datetime.timedelta(0, 0, period)
+    if (now-lastCheck).seconds>90: # Time to see if a feed needs updating
+      # Feeds with custom check periods
+      now_stamp=time.mktime(now.timetuple())
+      for feed in dbtables.Feed.query.filter(sql.and_(dbtables.Feed.updateInterval<>-1, 
+                            sql.func.strftime('%s', Feed.lastUpdated)+dbtables.Feed.updateInterval*60<now_stamp)).\
+                            filter(dbtables.Feed.xmlUrl<>None):
+        try:
           feed.update()
-          time.sleep(1)
+          # feed.expire(expunge=False)
         except:
           pass
-#        feedStatusQueue.put([1, feed.id])
-  else:
-    while True:
-      info("updater loop")
-      now=datetime.datetime.now()
-      period=config.getValue('options', 'defaultRefresh', 1800)
-      ids=[feed.id for feed in dbtables.Feed.query.filter(dbtables.Feed.xmlUrl<>None)]
-      for id in ids :
-        time.sleep(1)
-        feed=dbtables.Feed.get_by(id=id)
-        if feed.updateInterval==0: # Update never
-          continue
-        elif feed.updateInterval<>-1: # not update default
-          period=60*feed.updateInterval # convert to seconds
-        if (now-feed.lastUpdated).seconds>period:
-          info("updating because of timeout")
-          try:
-            feed.update()
-            # feed.expire(expunge=False)
-          except:
-            pass
-      time.sleep(60)
+      # Feeds with default check period
+      for feed in dbtables.Feed.query.filter(sql.and_(dbtables.Feed.updateInterval==-1, 
+                                                      dbtables.Feed.lastUpdated < cutoff)).\
+                                                      filter(dbtables.Feed.xmlUrl<>None):
+        try:
+          feed.update()
+          # feed.expire(expunge=False)
+        except:
+          pass
+      lastCheck=now
+    sleep(2)
 
 def main():
   initDB()
   elixir.metadata.bind.echo = True
-  feedUpdater(full=len(sys.argv)>1)
+  feedUpdater()
   
 
 if __name__ == "__main__":
