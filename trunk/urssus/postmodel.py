@@ -15,6 +15,8 @@ class PostModel(QtGui.QStandardItemModel):
     self.textFilter=textFilter
     self.statusFilter=statusFilter
     self.setSortRole(sorting)
+    self.star=QtGui.QIcon(':/star.svg')
+    self.star2=QtGui.QIcon(':/star2.svg')
     self._clear()
     column,order = config.getValue('ui','postSorting',[2,QtCore.Qt.DescendingOrder])
     self.sort(column,order) # Date, descending
@@ -142,9 +144,9 @@ class PostModel(QtGui.QStandardItemModel):
     item0, item1, item2, item3=self.postItems[post.id]
     # FIXME: respect the palette
     if post.important:
-      item0.setIcon(QtGui.QIcon(':/star.svg'))
+      item0.setIcon(self.star)
     else:
-      item0.setIcon(QtGui.QIcon(':/star2.svg'))
+      item0.setIcon(self.star2)
     if post.unread:
       item1.setForeground(QtGui.QColor("darkgreen"))
       item2.setForeground(QtGui.QColor("darkgreen"))
