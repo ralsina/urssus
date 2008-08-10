@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE Project SYSTEM "Project-4.2.dtd">
 <!-- eric4 project file for project urssus -->
-<!-- Saved: 2008-08-08, 22:44:27 -->
+<!-- Saved: 2008-08-10, 13:51:54 -->
 <!-- Copyright (C) 2008 Roberto Alsina, ralsina@netmanagers.com.ar -->
 <Project version="4.2">
   <ProgLanguage mixed="0">Python</ProgLanguage>
@@ -28,16 +28,6 @@
     </Source>
     <Source>
       <Dir>urssus</Dir>
-      <Dir>ui</Dir>
-      <Name>Ui_about.py</Name>
-    </Source>
-    <Source>
-      <Dir>urssus</Dir>
-      <Dir>ui</Dir>
-      <Name>Ui_main.py</Name>
-    </Source>
-    <Source>
-      <Dir>urssus</Dir>
       <Dir>templates</Dir>
       <Name>feed.tmpl</Name>
     </Source>
@@ -58,21 +48,6 @@
       <Dir>urssus</Dir>
       <Dir>templates</Dir>
       <Name>style.css</Name>
-    </Source>
-    <Source>
-      <Dir>urssus</Dir>
-      <Dir>ui</Dir>
-      <Name>Ui_feed_properties.py</Name>
-    </Source>
-    <Source>
-      <Dir>urssus</Dir>
-      <Dir>ui</Dir>
-      <Name>Ui_filterwidget.py</Name>
-    </Source>
-    <Source>
-      <Dir>urssus</Dir>
-      <Dir>ui</Dir>
-      <Name>Ui_searchwidget.py</Name>
     </Source>
     <Source>
       <Dir>urssus</Dir>
@@ -117,16 +92,6 @@
     </Source>
     <Source>
       <Dir>urssus</Dir>
-      <Dir>ui</Dir>
-      <Name>Ui_twitterpost.py</Name>
-    </Source>
-    <Source>
-      <Dir>urssus</Dir>
-      <Dir>ui</Dir>
-      <Name>Ui_twitterauth.py</Name>
-    </Source>
-    <Source>
-      <Dir>urssus</Dir>
       <Dir>versioning</Dir>
       <Dir>versions</Dir>
       <Name>002_Inheritance_for_feed_class.py</Name>
@@ -152,11 +117,6 @@
     <Source>
       <Dir>urssus</Dir>
       <Name>feedmodel.py</Name>
-    </Source>
-    <Source>
-      <Dir>urssus</Dir>
-      <Dir>ui</Dir>
-      <Name>Ui_greaderimport.py</Name>
     </Source>
     <Source>
       <Dir>urssus</Dir>
@@ -190,16 +150,6 @@
     </Source>
     <Source>
       <Dir>urssus</Dir>
-      <Dir>ui</Dir>
-      <Name>Ui_bugdialog.py</Name>
-    </Source>
-    <Source>
-      <Dir>urssus</Dir>
-      <Dir>ui</Dir>
-      <Name>Ui_configdialog.py</Name>
-    </Source>
-    <Source>
-      <Dir>urssus</Dir>
       <Dir>versioning</Dir>
       <Dir>versions</Dir>
       <Name>008_Add_columns_for_etag_and_last-modified_to_feeds.py</Name>
@@ -213,11 +163,6 @@
     <Source>
       <Dir>urssus</Dir>
       <Name>processdialog.py</Name>
-    </Source>
-    <Source>
-      <Dir>urssus</Dir>
-      <Dir>ui</Dir>
-      <Name>Ui_runprocess.py</Name>
     </Source>
     <Source>
       <Dir>urssus</Dir>
@@ -328,6 +273,70 @@
     </Source>
     <Source>
       <Dir>urssus</Dir>
+      <Dir>util</Dir>
+      <Name>deliciousapi.py</Name>
+    </Source>
+    <Source>
+      <Dir>urssus</Dir>
+      <Name>sync_delicious.py</Name>
+    </Source>
+    <Source>
+      <Dir>urssus</Dir>
+      <Dir>ui</Dir>
+      <Name>Ui_fancyauth.py</Name>
+    </Source>
+    <Source>
+      <Dir>urssus</Dir>
+      <Dir>ui</Dir>
+      <Name>Ui_about.py</Name>
+    </Source>
+    <Source>
+      <Dir>urssus</Dir>
+      <Dir>ui</Dir>
+      <Name>Ui_feed_properties.py</Name>
+    </Source>
+    <Source>
+      <Dir>urssus</Dir>
+      <Dir>ui</Dir>
+      <Name>Ui_filterwidget.py</Name>
+    </Source>
+    <Source>
+      <Dir>urssus</Dir>
+      <Dir>ui</Dir>
+      <Name>Ui_main.py</Name>
+    </Source>
+    <Source>
+      <Dir>urssus</Dir>
+      <Dir>ui</Dir>
+      <Name>Ui_searchwidget.py</Name>
+    </Source>
+    <Source>
+      <Dir>urssus</Dir>
+      <Dir>ui</Dir>
+      <Name>Ui_twitterpost.py</Name>
+    </Source>
+    <Source>
+      <Dir>urssus</Dir>
+      <Dir>ui</Dir>
+      <Name>Ui_greaderimport.py</Name>
+    </Source>
+    <Source>
+      <Dir>urssus</Dir>
+      <Dir>ui</Dir>
+      <Name>Ui_bugdialog.py</Name>
+    </Source>
+    <Source>
+      <Dir>urssus</Dir>
+      <Dir>ui</Dir>
+      <Name>Ui_configdialog.py</Name>
+    </Source>
+    <Source>
+      <Dir>urssus</Dir>
+      <Dir>ui</Dir>
+      <Name>Ui_runprocess.py</Name>
+    </Source>
+    <Source>
+      <Dir>urssus</Dir>
       <Dir>ui</Dir>
       <Name>Ui_newfeed.py</Name>
     </Source>
@@ -366,11 +375,6 @@
     <Form>
       <Dir>urssus</Dir>
       <Dir>ui</Dir>
-      <Name>twitterauth.ui</Name>
-    </Form>
-    <Form>
-      <Dir>urssus</Dir>
-      <Dir>ui</Dir>
       <Name>greaderimport.ui</Name>
     </Form>
     <Form>
@@ -392,6 +396,11 @@
       <Dir>urssus</Dir>
       <Dir>ui</Dir>
       <Name>newfeed.ui</Name>
+    </Form>
+    <Form>
+      <Dir>urssus</Dir>
+      <Dir>ui</Dir>
+      <Name>fancyauth.ui</Name>
     </Form>
   </Forms>
   <Translations>
