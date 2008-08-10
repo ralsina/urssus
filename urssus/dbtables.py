@@ -426,7 +426,6 @@ class Feed(elixir.Entity):
       af=self.allFeeds()
       for f in af:
         f.update()
-
     if self.lastModified:
       mod=self.lastModified
     else:
@@ -435,6 +434,8 @@ class Feed(elixir.Entity):
     if self.title:
       statusQueue.put(u"Updating: "+ self.title)
     d=fp.parse(self.xmlUrl, etag=self.etag, modified=mod.timetuple())
+    with elixir.session.begin():
+      self.lastUpdated=datetime.datetime.now()
     
     if d.status==304 and not forced: # No need to fetch
       return
@@ -533,7 +534,6 @@ class Feed(elixir.Entity):
           posts.append(p)
       except KeyError:
         debug( post )
-    self.lastUpdated=datetime.datetime.now()
     self.updateFeedData(d)
     if 'modified' in d:
       self.lastModified=datetime.datetime(*d['modified'][:6])
