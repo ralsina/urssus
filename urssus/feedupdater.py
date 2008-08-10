@@ -39,7 +39,7 @@ def feedUpdater():
         except:
           pass
       lastCheck=now
-    sleep(2)
+    time.sleep(2)
 
 def main():
   initDB()
