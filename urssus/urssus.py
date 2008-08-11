@@ -1361,16 +1361,11 @@ class MainWindow(QtGui.QMainWindow):
       info ("Opening in standard view")
       model=self.ui.posts.model()
 
-      print "open_feed1", model
       # Remember current post
       if self.ui.posts.model():
         post=self.ui.posts.model().postFromIndex(self.ui.posts.currentIndex())
       else:
         post=None
-      if post:
-        print "open_feed2", post.id
-      else:
-        print "open_feed2", post
 
       # The == are weird because sqlalchemy reimplementes the == operator for
       # model.statusFilter
@@ -1404,7 +1399,6 @@ class MainWindow(QtGui.QMainWindow):
     cp=self.ui.posts.model().postFromIndex(self.ui.posts.currentIndex())
     self.ui.posts.model().initData(update=True)
     if cp:
-      print "XXX: scrolling back to ", cp.id
       idx=self.ui.posts.model().indexFromPost(cp)
       self.ui.posts.setCurrentIndex(idx)
       self.ui.posts.scrollTo(idx, self.ui.posts.EnsureVisible)

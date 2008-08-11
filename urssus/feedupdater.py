@@ -65,7 +65,6 @@ def feedUpdater():
       lastCheck=now
     try:
       f=feedUpdateQueue.get(block=True, timeout=2)
-      print "Got %s from queue, updating"%f
       f.update()
     except: # Empty queue
       pass
