@@ -1089,7 +1089,7 @@ class MainWindow(QtGui.QMainWindow):
         # Force recount after update
         feed.curUnread=-1
         feed.unreadCount()
-        self.updateFeedItem(feed, updating=False)
+        self.updateFeedItem(feed, updating=False, parents=True)
         self.updatesCounter-=1
       elif action==2: # Update it, may have new posts, so all parents
         self.updateFeedItem(feed, parents=True, can_reopen=True)
