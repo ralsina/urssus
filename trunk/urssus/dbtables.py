@@ -404,43 +404,43 @@ class Feed(elixir.Entity):
     
     d=parsedFeed
     
-    if not self.htmlUrl:
-      if 'link' in d['feed']:
-        self.htmlUrl=d['feed']['link']
+    with elixir.session.begin():
+      if not self.htmlUrl:
+        if 'link' in d['feed']:
+          self.htmlUrl=d['feed']['link']
+        else:
+          # This happens, for instance, on deleted blogger blogs (everyone's clever)
+          self.htmlUrl=None
+          
+      if not self.title:
+        if 'title_detail' in d['feed']: 
+          self.title=detailToTitle(d['feed']['title_detail'])
+        else:
+          self.title=d['feed']['title']
       else:
         # This happens, for instance, on deleted blogger blogs (everyone's clever)
-        self.htmlUrl=None
-        
-    if not self.title:
-      if 'title_detail' in d['feed']: 
-        self.title=detailToTitle(d['feed']['title_detail'])
-      else:
-        self.title=d['feed']['title']
-    else:
-      # This happens, for instance, on deleted blogger blogs (everyone's clever)
-      self.title=''
-
-    if not self.subtitle:
-      if 'subtitle_detail' in d['feed']: 
-        self.subtitle=detailToTitle(d['feed']['subtitle_detail'])
-      elif 'subtitle' in d['feed']:
-        self.subtitle=d['feed']['subtitle']
-      else:
-        self.subtitle=''
-
-    if not self.description:
-      if 'info' in d['feed']:
-        self.description=d['feed']['info']
-      elif 'description' in d['feed']:
-        self.description=d['feed']['description']
-    if not self.icon and self.htmlUrl:
-      try:
-        # FIXME: handle 404, 403 whatever errors
-        self.icon=urlopen(urlparse.urljoin(self.htmlUrl,'/favicon.ico')).read()
-        open('/tmp/icon.ico', 'w').write(self.icon)
-      except:
-        pass #I am not going to care about errors here :-D
-    elixir.session.flush()
+        self.title=''
+  
+      if not self.subtitle:
+        if 'subtitle_detail' in d['feed']: 
+          self.subtitle=detailToTitle(d['feed']['subtitle_detail'])
+        elif 'subtitle' in d['feed']:
+          self.subtitle=d['feed']['subtitle']
+        else:
+          self.subtitle=''
+  
+      if not self.description:
+        if 'info' in d['feed']:
+          self.description=d['feed']['info']
+        elif 'description' in d['feed']:
+          self.description=d['feed']['description']
+      if not self.icon and self.htmlUrl:
+        try:
+          # FIXME: handle 404, 403 whatever errors
+          self.icon=urlopen(urlparse.urljoin(self.htmlUrl,'/favicon.ico')).read()
+          open('/tmp/icon.ico', 'w').write(self.icon)
+        except:
+          pass #I am not going to care about errors here :-D
     
   def update(self, forced=False):
     feedStatusQueue.put([0, self.id])
@@ -555,19 +555,22 @@ class Feed(elixir.Entity):
               p.content=content
               # FIXME: un updated flag? Mark unread again?
         else:
-          p=Post(feed=self, date=date, title=title, 
-                 post_id=post[idkey], content=content, 
-                 author=author, link=link)
-          if self.markRead:
-            p.unread=False
-          posts.append(p)
+          with elixir.session.begin():
+            p=Post(feed=self, date=date, title=title, 
+                   post_id=post[idkey], content=content, 
+                   author=author, link=link)
+            if self.markRead:
+              p.unread=False
+            posts.append(p)
       except KeyError:
         debug( post )
     self.updateFeedData(d)
     if 'modified' in d:
-      self.lastModified=datetime.datetime(*d['modified'][:6])
+      with elixir.session.begin():
+        self.lastModified=datetime.datetime(*d['modified'][:6])
     if 'etag' in d:
-      self.etag=d['etag']
+      with elixir.session.begin():
+        self.etag=d['etag']
 
     # Silly way to release the posts objects
     # we don't need anymore
@@ -577,7 +580,6 @@ class Feed(elixir.Entity):
       with elixir.session.begin():
         # Fix freshness
         Post.table.update().where(sql.except_(Post.table.select(Post.id.in_(posts)))).values(fresh=False)
-        elixir.session.commit()
 
       # Mark feed UI for updating
       self.curUnread=-1

@@ -651,17 +651,16 @@ class MainWindow(QtGui.QMainWindow):
             fname=cats[0]['label']
           # So, with a xmlUrl and a fname, we can just create the feed
           # See if we have the folder
-          folder=Feed.get_by_or_init(parent=root_feed, text=fname, xmlUrl=None)
-          elixir.session.flush()
-          if Feed.get_by(xmlUrl=xmlUrl):
-            # Already subscribed
-            # FIXME: implement progress reports
-            print "You are already subscribed to %s"%xmlUrl
-            continue
-          f=Feed.get_by(xmlUrl=xmlUrl)
-          if not f:
-            newFeed=Feed(text=title, title=title, xmlUrl=xmlUrl, parent=folder)
-        elixir.session.flush()
+          with elixir.session.begin():
+            folder=Feed.get_by_or_init(parent=root_feed, text=fname, xmlUrl=None)
+            if Feed.get_by(xmlUrl=xmlUrl):
+              # Already subscribed
+              # FIXME: implement progress reports
+              print "You are already subscribed to %s"%xmlUrl
+              continue
+            f=Feed.get_by(xmlUrl=xmlUrl)
+            if not f:
+              newFeed=Feed(text=title, title=title, xmlUrl=xmlUrl, parent=folder)
         self.initTree()
         
 
@@ -700,8 +699,9 @@ class MainWindow(QtGui.QMainWindow):
     if QtGui.QMessageBox.question(None, "Delete Article - uRSSus", 
         'Are you sure you want to delete "%s"'%curPost, 
         QtGui.QMessageBox.Yes | QtGui.QMessageBox.No, QtGui.QMessageBox.No ) == QtGui.QMessageBox.Yes:
-      curPost.delete()
-      elixir.session.flush()
+      with elixir.session.begin():
+        curPost.deleted=True
+        self.updatePostItem(curPost)
       self.open_feed(self.ui.feeds.currentIndex())
 
   def on_actionMark_as_Read_triggered(self, i=None):
@@ -711,9 +711,9 @@ class MainWindow(QtGui.QMainWindow):
     if not curPost: return
     if curPost.unread:
       info ("Marking as read post: %s", curPost)
-      curPost.unread=False
-      curPost.feed.curUnread-=1 
-      elixir.session.flush()
+      with elixir.session.begin():
+        curPost.unread=False
+        curPost.feed.curUnread-=1 
       self.updatePostItem(curPost)
       self.updateFeedItem(curPost.feed, parents=True)
 
@@ -727,9 +727,9 @@ class MainWindow(QtGui.QMainWindow):
     if not curPost: return
     if not curPost.unread:
       info ("Marking as unread post: %s", curPost)
-      curPost.unread=True
-      curPost.feed.curUnread+=1
-      elixir.session.flush()
+      with elixir.session.begin():
+        curPost.unread=True
+        curPost.feed.curUnread+=1
       self.updatePostItem(curPost)
       self.updateFeedItem(curPost.feed, parents=True)
 
@@ -747,8 +747,9 @@ class MainWindow(QtGui.QMainWindow):
     curPost=self.getCurrentPost()
     if not curPost: return
     info ("Marking as important post: %s", curPost)
-    curPost.important=True
-    elixir.session.flush()
+    if not curPost.important:
+      with elixir.session.begin():
+        curPost.important=True
     self.updatePostItem(curPost)
 
   def on_actionRemove_Important_Mark_triggered(self, i=None):
@@ -757,8 +758,9 @@ class MainWindow(QtGui.QMainWindow):
     curPost=self.getCurrentPost()
     if not curPost: return
     info ("Marking as not important post: %s", curPost)
-    curPost.important=False
-    elixir.session.flush()
+    if curPost.important:
+      with elixir.session.begin():
+        curPost.important=False
     self.updatePostItem(curPost)
 
   def postHeaderContextMenu(self, pos):
@@ -852,13 +854,13 @@ class MainWindow(QtGui.QMainWindow):
         curFeed=self.ui.feeds.model().feedFromIndex(index)
       else:
         curFeed=root_feed
-      # if curFeed is a feed, add as sibling
-      if curFeed.xmlUrl:
-        newFeed.parent=curFeed.parent
-      # if curFeed is a folder, add as child
-      else:
-        newFeed.parent=curFeed
-      elixir.session.flush()
+      with elixir.session.begin():
+        # if curFeed is a feed, add as sibling
+        if curFeed.xmlUrl:
+          newFeed.parent=curFeed.parent
+        # if curFeed is a folder, add as child
+        else:
+          newFeed.parent=curFeed
       self.initTree()
       idx=self.ui.feeds.model().indexFromFeed(newFeed)
       self.ui.feeds.setCurrentIndex(idx)
@@ -889,12 +891,12 @@ class MainWindow(QtGui.QMainWindow):
       _error('You are already subscribed to "%s"'%f)
       return
     _info ('Creating feed in the database')
-    newFeed=Feed(xmlUrl=feed)
-    _info ('Fetching feed information')
-    newFeed.update()
-    # To show it on the tree
-    newFeed.text=newFeed.title
-    elixir.session.flush()
+    with elixir.session.begin():
+      newFeed=Feed(xmlUrl=feed)
+      _info ('Fetching feed information')
+      newFeed.update()
+      # To show it on the tree
+      newFeed.text=newFeed.title
     _info ('done')
     _return (newFeed.id)
     
@@ -923,12 +925,12 @@ class MainWindow(QtGui.QMainWindow):
       else:
         curFeed=root_feed
       # if curFeed is a feed, add as sibling
-      if curFeed.xmlUrl:
-        newFolder.parent=curFeed.parent
-      # if curFeed is a folder, add as child
-      else:
-        newFolder.parent=curFeed
-      elixir.session.flush()
+      with elixir.session.begin():
+        if curFeed.xmlUrl:
+          newFolder.parent=curFeed.parent
+        # if curFeed is a folder, add as child
+        else:
+          newFolder.parent=curFeed
       self.initTree()
       self.ui.feeds.setCurrentIndex(self.ui.feeds.model().indexFromFeed(newFolder))
 
@@ -1021,15 +1023,15 @@ class MainWindow(QtGui.QMainWindow):
     if str(url.scheme())=='urssus':
       [_, command, post_id]=str(url.path()).split('/')
       post=Post.get_by(id=post_id)
-      if command=='read':
-        post.unread=False
-      elif command=='unread':
-        post.unread=True
-      elif command=='important':
-        post.important=True
-      elif command=='unimportant':
-        post.important=False
-      elixir.session.flush()
+      with elixir.session.begin():
+        if command=='read':
+          post.unread=False
+        elif command=='unread':
+          post.unread=True
+        elif command=='important':
+          post.important=True
+        elif command=='unimportant':
+          post.important=False
       post.feed.curUnread=-1
       self.updateFeedItem(post.feed, parents=True)
     else:
@@ -1151,14 +1153,14 @@ class MainWindow(QtGui.QMainWindow):
   def on_feeds_expanded(self, index):
     feed=self.ui.feeds.model().feedFromIndex(index)
     if not feed: return
-    feed.is_open=True
-    elixir.session.flush()
+    with elixir.session.begin():
+      feed.is_open=True
     
   def on_feeds_collapsed(self, index):
     feed=self.ui.feeds.model().feedFromIndex(index)
     if not feed: return
-    feed.is_open=False
-    elixir.session.flush()
+    with elixir.session.begin():
+      feed.is_open=False
     
   def on_feeds_clicked(self, index):
     self.open_feed(index)
@@ -1357,14 +1359,19 @@ class MainWindow(QtGui.QMainWindow):
 
     else: # StandardView / Widescreen View
       info ("Opening in standard view")
-      
+      model=self.ui.posts.model()
+
+      print "open_feed1", model
       # Remember current post
       if self.ui.posts.model():
         post=self.ui.posts.model().postFromIndex(self.ui.posts.currentIndex())
       else:
         post=None
+      if post:
+        print "open_feed2", post.id
+      else:
+        print "open_feed2", post
 
-      model=self.ui.posts.model()
       # The == are weird because sqlalchemy reimplementes the == operator for
       # model.statusFilter
       if model and model.feed_id==feed.id and \
@@ -1381,10 +1388,19 @@ class MainWindow(QtGui.QMainWindow):
       self.fixPostListUI()
 
       # Try to scroll to the same post or to the top
-      if post and self.ui.posts.model().hasPost(post):
-        idx=self.ui.posts.model().indexFromPost(post)
-        self.ui.posts.scrollTo(idx, self.ui.posts.EnsureVisible)
+      idx=self.ui.posts.model().indexFromPost(post)
+      if post:
+        print "Scrolling back to ", post.id
+      else:
+        print "Scrolling back to ", post
+      if idx:
         self.ui.posts.setCurrentIndex(idx)
+        self.ui.posts.scrollTo(idx, self.ui.posts.EnsureVisible)
+        npost=self.ui.posts.model().postFromIndex(self.ui.posts.currentIndex())
+        if npost:
+          print "An standing at: ", npost.id
+        else:
+          print "An standing at: ", npost
       else:
         self.ui.view.setHtml(renderTemplate('feed.tmpl',feed=feed))
         self.ui.posts.scrollToTop()
@@ -1564,6 +1580,7 @@ class MainWindow(QtGui.QMainWindow):
     index=self.ui.feeds.currentIndex()
     item=self.ui.feeds.model().itemFromIndex(index)
     feed=self.ui.feeds.model().feedFromIndex(index)
+    # FIXME: generalize 'don't delete'
     # Don't delete root_feed
     if feed == root_feed:
       return
@@ -1577,19 +1594,18 @@ class MainWindow(QtGui.QMainWindow):
         self.ui.posts.setModel(None)
         self.ui.view.setHtml('')
              
-        if feed.parent:
-          parent=feed.parent
-          # Trigger update on parent item
-          parent.curUnread=-1
-          # I really, really shouldn't have to do this. But it doesn'twork if I don't so...
-          parent.children.remove(feed)
-          self.updateFeedItem(parent, parents=True)
-
+        with elixir.session.begin():
+          if feed.parent:
+            parent=feed.parent
+            # Trigger update on parent item
+            parent.curUnread=-1
+            # I really, really shouldn't have to do this. But it doesn'twork if I don't so...
+            parent.children.remove(feed)
+          feed.delete()
         # No feed current
         self.ui.feeds.setCurrentIndex(QtCore.QModelIndex())
-        feed.delete()
         self.ui.feeds.model().removeRow(index.row(), index.parent())
-        elixir.session.flush()
+        self.updateFeedItem(parent, parents=True)
         
   def on_actionOpen_Homepage_triggered(self, i=None):
     if i==None: return
@@ -1798,15 +1814,17 @@ def importOPML(fname, parent=None):
              htmlUrl=node.get('htmlUrl'), 
              )
       if not f:
-        f=Feed(xmlUrl=node.get('xmlUrl'), 
-             htmlUrl=node.get('htmlUrl'), 
-             title=node.get('title'),
-             text=node.get('text'), 
-             description=node.get('description'), 
-             parent=parent
-             )
+        with elixir.session.begin():
+          f=Feed(xmlUrl=node.get('xmlUrl'), 
+               htmlUrl=node.get('htmlUrl'), 
+               title=node.get('title'),
+               text=node.get('text'), 
+               description=node.get('description'), 
+               parent=parent
+               )
     else: # Let's guess it's a folder
-      f=Feed.get_by_or_init(text=node.get('text'), parent=parent)
+      with elixir.session.begin():
+        f=Feed.get_by_or_init(text=node.get('text'), parent=parent)
       for child in node.getchildren():
         importSubTree(f, child)
 
@@ -1814,7 +1832,6 @@ def importOPML(fname, parent=None):
   tree = ElementTree.parse(fname)
   for node in tree.find('//body').getchildren():
     importSubTree(parent, node)
-  elixir.session.flush()
 
 # TODO: move substitute_entity and decode_htmlentities to utils module
 def substitute_entity(match):
