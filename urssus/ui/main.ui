@@ -339,6 +339,7 @@
     </property>
     <addaction name="actionOpen_in_Browser" />
     <addaction name="separator" />
+    <addaction name="actionTag_Article" />
     <addaction name="actionMark_as_Read" />
     <addaction name="actionMark_as_Unread" />
     <addaction name="separator" />
@@ -922,6 +923,18 @@
    </property>
    <property name="text" >
     <string>Sync Bookmarks To Web</string>
+   </property>
+  </action>
+  <action name="actionTag_Article" >
+   <property name="icon" >
+    <iconset resource="../images/icons.qrc" >
+     <normaloff>:/tag.svg</normaloff>:/tag.svg</iconset>
+   </property>
+   <property name="text" >
+    <string>Tag Article</string>
+   </property>
+   <property name="shortcut" >
+    <string>Ctrl+T</string>
    </property>
   </action>
   <addaction name="actionShow_Menu_Bar" />
