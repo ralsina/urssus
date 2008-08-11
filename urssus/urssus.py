@@ -1450,11 +1450,13 @@ class MainWindow(QtGui.QMainWindow):
     
     if parents: # Not by default because it's slow
       # Update all ancestors too, because unread counts and such change
-      while feed.parent:
+      if feed.parent:
         self.updateFeedItem(feed.parent, True)
-        feed=feed.parent
       # And set the systray tooltip to the unread count on root_feed
       self.tray.updateIcon()
+      # And update all metafeeds until I figure out a better way
+      # FIXME: make it efficient!
+      self.updateFeedItem(unread_feed, False)
 
   def on_posts_clicked(self, index):
     post=self.ui.posts.model().postFromIndex(index)
@@ -1469,15 +1471,21 @@ class MainWindow(QtGui.QMainWindow):
           post.content = decode_htmlentities(post.content)
         self.ui.view.setHtml(renderTemplate('post.tmpl',post=post, showFeed=showFeed))
       QtGui.QApplication.instance().processEvents()
+      upPost=False
+      upFeed=False
       with elixir.session.begin():
         if index.column()==0: # Star icon
           post.important= not post.important
-          self.updatePostItem(post)
+          upPost=True
         if post.unread: 
           post.unread=False
           post.feed.curUnread-=1
-          self.updateFeedItem(post.feed, parents=True)
+          upPost=True
+          upFeed=True
+      if upPost:
           self.updatePostItem(post)
+      if upFeed:
+          self.updateFeedItem(post.feed, parents=True)
  
   def on_posts_doubleClicked(self, index=None):
     if index==None: return
@@ -1556,22 +1564,26 @@ class MainWindow(QtGui.QMainWindow):
     index=self.ui.feeds.currentIndex()
     item=self.ui.feeds.model().itemFromIndex(index)
     feed=self.ui.feeds.model().feedFromIndex(index)
+    # Don't delete root_feed
+    if feed == root_feed:
+      return
     if feed:
       info( "Deleting %s", feed)
       if QtGui.QMessageBox.question(None, "Delete Feed - uRSSus", 
            'Are you sure you want to delete "%s"'%feed, 
            QtGui.QMessageBox.Yes | QtGui.QMessageBox.No, QtGui.QMessageBox.No ) == QtGui.QMessageBox.Yes:
-        parent=feed.parent
-
+             
         # Clean posts list
         self.ui.posts.setModel(None)
         self.ui.view.setHtml('')
-
-        # Trigger update on parent item
-        parent.curUnread=-1
-        # I really, really shouldn't have to do this. But it doesn'twork if I don't so...
-        parent.children.remove(feed)
-        self.updateFeedItem(parent, parents=True)
+             
+        if feed.parent:
+          parent=feed.parent
+          # Trigger update on parent item
+          parent.curUnread=-1
+          # I really, really shouldn't have to do this. But it doesn'twork if I don't so...
+          parent.children.remove(feed)
+          self.updateFeedItem(parent, parents=True)
 
         # No feed current
         self.ui.feeds.setCurrentIndex(QtCore.QModelIndex())

@@ -175,7 +175,7 @@ class PostModel(QtGui.QStandardItemModel):
       item3.setForeground(QtGui.QColor("black"))
       
     f=item1.font()
-    if post.important or post.unread:
+    if post.unread:
       f.setBold(True)
     else:
       f.setBold(False)

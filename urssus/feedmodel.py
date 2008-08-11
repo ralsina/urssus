@@ -87,9 +87,13 @@ class FeedModel(QtGui.QStandardItemModel):
           addSubTree(item1, child)
           
     iroot=self.invisibleRootItem()
+    # First all metafeeds with no parents
+    for mf in MetaFeed.query.filter(MetaFeed.parent==None):
+      addSubTree(iroot, mf)
+      
+    # Now the feeds
     self.feedIndex[root_feed.id]=[self.indexFromItem(iroot), QtCore.QModelIndex()]
     addSubTree(iroot, root_feed)
-  
     self.reset()
 
   def removeRow(self, row, parent):
