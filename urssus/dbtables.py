@@ -96,6 +96,12 @@ class Post(elixir.Entity):
       return '<a href="%s">%s</a>'%(self.link, unicode(self))
     return self.title
 
+# Added in schema version 10
+class Tag(elixir.Entity):
+  elixir.using_options (tablename='tags')
+  feeds       = elixir.ManyToMany('Feed', inverse='tags')
+  posts       = elixir.ManyToMany('Post', inverse='tags')
+
 class Feed(elixir.Entity):
   elixir.using_options (tablename='feeds', inheritance='multi')
   htmlUrl        = elixir.Field(elixir.Text)
@@ -134,14 +140,7 @@ class Feed(elixir.Entity):
   # Added in schema version 10
   tags        = elixir.ManyToMany('Tag')
 
-# Added in schema version 10
-class Tag(elixir.Entity):
-  elixir.using_options (tablename='tags')
-  feeds       = elixir.ManyToMany('Feed', inverse='tags')
-  posts       = elixir.ManyToMany('Post', inverse='tags')
 
-  
-  
   def __repr__(self):
     return self.text
 
