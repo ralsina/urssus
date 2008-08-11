@@ -81,7 +81,9 @@ class Post(elixir.Entity):
   deleted     = elixir.Field(elixir.Boolean, default=False)
   # Added in schema version 5
   fresh       = elixir.Field(elixir.Boolean, default=True)
-
+  # Added in schema version 10
+  tags        = elixir.ManyToMany('Tag')
+  
   decoTitle    = ''
 
   def __repr__(self):
@@ -129,6 +131,16 @@ class Feed(elixir.Entity):
   etag           = elixir.Field(elixir.Text, default='')
   # Added in schema version 7
   lastModified   = elixir.Field(elixir.DateTime, colname="last-modified", default=datetime.datetime(1970,1,1))
+  # Added in schema version 10
+  tags        = elixir.ManyToMany('Tag')
+
+# Added in schema version 10
+class Tag(elixir.Entity):
+  elixir.using_options (tablename='tags')
+  feeds       = elixir.ManyToMany('Feed', inverse='tags')
+  posts       = elixir.ManyToMany('Post', inverse='tags')
+
+  
   
   def __repr__(self):
     return self.text
@@ -569,7 +581,7 @@ root_feed=None
 
 def initDB():
   global root_feed
-  REQUIRED_SCHEMA=9
+  REQUIRED_SCHEMA=10
   # FIXME: show what we are doing on the UI
   if not os.path.exists(database.dbfile): # Just create it
     os.system('urssus_upgrade_db')
