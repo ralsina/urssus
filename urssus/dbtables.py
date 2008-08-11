@@ -466,7 +466,7 @@ class Feed(elixir.Entity):
     with elixir.session.begin():
       self.lastUpdated=datetime.datetime.now()
     
-    if d.status==304 and not forced: # No need to fetch
+    if d.status==304: # No need to fetch
       return
     if d.status==301: # Permanent redirect
       self.xmlUrl=d.href

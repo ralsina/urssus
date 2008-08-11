@@ -32,6 +32,7 @@ def updateOneNice(feed):
 def feedUpdater():
   import dbtables
   lastCheck=datetime.datetime(1970, 1, 1)
+  time.sleep(5)
   while True:
     info("updater loop")
     now=datetime.datetime.now()
@@ -62,7 +63,12 @@ def feedUpdater():
         except:
           pass
       lastCheck=now
-    time.sleep(2)
+    try:
+      f=feedUpdateQueue.get(block=True, timeout=2)
+      print "Got %s from queue, updating"%f
+      f.update()
+    except: # Empty queue
+      pass
 
 def main():
   initDB()

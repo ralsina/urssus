@@ -1099,7 +1099,7 @@ class MainWindow(QtGui.QMainWindow):
         self.updateFeedItem(feed, updating=False, parents=True)
         self.updatesCounter-=1
       elif action==2: # Update it, may have new posts, so all parents
-        self.updateFeedItem(feed, parents=True, can_reopen=True)
+        self.updateFeedItem(feed, parents=True)
       elif action==3: # Systray notification
         self.notifiedFeed=feed
         self.tray.showMessage("New Articles", "%d new articles in %s"%(data[2], feed.text) )
@@ -1388,22 +1388,9 @@ class MainWindow(QtGui.QMainWindow):
       self.fixPostListUI()
 
       # Try to scroll to the same post or to the top
-      idx=self.ui.posts.model().indexFromPost(post)
-      if post:
-        print "Scrolling back to ", post.id
-      else:
-        print "Scrolling back to ", post
-      if idx:
-        self.ui.posts.setCurrentIndex(idx)
-        self.ui.posts.scrollTo(idx, self.ui.posts.EnsureVisible)
-        npost=self.ui.posts.model().postFromIndex(self.ui.posts.currentIndex())
-        if npost:
-          print "An standing at: ", npost.id
-        else:
-          print "An standing at: ", npost
-      else:
-        self.ui.view.setHtml(renderTemplate('feed.tmpl',feed=feed))
-        self.ui.posts.scrollToTop()
+      
+      self.updatePostList()
+      
       for action in actions:
         action.setEnabled(True)
 
@@ -1411,7 +1398,19 @@ class MainWindow(QtGui.QMainWindow):
     '''The feed linked to the current index in self.ui.feeds'''
     return self.ui.feeds.model().feedFromIndex(self.ui.feeds.currentIndex())
 
-  def updateFeedItem(self, feed, parents=False, updating=False, can_reopen=False):
+  def updatePostList(self):
+    # This may call updateFeedItem, so avoid loops
+    QtCore.QObject.disconnect(self.ui.posts.model(), QtCore.SIGNAL("modelReset()"), self.updateListedFeedItem)
+    cp=self.ui.posts.model().postFromIndex(self.ui.posts.currentIndex())
+    self.ui.posts.model().initData(update=True)
+    if cp:
+      print "XXX: scrolling back to ", cp.id
+      idx=self.ui.posts.model().indexFromPost(cp)
+      self.ui.posts.setCurrentIndex(idx)
+      self.ui.posts.scrollTo(idx, self.ui.posts.EnsureVisible)
+    QtCore.QObject.connect(self.ui.posts.model(), QtCore.SIGNAL("modelReset()"), self.updateListedFeedItem)
+
+  def updateFeedItem(self, feed, parents=True, updating=False):
     info("Updating item for feed %d", feed.id)
     
     model=self.ui.feeds.model()
@@ -1426,12 +1425,7 @@ class MainWindow(QtGui.QMainWindow):
 
     # If we are updating the current feed, update the post list, too
     if self.ui.posts.model() and self.ui.posts.model().feed_id==feed.id:
-      # This may call updateFeedItem, so avoid loops
-      QtCore.QObject.disconnect(self.ui.posts.model(), QtCore.SIGNAL("modelReset()"), self.updateListedFeedItem)
-      pidx=self.ui.posts.currentIndex()
-      self.ui.posts.model().initData(update=True)
-      self.ui.posts.setCurrentIndex(pidx)
-      QtCore.QObject.connect(self.ui.posts.model(), QtCore.SIGNAL("modelReset()"), self.updateListedFeedItem)
+      self.updatePostList()
 
     item=self.ui.feeds.model().itemFromIndex(index)
     item2=self.ui.feeds.model().itemFromIndex(self.ui.feeds.model().index(index.row(), 1, index.parent()))
@@ -1472,7 +1466,7 @@ class MainWindow(QtGui.QMainWindow):
       self.tray.updateIcon()
       # And update all metafeeds until I figure out a better way
       # FIXME: make it efficient!
-      self.updateFeedItem(unread_feed, False)
+#      self.updateFeedItem(unread_feed, False)
 
   def on_posts_clicked(self, index):
     post=self.ui.posts.model().postFromIndex(index)
@@ -1620,21 +1614,14 @@ class MainWindow(QtGui.QMainWindow):
     idx=self.ui.feeds.currentIndex()
     feed=self.ui.feeds.model().feedFromIndex(idx)
     if feed:
-      # FIXME: move to out-of-process
-      p=processing.Process(target=updateOne, args=(feed, ))
-      p.setDaemon(True)
-      p.start()
-      self.open_feed(idx)
+      feedUpdateQueue.put(feed)
       
   def on_actionFetch_All_Feeds_triggered(self, i=None):
     if i==None: return
     global processes
     # Start an immediate update for all feeds
     statusQueue.put("fetching all feeds")
-    p=processing.Process(target=updateOneNice, args=(root_feed, ))
-    p.setDaemon(True)
-    p.start()
-    processes.append(p)
+    feedUpdateQueue.put(root_feed)
     
   def on_actionAbort_Fetches_triggered(self, i=None):
     if i==None: return
