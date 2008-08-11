@@ -600,6 +600,7 @@ class Feed(elixir.Entity):
 class MetaFeed(Feed):
   elixir.using_options (tablename='metafeeds', inheritance='multi')
   condition   = elixir.Field(elixir.Text)
+  _stamp = None
 
   def __repr__(self):
     return unicode(self.text or self.condition)
@@ -608,7 +609,10 @@ class MetaFeed(Feed):
     return Post.query.filter(eval(self.condition))
 
   def unreadCount(self):
-    return Post.query.filter(eval(self.condition)).filter(Post.unread==True).count()
+    now=time.mktime(time.localtime())
+    if not self._stamp or now-self._stamp > 5:
+      self.unreadC=Post.query.filter(eval(self.condition)).filter(Post.unread==True).count()
+    return self.unreadC
 
 root_feed=None
 starred_feed=None

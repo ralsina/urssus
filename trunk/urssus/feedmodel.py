@@ -36,6 +36,7 @@ class FeedModel(QtGui.QStandardItemModel):
     self.feedCache={}
     self.urssusicon=QtGui.QIcon(':/urssus.svg')
     self.foldericon=QtGui.QIcon(':/folder.svg')
+    self.staricon=QtGui.QIcon(':/star.svg')
     QtGui.QStandardItemModel.__init__(self, parent)
     self.initData()
 
@@ -83,9 +84,14 @@ class FeedModel(QtGui.QStandardItemModel):
       if feed.xmlUrl:
         item1.setIcon(self.urssusicon)
       else:
-        item1.setIcon(self.foldericon)
-        for child in feed.children:
-          addSubTree(item1, child)
+        if feed==starred_feed:
+          item1.setIcon(self.staricon)
+        elif feed==unread_feed:
+          item1.setIcon(self.urssusicon)          
+        else:
+          item1.setIcon(self.foldericon)
+          for child in feed.children:
+            addSubTree(item1, child)
           
     iroot=self.invisibleRootItem()
     # First all metafeeds with no parents
@@ -100,7 +106,7 @@ class FeedModel(QtGui.QStandardItemModel):
   def removeRow(self, row, parent):
     # Remove the feed from the DB
     feed=self.feedFromIndex(self.index(row, 0, parent))
-    feed.delete()
+    if feed: feed.delete()
     return QtGui.QStandardItemModel.removeRow(self, row, parent)
 
   def supportedDropActions(self):

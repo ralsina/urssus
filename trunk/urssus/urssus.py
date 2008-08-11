@@ -1108,7 +1108,8 @@ class MainWindow(QtGui.QMainWindow):
         self.ui.actionAbort_Fetches.setEnabled(True)
       else:
         self.ui.actionAbort_Fetches.setEnabled(False)
-
+      
+#    self.updateFeedItem(unread_feed)
     self.feedStatusTimer.start(1000)
 
   def updateStatusBar(self):
@@ -1423,9 +1424,10 @@ class MainWindow(QtGui.QMainWindow):
 
     item=self.ui.feeds.model().itemFromIndex(index)
     item2=self.ui.feeds.model().itemFromIndex(self.ui.feeds.model().index(index.row(), 1, index.parent()))
+    unreadCount=feed.unreadCount()
   
     if self.showOnlyUnread:
-      if feed.unreadCount()==0 and feed<>self.currentFeed() and feed.xmlUrl: 
+      if unreadCount==0 and feed<>self.currentFeed() and feed.xmlUrl: 
         # Hide feeds with no unread items
         self.ui.feeds.setRowHidden(item.row(), index.parent(), True)
       else:
@@ -1445,7 +1447,7 @@ class MainWindow(QtGui.QMainWindow):
     item2.setToolTip(unicode(feed))
     
     f=item.font()
-    if feed.unreadCount():
+    if unreadCount:
       f.setBold(True)
     else:
       f.setBold(False)
@@ -1458,9 +1460,6 @@ class MainWindow(QtGui.QMainWindow):
         self.updateFeedItem(feed.parent, True)
       # And set the systray tooltip to the unread count on root_feed
       self.tray.updateIcon()
-      # And update all metafeeds until I figure out a better way
-      # FIXME: make it efficient!
-#      self.updateFeedItem(unread_feed, False)
 
   def on_posts_clicked(self, index):
     post=self.ui.posts.model().postFromIndex(index)
