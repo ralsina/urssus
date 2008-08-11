@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE Project SYSTEM "Project-4.2.dtd">
 <!-- eric4 project file for project urssus -->
-<!-- Saved: 2008-08-10, 13:51:54 -->
+<!-- Saved: 2008-08-10, 22:34:13 -->
 <!-- Copyright (C) 2008 Roberto Alsina, ralsina@netmanagers.com.ar -->
 <Project version="4.2">
   <ProgLanguage mixed="0">Python</ProgLanguage>
@@ -339,6 +339,11 @@
       <Dir>urssus</Dir>
       <Dir>ui</Dir>
       <Name>Ui_newfeed.py</Name>
+    </Source>
+    <Source>
+      <Dir>urssus</Dir>
+      <Dir>util</Dir>
+      <Name>pydelicious.py</Name>
     </Source>
   </Sources>
   <Forms>
