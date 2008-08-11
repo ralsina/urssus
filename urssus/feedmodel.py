@@ -16,6 +16,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
+from __future__ import with_statement
 from globals import *
 from dbtables import *
 from PyQt4 import QtGui, QtCore
@@ -43,9 +44,9 @@ class FeedModel(QtGui.QStandardItemModel):
       # Find the feed for this index
       item=self.itemFromIndex(index)
       if item:
-        feed=Feed.get_by(id=item.data(QtCore.Qt.UserRole).toInt()[0])
-        feed.text=unicode(value.toString())
-        elixir.session.flush()
+        with elixir.session.begin():
+          feed=Feed.get_by(id=item.data(QtCore.Qt.UserRole).toInt()[0])
+          feed.text=unicode(value.toString())
     return QtGui.QStandardItemModel.setData(self, index, value, role)
     
 
@@ -106,7 +107,6 @@ class FeedModel(QtGui.QStandardItemModel):
     return QtCore.Qt.MoveAction
   
   def dropMimeData(self, data, action, row, column, parent):
-    print "DROP"
     destIndex=self.index(row, column, parent)
     destItem=self.itemFromIndex(destIndex)
     if destItem:
@@ -128,24 +128,23 @@ class FeedModel(QtGui.QStandardItemModel):
     print list(data.formats())
     idlist=[int(id) for id in str(data.text()).split(',')]
     print "IDLIST:", idlist
-    for id in idlist:
-      # Do feed housekeeping
-      feed=Feed.get_by(id=id)
-      if beforeFeed: #insert
-        idx=parentFeed.children.index(beforeFeed)
-        l=parentFeed.children[:idx]+[feed]+parentFeed.children[idx:]
-        i=0
-        for f in l:
-          f.position=i
-          i+=1
-      else: #append
-        if parentFeed.children:
-          feed.position=parentFeed.children[-1].position+1
-        else:
-          feed.position=0
-      feed.parent=parentFeed
-
-    elixir.session.flush()
+    with elixir.session.begin():
+      for id in idlist:
+        # Do feed housekeeping
+        feed=Feed.get_by(id=id)
+        if beforeFeed: #insert
+          idx=parentFeed.children.index(beforeFeed)
+          l=parentFeed.children[:idx]+[feed]+parentFeed.children[idx:]
+          i=0
+          for f in l:
+            f.position=i
+            i+=1
+        else: #append
+          if parentFeed.children:
+            feed.position=parentFeed.children[-1].position+1
+          else:
+            feed.position=0
+        feed.parent=parentFeed
     self.emit(QtCore.SIGNAL("dropped(PyQt_PyObject)"), feed)
     return QtGui.QStandardItemModel.dropMimeData(self, data, action, row, column, parent)
 

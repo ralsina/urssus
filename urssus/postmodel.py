@@ -16,6 +16,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
+from __future__ import with_statement
 from globals import *
 from dbtables import *
 from PyQt4 import QtGui, QtCore
@@ -131,11 +132,11 @@ class PostModel(QtGui.QStandardItemModel):
       if d[5]:
         if d[5]:
           d[5]=False
-          post=Post.get_by(id=d[0])        
-          post.unread=False
+          with elixir.session.begin():
+            post=Post.get_by(id=d[0])        
+            post.unread=False
           post.feed.curUnread=-1
           self.updateItem(post)
-    elixir.session.flush()
     self.reset()
 
   def indexFromPost(self, post=None, id=None):
@@ -179,6 +180,10 @@ class PostModel(QtGui.QStandardItemModel):
       f.setBold(True)
     else:
       f.setBold(False)
+    if post.deleted:
+      f.setStrikeOut(True)
+    else:
+      f.setStrikeOut(False)
     item1.setFont(f)
     item2.setFont(f)
     item3.setFont(f)
@@ -196,10 +201,10 @@ class PostModel(QtGui.QStandardItemModel):
     # Thanks pyar!
     self.post_data.sort(key=operator.itemgetter(self.colkey[column]), 
                         reverse=order==QtCore.Qt.DescendingOrder)
-    QtGui.QStandardItemModel.sort(self, column, order)
     self.post_ids=[id for [id, _, _, _, _, _] in self.post_data]
     self.lastSort=(column, order)
     config.setValue('ui','postSorting',[column,order])
+#    QtGui.QStandardItemModel.sort(self, column, order)
 
   def nextPostIndex(self, post):
     '''Takes a Post and returns the index of the following post'''
