@@ -594,6 +594,17 @@ class Feed(elixir.Entity):
     else:
       return self.allPostsQuery()
 
+
+class MetaFeed(Feed):
+  elixir.using_options (tablename='metafeeds', inheritance='multi')
+  condition   = elixir.Field(elixir.Text)
+
+  def __repr__(self):
+    return unicode(self.text or self.condition)
+  
+  def allPostsQuery(self):
+    return Post.query.filter(eval(self.condition))
+
 root_feed=None
 
 def initDB():
@@ -621,5 +632,12 @@ def initDB():
   elixir.metadata.bind = engine
   elixir.setup_all()
   with elixir.session.begin():
+    # Make sure we have a root feed
     root_feed=Feed.get_by_or_init(parent=None)
     root_feed.text='All Feeds'
+    
+  with elixir.session.begin():
+    # Add standard meta feeds
+    starredItems=MetaFeed.get_by_or_init(parent=root_feed, 
+                                         condition='Post.important==True', 
+                                         text='Important Articles')

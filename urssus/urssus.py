@@ -16,6 +16,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
+from __future__ import with_statement
 import sys, os, time, urlparse, tempfile, codecs, traceback
 from urllib import urlopen, quote
 from datetime import datetime, timedelta
@@ -320,32 +321,29 @@ class FeedProperties(QtGui.QDialog):
     
   def accept(self):
     feed=self.feed
-    feed.text=unicode(self.ui.name.text())
-    # FIXME: validate
-    feed.xmlUrl=unicode(self.ui.url.text())
-    feed.notify=self.ui.notify.isChecked()
-    feed.markRead=self.ui.markRead.isChecked()
-    feed.loadFull=self.ui.loadFull.isChecked()
-    
-    if self.ui.customUpdate.isChecked():
-      multiplier=[1, 60, 1440, 0][self.ui.updateUnit.currentIndex()]
-      feed.updateInterval=self.ui.updatePeriod.value()*multiplier
-
-    if self.ui.useDefault.isChecked(): # Default expire
-      feed.archiveType=0
-    elif self.ui.keepAll.isChecked(): # Keep everything
-      feed.archiveType=1
-    elif self.ui.limitCount.isChecked(): # Limit by count
-      feed.archiveType=2
-      feed.limitCount=self.ui.count.value()
-    elif self.ui.limitDays.isChecked(): # Limit by age
-      feed.archiveType=3
-      feed.limitDays=self.ui.days.value()
-    elif self.ui.noArchive.isChecked(): # Don't archive
-      feed.archiveType=4
-
-
-    elixir.session.flush()
+    with elixir.session.begin():
+      feed.text=unicode(self.ui.name.text())
+      # FIXME: validate
+      feed.xmlUrl=unicode(self.ui.url.text())
+      feed.notify=self.ui.notify.isChecked()
+      feed.markRead=self.ui.markRead.isChecked()
+      feed.loadFull=self.ui.loadFull.isChecked()
+      if self.ui.customUpdate.isChecked():
+        multiplier=[1, 60, 1440, 0][self.ui.updateUnit.currentIndex()]
+        feed.updateInterval=self.ui.updatePeriod.value()*multiplier
+  
+      if self.ui.useDefault.isChecked(): # Default expire
+        feed.archiveType=0
+      elif self.ui.keepAll.isChecked(): # Keep everything
+        feed.archiveType=1
+      elif self.ui.limitCount.isChecked(): # Limit by count
+        feed.archiveType=2
+        feed.limitCount=self.ui.count.value()
+      elif self.ui.limitDays.isChecked(): # Limit by age
+        feed.archiveType=3
+        feed.limitDays=self.ui.days.value()
+      elif self.ui.noArchive.isChecked(): # Don't archive
+        feed.archiveType=4
     QtGui.QDialog.accept(self)
 
 class MainWindow(QtGui.QMainWindow):
@@ -1471,16 +1469,15 @@ class MainWindow(QtGui.QMainWindow):
           post.content = decode_htmlentities(post.content)
         self.ui.view.setHtml(renderTemplate('post.tmpl',post=post, showFeed=showFeed))
       QtGui.QApplication.instance().processEvents()
-      if index.column()==0: # Star icon
-        post.important= not post.important
-        elixir.session.flush()
-        self.updatePostItem(post)
-      if post.unread: 
-        post.unread=False
-        post.feed.curUnread-=1
-        elixir.session.flush()
-        self.updateFeedItem(post.feed, parents=True)
-        self.updatePostItem(post)
+      with elixir.session.begin():
+        if index.column()==0: # Star icon
+          post.important= not post.important
+          self.updatePostItem(post)
+        if post.unread: 
+          post.unread=False
+          post.feed.curUnread-=1
+          self.updateFeedItem(post.feed, parents=True)
+          self.updatePostItem(post)
  
   def on_posts_doubleClicked(self, index=None):
     if index==None: return
