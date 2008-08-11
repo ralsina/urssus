@@ -605,10 +605,15 @@ class MetaFeed(Feed):
   def allPostsQuery(self):
     return Post.query.filter(eval(self.condition))
 
+  def unreadCount(self):
+    return Post.query.filter(eval(self.condition)).filter(Post.unread==True).count()
+
 root_feed=None
+starred_feed=None
+unread_feed=None
 
 def initDB():
-  global root_feed
+  global root_feed, starred_feed, unread_feed
   REQUIRED_SCHEMA=10
   # FIXME: show what we are doing on the UI
   if not os.path.exists(database.dbfile): # Just create it
@@ -638,6 +643,13 @@ def initDB():
     
   with elixir.session.begin():
     # Add standard meta feeds
-    starredItems=MetaFeed.get_by_or_init(parent=root_feed, 
-                                         condition='Post.important==True', 
-                                         text='Important Articles')
+    starred_feed=MetaFeed.get_by(parent=None, condition='Post.important==True') 
+    if not starred_feed:
+      starred_feed=MetaFeed(parent=None, 
+                            condition='Post.important==True',
+                            text='Important Articles')
+    unread_feed=MetaFeed.get_by(parent=None, condition='Post.unread==True') 
+    if not unread_feed:
+      unread_feed=MetaFeed(parent=None, 
+                           condition='Post.unread==True',
+                           text='Unread Articles')
