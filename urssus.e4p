@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE Project SYSTEM "Project-4.2.dtd">
 <!-- eric4 project file for project urssus -->
-<!-- Saved: 2008-08-10, 22:34:13 -->
+<!-- Saved: 2008-08-10, 23:20:55 -->
 <!-- Copyright (C) 2008 Roberto Alsina, ralsina@netmanagers.com.ar -->
 <Project version="4.2">
   <ProgLanguage mixed="0">Python</ProgLanguage>
@@ -270,15 +270,6 @@
       <Dir>web</Dir>
       <Dir>resolvUrl</Dir>
       <Name>resolvUrl.py</Name>
-    </Source>
-    <Source>
-      <Dir>urssus</Dir>
-      <Dir>util</Dir>
-      <Name>deliciousapi.py</Name>
-    </Source>
-    <Source>
-      <Dir>urssus</Dir>
-      <Name>sync_delicious.py</Name>
     </Source>
     <Source>
       <Dir>urssus</Dir>
