@@ -66,7 +66,7 @@ class PostModel(QtGui.QStandardItemModel):
     feed=Feed.get_by(id=self.feed_id)
     if not feed or not update:
       self._clear()
-    
+      
     if feed.xmlUrl: # A regular feed
       self.posts=Post.query.filter(Post.feed==feed).filter(Post.deleted==False)
     else: # A folder

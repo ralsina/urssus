@@ -1348,7 +1348,7 @@ class MainWindow(QtGui.QMainWindow):
     if self.combinedView: # CombinedView / FancyView
       # Lose the model in self.ui.posts
       self.ui.posts.setModel(None)
-    
+      
       info("Opening combined")
       if feed.xmlUrl: # A regular feed
         self.posts=Post.query.filter(Post.feed==feed)
