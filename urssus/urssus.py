@@ -905,10 +905,10 @@ class MainWindow(QtGui.QMainWindow):
     with elixir.session.begin():
       newFeed=Feed(xmlUrl=feed)
       # To show it on the tree
-      newFeed.text=newFeed.title
     _info ('Fetching feed information')
     newFeed.update()
     _info ('done')
+    print "titles: ", newFeed.title, newFeed.text
     _return (newFeed.id)
     
 

@@ -417,6 +417,9 @@ class Feed(elixir.Entity):
     else:
       # This happens, for instance, on deleted blogger blogs (everyone's clever)
       self.title=''
+      
+    if not self.text:
+      self.text=self.title
 
     if not self.subtitle:
       if 'subtitle_detail' in d['feed']: 
