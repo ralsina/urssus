@@ -1124,7 +1124,7 @@ class MainWindow(QtGui.QMainWindow):
         self.ui.actionAbort_Fetches.setEnabled(False)
       
     self.feedStatusTimer.start(1000)
-    self.updateFeedItem(unread_feed)
+#    self.updateFeedItem(unread_feed)
 
   def updateStatusBar(self):
     if not statusQueue.empty():
