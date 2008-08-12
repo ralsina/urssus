@@ -115,8 +115,7 @@ class PostModel(QtGui.QStandardItemModel):
 
         self.postItems[post.id]=[item0, item1, item2, item3]
         self.appendRow([item0, item1, item2, item3])
-        self.updateItem(post)
-      
+#        self.updateItem(post)
     self.reset()
  
     if update: # New data, resort

@@ -579,16 +579,12 @@ class Feed(elixir.Entity):
     if posts:
       with elixir.session.begin():
         # Fix freshness
-        Post.table.update().where(sql.except_(Post.table.select(Post.id.in_(posts)))).values(fresh=False)
-
+        Post.table.update().where(sql.except_(Post.table.select(Post.feed==self), 
+                                              Post.table.select(Post.id.in_(posts)))).\
+                                              values(fresh=False).execute()
       # Mark feed UI for updating
       self.curUnread=-1
-      self.unreadCount()
       feedStatusQueue.put([2, self.id])
-
-      # Queue a notification if needed
-      if self.notify:
-        feedStatusQueue.put([3, self.id, len(posts)])
     
   def getQuery(self):
     if self.xmlUrl:
@@ -601,6 +597,7 @@ class MetaFeed(Feed):
   elixir.using_options (tablename='metafeeds', inheritance='multi')
   condition   = elixir.Field(elixir.Text)
   _stamp = None
+  unreadC=0
 
   def __repr__(self):
     return unicode(self.text or self.condition)
@@ -609,9 +606,12 @@ class MetaFeed(Feed):
     return Post.query.filter(eval(self.condition))
 
   def unreadCount(self):
-    now=time.mktime(time.localtime())
-    if not self._stamp or now-self._stamp > 5:
-      self.unreadC=Post.query.filter(eval(self.condition)).filter(Post.unread==True).count()
+    try:
+      now=time.mktime(time.localtime())
+      if not self._stamp or now-self._stamp > 10:
+        self.unreadC=Post.query.filter(eval(self.condition)).filter(Post.unread==True).count()
+    except:
+      pass
     return self.unreadC
 
 root_feed=None
