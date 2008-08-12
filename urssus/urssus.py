@@ -1851,7 +1851,7 @@ def main():
   app=QtGui.QApplication(sys.argv)
   app.setQuitOnLastWindowClosed(False)
   # Not enabled yet, because I need to implement a web app to handle it
-  if os.getenv('DEBUG')=='YES':
+  if config.getValue('options','showDebugDialog', False):
     sys.excepthook = my_excepthook
   window=MainWindow()
     
