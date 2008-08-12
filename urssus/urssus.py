@@ -721,7 +721,14 @@ class MainWindow(QtGui.QMainWindow):
         curPost.unread=False
         curPost.feed.curUnread-=1 
       self.updatePostItem(curPost)
-      self.updateFeedItem(curPost.feed, parents=True)
+      self.queueFeedUpdate(curPost.feed)
+
+  def queueFeedUpdate(self, feed):
+    feedStatusQueue.put([1, feed.id])
+    p=feed.parent
+    while p:
+      feedStatusQueue.put([1, p.id])
+      p=p.parent
 
   def updatePostItem(self, post):
     self.ui.posts.model().updateItem(post)
@@ -737,7 +744,7 @@ class MainWindow(QtGui.QMainWindow):
         curPost.unread=True
         curPost.feed.curUnread+=1
       self.updatePostItem(curPost)
-      self.updateFeedItem(curPost.feed, parents=True)
+      self.queueFeedUpdate(curPost.feed)
 
   def on_actionOpen_in_Browser_triggered(self, i=None):
     # FIXME: handle selections
@@ -828,7 +835,7 @@ class MainWindow(QtGui.QMainWindow):
     # and reopen the feed
     self.ui.posts.setModel(None)
     self.open_feed(index)
-    self.updateFeedItem(curFeed,parents=True)
+    self.queueFeedUpdate(curFeed)
 
   def on_actionEdit_Feed_triggered(self, i=None):
     if i==None: return
@@ -840,9 +847,7 @@ class MainWindow(QtGui.QMainWindow):
     info ("Editing feed: %s", curFeed)
 
     editDlg=FeedProperties(curFeed)
-    if editDlg.exec_():
-      # update feed item, no parents
-      self.updateFeedItem(curFeed)
+    editDlg.exec_()
     self.open_feed(index)
 
   def addFeed(self, url):
@@ -945,7 +950,7 @@ class MainWindow(QtGui.QMainWindow):
     info ("Show only unread: %d", checked)
     self.showOnlyUnread=checked
     for feed in Feed.query().all():
-      self.updateFeedItem(feed)
+      self.queueFeedUpdate(feed)
     config.setValue('ui', 'showOnlyUnreadFeeds', checked)
   
   def on_actionFind_triggered(self, i=None):
@@ -1039,7 +1044,7 @@ class MainWindow(QtGui.QMainWindow):
         elif command=='unimportant':
           post.important=False
       post.feed.curUnread=-1
-      self.updateFeedItem(post.feed, parents=True)
+      self.queueFeedUpdate(post.feed)
     else:
       QtGui.QDesktopServices.openUrl(url)
 
@@ -1082,7 +1087,7 @@ class MainWindow(QtGui.QMainWindow):
       info("updateFeedStatus: %d %d", action, id)
       
       # FIXME: make this more elegant
-      # These are not really feed updated
+      # These are not really feed updates
       if not self.ui.feeds.model().hasFeed(id):
         if action==4: # Add new feed
           self.addFeed(id)
@@ -1097,31 +1102,22 @@ class MainWindow(QtGui.QMainWindow):
         else:
           error( "id %s not in the tree", id)
           return
-        updated[id]=data
+      # We collapse all updates for a feed, and keep the last one
+      updated[id]=data
     
-    # We collapse all updates for a feed, and keep the last one
+        
     for id in updated:
-      data=updated[id]
       feed=Feed.get_by(id=id)
       if action==0: # Mark as updating
-        self.updateFeedItem(feed, updating=True)
-        self.updatesCounter+=1
-      elif action==1: # Mark as finished updating
+        self.updateFeedItem(feed)
+      else: # Mark as finished updating
         # Force recount after update
         feed.curUnread=-1
         feed.unreadCount()
-        self.updateFeedItem(feed, updating=False, parents=True)
-        self.updatesCounter-=1
-      elif action==2: # Update it, may have new posts, so all parents
-        self.updateFeedItem(feed, parents=True)
-      if feed.notify: # Systray notification
-        self.notifiedFeed=feed
-        self.tray.showMessage("New Articles", "%d new articles in %s"%(data[2], feed.text) )
-        
-      if self.updatesCounter>0:
-        self.ui.actionAbort_Fetches.setEnabled(True)
-      else:
-        self.ui.actionAbort_Fetches.setEnabled(False)
+        self.updateFeedItem(feed)
+        if feed.notify and len(data)>2: # Systray notification
+          self.notifiedFeed=feed
+          self.tray.showMessage("New Articles", "%d new articles in %s"%(data[2], feed.text) )
       
     self.feedStatusTimer.start(1000)
 #    self.updateFeedItem(unread_feed)
@@ -1312,7 +1308,7 @@ class MainWindow(QtGui.QMainWindow):
     the feed item when the model data changes'''
     
     feed=Feed.get_by(id=self.ui.posts.model().feed_id)
-    self.updateFeedItem(feed, parents=True)
+    self.queueFeedUpdate(feed)
 
   def open_feed(self, index):
     if not index.isValid():
@@ -1421,7 +1417,7 @@ class MainWindow(QtGui.QMainWindow):
       self.ui.posts.scrollToTop()
     QtCore.QObject.connect(self.ui.posts.model(), QtCore.SIGNAL("modelReset()"), self.updateListedFeedItem)
 
-  def updateFeedItem(self, feed, parents=True, updating=False):
+  def updateFeedItem(self, feed):
     info("Updating item for feed %d", feed.id)
     
     model=self.ui.feeds.model()
@@ -1451,14 +1447,14 @@ class MainWindow(QtGui.QMainWindow):
     else:
       if self.ui.feeds.isRowHidden(item.row(), index.parent()):
         self.ui.feeds.setRowHidden(item.row(), index.parent(), False)
-    if updating:
+    if feed.updating:
       item.setForeground(QtGui.QColor("darkgrey"))
       item2.setForeground(QtGui.QColor("darkgrey"))
     else:
       item.setForeground(QtGui.QColor("black"))
       item2.setForeground(QtGui.QColor("black"))
     item.setText(unicode(feed))
-    item2.setText(unicode(feed.unreadCount() or ''))
+    item2.setText(unicode(unreadCount or ''))
     item.setToolTip(unicode(feed))
     item2.setToolTip(unicode(feed))
     
@@ -1470,9 +1466,6 @@ class MainWindow(QtGui.QMainWindow):
     item.setFont(f)
     item2.setFont(f)
     
-    # Update all ancestors too, because unread counts and such change
-    if feed.parent:
-      self.updateFeedItem(feed.parent)
     # And set the systray tooltip to the unread count on root_feed
     self.tray.updateIcon()
 
@@ -1504,7 +1497,7 @@ class MainWindow(QtGui.QMainWindow):
       if upUnread or upImportant:
           self.updatePostItem(post)
       if upFeed:
-          self.updateFeedItem(post.feed, parents=True)
+          self.queueFeedUpdate(post.feed)
  
   def on_posts_doubleClicked(self, index=None):
     if index==None: return
@@ -1608,7 +1601,7 @@ class MainWindow(QtGui.QMainWindow):
         # No feed current
         self.ui.feeds.setCurrentIndex(QtCore.QModelIndex())
         self.ui.feeds.model().removeRow(index.row(), index.parent())
-        self.updateFeedItem(parent, parents=True)
+        self.queueFeedUpdate(parent)
         
   def on_actionOpen_Homepage_triggered(self, i=None):
     if i==None: return
