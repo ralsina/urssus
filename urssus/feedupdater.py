@@ -32,7 +32,8 @@ def updateOneNice(feed):
 def feedUpdater():
   import dbtables
   lastCheck=datetime.datetime(1970, 1, 1)
-  time.sleep(5)
+  # Wait blocked until the main thread tells us we can go
+  f=feedUpdateQueue.get(block=True)
   while True:
     info("updater loop")
     now=datetime.datetime.now()
@@ -45,11 +46,7 @@ def feedUpdater():
                             sql.func.strftime('%s', dbtables.Feed.lastUpdated)+\
                                                     dbtables.Feed.updateInterval*60<now_stamp)).\
                             filter(dbtables.Feed.xmlUrl<>None):
-        try:
-          feed.update()
-          # feed.expire(expunge=False)
-        except:
-          pass
+        feed.update()
       # Feeds with default check period
       # Limit to 5 feeds so they get progressively out-of-sync and you don't have a glut of
       # feeds updating all at the same time
@@ -57,11 +54,7 @@ def feedUpdater():
                                                       dbtables.Feed.lastUpdated < cutoff)).\
                                                       filter(dbtables.Feed.xmlUrl<>None).\
                                                       order_by(dbtables.Feed.lastUpdated).limit(5):
-        try:
-          feed.update()
-          # feed.expire(expunge=False)
-        except:
-          pass
+        feed.update()
       lastCheck=now
     try:
       f=feedUpdateQueue.get(block=True, timeout=2)
