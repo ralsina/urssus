@@ -1462,12 +1462,11 @@ class MainWindow(QtGui.QMainWindow):
     item.setFont(f)
     item2.setFont(f)
     
-    if parents: # Not by default because it's slow
-      # Update all ancestors too, because unread counts and such change
-      if feed.parent:
-        self.updateFeedItem(feed.parent, True)
-      # And set the systray tooltip to the unread count on root_feed
-      self.tray.updateIcon()
+    # Update all ancestors too, because unread counts and such change
+    if feed.parent:
+      self.updateFeedItem(feed.parent)
+    # And set the systray tooltip to the unread count on root_feed
+    self.tray.updateIcon()
 
   def on_posts_clicked(self, index):
     post=self.ui.posts.model().postFromIndex(index)
@@ -1496,10 +1495,6 @@ class MainWindow(QtGui.QMainWindow):
           upFeed=True
       if upUnread or upImportant:
           self.updatePostItem(post)
-#          if upUnread:
-#            self.updateFeedItem(unread_feed)
-#          if upImportant:
-#            self.updateFeedItem(starred_feed)
       if upFeed:
           self.updateFeedItem(post.feed, parents=True)
  

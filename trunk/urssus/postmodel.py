@@ -80,17 +80,14 @@ class PostModel(QtGui.QStandardItemModel):
       # of self.posts.all()
       
       if post.id in self.post_ids: #Existing post, update
-        # FIXME: implement update fully
-        self.post_data[self.post_ids.index(post.id)][5]=post.unread
-        self.post_data[self.post_ids.index(post.id)][4]=post.important
         self.updateItem(post)
       else:
         # New post, add
-        self.post_data.append([post.id, unicode(post).lower(), post.date,
-                               unicode(post.feed).lower(), post.important, post.unread])
+        data=[post.id, unicode(post).lower(), post.date,
+              unicode(post.feed).lower(), None, None]
+        self.post_data.append(data)
+        self.post_ids.append(post.id)
         item0=QtGui.QStandardItem()
-        item0.setData(QtCore.QVariant(post.important), sorting)
-
         item1=QtGui.QStandardItem()
         item1.setToolTip('%s - Posted at %s'%(unicode(post), unicode(post.date)))
         item1.setData(QtCore.QVariant(unicode(post)), display)
@@ -115,11 +112,12 @@ class PostModel(QtGui.QStandardItemModel):
 
         self.postItems[post.id]=[item0, item1, item2, item3]
         self.appendRow([item0, item1, item2, item3])
-#        self.updateItem(post)
-    self.reset()
+        self.updateItem(post)
  
     if update: # New data, resort
       self.sort(*self.lastSort)
+    else:
+      self.reset()
 
   def hasPost(self, post):
     return post.id in self.postItems
@@ -160,39 +158,40 @@ class PostModel(QtGui.QStandardItemModel):
     if not post.id in self.postItems: #post is not being displayed
       return
     item0, item1, item2, item3=self.postItems[post.id]
-    # FIXME: respect the palette
-    if post.important:
-      item0.setIcon(self.star)
-    else:
-      item0.setIcon(self.star2)
-    if post.unread:
-      item1.setForeground(QtGui.QColor("darkgreen"))
-      item2.setForeground(QtGui.QColor("darkgreen"))
-      item3.setForeground(QtGui.QColor("darkgreen"))
-    else:
-      item1.setForeground(QtGui.QColor("black"))
-      item2.setForeground(QtGui.QColor("black"))
-      item3.setForeground(QtGui.QColor("black"))
-      
-    f=item1.font()
-    if post.unread:
-      f.setBold(True)
-    else:
-      f.setBold(False)
-    if post.deleted:
-      f.setStrikeOut(True)
-    else:
-      f.setStrikeOut(False)
-    item1.setFont(f)
-    item2.setFont(f)
-    item3.setFont(f)
+    idx=self.post_ids.index(post.id)
+    data=self.post_data[idx]
+    # Only change what's really changed
+    if post.important <> data[4]:
+      if post.important:
+        item0.setIcon(self.star)
+      else:
+        item0.setIcon(self.star2)
+      item0.setData(QtCore.QVariant(post.important), sorting)
+    if post.unread <> data[5]:
+      f=item1.font()
+      if post.unread:
+        f.setBold(True)
+        item1.setForeground(QtGui.QColor("darkgreen"))
+        item2.setForeground(QtGui.QColor("darkgreen"))
+        item3.setForeground(QtGui.QColor("darkgreen"))
+      else:
+        f.setBold(False)
+        item1.setForeground(QtGui.QColor("black"))
+        item2.setForeground(QtGui.QColor("black"))
+        item3.setForeground(QtGui.QColor("black"))      
+      item1.setFont(f)
+      item2.setFont(f)
+      item3.setFont(f)
     
     # Update our post_data, too. Probably not the best way
     # FIXME: not efficient
-    self.post_ids=[id for [id, _, _, _, _, _] in self.post_data]
-    idx=self.post_ids.index(post.id)
-    self.post_data[idx]=[post.id, unicode(post).lower(), post.date,unicode(post.feed).lower(),post.important,post.unread]
-
+    # self.post_ids=[id for [id, _, _, _, _, _] in self.post_data]
+    self.post_data[idx]=[post.id, 
+                         unicode(post).lower(), 
+                         post.date,
+                         unicode(post.feed).lower(),
+                         post.important,
+                         post.unread]
   colkey=[5, 1, 2, 3]
 
   def sort(self, column, order):
