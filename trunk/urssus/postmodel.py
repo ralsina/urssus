@@ -39,6 +39,13 @@ class PostModel(QtGui.QStandardItemModel):
     self._clear()
     column,order = config.getValue('ui','postSorting',[2,QtCore.Qt.DescendingOrder])
     self.sort(column,order) # Date, descending
+
+    self.font=QtGui.QApplication.instance().font()
+    self.boldFont=QtGui.QApplication.instance().font()
+    self.boldFont.setBold(True)
+    self.unreadColor=QtGui.QColor('red')
+    self.color=QtGui.QColor('black')
+
     self.initData(feed)
 
   def _clear(self):
@@ -168,17 +175,15 @@ class PostModel(QtGui.QStandardItemModel):
         item0.setIcon(self.star2)
       item0.setData(QtCore.QVariant(post.important), sorting)
     if post.unread <> data[5]:
-      f=item1.font()
       if post.unread:
-        f.setBold(True)
-        item1.setForeground(QtGui.QColor("darkgreen"))
-        item2.setForeground(QtGui.QColor("darkgreen"))
-        item3.setForeground(QtGui.QColor("darkgreen"))
+        f=self.boldFont
+        c=self.unreadColor
       else:
-        f.setBold(False)
-        item1.setForeground(QtGui.QColor("black"))
-        item2.setForeground(QtGui.QColor("black"))
-        item3.setForeground(QtGui.QColor("black"))      
+        f=self.font
+        c=self.color
+      item1.setForeground(c)
+      item2.setForeground(c)
+      item3.setForeground(c)      
       item1.setFont(f)
       item2.setFont(f)
       item3.setFont(f)
