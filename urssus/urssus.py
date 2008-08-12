@@ -904,10 +904,10 @@ class MainWindow(QtGui.QMainWindow):
     _info ('Creating feed in the database')
     with elixir.session.begin():
       newFeed=Feed(xmlUrl=feed)
-      _info ('Fetching feed information')
-      newFeed.update()
       # To show it on the tree
       newFeed.text=newFeed.title
+    _info ('Fetching feed information')
+    newFeed.update()
     _info ('done')
     _return (newFeed.id)
     
