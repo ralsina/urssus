@@ -452,6 +452,8 @@ class MainWindow(QtGui.QMainWindow):
     QtCore.QObject.connect(self.feedStatusTimer, QtCore.SIGNAL("timeout()"), self.updateFeedStatus)
     self.feedStatusTimer.start(1000)
     self.updatesCounter=0
+    # Start the background feedupdater
+    feedUpdateQueue.put([1])
 
   def fixPostListUI(self):
     # Fixes for post list UI

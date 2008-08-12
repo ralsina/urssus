@@ -443,14 +443,12 @@ class Feed(elixir.Entity):
         pass #I am not going to care about errors here :-D
     
   def update(self, forced=False):
-    feedStatusQueue.put([0, self.id])
     try:
       self.real_update(forced)
     except: # FIXME: reraise
       pass
-    feedStatusQueue.put([1, self.id])
-    # Add the parents to the queue if needed
-    p=self.parent
+    # Add feed and parents to the update queue
+    p=self
     while p:
       feedStatusQueue.put([1, p.id])
       p=p.parent
@@ -477,7 +475,10 @@ class Feed(elixir.Entity):
       self.xmlUrl=d.href
     if d.status==410: # Feed deleted. FIXME: tell the user and stop trying!
       return
-
+      
+    self.updating=True
+    # Notify feed is updating
+    feedStatusQueue.put([0, self.id])
     with elixir.session.begin():
       posts=[]
       for post in d['entries']:
