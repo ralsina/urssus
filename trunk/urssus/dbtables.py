@@ -138,7 +138,6 @@ class Feed(elixir.Entity):
   archiveType    = elixir.Field(elixir.Integer, default=0) 
   limitCount     = elixir.Field(elixir.Integer, default=1000)
   limitDays      = elixir.Field(elixir.Integer, default=60)
-
   notify         = elixir.Field(elixir.Boolean, default=False)
   markRead       = elixir.Field(elixir.Boolean, default=False)
   icon           = elixir.Field(elixir.Binary, deferred=True)
@@ -149,6 +148,7 @@ class Feed(elixir.Entity):
   # Added in schema version 4
   is_open        = elixir.Field(elixir.Integer, default=0)
   curUnread      = -1
+  updating       = False
   # Added in schema version 6
   subtitle       = elixir.Field(elixir.Text, default='')
   # Added in schema version 7
@@ -178,10 +178,8 @@ class Feed(elixir.Entity):
     else: # A folder
       for feed in self.allFeeds():
         feed.markAsRead()
-    # Put in queue for status update [parents too]
-    self.curUnread=-1
-    self.unreadCount()
-    feedStatusQueue.put([2, self.id, True])
+    # Put in queue for status update
+    feedStatusQueue.put([1, self.id])
     
 
   def expire(self, expunge=False):
@@ -404,43 +402,42 @@ class Feed(elixir.Entity):
     
     d=parsedFeed
     
-    with elixir.session.begin():
-      if not self.htmlUrl:
-        if 'link' in d['feed']:
-          self.htmlUrl=d['feed']['link']
-        else:
-          # This happens, for instance, on deleted blogger blogs (everyone's clever)
-          self.htmlUrl=None
-          
-      if not self.title:
-        if 'title_detail' in d['feed']: 
-          self.title=detailToTitle(d['feed']['title_detail'])
-        else:
-          self.title=d['feed']['title']
+    if not self.htmlUrl:
+      if 'link' in d['feed']:
+        self.htmlUrl=d['feed']['link']
       else:
         # This happens, for instance, on deleted blogger blogs (everyone's clever)
-        self.title=''
-  
-      if not self.subtitle:
-        if 'subtitle_detail' in d['feed']: 
-          self.subtitle=detailToTitle(d['feed']['subtitle_detail'])
-        elif 'subtitle' in d['feed']:
-          self.subtitle=d['feed']['subtitle']
-        else:
-          self.subtitle=''
-  
-      if not self.description:
-        if 'info' in d['feed']:
-          self.description=d['feed']['info']
-        elif 'description' in d['feed']:
-          self.description=d['feed']['description']
-      if not self.icon and self.htmlUrl:
-        try:
-          # FIXME: handle 404, 403 whatever errors
-          self.icon=urlopen(urlparse.urljoin(self.htmlUrl,'/favicon.ico')).read()
-          open('/tmp/icon.ico', 'w').write(self.icon)
-        except:
-          pass #I am not going to care about errors here :-D
+        self.htmlUrl=None
+        
+    if not self.title:
+      if 'title_detail' in d['feed']: 
+        self.title=detailToTitle(d['feed']['title_detail'])
+      else:
+        self.title=d['feed']['title']
+    else:
+      # This happens, for instance, on deleted blogger blogs (everyone's clever)
+      self.title=''
+
+    if not self.subtitle:
+      if 'subtitle_detail' in d['feed']: 
+        self.subtitle=detailToTitle(d['feed']['subtitle_detail'])
+      elif 'subtitle' in d['feed']:
+        self.subtitle=d['feed']['subtitle']
+      else:
+        self.subtitle=''
+
+    if not self.description:
+      if 'info' in d['feed']:
+        self.description=d['feed']['info']
+      elif 'description' in d['feed']:
+        self.description=d['feed']['description']
+    if not self.icon and self.htmlUrl:
+      try:
+        # FIXME: handle 404, 403 whatever errors
+        self.icon=urlopen(urlparse.urljoin(self.htmlUrl,'/favicon.ico')).read()
+        open('/tmp/icon.ico', 'w').write(self.icon)
+      except:
+        pass #I am not going to care about errors here :-D
     
   def update(self, forced=False):
     feedStatusQueue.put([0, self.id])
@@ -449,6 +446,11 @@ class Feed(elixir.Entity):
     except: # FIXME: reraise
       pass
     feedStatusQueue.put([1, self.id])
+    # Add the parents to the queue if needed
+    p=self.parent
+    while p:
+      feedStatusQueue.put([1, p.id])
+      p=p.parent
     
   def real_update(self, forced=False):
     if not self.xmlUrl: # Not a real feed
@@ -473,118 +475,117 @@ class Feed(elixir.Entity):
     if d.status==410: # Feed deleted. FIXME: tell the user and stop trying!
       return
 
-    posts=[]
-    for post in d['entries']:
-      try:
-        # Date can be one of several fields
-        if 'created_parsed' in post:
-          dkey='created_parsed'
-        elif 'published_parsed' in post:
-          dkey='published_parsed'
-        elif 'modified_parsed' in post:
-          dkey='modified_parsed'
-        else:
-          dkey=None
-        if dkey and post[dkey]:
-          date=datetime.datetime.fromtimestamp(time.mktime(post[dkey]))
-        else:
-          date=datetime.datetime.now()
-        
-        # So can the "unique ID for this entry"
-        if 'id' in post:
-          idkey='id'
-        elif 'link' in post:
-          idkey='link'
-       
-        # So can the content
-       
-        if 'content' in post:
-          content='<hr>'.join([ c.value for c in post['content']])
-        elif 'summary' in post:
-          content=post['summary']
-        elif 'value' in post:
-          content=post['value']
-         
-        # Rudimentary NON-html detection
-        if not '<' in content:
-          content=escape(content).replace('\n\n','<p>')
-         
-        # Author if available, else None
-        author=''
-        # First, we may have author_detail, which is the nicer one
-        if 'author_detail' in post:
-          ad=post['author_detail']
-          author=detailToAuthor(ad)
-        # Or maybe just an author
-        elif 'author' in post:
-          author=post['author']
+    with elixir.session.begin():
+      posts=[]
+      for post in d['entries']:
+        try:
+          # Date can be one of several fields
+          if 'created_parsed' in post:
+            dkey='created_parsed'
+          elif 'published_parsed' in post:
+            dkey='published_parsed'
+          elif 'modified_parsed' in post:
+            dkey='modified_parsed'
+          else:
+            dkey=None
+          if dkey and post[dkey]:
+            date=datetime.datetime.fromtimestamp(time.mktime(post[dkey]))
+          else:
+            date=datetime.datetime.now()
           
-        # But we may have a list of contributors
-        if 'contributors' in post:
-          # Which may have the same detail as the author's
-          author+=' - '.join([ detailToAuthor(contrib) for contrib in post[contributors]])
-        if not author:
-          #FIXME: how about using the feed's author, or something like that
-          author=None
-          
-        # The link should be simple ;-)
-        if 'link' in post:
-          link=post['link']
-        else:
-            link=None
+          # So can the "unique ID for this entry"
+          if 'id' in post:
+            idkey='id'
+          elif 'link' in post:
+            idkey='link'
+         
+          # So can the content
+         
+          if 'content' in post:
+            content='<hr>'.join([ c.value for c in post['content']])
+          elif 'summary' in post:
+            content=post['summary']
+          elif 'value' in post:
+            content=post['value']
+           
+          # Rudimentary NON-html detection
+          if not '<' in content:
+            content=escape(content).replace('\n\n','<p>')
+           
+          # Author if available, else None
+          author=''
+          # First, we may have author_detail, which is the nicer one
+          if 'author_detail' in post:
+            ad=post['author_detail']
+            author=detailToAuthor(ad)
+          # Or maybe just an author
+          elif 'author' in post:
+            author=post['author']
             
-        # Titles may be in plain title, but a title_detail is preferred
-        if 'title_detail' in post:
-          title=detailToTitle(post['title_detail'])
-        else:
-          title=post['title']
-
+          # But we may have a list of contributors
+          if 'contributors' in post:
+            # Which may have the same detail as the author's
+            author+=' - '.join([ detailToAuthor(contrib) for contrib in post[contributors]])
+          if not author:
+            #FIXME: how about using the feed's author, or something like that
+            author=None
+            
+          # The link should be simple ;-)
+          if 'link' in post:
+            link=post['link']
+          else:
+              link=None
+              
+          # Titles may be in plain title, but a title_detail is preferred
+          if 'title_detail' in post:
+            title=detailToTitle(post['title_detail'])
+          else:
+            title=post['title']
+  
+            
+          # FIXME: if I use date to check here, I get duplicates on posts where I use
+          # artificial date because it's not in the feed's entry.
+          # If I don't I don't re-get updated posts.
+          p = Post.get_by(feed=self, title=title)
           
-        # FIXME: if I use date to check here, I get duplicates on posts where I use
-        # artificial date because it's not in the feed's entry.
-        # If I don't I don't re-get updated posts.
-        p = Post.get_by(feed=self, title=title)
-        
-        # This is because of google news: the same news gets reposted over and over 
-        # with different post_id :-(
-        if p:
-          with elixir.session.begin():
+          # This is because of google news: the same news gets reposted over and over 
+          # with different post_id :-(
+          if p:
             if p.post_id<>post[idkey]:
               p.post_id=post[idkey]
             if p.content<>content:
               p.content=content
               # FIXME: un updated flag? Mark unread again?
-        else:
-          with elixir.session.begin():
+          else:
+            print "new post: ", self, title
             p=Post(feed=self, date=date, title=title, 
                    post_id=post[idkey], content=content, 
                    author=author, link=link)
             if self.markRead:
               p.unread=False
+            p.save()
             posts.append(p)
-      except KeyError:
-        debug( post )
-    self.updateFeedData(d)
-    if 'modified' in d:
-      with elixir.session.begin():
+        except KeyError:
+          debug( post )
+      self.updateFeedData(d)
+      if 'modified' in d:
         self.lastModified=datetime.datetime(*d['modified'][:6])
-    if 'etag' in d:
-      with elixir.session.begin():
+      if 'etag' in d:
         self.etag=d['etag']
-
-    # Silly way to release the posts objects
-    # we don't need anymore
-    posts=[post.id for post in posts]
-
-    if posts:
-      with elixir.session.begin():
+  
+    with elixir.session.begin():
+      # Silly way to release the posts objects
+      # we don't need anymore
+      post_ids=[post.id for post in posts]
+      print "post_ids:", post_ids, len(post_ids)
+  
+      if len(post_ids):
+        # Mark feed UI for updating
+        self.curUnread=-1
         # Fix freshness
         Post.table.update().where(sql.except_(Post.table.select(Post.feed==self), 
-                                              Post.table.select(Post.id.in_(posts)))).\
+                                              Post.table.select(Post.id.in_(post_ids)))).\
                                               values(fresh=False).execute()
-      # Mark feed UI for updating
-      self.curUnread=-1
-      feedStatusQueue.put([2, self.id])
     
   def getQuery(self):
     if self.xmlUrl:
