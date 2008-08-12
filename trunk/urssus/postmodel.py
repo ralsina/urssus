@@ -127,8 +127,7 @@ class PostModel(QtGui.QStandardItemModel):
  
     if update: # New data, resort
       self.sort(*self.lastSort)
-    else:
-      self.reset()
+    self.reset()
 
   def hasPost(self, post):
     return post.id in self.postItems
@@ -139,13 +138,11 @@ class PostModel(QtGui.QStandardItemModel):
     for d in self.post_data:
       if d[5]:
         if d[5]:
-          d[5]=False
           with elixir.session.begin():
             post=Post.get_by(id=d[0])        
             post.unread=False
           post.feed.curUnread=-1
           self.updateItem(post)
-    self.reset()
 
   def indexFromPost(self, post=None, id=None):
     if not id and not post:
@@ -166,11 +163,13 @@ class PostModel(QtGui.QStandardItemModel):
     return None
 
   def updateItem(self, post):
+    print "updateItem"
     if not post.id in self.postItems: #post is not being displayed
       return
     item0, item1, item2, item3=self.postItems[post.id]
     idx=self.post_ids.index(post.id)
     data=self.post_data[idx]
+    print "updating post", post.id, data
     # Only change what's really changed
     if post.important <> data[4]:
       if post.important:
