@@ -1069,11 +1069,14 @@ class MainWindow(QtGui.QMainWindow):
     AboutDialog(self).exec_()
     
   def updateFeedStatus(self):
+    updated={}
     while not feedStatusQueue.empty():
       data=feedStatusQueue.get()
-      
       [action, id] = data[:2]
       info("updateFeedStatus: %d %d", action, id)
+      
+      # FIXME: make this more elegant
+      # These are not really feed updated
       if not self.ui.feeds.model().hasFeed(id):
         if action==4: # Add new feed
           self.addFeed(id)
@@ -1088,6 +1091,11 @@ class MainWindow(QtGui.QMainWindow):
         else:
           error( "id %s not in the tree", id)
           return
+        updated[id]=data
+    
+    # We collapse all updates for a feed, and keep the last one
+    for id in updated:
+      data=updated[id]
       feed=Feed.get_by(id=id)
       if action==0: # Mark as updating
         self.updateFeedItem(feed, updating=True)
@@ -1100,7 +1108,7 @@ class MainWindow(QtGui.QMainWindow):
         self.updatesCounter-=1
       elif action==2: # Update it, may have new posts, so all parents
         self.updateFeedItem(feed, parents=True)
-      elif action==3: # Systray notification
+      if feed.notify: # Systray notification
         self.notifiedFeed=feed
         self.tray.showMessage("New Articles", "%d new articles in %s"%(data[2], feed.text) )
         
@@ -1109,8 +1117,8 @@ class MainWindow(QtGui.QMainWindow):
       else:
         self.ui.actionAbort_Fetches.setEnabled(False)
       
-#    self.updateFeedItem(unread_feed)
     self.feedStatusTimer.start(1000)
+    self.updateFeedItem(unread_feed)
 
   def updateStatusBar(self):
     if not statusQueue.empty():
@@ -1474,19 +1482,24 @@ class MainWindow(QtGui.QMainWindow):
           post.content = decode_htmlentities(post.content)
         self.ui.view.setHtml(renderTemplate('post.tmpl',post=post, showFeed=showFeed))
       QtGui.QApplication.instance().processEvents()
-      upPost=False
+      upUnread=False
+      upImportant=False
       upFeed=False
       with elixir.session.begin():
         if index.column()==0: # Star icon
           post.important= not post.important
-          upPost=True
+          upImportant=True
         if post.unread: 
           post.unread=False
           post.feed.curUnread-=1
-          upPost=True
+          upUnread=True
           upFeed=True
-      if upPost:
+      if upUnread or upImportant:
           self.updatePostItem(post)
+#          if upUnread:
+#            self.updateFeedItem(unread_feed)
+#          if upImportant:
+#            self.updateFeedItem(starred_feed)
       if upFeed:
           self.updateFeedItem(post.feed, parents=True)
  
