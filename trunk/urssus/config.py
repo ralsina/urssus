@@ -110,8 +110,9 @@ options = (
     (
       ('defaultRefresh'      ,  ('int', 1800, "How often feeds should be refreshed by default (in seconds).", 300, None )), 
       ('maxPostsDisplayed'   ,  ('int', 1000, "Limit the display to this many posts. If set too high, opening 'All Feeds' may take forever", 0, None)), 
-      ('defaultExpiration'   ,  ('int',    7, "How long should articles be kept by default. (In days)", 0, 9999)), 
+      ('defaultExpiration'   ,  ('int',    7, "How long should articles be kept by default. (In days). You need to restart uRSSus to have an effect.", 0, 9999)), 
       ('fetchOnStartup'      ,  ('bool', False, "Fetch all feeds on startup.")), 
+      ('showDebugDialog'     ,  ('bool', False, "Show dialog on uncatched exceptions. Only a good idea if you want to help debug uRSSus ;-). You need to restart uRSSus to have an effect.")), 
     )
   ), 
 )
