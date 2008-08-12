@@ -210,7 +210,8 @@ class PostModel(QtGui.QStandardItemModel):
     self.post_ids=[id for [id, _, _, _, _, _] in self.post_data]
     self.lastSort=(column, order)
     config.setValue('ui','postSorting',[column,order])
-#    QtGui.QStandardItemModel.sort(self, column, order)
+    self.reset()
+    QtGui.QStandardItemModel.sort(self, column, order)
 
   def nextPostIndex(self, post):
     '''Takes a Post and returns the index of the following post'''
