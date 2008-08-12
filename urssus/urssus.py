@@ -397,14 +397,13 @@ class MainWindow(QtGui.QMainWindow):
     page.setLinkDelegationPolicy(page.DelegateAllLinks)
     self.ui.view.setFocus(QtCore.Qt.TabFocusReason)
     QtWebKit.QWebSettings.globalSettings().setUserStyleSheetUrl(QtCore.QUrl(cssFile))
-    QtWebKit.QWebSettings.globalSettings().setAttribute(QtWebKit.QWebSettings.PluginsEnabled, True)
-    
+    QtWebKit.QWebSettings.globalSettings().setAttribute(QtWebKit.QWebSettings.PluginsEnabled, True)    
     QtWebKit.QWebSettings.globalSettings().setWebGraphic(QtWebKit.QWebSettings.MissingImageGraphic, QtGui.QPixmap(':/file_broken.svg').scaledToHeight(24))
-    
     copy_action=self.ui.view.page().action(QtWebKit.QWebPage.Copy)
     copy_action.setIcon(QtGui.QIcon(':/editcopy.svg'))
     self.ui.menu_Edit.insertAction(self.ui.actionFind, copy_action )
     self.ui.menu_Edit.insertSeparator(self.ui.actionFind)
+    self.ui.view.setFocus(QtCore.Qt.TabFocusReason)
 
     # Set sorting for post list
     column,order=config.getValue('ui','postSorting',[2,QtCore.Qt.DescendingOrder])
@@ -1487,7 +1486,7 @@ class MainWindow(QtGui.QMainWindow):
         if not self.showingFolder:
           post.content = decode_htmlentities(post.content)
         self.ui.view.setHtml(renderTemplate('post.tmpl',post=post, showFeed=showFeed))
-      QtGui.QApplication.instance().processEvents()
+      QtGui.QApplication.instance().processEvents(QtCore.QEventLoop.ExcludeUserInputEvents, 1000)
       upUnread=False
       upImportant=False
       upFeed=False

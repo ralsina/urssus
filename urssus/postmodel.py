@@ -80,7 +80,11 @@ class PostModel(QtGui.QStandardItemModel):
   
     maxposts=config.getValue('options', 'maxPostsDisplayed', 1000)
     posts=self.posts.order_by(sql.desc('date')).limit(maxposts)
+    i=0
     for post in posts:
+      i+=1
+      if i%10==0:
+        QtGui.QApplication.instance().processEvents(QtCore.QEventLoop.ExcludeUserInputEvents, 1000)
       # Keep references to posts instead of posts, to 
       # avoid stale data. nextPost/etc are about
       # iterating what's shown, not the result
