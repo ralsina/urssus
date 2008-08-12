@@ -1564,6 +1564,7 @@ class MainWindow(QtGui.QMainWindow):
     # See if we are displaying the feed using the post list
     if self.ui.posts.model() and self.ui.posts.model().feed_id==feed.id:
       self.ui.posts.model().markRead()
+      self.queueFeedUpdate(feed)
     else: # Mark as read a feed from the tree
       idx=self.ui.feeds.currentIndex()
       feed=self.ui.feeds.model().feedFromIndex(idx)
