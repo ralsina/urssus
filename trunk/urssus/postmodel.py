@@ -163,13 +163,11 @@ class PostModel(QtGui.QStandardItemModel):
     return None
 
   def updateItem(self, post):
-    print "updateItem"
     if not post.id in self.postItems: #post is not being displayed
       return
     item0, item1, item2, item3=self.postItems[post.id]
     idx=self.post_ids.index(post.id)
     data=self.post_data[idx]
-    print "updating post", post.id, data
     # Only change what's really changed
     if post.important <> data[4]:
       if post.important:

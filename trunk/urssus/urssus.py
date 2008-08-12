@@ -204,7 +204,7 @@ def my_excepthook(exc_type, exc_value, exc_traceback):
                                               exc_value,
                                               exc_traceback,20))
     dlg=BugDialog()
-    dlg.ui.report.setText('''Version: %s\n\n%s'''%(VERSION, msg))
+    dlg.ui.report.setText('''<pre>Version: %s\n\n%s</pre>'''%(VERSION, msg))
     dlg.exec_()
   # Call the default exception handler if you want
   sys.__excepthook__(exc_type, exc_value, exc_traceback)
