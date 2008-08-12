@@ -1417,6 +1417,8 @@ class MainWindow(QtGui.QMainWindow):
       idx=self.ui.posts.model().indexFromPost(cp)
       self.ui.posts.setCurrentIndex(idx)
       self.ui.posts.scrollTo(idx, self.ui.posts.EnsureVisible)
+    else:
+      self.ui.posts.scrollToTop()
     QtCore.QObject.connect(self.ui.posts.model(), QtCore.SIGNAL("modelReset()"), self.updateListedFeedItem)
 
   def updateFeedItem(self, feed, parents=True, updating=False):
