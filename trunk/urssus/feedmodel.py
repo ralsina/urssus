@@ -36,7 +36,6 @@ class FeedModel(QtGui.QStandardItemModel):
     self.feedCache={}
     self.urssusicon=QtGui.QIcon(':/urssus.svg')
     self.foldericon=QtGui.QIcon(':/folder.svg')
-    self.staricon=QtGui.QIcon(':/star.svg')
     QtGui.QStandardItemModel.__init__(self, parent)
     self.initData()
 
@@ -81,23 +80,17 @@ class FeedModel(QtGui.QStandardItemModel):
       parentItem.appendRow([item1, item2])
 
       self.feedIndex[feed.id]=[self.indexFromItem(item1), self.indexFromItem(item2)]
-      if feed.xmlUrl:
-        if feed.icon:
-          iconData=str(feed.icon).decode('base64')
-          pmap=QtGui.QPixmap()
-          pmap.loadFromData(iconData)
-          item1.setIcon(QtGui.QIcon(pmap))
-        else:
-          item1.setIcon(self.urssusicon)
+      icon=feed.getIcon()
+      if icon:
+        item1.setIcon(icon)
       else:
-        if feed==starred_feed:
-          item1.setIcon(self.staricon)
-        elif feed==unread_feed:
-          item1.setIcon(self.urssusicon)          
+        if feed.xmlUrl:
+          item1.setIcon(self.urssusicon)
         else:
           item1.setIcon(self.foldericon)
-          for child in feed.children:
-            addSubTree(item1, child)
+      if not feed.xmlUrl:
+        for child in feed.children:
+          addSubTree(item1, child)
           
     iroot=self.invisibleRootItem()
     # First all metafeeds with no parents
