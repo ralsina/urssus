@@ -581,7 +581,6 @@ class Feed(elixir.Entity):
       # Silly way to release the posts objects
       # we don't need anymore
       post_ids=[post.id for post in posts]
-      print "post_ids:", post_ids, len(post_ids)
   
       if len(post_ids):
         # Mark feed UI for updating
@@ -602,7 +601,7 @@ class MetaFeed(Feed):
   elixir.using_options (tablename='metafeeds', inheritance='multi')
   condition   = elixir.Field(elixir.Text)
   _stamp = None
-  unreadC=0
+  unreadC=-1
 
   def __repr__(self):
     return unicode(self.text or self.condition)
@@ -611,13 +610,14 @@ class MetaFeed(Feed):
     return Post.query.filter(eval(self.condition))
 
   def unreadCount(self):
-    try:
-      now=time.mktime(time.localtime())
-      if not self._stamp or now-self._stamp > 10:
-        self.unreadC=Post.query.filter(eval(self.condition)).filter(Post.unread==True).count()
-    except:
-      pass
+    if self.unreadC==-1:
+      self.unreadC=Post.query.filter(eval(self.condition)).filter(Post.unread==True).count()
     return self.unreadC
+
+class UnreadPosts(MetaFeed):
+  def unreadCount(self):
+    print "unreadposts.unreadCOunt"
+    return root_feed.unreadCount()
 
 root_feed=None
 starred_feed=None
@@ -625,7 +625,7 @@ unread_feed=None
 
 def initDB():
   global root_feed, starred_feed, unread_feed
-  REQUIRED_SCHEMA=10
+  REQUIRED_SCHEMA=11
   # FIXME: show what we are doing on the UI
   if not os.path.exists(database.dbfile): # Just create it
     os.system('urssus_upgrade_db')
@@ -661,6 +661,6 @@ def initDB():
                             text='Important Articles')
     unread_feed=MetaFeed.get_by(parent=None, condition='Post.unread==True') 
     if not unread_feed:
-      unread_feed=MetaFeed(parent=None, 
-                           condition='Post.unread==True',
-                           text='Unread Articles')
+      unread_feed=UnreadFeed(parent=None, 
+                             condition='Post.unread==True',
+                             text='Unread Articles')
