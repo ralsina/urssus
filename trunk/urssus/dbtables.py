@@ -636,17 +636,20 @@ class Feed(elixir.Entity):
       return self.allPostsQuery()
 
   def getIcon(self):
-    sicon=str(self.icon)
-    if sicon<>'None':
-      if sicon.startswith(':/'): # A resource name
-        icon=QtGui.QIcon(sicon)
-      else:
-        iconData=sicon.decode('base64') # An encoded binary
-        pmap=QtGui.QPixmap()
-        pmap.loadFromData(iconData)
-        icon=QtGui.QIcon(pmap)
-    else:
-      icon=None
+    icon=None
+    try:
+      sicon=str(self.icon)
+      if sicon<>'None':
+	if sicon.startswith(':/'): # A resource name
+	  icon=QtGui.QIcon(sicon)
+	else:
+	  
+	  iconData=sicon.decode('base64') # An encoded binary
+	  pmap=QtGui.QPixmap()
+	  pmap.loadFromData(iconData)
+	  icon=QtGui.QIcon(pmap)
+    except:
+      pass # Te icon is not critical!
     return icon
 
 
