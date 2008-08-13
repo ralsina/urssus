@@ -69,7 +69,9 @@ def main():
     serverProc=serverConn()
     if not serverProc:
       # FIXME: Assume another copy is running
-      sys.exit(1)
+	  err = "Looks like another copy of uRSSus running. If not, try to delete file " +  sockaddr
+	  ErrorMessageWidget(err)
+	  sys.exit(1)
   
   import dbtables
   import feedupdater
@@ -81,6 +83,13 @@ def main():
 
   import urssus
   urssus.main()
-  
+
+from PyQt4 import QtGui
+class ErrorMessageWidget(QtGui.QWidget):
+  def __init__(self,  text):
+    app=QtGui.QApplication(sys.argv)
+    QtGui.QWidget.__init__(self)
+    QtGui.QMessageBox.critical(None, "Error", text, QtGui.QMessageBox.Ok)
+
 if __name__ == "__main__":
   main()
