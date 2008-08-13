@@ -819,17 +819,25 @@ class MainWindow(QtGui.QMainWindow):
     if pos==None: return
     
     feed=self.ui.feeds.model().feedFromIndex(self.ui.feeds.currentIndex())
-    if feed:
+    if feed:      
       menu=QtGui.QMenu()
+      # Common actions
       menu.addAction(self.ui.actionMark_Feed_as_Read)
       menu.addSeparator()
       menu.addAction(self.ui.actionFetch_Feed)
       menu.addSeparator()
-      menu.addAction(self.ui.actionOpen_Homepage)
-      menu.addSeparator()
-      menu.addAction(self.ui.actionEdit_Feed)
-      menu.addAction(self.ui.actionExpire_Feed)
-      menu.addAction(self.ui.actionDelete_Feed)
+      if feed.xmlUrl: # Regular Feed
+        menu.addAction(self.ui.actionOpen_Homepage)
+        menu.addSeparator()
+        menu.addAction(self.ui.actionEdit_Feed)
+        menu.addAction(self.ui.actionExpire_Feed)
+        menu.addAction(self.ui.actionDelete_Feed)
+      else: # Folder
+        menu.addAction(self.ui.actionAdd_Feed)
+        menu.addAction(self.ui.actionNew_Folder)
+        menu.addSeparator()
+        menu.addAction(self.ui.actionEdit_Feed)
+        menu.addAction(self.ui.actionDelete_Feed)
       menu.exec_(QtGui.QCursor.pos())
 
   def on_actionExpire_Feed_triggered(self, i=None):
