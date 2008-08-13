@@ -561,7 +561,6 @@ class Feed(elixir.Entity):
               p.content=content
               # FIXME: un updated flag? Mark unread again?
           else:
-            print "new post: ", self, title
             p=Post(feed=self, date=date, title=title, 
                    post_id=post[idkey], content=content, 
                    author=author, link=link)
@@ -601,7 +600,6 @@ class MetaFeed(Feed):
   elixir.using_options (tablename='metafeeds', inheritance='multi')
   condition   = elixir.Field(elixir.Text)
   _stamp = None
-  unreadC=-1
 
   def __repr__(self):
     return unicode(self.text or self.condition)
@@ -610,14 +608,10 @@ class MetaFeed(Feed):
     return Post.query.filter(eval(self.condition))
 
   def unreadCount(self):
-    if self.unreadC==-1:
-      self.unreadC=Post.query.filter(eval(self.condition)).filter(Post.unread==True).count()
-    return self.unreadC
-
-class UnreadPosts(MetaFeed):
-  def unreadCount(self):
-    print "unreadposts.unreadCOunt"
-    return root_feed.unreadCount()
+    if self.curUnread==-1:
+      info ("Forcing recount in %s", self.title)
+      self.curUnread=Post.query.filter(Post.feed==self).filter(Post.deleted==False).filter(Post.unread==True).count()
+    return self.curUnread
 
 root_feed=None
 starred_feed=None
@@ -661,6 +655,6 @@ def initDB():
                             text='Important Articles')
     unread_feed=MetaFeed.get_by(parent=None, condition='Post.unread==True') 
     if not unread_feed:
-      unread_feed=UnreadFeed(parent=None, 
+      unread_feed=MetaFeed(parent=None, 
                              condition='Post.unread==True',
                              text='Unread Articles')
