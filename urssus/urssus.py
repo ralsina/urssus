@@ -457,6 +457,7 @@ class MainWindow(QtGui.QMainWindow):
 
   def fixPostListUI(self):
     # Fixes for post list UI
+    widths=config.getValue('ui', 'postColumnWidths', [])
     header=self.ui.posts.header()
     header.setStretchLastSection(False)
     header.setResizeMode(0, QtGui.QHeaderView.Fixed)
@@ -465,6 +466,8 @@ class MainWindow(QtGui.QMainWindow):
     header.setResizeMode(2, QtGui.QHeaderView.Fixed)
     header.resizeSection(2, header.fontMetrics().width(' 88/88/8888 8888:88:88 ')+4)
     header.setResizeMode(3, QtGui.QHeaderView.Interactive)
+    if widths:
+      header.resizeSection(3, widths[3])
     self.loadPostColumnPosition()
     starred, feed, date=config.getValue('ui', 'visiblePostColumns', [True, False, True])
     self.ui.actionShowStarredColumn.setChecked(starred)
@@ -482,6 +485,11 @@ class MainWindow(QtGui.QMainWindow):
       header.showSection(2)
     else:
       header.hideSection(2)
+        
+  def savePostSectionSizes(self, *args):
+    ws=[max(24, self.ui.posts.header().sectionSize(i)) for i in [0, 1, 2, 3]]
+    if ws==[24, 24, 24, 24]: return #Header is not initialized yet
+    config.setValue('ui', 'postColumnWidths',ws)
 
   def fixFeedListUI(self):
     # Fixes for feed list UI
@@ -1371,6 +1379,9 @@ class MainWindow(QtGui.QMainWindow):
 
     else: # StandardView / Widescreen View
       info ("Opening in standard view")
+      # FIXME: There must be a better place to call this
+      self.savePostSectionSizes()
+      
       model=self.ui.posts.model()
 
       # Remember current post
@@ -1554,6 +1565,7 @@ class MainWindow(QtGui.QMainWindow):
     size=self.size()
     config.setValue('ui', 'size', [size.width(), size.height()])
     config.setValue('ui', 'splitters', [self.ui.splitter.sizes(), self.ui.splitter_2.sizes()])
+    self.savePostSectionSizes()
     QtGui.QApplication.instance().quit()
     Post.table.delete(sql.and_(Post.deleted==True, Post.fresh==False)).execute()
 
