@@ -26,6 +26,8 @@ import os, sys, time
 from globals import *
 import urlparse
 
+# Not sure about this
+from PyQt4 import QtCore, QtGui
 
 # Mark Pilgrim's Feed Parser
 from util import feedparser as fp
@@ -604,6 +606,20 @@ class Feed(elixir.Entity):
     else:
       return self.allPostsQuery()
 
+  def getIcon(self):
+    sicon=str(self.icon)
+    if sicon<>'None':
+      if sicon.startswith(':/'): # A resource name
+        icon=QtGui.QIcon(sicon)
+      else:
+        iconData=sicon.decode('base64') # An encoded binary
+        pmap=QtGui.QPixmap()
+        pmap.loadFromData(iconData)
+        icon=QtGui.QIcon(pmap)
+    else:
+      icon=None
+    return icon
+
 
 class MetaFeed(Feed):
   elixir.using_options (tablename='metafeeds', inheritance='multi')
@@ -661,7 +677,7 @@ def initDB():
     if not starred_feed:
       starred_feed=MetaFeed(parent=None, 
                             condition='Post.important==True',
-                            text='Important Articles')
+                            text='Important Articles', icon=':/star.svg')
     unread_feed=MetaFeed.get_by(parent=None, condition='Post.unread==True') 
     if not unread_feed:
       unread_feed=MetaFeed(parent=None, 
