@@ -1098,41 +1098,44 @@ class MainWindow(QtGui.QMainWindow):
     
   def updateFeedStatus(self):
     updated={}
-    while not feedStatusQueue.empty():
-      data=feedStatusQueue.get()
-      [action, id] = data[:2]
-      info("updateFeedStatus: %d %d", action, id)
-      
-      # FIXME: make this more elegant
-      # These are not really feed updates
-      if action in [4, 5, 6]:
-        if action==4: # Add new feed
-          self.addFeed(id)
-        elif action==5: #OPML to import
-          importOPML(id, root_feed)
-          self.initTree()
-        elif action==6: #Just pop
-          self.show()
-          self.raise_()
-        else:
-          error( "id %s not in the tree", id)
-      # We collapse all updates for a feed, and keep the last one
-      else:
-        updated[id]=data
-  
-    for id in updated:
-      feed=Feed.get_by(id=id)
-      if action==0: # Mark as updating
-        self.updateFeedItem(feed)
-      else: # Mark as finished updating
-        # Force recount after update
-        feed.curUnread=-1
-        feed.unreadCount()
-        self.updateFeedItem(feed)
-        if feed.notify and len(data)>2: # Systray notification
-          self.notifiedFeed=feed
-          self.tray.showMessage("New Articles", "%d new articles in %s"%(data[2], feed.text) )
-      
+    try:
+      while not feedStatusQueue.empty():
+	data=feedStatusQueue.get()
+	[action, id] = data[:2]
+	info("updateFeedStatus: %d %d", action, id)
+	
+	# FIXME: make this more elegant
+	# These are not really feed updates
+	if action in [4, 5, 6]:
+	  if action==4: # Add new feed
+	    self.addFeed(id)
+	  elif action==5: #OPML to import
+	    importOPML(id, root_feed)
+	    self.initTree()
+	  elif action==6: #Just pop
+	    self.show()
+	    self.raise_()
+	  else:
+	    error( "id %s not in the tree", id)
+	# We collapse all updates for a feed, and keep the last one
+	else:
+	  updated[id]=data
+    
+      for id in updated:
+	feed=Feed.get_by(id=id)
+	if action==0: # Mark as updating
+	  self.updateFeedItem(feed)
+	else: # Mark as finished updating
+	  # Force recount after update
+	  feed.curUnread=-1
+	  feed.unreadCount()
+	  self.updateFeedItem(feed)
+	  if feed.notify and len(data)>2: # Systray notification
+	    self.notifiedFeed=feed
+	    self.tray.showMessage("New Articles", "%d new articles in %s"%(data[2], feed.text) )
+    except:
+      # FIXME: handle errors
+      pass	
     self.feedStatusTimer.start(1000)
 
   def updateStatusBar(self):
