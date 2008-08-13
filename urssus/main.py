@@ -64,11 +64,12 @@ def theServer(server):
 def main():
   global root_feed
 
-  # Try to be the server
-  serverProc=serverConn()
-  if not serverProc:
-    # FIXME: Assume another copy is running
-    sys.exit(1)
+  if sys.platform <> 'win32':
+    # Try to be the server
+    serverProc=serverConn()
+    if not serverProc:
+      # FIXME: Assume another copy is running
+      sys.exit(1)
   
   import dbtables
   import feedupdater

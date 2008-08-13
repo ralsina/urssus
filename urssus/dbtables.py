@@ -35,7 +35,7 @@ fp.USER_AGENT = 'uRSSus/%s +http://urssus.googlecode.com/'%VERSION
 # Configuration
 import config
 
-from feedupdater import updateOne, updateOneNice
+from feedupdater import *
 
 # Some feeds put html in titles, which can't be shown in QStandardItems
 from util.html2text import html2text as h2t
