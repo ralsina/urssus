@@ -80,6 +80,7 @@ def main():
   p = processing.Process(target=feedupdater.feedUpdater)
   p.setDaemon(True)
   p.start()
+  print "Updater PID: ",p.getPid()
 
   import urssus
   urssus.main()
