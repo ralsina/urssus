@@ -129,7 +129,7 @@ class Post(elixir.Entity):
 # Added in schema version 10
 class Tag(elixir.Entity):
   elixir.using_options (tablename='tags')
-  name        = eixir.Field(elixir.Text,unique=True)
+  name        = elixir.Field(elixir.Text,unique=True)
   feeds       = elixir.ManyToMany('Feed', inverse='tags')
   posts       = elixir.ManyToMany('Post', inverse='tags')
 
