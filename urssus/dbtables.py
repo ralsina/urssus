@@ -598,8 +598,9 @@ class Feed(elixir.Entity):
           if 'tags' in post:
             for t in post['tags']:
               print p, t['keyword']
-              tag=Tag.get_by_or_init(keyword=t['keyword'])
-              p.tags.append(tag)
+              tag=Tag.get_by_or_init(name=t['keyword'])
+              tag.posts.append(p)
+              tag.save()
 
         except KeyError:
           debug( post )
