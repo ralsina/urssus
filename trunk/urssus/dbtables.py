@@ -35,7 +35,7 @@ fp.USER_AGENT = 'uRSSus/%s +http://urssus.googlecode.com/'%VERSION
 # Configuration
 import config
 
-from feedupdater import *
+from feedupdater import updateOne, updateOneNice
 
 # Some feeds put html in titles, which can't be shown in QStandardItems
 from util.html2text import html2text as h2t
@@ -174,6 +174,10 @@ class Feed(elixir.Entity):
   def __repr__(self):
     return self.text
 
+  def getChildren(self):
+    # Always should use this accesor, so metafolders work transparently
+    return self.children
+
   def titleLink(self):
     if self.title:
       title=self.title
@@ -246,10 +250,10 @@ class Feed(elixir.Entity):
 
   def allFeeds(self):
     '''Returns a list of all "real" feeds that have this one as ancestor'''
-    if not self.children:
+    if not self.getChildren():
       return [self]
     feeds=[]
-    for child in self.children:
+    for child in self.getChildren():
       feeds.extend(child.allFeeds())
     return feeds
 
@@ -269,13 +273,13 @@ class Feed(elixir.Entity):
     
     # Get posts for all children
     posts=[]
-    for child in self.children:
+    for child in self.getChildren():
       posts.extend(child.posts)
     return posts
     
   def previousSibling(self):
     if not self.parent: return None
-    sibs=self.parent.children
+    sibs=self.parent.getChildren()
     ind=sibs.index(self)
     if ind==0: return None
     else:
@@ -283,7 +287,7 @@ class Feed(elixir.Entity):
 
   def nextSibling(self):
     if not self.parent: return None
-    sibs=self.parent.children
+    sibs=self.parent.getChildren()
     ind=sibs.index(self)+1
     if ind >= len(sibs):
       return None
@@ -291,10 +295,10 @@ class Feed(elixir.Entity):
 
   def lastChild(self):
     '''Goes to the last possible child of this feed (the last child of the last child ....)'''
-    if not self.children:
+    if not self.getChildren():
       return self
     else:
-      return self.children[-1].lastChild()
+      return self.getChildren()[-1].lastChild()
 
   def previousFeed(self):
     # Search for a sibling above this one, then dig
@@ -310,8 +314,8 @@ class Feed(elixir.Entity):
 
   def nextFeed(self):
     # First see if we have children
-    if len(self.children):
-      return self.children[0]
+    if len(self.getChildren()):
+      return self.getChildren()[0]
     # Then search for a sibling below this one
     sib=self.nextSibling()
     if sib:
@@ -333,7 +337,7 @@ class Feed(elixir.Entity):
     # First see if there is any sibling with unread items above this one
     if not self.parent: # At root feed
       return self.lastChild().previousUnreadFeed()
-    sibs=self.parent.children
+    sibs=self.parent.getChildren()
     sibs=sibs[:sibs.index(self)]
     sibs.reverse()
     for sib in sibs:
@@ -360,8 +364,8 @@ class Feed(elixir.Entity):
     if root_feed.unreadCount()==0:
       return
     # First see if we have children with unread articles
-    if len(self.children):
-      for child in self.children:
+    if len(self.getChildren()):
+      for child in self.getChildren():
         if child.unreadCount():
           if child.xmlUrl:
             return child
@@ -394,8 +398,8 @@ class Feed(elixir.Entity):
     return root_feed.nextUnreadFeed()
 
   def unreadCount(self):
-    if self.children:
-      self.curUnread=sum([ f.unreadCount() for f in self.children])
+    if self.getChildren():
+      self.curUnread=sum([ f.unreadCount() for f in self.getChildren()])
     else:
       if self.curUnread==-1:
         info ("Forcing recount in %s", self.title)
@@ -638,13 +642,22 @@ class MetaFeed(Feed):
       self.curUnread=Post.query.filter(Post.feed==self).filter(Post.deleted==False).filter(Post.unread==True).count()
     return self.curUnread
 
+class MetaFolder(Feed):
+  elixir.using_options (tablename='metafolders', inheritance='multi')
+  condition   = elixir.Field(elixir.Text)
+  
+  def getChildren(self):
+    return Feed.query.filter(evak(self.condition))
+
+
+
 root_feed=None
 starred_feed=None
 unread_feed=None
 
 def initDB():
   global root_feed, starred_feed, unread_feed
-  REQUIRED_SCHEMA=11
+  REQUIRED_SCHEMA=12
   # FIXME: show what we are doing on the UI
   if not os.path.exists(database.dbfile): # Just create it
     os.system('urssus_upgrade_db')
