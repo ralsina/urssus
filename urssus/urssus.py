@@ -1321,6 +1321,13 @@ class MainWindow(QtGui.QMainWindow):
     feed=self.ui.feeds.model().feedFromIndex(index)
     if not feed: return
     
+    unreadCount=feed.unreadCount()
+    
+    if unreadCount:
+      self.ui.actionMark_Feed_as_Read.setEnabled(True)
+    else:
+      self.ui.actionMark_Feed_as_Read.setEnabled(False)
+    
     if feed.xmlUrl:
       self.showingFolder=False
     else:
@@ -1437,14 +1444,18 @@ class MainWindow(QtGui.QMainWindow):
     
     if not index.isValid():
       return # Weird, but a feed was added behind our backs or something
-
+    unreadCount=feed.unreadCount()
     # If we are updating the current feed, update the post list, too
     if self.ui.posts.model() and self.ui.posts.model().feed_id==feed.id:
       self.updatePostList()
+      # And enable/disable the "mark as read" action as needed
+      if unreadCount:
+        self.ui.actionMark_Feed_as_Read.setEnabled(True)
+      else:
+        self.ui.actionMark_Feed_as_Read.setEnabled(False)
 
     item=self.ui.feeds.model().itemFromIndex(index)
     item2=self.ui.feeds.model().itemFromIndex(self.ui.feeds.model().index(index.row(), 1, index.parent()))
-    unreadCount=feed.unreadCount()
   
     if self.showOnlyUnread:
       if unreadCount==0 and feed<>self.currentFeed() and feed.xmlUrl: 

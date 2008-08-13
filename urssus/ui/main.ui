@@ -443,6 +443,9 @@
    </property>
   </action>
   <action name="actionMark_Feed_as_Read" >
+   <property name="enabled" >
+    <bool>false</bool>
+   </property>
    <property name="icon" >
     <iconset resource="../images/icons.qrc" >
      <normaloff>:/apply.svg</normaloff>:/apply.svg</iconset>
