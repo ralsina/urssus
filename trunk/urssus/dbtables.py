@@ -177,7 +177,10 @@ class Feed(elixir.Entity):
   def getChildren(self):
     # Always should use this accesor, so metafolders work transparently
     return self.children
-
+    
+  def removeChild(self, feed):
+    self.children.remove(feed)
+    
   def titleLink(self):
     if self.title:
       title=self.title
@@ -457,6 +460,10 @@ class Feed(elixir.Entity):
       except:
         pass #I am not going to care about errors here :-D
     
+    # Tag support
+    print d['tags']
+    
+    
   def update(self, forced=False):
     try:
       self.real_update(forced)
@@ -649,6 +656,9 @@ class MetaFolder(Feed):
   def getChildren(self):
     return Feed.query.filter(evak(self.condition))
 
+  def removeChild(self, feed):
+    '''Makes no sense in this context'''
+    return
 
 
 root_feed=None

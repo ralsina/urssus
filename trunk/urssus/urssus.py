@@ -1625,7 +1625,7 @@ class MainWindow(QtGui.QMainWindow):
             # Trigger update on parent item
             parent.curUnread=-1
             # I really, really shouldn't have to do this. But it doesn'twork if I don't so...
-            parent.children.remove(feed)
+            parent.removeChild(feed)
           feed.delete()
         # No feed current
         self.ui.feeds.setCurrentIndex(QtCore.QModelIndex())
@@ -1797,9 +1797,10 @@ def exportOPML(fname):
   from util.OPML import Outline, OPML
   from cgi import escape
   def exportSubTree(parent, node):
-    if not node.children:
+    children=node.getChildren()
+    if not children:
       return
-    for feed in node.children:
+    for feed in children:
       co=Outline()
       co['text']=feed.text or ''
       if feed.xmlUrl:
@@ -1812,7 +1813,7 @@ def exportOPML(fname):
       
   opml=OPML()
   root=Outline()
-  for feed in root_feed.children:
+  for feed in root_feed.getChildren():
     exportSubTree(root, feed)
   opml.outlines=root._children
   opml.output(codecs.open(fname, 'w', 'utf-8'))
