@@ -1122,7 +1122,6 @@ class MainWindow(QtGui.QMainWindow):
           self.tray.showMessage("New Articles", "%d new articles in %s"%(data[2], feed.text) )
       
     self.feedStatusTimer.start(1000)
-#    self.updateFeedItem(unread_feed)
 
   def updateStatusBar(self):
     if not statusQueue.empty():
