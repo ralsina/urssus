@@ -89,7 +89,7 @@ class FeedModel(QtGui.QStandardItemModel):
         else:
           item1.setIcon(self.foldericon)
       if not feed.xmlUrl:
-        for child in feed.children:
+        for child in feed.getChildren():
           addSubTree(item1, child)
           
     iroot=self.invisibleRootItem()
@@ -138,15 +138,17 @@ class FeedModel(QtGui.QStandardItemModel):
         # Do feed housekeeping
         feed=Feed.get_by(id=id)
         if beforeFeed: #insert
-          idx=parentFeed.children.index(beforeFeed)
-          l=parentFeed.children[:idx]+[feed]+parentFeed.children[idx:]
+          children=parentFeed.getChildren()
+          idx=children.index(beforeFeed)
+          l=children[:idx]+[feed]+children[idx:]
           i=0
           for f in l:
             f.position=i
             i+=1
         else: #append
-          if parentFeed.children:
-            feed.position=parentFeed.children[-1].position+1
+          children=parentFeed.getChildren()
+          if children:
+            feed.position=children[-1].position+1
           else:
             feed.position=0
         feed.parent=parentFeed
