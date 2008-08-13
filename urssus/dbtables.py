@@ -461,7 +461,8 @@ class Feed(elixir.Entity):
         pass #I am not going to care about errors here :-D
     
     # Tag support
-    print d['tags']
+    if 'tags' in d:
+      print d['tags']
     
     
   def update(self, forced=False):
