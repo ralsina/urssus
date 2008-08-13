@@ -14,6 +14,12 @@
 <?py if post.author: ?>
   <b>Author:&nbsp;</b>#{post.author}<br>
 <?py #end ?>
+<?py if post.tags: ?>
+  <b>Tags:&nbsp;</b>
+<?py for tag in post.tags: ?>
+    #{tag.name}&nbsp;
+<?py #endfor ?><br>
+<?py #end ?>
 </div>
 <div style='margin-top: 1em;'>
 #{post.content}
