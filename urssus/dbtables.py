@@ -129,9 +129,9 @@ class Post(elixir.Entity):
 # Added in schema version 10
 class Tag(elixir.Entity):
   elixir.using_options (tablename='tags')
+  name        = eixir.Field(elixir.Text,unique=True)
   feeds       = elixir.ManyToMany('Feed', inverse='tags')
   posts       = elixir.ManyToMany('Post', inverse='tags')
-  keyword     = elixir.Field(elixir.Text)
 
 class Feed(elixir.Entity):
   elixir.using_options (tablename='feeds', inheritance='multi')
@@ -508,11 +508,6 @@ class Feed(elixir.Entity):
       for post in d['entries']:
         try:
           
-          # Tag support
-          if 'tags' in post:
-            for t in post['tags']:
-              tag=Tag.get_by_or_init()
-
           # Date can be one of several fields
           if 'created_parsed' in post:
             dkey='created_parsed'
@@ -598,6 +593,14 @@ class Feed(elixir.Entity):
               p.unread=False
             p.save()
             posts.append(p)
+
+          # Tag support
+          if 'tags' in post:
+            for t in post['tags']:
+              print p, t['keyword']
+              tag=Tag.get_by_or_init(keyword=t['keyword'])
+              p.tags.append(tag)
+
         except KeyError:
           debug( post )
       self.updateFeedData(d)
@@ -675,7 +678,7 @@ unread_feed=None
 
 def initDB():
   global root_feed, starred_feed, unread_feed
-  REQUIRED_SCHEMA=13
+  REQUIRED_SCHEMA=12
   # FIXME: show what we are doing on the UI
   if not os.path.exists(database.dbfile): # Just create it
     os.system('urssus_upgrade_db')
