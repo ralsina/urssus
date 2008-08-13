@@ -27,7 +27,7 @@ else:
 
 def serverConn():
   try:
-    server=connection.Listener(sockaddr, authkey='urssus')
+    server=connection.Listener(sockaddr)
   except socket.error, e:
     if e[0]==98: #Address already in use
       return None
@@ -38,10 +38,15 @@ def serverConn():
 
 def theServer(server):
   while True:
+    info("Listening for connections")
     conn = server.accept()
-    info ('connection accepted')
+    info('connection accepted')
     # Process the message as needed
-    d=conn.recv()
+    try:
+      d=conn.recv()
+    except: #EOFError?
+      conn.close()
+      continue
     if len(d)>0:
       data=str(d[0])
       # Simple protocol. We get [data].
@@ -54,7 +59,6 @@ def theServer(server):
         feedStatusQueue.put([5, data])
     else:
         feedStatusQueue.put([6, None])      
-    conn.close()
   server.close()
 
 def main():

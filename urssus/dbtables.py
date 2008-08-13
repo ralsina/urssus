@@ -327,9 +327,6 @@ class Feed(elixir.Entity):
 
   def previousUnreadFeed(self):
     # If there are no unread articles, there is no point
-#    if Post.query.filter(Post.unread==True).count()==0:
-#      return None
-    # More efficient version
     if root_feed.unreadCount()==0:
       return
       
@@ -360,9 +357,6 @@ class Feed(elixir.Entity):
 
   def nextUnreadFeed(self):
     # If there are no unread articles, there is no point
-#    if Post.query.filter(Post.unread==True).count()==0:
-#      return None
-    # More efficient version
     if root_feed.unreadCount()==0:
       return
     # First see if we have children with unread articles
