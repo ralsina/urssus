@@ -29,7 +29,7 @@ from processing import connection
 
 def clientConn():
   try:
-    return connection.Client(sockaddr, authkey='urssus')
+    return connection.Client(sockaddr)
   except socket.error, e:
     print e
     if e[0]==111: # Connection refused, stale socket

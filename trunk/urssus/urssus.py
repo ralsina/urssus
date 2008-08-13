@@ -918,7 +918,6 @@ class MainWindow(QtGui.QMainWindow):
     _info ('Fetching feed information')
     newFeed.update()
     _info ('done')
-    print "titles: ", newFeed.title, newFeed.text
     _return (newFeed.id)
     
 
@@ -1098,24 +1097,21 @@ class MainWindow(QtGui.QMainWindow):
       
       # FIXME: make this more elegant
       # These are not really feed updates
-      if not self.ui.feeds.model().hasFeed(id):
+      if action in [4, 5, 6]:
         if action==4: # Add new feed
           self.addFeed(id)
-          return
         elif action==5: #OPML to import
           importOPML(id, root_feed)
           self.initTree()
-          return
         elif action==6: #Just pop
           self.show()
           self.raise_()
         else:
           error( "id %s not in the tree", id)
-          return
       # We collapse all updates for a feed, and keep the last one
-      updated[id]=data
-    
-        
+      else:
+        updated[id]=data
+  
     for id in updated:
       feed=Feed.get_by(id=id)
       if action==0: # Mark as updating
