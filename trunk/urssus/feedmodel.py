@@ -82,7 +82,13 @@ class FeedModel(QtGui.QStandardItemModel):
 
       self.feedIndex[feed.id]=[self.indexFromItem(item1), self.indexFromItem(item2)]
       if feed.xmlUrl:
-        item1.setIcon(self.urssusicon)
+        if feed.icon:
+          iconData=str(feed.icon).decode('base64')
+          pmap=QtGui.QPixmap()
+          pmap.loadFromData(iconData)
+          item1.setIcon(QtGui.QIcon(pmap))
+        else:
+          item1.setIcon(self.urssusicon)
       else:
         if feed==starred_feed:
           item1.setIcon(self.staricon)

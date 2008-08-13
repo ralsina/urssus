@@ -24,7 +24,6 @@ import migrate as migrate
 import database
 import os, sys, time
 from globals import *
-from urllib import urlopen
 import urlparse
 
 
@@ -38,6 +37,17 @@ from feedupdater import updateOne, updateOneNice
 
 # Some feeds put html in titles, which can't be shown in QStandardItems
 from util.html2text import html2text as h2t
+
+
+import urllib
+class MyUrlOpener(urllib.FancyURLopener):
+  '''A url opener that fails on 404s, copied from 
+  http://mail.python.org/pipermail/python-bugs-list/2006-February/032155.html'''
+  
+  def http_error_default(*args, **kwargs):
+    return urllib.URLopener.http_error_default(*args, **kwargs)
+    
+urllib._urlopener=MyUrlOpener()
 
 def detailToTitle(td):
   '''Converts something like feedparser's title_detail into a 
@@ -436,9 +446,8 @@ class Feed(elixir.Entity):
         self.description=d['feed']['description']
     if not self.icon and self.htmlUrl:
       try:
-        # FIXME: handle 404, 403 whatever errors
-        self.icon=urlopen(urlparse.urljoin(self.htmlUrl,'/favicon.ico')).read()
-        open('/tmp/icon.ico', 'w').write(self.icon)
+        iconUrl=urlparse.urljoin(self.htmlUrl,'/favicon.ico')
+        self.icon=urllib.urlopen(iconUrl).read().encode('base64')
       except:
         pass #I am not going to care about errors here :-D
     
