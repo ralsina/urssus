@@ -133,6 +133,9 @@ class Tag(elixir.Entity):
   feeds       = elixir.ManyToMany('Feed', inverse='tags')
   posts       = elixir.ManyToMany('Post', inverse='tags')
 
+  def __repr__ (self):
+    return '%s (%d posts)'%(self.name, len(self.posts))
+
 class Feed(elixir.Entity):
   elixir.using_options (tablename='feeds', inheritance='multi')
   htmlUrl        = elixir.Field(elixir.Text)
@@ -503,75 +506,74 @@ class Feed(elixir.Entity):
     self.updating=True
     # Notify feed is updating
     feedStatusQueue.put([0, self.id])
-    with elixir.session.begin():
-      posts=[]
-      for post in d['entries']:
-        try:
-          
-          # Date can be one of several fields
-          if 'created_parsed' in post:
-            dkey='created_parsed'
-          elif 'published_parsed' in post:
-            dkey='published_parsed'
-          elif 'modified_parsed' in post:
-            dkey='modified_parsed'
-          else:
-            dkey=None
-          if dkey and post[dkey]:
-            date=datetime.datetime.fromtimestamp(time.mktime(post[dkey]))
-          else:
-            date=datetime.datetime.now()
-          
-          # So can the "unique ID for this entry"
-          if 'id' in post:
-            idkey='id'
-          elif 'link' in post:
-            idkey='link'
+    posts=[]
+    for post in d['entries']:
+      try:
+        
+        # Date can be one of several fields
+        if 'created_parsed' in post:
+          dkey='created_parsed'
+        elif 'published_parsed' in post:
+          dkey='published_parsed'
+        elif 'modified_parsed' in post:
+          dkey='modified_parsed'
+        else:
+          dkey=None
+        if dkey and post[dkey]:
+          date=datetime.datetime.fromtimestamp(time.mktime(post[dkey]))
+        else:
+          date=datetime.datetime.now()
+        
+        # So can the "unique ID for this entry"
+        if 'id' in post:
+          idkey='id'
+        elif 'link' in post:
+          idkey='link'
+       
+        # So can the content
+       
+        if 'content' in post:
+          content='<hr>'.join([ c.value for c in post['content']])
+        elif 'summary' in post:
+          content=post['summary']
+        elif 'value' in post:
+          content=post['value']
          
-          # So can the content
+        # Rudimentary NON-html detection
+        if not '<' in content:
+          content=escape(content).replace('\n\n','<p>')
          
-          if 'content' in post:
-            content='<hr>'.join([ c.value for c in post['content']])
-          elif 'summary' in post:
-            content=post['summary']
-          elif 'value' in post:
-            content=post['value']
-           
-          # Rudimentary NON-html detection
-          if not '<' in content:
-            content=escape(content).replace('\n\n','<p>')
-           
-          # Author if available, else None
-          author=''
-          # First, we may have author_detail, which is the nicer one
-          if 'author_detail' in post:
-            ad=post['author_detail']
-            author=detailToAuthor(ad)
-          # Or maybe just an author
-          elif 'author' in post:
-            author=post['author']
+        # Author if available, else None
+        author=''
+        # First, we may have author_detail, which is the nicer one
+        if 'author_detail' in post:
+          ad=post['author_detail']
+          author=detailToAuthor(ad)
+        # Or maybe just an author
+        elif 'author' in post:
+          author=post['author']
+          
+        # But we may have a list of contributors
+        if 'contributors' in post:
+          # Which may have the same detail as the author's
+          author+=' - '.join([ detailToAuthor(contrib) for contrib in post[contributors]])
+        if not author:
+          #FIXME: how about using the feed's author, or something like that
+          author=None
+          
+        # The link should be simple ;-)
+        if 'link' in post:
+          link=post['link']
+        else:
+            link=None
             
-          # But we may have a list of contributors
-          if 'contributors' in post:
-            # Which may have the same detail as the author's
-            author+=' - '.join([ detailToAuthor(contrib) for contrib in post[contributors]])
-          if not author:
-            #FIXME: how about using the feed's author, or something like that
-            author=None
-            
-          # The link should be simple ;-)
-          if 'link' in post:
-            link=post['link']
-          else:
-              link=None
-              
-          # Titles may be in plain title, but a title_detail is preferred
-          if 'title_detail' in post:
-            title=detailToTitle(post['title_detail'])
-          else:
-            title=post['title']
-  
-            
+        # Titles may be in plain title, but a title_detail is preferred
+        if 'title_detail' in post:
+          title=detailToTitle(post['title_detail'])
+        else:
+          title=post['title']
+
+        with elixir.session.begin():
           # FIXME: if I use date to check here, I get duplicates on posts where I use
           # artificial date because it's not in the feed's entry.
           # If I don't I don't re-get updated posts.
@@ -585,25 +587,29 @@ class Feed(elixir.Entity):
             if p.content<>content:
               p.content=content
               # FIXME: un updated flag? Mark unread again?
+              # FIXME: tags are not updated. Is that wrong?
           else:
             p=Post(feed=self, date=date, title=title, 
                    post_id=post[idkey], content=content, 
                    author=author, link=link)
             if self.markRead:
               p.unread=False
+            # Tag support
+            if 'tags' in post:
+                for t in post['tags']:
+                  print p, t
+                  print '--------'
+                  tag=Tag.get_by_or_init(name=t['term'])
+                  tag.posts.append(p)
+                  tag.save()
+                  print tag.name
             p.save()
             posts.append(p)
 
-          # Tag support
-          if 'tags' in post:
-            for t in post['tags']:
-              print p, t['keyword']
-              tag=Tag.get_by_or_init(name=t['keyword'])
-              tag.posts.append(p)
-              tag.save()
 
-        except KeyError:
-          debug( post )
+      except KeyError:
+        debug( post )
+    with elixir.session.begin():
       self.updateFeedData(d)
       if 'modified' in d:
         self.lastModified=datetime.datetime(*d['modified'][:6])
