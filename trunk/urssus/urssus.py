@@ -360,6 +360,7 @@ class MainWindow(QtGui.QMainWindow):
     # Internal indexes
     self.combinedView=False
     self.showingFolder=False
+    self.pendingFeedUpdates={}
     
     # Set up the UI from designer
     self.ui=Ui_MainWindow()
@@ -415,9 +416,6 @@ class MainWindow(QtGui.QMainWindow):
     QtCore.QObject.connect(header, QtCore.SIGNAL("customContextMenuRequested(const QPoint)"), self.postHeaderContextMenu)
     QtCore.QObject.connect(header, QtCore.SIGNAL("sectionMoved ( int, int, int)"), 
                                    self.savePostColumnPosition)
-    # Fill with feed data
-    self.showOnlyUnread=False
-    QtCore.QTimer.singleShot(0, self.initTree)
 
     # Timer to trigger status bar updates
     self.statusTimer=QtCore.QTimer()
@@ -447,12 +445,16 @@ class MainWindow(QtGui.QMainWindow):
     for action in self.ui.menuBar.actions():
       self.addAction(action)
 
+
+    # Fill with feed data
+    self.showOnlyUnread=False
+    self.initTree()
+
     # Timer to mark feeds as busy/updated/whatever
     self.feedStatusTimer=QtCore.QTimer()
     self.feedStatusTimer.setSingleShot(True)
     QtCore.QObject.connect(self.feedStatusTimer, QtCore.SIGNAL("timeout()"), self.updateFeedStatus)
     self.feedStatusTimer.start(1000)
-    self.updatesCounter=0
     # Start the background feedupdater
     feedUpdateQueue.put([1])
 
@@ -1098,9 +1100,11 @@ class MainWindow(QtGui.QMainWindow):
     AboutDialog(self).exec_()
     
   def updateFeedStatus(self):
-    updated={}
     try:
       while not feedStatusQueue.empty():
+        # The idea: this function should never fail.
+        # But, if we do, we keep our last attempted update in 
+        # memory, and we'll restart it the next try.
         data=feedStatusQueue.get()
         [action, id] = data[:2]
         info("updateFeedStatus: %d %d", action, id)
@@ -1120,9 +1124,10 @@ class MainWindow(QtGui.QMainWindow):
             error( "id %s not in the tree", id)
         # We collapse all updates for a feed, and keep the last one
         else:
-          updated[id]=data
+          self.pendingFeedUpdates[id]=data
         
-      for id in updated:
+      for id in self.pendingFeedUpdates:
+        if not self.pendingFeedUpdates[id]: continue
         feed=Feed.get_by(id=id)
         if action==0: # Mark as updating
           self.updateFeedItem(feed)
@@ -1134,9 +1139,13 @@ class MainWindow(QtGui.QMainWindow):
           if feed.notify and len(data)>2: # Systray notification
             self.notifiedFeed=feed
             self.tray.showMessage("New Articles", "%d new articles in %s"%(data[2], feed.text) )
+        # We got this far, that means it's not pending anymore!
+        self.pendingFeedUpdates[id]=None
+      # We got this far, that means nothing is pending anymore!
+      self.pendingFeedUpdates={}
     except:
-      # FIXME: handle errors
-      pass  
+      # FIXME: handle errors better
+      traceback.print_exc(10)
     self.feedStatusTimer.start(1000)
 
   def updateStatusBar(self):
@@ -1663,16 +1672,7 @@ class MainWindow(QtGui.QMainWindow):
     if i==None: return
     global processes, statusQueue, feedStatusQueue
     statusQueue.put("Aborting all fetches")
-    # stop all processes and restart the background timed fetcher
-    for proc in processes:
-      proc.terminate()
-    processes=[]
-    
-    # Mark all feeds as not updating
-    for feed in Feed.query():
-      feedStatusQueue.put([1, feed.id])
-    self.updateFeedStatus()
-    self.updatesCounter=0
+    #FIXME: reimplement
       
   def on_actionNext_Unread_Article_triggered(self, i=None):
     if i==None: return
