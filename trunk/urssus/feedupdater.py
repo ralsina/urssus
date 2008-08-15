@@ -43,7 +43,7 @@ def feedUpdater():
       # Feeds with custom check periods
       now_stamp=time.mktime(now.timetuple())
       for feed in dbtables.Feed.query.filter(sql.and_(dbtables.Feed.updateInterval<>-1, 
-                            sql.func.strftime('%s', dbtables.Feed.lastUpdated)+\
+                            sql.func.strftime('%s', dbtables.Feed.lastUpdated, 'utc')+\
                                                     dbtables.Feed.updateInterval*60<now_stamp)).\
                             filter(dbtables.Feed.xmlUrl<>None):
         print feed
