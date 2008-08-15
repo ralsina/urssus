@@ -480,12 +480,7 @@ class Feed(elixir.Entity):
         self.icon=urllib.urlopen(iconUrl).read().encode('base64')
       except:
         pass #I am not going to care about errors here :-D
-    
-    # Tag support
-    if 'tags' in d:
-      print d['tags']
-    
-    
+        
   def update(self, forced=False):
     try:
       self.real_update(forced)
@@ -617,13 +612,8 @@ class Feed(elixir.Entity):
             # Tag support
             if 'tags' in post:
                 for t in post['tags']:
-                  print p, t
-                  print '--------'
                   tag=Tag.get_by_or_init(name=t['term'])
                   tag.posts.append(p)
-                  tag.save()
-                  print tag.name
-            p.save()
             posts.append(p)
           elixir.session.commit()
         except:

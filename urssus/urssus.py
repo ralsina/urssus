@@ -1182,6 +1182,7 @@ class MainWindow(QtGui.QMainWindow):
     except:
       # FIXME: handle errors better
       traceback.print_exc(10)
+      print "---------------------[FIX error handling in updateFeedStatus already!]"
     self.feedStatusTimer.start(1000)
 
   def updateStatusBar(self):
