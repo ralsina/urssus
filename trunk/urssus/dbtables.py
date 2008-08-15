@@ -686,18 +686,10 @@ unread_feed=None
 
 def initDB():
   global root_feed, starred_feed, unread_feed
-  REQUIRED_SCHEMA=12
   # FIXME: show what we are doing on the UI
   os.system('urssus_upgrade_db')
-
-  import sqlite3
-  def connect():
-    conn = sqlite3.connect(database.dbfile)
-    conn.isolation_level = "IMMEDIATE"
-    return conn
-  engine = sql.create_engine(database.dbUrl, creator=connect) 
-    
-  elixir.metadata.bind = engine
+  elixir.session = sql.orm.scoped_session(sql.orm.create_session)
+  elixir.metadata.bind = database.dbUrl
   elixir.setup_all()
   with elixir.session.begin():
     # Make sure we have a root feed
