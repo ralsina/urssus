@@ -19,6 +19,7 @@
 import os, sys, socket
 from processing import connection
 from globals import *
+from util.backup import backup_files
 
 if sys.platform=='win32':
   sockaddr=r'\\.\pipe\uRSSus'
@@ -63,6 +64,10 @@ def theServer(server):
 
 def main():
   global root_feed
+  
+  # Backup the DB and config file
+  print "Backing up ", config.cfdir
+  backup_files(config.cfdir)
 
   if sys.platform <> 'win32':
     # Try to be the server

@@ -6,7 +6,7 @@
 # Credit: Anand Pillai, Tiago Henriques, Mario Ruggier
 import sys,os, shutil, filecmp
 
-MAXVERSIONS=100
+MAXVERSIONS=10
 BAKFOLDER = '.bak'
 
 def backup_files(tree_top, bakdir_name=BAKFOLDER):
@@ -60,6 +60,8 @@ def backup_files(tree_top, bakdir_name=BAKFOLDER):
         for f in files:
             filepath = os.path.join(dir, f)
             destpath = os.path.join(backup_dir, f)
+            if not os.path.isfile(filepath): #Ignore sockets, folders, etc.
+              continue
             # Check existence of previous versions
             for index in xrange(MAXVERSIONS):
                 backup = '%s.%2.2d' % (destpath, index)
@@ -84,17 +86,3 @@ def backup_files(tree_top, bakdir_name=BAKFOLDER):
                         shutil.copy(filepath, backup)
                 except (OSError, IOError), e:
                     pass
-
-if __name__=="__main__":
-    if len(sys.argv)<2:
-        sys.exit("Usage: %s [directory] [backup directory]" % sys.argv[0])
-        
-    tree_top = os.path.abspath(os.path.expanduser(os.path.expandvars(sys.argv[1])))
-    
-    if len(sys.argv)>=3:
-        bakfolder = os.path.abspath(os.path.expanduser(os.path.expandvars(sys.argv[2])))
-    else:
-        bakfolder = BAKFOLDER
-        
-    if os.path.isdir(tree_top):
-        backup_files(tree_top, bakfolder)
