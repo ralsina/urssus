@@ -91,3 +91,15 @@ def renderTemplate(tname, **context):
 import processing
 processes=[]
 
+
+import sqlalchemy
+
+def RetryOnDBError(fn):
+  def new(*args):
+    while True:
+      try:
+        return fn(*args)
+        break
+      except sqlalchemy.exc.OperationalError:
+        pass # Retry
+  return new
