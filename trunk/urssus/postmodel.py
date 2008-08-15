@@ -138,9 +138,12 @@ class PostModel(QtGui.QStandardItemModel):
     for d in self.post_data:
       if d[5]:
         if d[5]:
-          with elixir.session.begin():
+          try:
             post=Post.get_by(id=d[0])        
             post.unread=False
+            elixir.session.commit()
+          except:
+            elixir.session.rollback()
           post.feed.curUnread=-1
           self.updateItem(post)
 
