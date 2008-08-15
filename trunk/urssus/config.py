@@ -113,6 +113,7 @@ options = (
       ('defaultExpiration'   ,  ('int',    7, "How long should articles be kept by default. (In days). You need to restart uRSSus to have an effect.", 0, 9999)), 
       ('fetchOnStartup'      ,  ('bool', False, "Fetch all feeds on startup.")), 
       ('showDebugDialog'     ,  ('bool', False, "Show dialog on uncatched exceptions. Only a good idea if you want to help debug uRSSus ;-). You need to restart uRSSus to have an effect.")), 
+      ('followLinksInUrssus' ,  ('bool', False, "If True, links in articles will open in uRSSus window, instead of in your web browser. You can still open in the browser by using right click and 'Open in New Window'")), 
     )
   ), 
 )

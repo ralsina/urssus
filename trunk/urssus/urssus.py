@@ -398,12 +398,14 @@ class MainWindow(QtGui.QMainWindow):
 
     # Set some properties of the Web view
     page=self.ui.view.page()
-    page.setLinkDelegationPolicy(page.DelegateAllLinks)
+    if not config.getValue('options', 'followLinksInUrssus', False):
+      page.setLinkDelegationPolicy(page.DelegateAllLinks)
     self.ui.view.setFocus(QtCore.Qt.TabFocusReason)
     QtWebKit.QWebSettings.globalSettings().setUserStyleSheetUrl(QtCore.QUrl(cssFile))
     QtWebKit.QWebSettings.globalSettings().setAttribute(QtWebKit.QWebSettings.PluginsEnabled, True)    
     QtWebKit.QWebSettings.globalSettings().setWebGraphic(QtWebKit.QWebSettings.MissingImageGraphic, QtGui.QPixmap(':/file_broken.svg').scaledToHeight(24))
     copy_action=self.ui.view.page().action(QtWebKit.QWebPage.Copy)
+    self.ui.view.page().action(QtWebKit.QWebPage.OpenLinkInNewWindow).setVisible(False)
     copy_action.setIcon(QtGui.QIcon(':/editcopy.svg'))
     self.ui.menu_Edit.insertAction(self.ui.actionFind, copy_action )
     self.ui.menu_Edit.insertSeparator(self.ui.actionFind)
@@ -1644,6 +1646,7 @@ class MainWindow(QtGui.QMainWindow):
     # FIXME: bandaid!
     elixir.session.flush()
 
+  @RetryOnDBError
   def on_actionMark_Feed_as_Read_triggered(self, i=None):
     if i==None: return
 
@@ -1660,6 +1663,7 @@ class MainWindow(QtGui.QMainWindow):
         feed.markAsRead()
         self.open_feed(idx) # To update all the actions/items
 
+  @RetryOnDBError
   def on_actionDelete_Feed_triggered(self, i=None):
     if i==None: return
     index=self.ui.feeds.currentIndex()
@@ -1722,7 +1726,8 @@ class MainWindow(QtGui.QMainWindow):
     global processes, statusQueue, feedStatusQueue
     statusQueue.put("Aborting all fetches")
     #FIXME: reimplement
-      
+     
+  @RetryOnDBError
   def on_actionNext_Unread_Article_triggered(self, i=None):
     if i==None: return
     info( "Next Unread Article")
@@ -1738,6 +1743,7 @@ class MainWindow(QtGui.QMainWindow):
     else: # Go to next feed
       self.on_actionNext_Unread_Feed_triggered(True)
       
+  @RetryOnDBError
   def on_actionNext_Article_triggered(self, i=None, do_open=True):
     if i==None: return
     info ("Next Article")
@@ -1754,6 +1760,7 @@ class MainWindow(QtGui.QMainWindow):
     else: # Go to next feed
       self.on_actionNext_Feed_triggered(True)
 
+  @RetryOnDBError
   def on_actionPrevious_Unread_Article_triggered(self, i=None):
     if i==None: return
     info("Previous Unread Article")
@@ -1770,6 +1777,7 @@ class MainWindow(QtGui.QMainWindow):
     else: # Go to next feed
       self.on_actionPrevious_Unread_Feed_triggered(True)
 
+  @RetryOnDBError
   def on_actionPrevious_Article_triggered(self, i=None, do_open=True):
     if i==None: return
     info ("Next Article")
@@ -1785,6 +1793,7 @@ class MainWindow(QtGui.QMainWindow):
     else: # Go to next feed
       self.on_actionPrevious_Feed_triggered(True)
 
+  @RetryOnDBError
   def on_actionNext_Feed_triggered(self, i=None):
     if i==None: return
     info("Next Feed")
@@ -1793,6 +1802,7 @@ class MainWindow(QtGui.QMainWindow):
     if nextFeed:
       self.open_feed(self.ui.feeds.model().indexFromFeed(nextFeed))
 
+  @RetryOnDBError
   def on_actionPrevious_Feed_triggered(self, i=None):
     if i==None: return
     info("Previous Feed")
@@ -1805,6 +1815,7 @@ class MainWindow(QtGui.QMainWindow):
       # No current feed, so what's the meaning of "previous feed"?
       pass
       
+  @RetryOnDBError
   def on_actionNext_Unread_Feed_triggered(self, i=None):
     if i==None: return
     info("Next unread feed")
@@ -1813,6 +1824,7 @@ class MainWindow(QtGui.QMainWindow):
     if nextFeed:
       self.open_feed(self.ui.feeds.model().indexFromFeed(nextFeed))
 
+  @RetryOnDBError
   def on_actionPrevious_Unread_Feed_triggered(self, i=None):
     if i==None: return
     info("Previous unread feed")

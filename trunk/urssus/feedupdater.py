@@ -36,6 +36,13 @@ def feedUpdater():
   f=feedUpdateQueue.get(block=True)
   while True:
     info("updater loop")
+    # See if we have any feed update requests
+    try:
+      f=feedUpdateQueue.get(block=True, timeout=10)
+      f.update()
+    except: # Empty queue
+      pass
+
     now=datetime.datetime.now()
     period=config.getValue('options', 'defaultRefresh', 1800)
     cutoff=now-datetime.timedelta(0, 0, period+random.randint(-60, 60))
@@ -57,11 +64,6 @@ def feedUpdater():
                                                       order_by(dbtables.Feed.lastUpdated).limit(5):
         feed.update()
       lastCheck=now
-    try:
-      f=feedUpdateQueue.get(block=True, timeout=2)
-      f.update()
-    except: # Empty queue
-      pass
 
 def main():
   initDB()
