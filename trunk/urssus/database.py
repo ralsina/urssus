@@ -17,7 +17,6 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 import os, sys
-import migrate.versioning.api as migrate
 import config, sqlalchemy
 from globals import *
 from sqlite3 import dbapi2 as sqlite

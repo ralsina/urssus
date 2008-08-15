@@ -43,7 +43,7 @@ options(
                                             ], 
                         }, 
         install_requires = ['SQLAlchemy==0.4.6', 
-                            'Elixir==0.6.0', 
+                            'Elixir>=0.5.2', 
                             'processing', 
                             'miruku', 
                             'simplejson'],
