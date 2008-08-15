@@ -101,5 +101,6 @@ def RetryOnDBError(fn):
         return fn(*args)
         break
       except sqlalchemy.exc.OperationalError:
+        debug("retrying")
         pass # Retry
   return new
