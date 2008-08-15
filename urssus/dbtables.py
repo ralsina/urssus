@@ -20,7 +20,6 @@
 from __future__ import with_statement
 import sqlalchemy as sql
 import elixir
-import migrate as migrate
 import database
 import os, sys, time
 from globals import *
@@ -689,16 +688,7 @@ def initDB():
   global root_feed, starred_feed, unread_feed
   REQUIRED_SCHEMA=12
   # FIXME: show what we are doing on the UI
-  if not os.path.exists(database.dbfile): # Just create it
-    os.system('urssus_upgrade_db')
-  else: # May need to upgrade
-    try:
-      curVer=migrate.versioning.api.db_version(database.dbUrl, database.repo)
-    except:
-      curVer=0
-    if curVer < REQUIRED_SCHEMA:
-      info ("UPGRADING from %s to %s", curVer, REQUIRED_SCHEMA)
-      os.system('urssus_upgrade_db')
+  os.system('urssus_upgrade_db')
 
   import sqlite3
   def connect():
