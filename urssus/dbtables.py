@@ -195,8 +195,11 @@ class Feed(elixir.Entity):
 
   def markAsRead(self):
     if self.xmlUrl: # regular feed
-      with elixir.session.begin():
+      try:
         Post.table.update().where(Post.unread==True).where(Post.feed==self).values(unread=False).execute()
+        elixir.session.commit()
+      except:
+        elixir.session.rollback()
     else: # A folder
       for feed in self.allFeeds():
         feed.markAsRead()
@@ -213,42 +216,57 @@ class Feed(elixir.Entity):
     if self.archiveType==0: # Default archive config
       days=config.getValue('options', 'defaultExpiration', 7)
       cutoff=now-datetime.timedelta(7, 0, 0)
-      with elixir.session.begin():
+      try:
         Post.table.update().where(sql.and_(Post.important==False,  
                                          Post.feed==self, 
                                          Post.date<cutoff)).\
                             values(deleted=True).execute()
+        elixir.session.commit()
+      except:
+        elixir.session.rollback()
     elif self.archiveType==1: #keepall
       # Tested ;-)
       return
     elif self.archiveType==2: #limitCount
       # FIXME: implement quicker!
       # Doesn't seem to work
-      with elixir.session.begin():
+      try:
         for post in self.posts[self.limitCount:]:
           if post.important: continue # Don't delete important stuff
           post.deleted=True
+        elixir.session.commit()
+      except:
+        elixir.session.rollback()
+        
     elif self.archiveType==3: #limitDays
       # Tested
       cutoff=now-datetime.timedelta(self.limitDays, 0, 0)
-      with elixir.session.begin():
+      try:
         Post.table.update().where(sql.and_(Post.important==False, 
                                           Post.date<cutoff)).\
                             values(deleted=True).execute()
+        elixir.session.commit()
+      except:
+        elixir.session.rollback()
     elif self.archiveType==4: #no archiving
-      # Tested
-      with elixir.session.begin():
+      try:
         Post.table.update().where(sql.and_(Post.important==False, 
                                           Post.feed==self)).\
                             values(deleted=True).execute()
+        elixir.session.commit()
+      except:
+        elixir.session.rollback()
         
     if expunge:
       # Delete all posts with deleted==True, which are not fresh 
       # (are not in the last RSS/Atom we got)
-      with elixir.session.begin():
+      try:
         Post.table.delete().where(sql.and_(Post.deleted==True,
                                            Post.fresh==False,
                                            Post.feed==self)).execute()
+        elixir.session.commit()
+      except:
+        elixir.session.rollback()
       
     # Force recount
     self.curUnread=-1
@@ -492,8 +510,11 @@ class Feed(elixir.Entity):
     if self.title:
       statusQueue.put(u"Updating: "+ self.title)
     d=fp.parse(self.xmlUrl, etag=self.etag, modified=mod.timetuple())
-    with elixir.session.begin():
+    try:
       self.lastUpdated=datetime.datetime.now()
+      elixir.session.commit()
+    except:
+      elixir.session.rollback()
     
     if d.status==304: # No need to fetch
       return
@@ -572,7 +593,7 @@ class Feed(elixir.Entity):
         else:
           title=post['title']
 
-        with elixir.session.begin():
+        try:
           # FIXME: if I use date to check here, I get duplicates on posts where I use
           # artificial date because it's not in the feed's entry.
           # If I don't I don't re-get updated posts.
@@ -604,18 +625,22 @@ class Feed(elixir.Entity):
                   print tag.name
             p.save()
             posts.append(p)
-
-
+          elixir.session.commit()
+        except:
+          elixir.session.rollback()
       except KeyError:
         debug( post )
-    with elixir.session.begin():
+    try:
       self.updateFeedData(d)
       if 'modified' in d:
         self.lastModified=datetime.datetime(*d['modified'][:6])
       if 'etag' in d:
         self.etag=d['etag']
+      elixir.session.commit()
+    except:
+      elixir.session.rollback()
   
-    with elixir.session.begin():
+    try:
       # Silly way to release the posts objects
       # we don't need anymore
       post_ids=[post.id for post in posts]
@@ -627,7 +652,10 @@ class Feed(elixir.Entity):
         Post.table.update().where(sql.except_(Post.table.select(Post.feed==self), 
                                               Post.table.select(Post.id.in_(post_ids)))).\
                                               values(fresh=False).execute()
-    
+      elixir.session.commit()
+    except:
+      elixir.session.rollback()
+
   def getQuery(self):
     if self.xmlUrl:
       return Post.query.filter(Post.feed==self)
@@ -688,21 +716,17 @@ def initDB():
   global root_feed, starred_feed, unread_feed
   # FIXME: show what we are doing on the UI
   os.system('urssus_upgrade_db')
-  
-  import sqlite3
-  def connect():
-    conn = sqlite3.connect(database.dbfile)
-    conn.isolation_level = "IMMEDIATE"
-    return conn
-  engine = sql.create_engine(database.dbUrl, creator=connect)
-  elixir.metadata.bind = engine
+  elixir.metadata.bind = database.dbUrl
   elixir.setup_all()
-  with elixir.session.begin():
+  try:
     # Make sure we have a root feed
     root_feed=Feed.get_by_or_init(parent=None)
     root_feed.text='All Feeds'
-    
-  with elixir.session.begin():
+    elixir.session.commit()
+  except:
+    elixir.session.rollback()
+
+  try:
     # Add standard meta feeds
     starred_feed=MetaFeed.get_by(parent=None, condition='Post.important==True') 
     if not starred_feed:
@@ -714,3 +738,6 @@ def initDB():
       unread_feed=MetaFeed(parent=None, 
                              condition='Post.unread==True',
                              text='Unread Articles')
+    elixir.session.commit()
+  except:
+    elixir.session.rollback()

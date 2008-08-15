@@ -44,9 +44,12 @@ class FeedModel(QtGui.QStandardItemModel):
       # Find the feed for this index
       item=self.itemFromIndex(index)
       if item:
-        with elixir.session.begin():
+        try:
           feed=Feed.get_by(id=item.data(QtCore.Qt.UserRole).toInt()[0])
           feed.text=unicode(value.toString())
+          elixir.session.commit()
+        except:
+          elixir.session.rollback()
     return QtGui.QStandardItemModel.setData(self, index, value, role)
     
 
@@ -133,7 +136,7 @@ class FeedModel(QtGui.QStandardItemModel):
     print list(data.formats())
     idlist=[int(id) for id in str(data.text()).split(',')]
     print "IDLIST:", idlist
-    with elixir.session.begin():
+    try:
       for id in idlist:
         # Do feed housekeeping
         feed=Feed.get_by(id=id)
@@ -152,6 +155,10 @@ class FeedModel(QtGui.QStandardItemModel):
           else:
             feed.position=0
         feed.parent=parentFeed
+      elixir.session.commit()
+    except:
+      elixir.session.rollback()
+
     self.emit(QtCore.SIGNAL("dropped(PyQt_PyObject)"), feed)
     return QtGui.QStandardItemModel.dropMimeData(self, data, action, row, column, parent)
 
