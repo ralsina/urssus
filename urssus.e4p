@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE Project SYSTEM "Project-4.4.dtd">
 <!-- eric4 project file for project urssus -->
-<!-- Saved: 2008-08-14, 22:51:23 -->
+<!-- Saved: 2008-08-15, 13:15:30 -->
 <!-- Copyright (C) 2008 Roberto Alsina, ralsina@netmanagers.com.ar -->
 <Project version="4.4">
   <ProgLanguage mixed="0">Python</ProgLanguage>
@@ -21,27 +21,16 @@
     <Source>setup_win.py</Source>
     <Source>urssus/templates/style.css</Source>
     <Source>urssus/database.py</Source>
-    <Source>urssus/versioning/__init__.py</Source>
-    <Source>urssus/versioning/manage.py</Source>
-    <Source>urssus/versioning/versions/__init__.py</Source>
-    <Source>urssus/versioning/versions/001_Add_initial_tables.py</Source>
     <Source>urssus/templates/fancy.tmpl</Source>
     <Source>urssus/templates/mootools-core.js</Source>
     <Source>urssus/templates/mootools-more.js</Source>
-    <Source>urssus/versioning/versions/002_Inheritance_for_feed_class.py</Source>
-    <Source>urssus/versioning/versions/003_Add_position_column_to_feeds_table.py</Source>
     <Source>urssus/dbtables.py</Source>
     <Source>urssus/globals.py</Source>
     <Source>urssus/postmodel.py</Source>
     <Source>urssus/feedmodel.py</Source>
     <Source>urssus/main.py</Source>
     <Source>urssus/feedupdater.py</Source>
-    <Source>urssus/versioning/versions/006_Add_subtitle_column_to_feeds_table.py</Source>
-    <Source>urssus/versioning/versions/004_Add_is_open_column_to_feeds_table.py</Source>
-    <Source>urssus/versioning/versions/005_Add_column_fresh_to_posts_table.py</Source>
     <Source>urssus/client.py</Source>
-    <Source>urssus/versioning/versions/008_Add_columns_for_etag_and_last-modified_to_feeds.py</Source>
-    <Source>urssus/versioning/versions/009_Set_defaults_in_last-modified_column_if_needed.py</Source>
     <Source>urssus/processdialog.py</Source>
     <Source>urssus/util/easylog.py</Source>
     <Source>urssus/util/tiny.py</Source>
@@ -74,12 +63,7 @@
     <Source>urssus/ui/Ui_runprocess.py</Source>
     <Source>urssus/ui/Ui_newfeed.py</Source>
     <Source>urssus/util/pydelicious.py</Source>
-    <Source>urssus/versioning/versions/011_MetaFeed_class.py</Source>
-    <Source>urssus/versioning/versions/012_Create_MetaFolder_class.py</Source>
     <Source>urssus/schema.py</Source>
-    <Source>urssus/versioning/versions/010_Add_tags_table_and_tag_fields_for_feeds_and_posts.py</Source>
-    <Source>urssus/versioning/versions/007_dummy_version_because_I_removed_one_from_the_repo.py</Source>
-    <Source>urssus/versioning/versions/013_dummy_version_because_I_removed_one_from_the_repo.py</Source>
     <Source>urssus/util/BeautifulSoup.py</Source>
     <Source>urssus/util/backup.py</Source>
   </Sources>
@@ -127,7 +111,6 @@
     <Other>urssus/images/viewmag+.svg</Other>
     <Other>urssus/images/viewmag-.svg</Other>
     <Other>MANIFEST.in</Other>
-    <Other>urssus/versioning/migrate.cfg</Other>
     <Other>README</Other>
   </Others>
   <MainScript>urssus/main.py</MainScript>
