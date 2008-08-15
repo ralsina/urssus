@@ -19,7 +19,7 @@
 # DB Classes
 from __future__ import with_statement
 import sqlalchemy as sql
-import elixir as elixir
+import elixir
 import migrate as migrate
 import database
 import os, sys, time
@@ -640,14 +640,13 @@ class Feed(elixir.Entity):
     try:
       sicon=str(self.icon)
       if sicon<>'None':
-	if sicon.startswith(':/'): # A resource name
-	  icon=QtGui.QIcon(sicon)
-	else:
-	  
-	  iconData=sicon.decode('base64') # An encoded binary
-	  pmap=QtGui.QPixmap()
-	  pmap.loadFromData(iconData)
-	  icon=QtGui.QIcon(pmap)
+        if sicon.startswith(':/'): # A resource name
+          icon=QtGui.QIcon(sicon)
+        else:    
+          iconData=sicon.decode('base64') # An encoded binary
+          pmap=QtGui.QPixmap()
+          pmap.loadFromData(iconData)
+          icon=QtGui.QIcon(pmap)
     except:
       pass # Te icon is not critical!
     return icon

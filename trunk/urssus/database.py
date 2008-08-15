@@ -20,28 +20,41 @@ import os, sys
 import migrate.versioning.api as migrate
 import config, sqlalchemy
 from globals import *
+from sqlite3 import dbapi2 as sqlite
 
 dbfile=os.path.join(config.cfdir, 'urssus.sqlite')
 dbUrl="sqlite:///%s"%dbfile
-repo=os.path.join(os.path.abspath(os.path.dirname(__file__)), 'versioning')
 
 def initDB():
   '''Creates the DB if it doesn't exists, 
-     Puts the DB under migrate versioning control if needed,
+     Puts the DB under miruku versioning control if needed,
      upgrades to latest schema if needed'''
   # See if the DB exists, or create
   info ("Initializing DB")
-  if not os.path.exists(dbfile):
-    info ("Starting on schema version 0")
-    migrate.version_control (dbUrl, repo, version=0 )
-  try:
-    curVer=migrate.db_version(dbUrl, repo)
-    info ("Currently on schema version %d", curVer)
-  except sqlalchemy.exceptions.NoSuchTableError:
-    info ("Starting on schema version 1")
-    # Start at version 1 because this was created by a pre-migrate urssus
-    migrate.version_control (dbUrl, repo, version=1 )
-  migrate.upgrade(dbUrl, repo)
+  if os.path.exists(dbfile):
+    con = sqlite.connect(dbfile)
+    # If the migrate_version table exists, kill it
+    try:
+      con.execute('drop table migrate_version')
+      con.commit()
+    except:
+      pass
+    # Check if the miruku table exists
+    try:
+      con.execute('select 1 from miruku_track')
+      con.commit()
+      # If we got this far, it is managed by miruku, 
+      # so upgrade and be done with it
+      cmd='miruku upgrade %s urssus.schema.metadata urssus'%dbUrl
+      print "Running:", cmd
+      os.system(cmd)
+      return
+    except:
+      pass
+  # Either it doesn't exist, or it's not managed by miruku.
+  cmd='miruku create %s urssus.schema.metadata urssus'%dbUrl
+  print "Running:", cmd
+  os.system(cmd)
  
 def main():
   initDB()

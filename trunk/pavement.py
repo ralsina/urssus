@@ -45,7 +45,7 @@ options(
         install_requires = ['SQLAlchemy==0.4.6', 
                             'Elixir==0.5.2', 
                             'processing', 
-                            'sqlalchemy-migrate', 
+                            'miruku', 
                             'simplejson'],
         extras_require = {'Twitter':  ["twitter"] }, 
         description = 'A multiplatform GUI news agregator.', 
