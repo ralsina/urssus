@@ -125,16 +125,6 @@ class Post(elixir.Entity):
       return '<a href="%s">%s</a>'%(self.link, unicode(self))
     return self.title
 
-# Added in schema version 10
-class Tag(elixir.Entity):
-  elixir.using_options (tablename='tags')
-  name        = elixir.Field(elixir.Text,unique=True)
-  feeds       = elixir.ManyToMany('Feed', inverse='tags')
-  posts       = elixir.ManyToMany('Post', inverse='tags')
-
-  def __repr__ (self):
-    return '%s (%d posts)'%(self.name, len(self.posts))
-
 class Feed(elixir.Entity):
   elixir.using_options (tablename='feeds', inheritance='multi')
   htmlUrl        = elixir.Field(elixir.Text)
@@ -612,8 +602,8 @@ class Feed(elixir.Entity):
             # Tag support
             if 'tags' in post:
                 for t in post['tags']:
-                  tag=Tag.get_by_or_init(name=t['term'])
-                  tag.posts.append(p)
+                  tag=Tag.get_by_or_init(name=t['term'], parent=tags_feed)
+                  tag.taggedposts.append(p)
             posts.append(p)
           elixir.session.commit()
         except:
@@ -691,19 +681,33 @@ class MetaFolder(Feed):
   condition   = elixir.Field(elixir.Text)
   
   def getChildren(self):
-    return Feed.query.filter(evak(self.condition))
+    return eval(self.condition)
 
   def removeChild(self, feed):
     '''Makes no sense in this context'''
     return
 
+# Added in schema version 10
+class Tag(MetaFeed):
+  elixir.using_options (tablename='tags')
+  name        = elixir.Field(elixir.Text,unique=True)
+  taggedfeeds = elixir.ManyToMany('Feed', inverse='tags')
+  taggedposts = elixir.ManyToMany('Post', inverse='tags')
 
+  def __repr__ (self):
+    return '%s (%d posts)'%(self.name, len(self.taggedposts))  
+
+  def allPostsQuery(self):
+    #FIXME: there must be a nicer way
+    return Post.query.filter(Post.id.in_([p.id for p in self.taggedposts ]))
+    
 root_feed=None
 starred_feed=None
 unread_feed=None
+tags_feed=None
 
 def initDB():
-  global root_feed, starred_feed, unread_feed
+  global root_feed, starred_feed, unread_feed, tags_feed
   # FIXME: show what we are doing on the UI
   os.system('urssus_upgrade_db')
   elixir.metadata.bind = database.dbUrl
@@ -728,6 +732,11 @@ def initDB():
       unread_feed=MetaFeed(parent=None, 
                              condition='Post.unread==True',
                              text='Unread Articles')
+                             
+    tags_feed=MetaFolder.get_by_or_init(parent=None, 
+                                        text='Tags', 
+                                        condition='Tag.query.all()', 
+                                        icon=':/tag.svg')
     elixir.session.commit()
   except:
     elixir.session.rollback()
