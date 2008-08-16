@@ -37,13 +37,6 @@ class Post(elixir.Entity):
   
   decoTitle    = ''
 
-# Added in schema version 10
-class Tag(elixir.Entity):
-  elixir.using_options (tablename='tags')
-  name        = elixir.Field(elixir.Text,unique=True)
-  feeds       = elixir.ManyToMany('Feed', inverse='tags')
-  posts       = elixir.ManyToMany('Post', inverse='tags')
-
 class Feed(elixir.Entity):
   elixir.using_options (tablename='feeds', inheritance='multi')
   htmlUrl        = elixir.Field(elixir.Text)
@@ -89,6 +82,12 @@ class MetaFeed(Feed):
 class MetaFolder(Feed):
   elixir.using_options (tablename='metafolders', inheritance='multi')
   condition   = elixir.Field(elixir.Text)
+
+class Tag(MetaFeed):
+  elixir.using_options (tablename='tags')
+  name        = elixir.Field(elixir.Text,unique=True)
+  taggedfeeds = elixir.ManyToMany('Feed', inverse='tags')
+  taggedposts = elixir.ManyToMany('Post', inverse='tags')
 
 elixir.setup_all()
 metadata=elixir.metadata
