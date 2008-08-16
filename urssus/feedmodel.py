@@ -100,8 +100,8 @@ class FeedModel(QtGui.QStandardItemModel):
     for mf in MetaFeed.query.filter(MetaFeed.parent==None):
       addSubTree(iroot, mf)
     # Same for all metafolders
-    for mf in MetaFolder.query.filter(MetaFolder.parent==None):
-      addSubTree(iroot, mf)
+    #for mf in MetaFolder.query.filter(MetaFolder.parent==None):
+    #  addSubTree(iroot, mf)
     
       
     # Now the feeds
