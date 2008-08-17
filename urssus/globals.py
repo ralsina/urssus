@@ -92,7 +92,10 @@ import processing
 processes=[]
 
 
-import sqlalchemy
+import sqlalchemy, sqlalchemy.orm
+
+session = sqlalchemy.orm.scoped_session(sqlalchemy.orm.create_session)
+
 
 def RetryOnDBError(fn):
   def new(*args):
