@@ -135,17 +135,17 @@ class PostModel(QtGui.QStandardItemModel):
   def markRead(self):
     '''Marks as read what's shown by the model, as opposite to Feed.markAsRead, which
     marks what's on the feed. UI should call this one, usually'''''
-    for d in self.post_data:
-      if d[5]:
+    try:
+      for d in self.post_data:
         if d[5]:
-          try:
+          if d[5]:
             post=Post.get_by(id=d[0])        
             post.unread=False
-            elixir.session.commit()
-          except:
-            elixir.session.rollback()
-          post.feed.curUnread=-1
-          self.updateItem(post)
+            post.feed.curUnread=-1
+            self.updateItem(post)
+      elixir.session.commit()
+    except:
+      elixir.session.rollback()
 
   def indexFromPost(self, post=None, id=None):
     if not id and not post:
