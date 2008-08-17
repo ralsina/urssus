@@ -18,6 +18,9 @@
 
 from __future__ import with_statement
 
+from globals import *
+__session__=session
+
 #try:
 #  import psyco
 #  psyco.full()
@@ -42,7 +45,6 @@ except ImportError:
 from util.tiny import tiny
 
 
-from globals import *
 from feedupdater import feedUpdater
 
 # UI Classes

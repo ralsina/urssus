@@ -17,6 +17,9 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 from globals import *
+
+__session__=session
+
 import sys, time, datetime, random
 import elixir
 import sqlalchemy as sql
