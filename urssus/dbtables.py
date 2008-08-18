@@ -600,10 +600,10 @@ class Feed(elixir.Entity):
             if self.markRead:
               p.unread=False
             # Tag support
-            if 'tags' in post:
-                for t in post['tags']:
-                  tag=Tag.get_by_or_init(name=t['term'], parent=tags_feed)
-                  tag.taggedposts.append(p)
+#            if 'tags' in post:
+#                for t in post['tags']:
+#                  tag=Tag.get_by_or_init(name=t['term'], parent=tags_feed)
+#                  tag.taggedposts.append(p)
             posts.append(p)
           elixir.session.commit()
         except:
