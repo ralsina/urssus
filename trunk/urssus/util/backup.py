@@ -62,29 +62,25 @@ def backup_files(tree_top, bakdir_name=BAKFOLDER):
             destpath = os.path.join(backup_dir, f)
             if not os.path.isfile(filepath): #Ignore sockets, folders, etc.
               continue
-            if filepath.startswith('urssus.log'): # Don't backup log files
+            if f.startswith('urssus.log'): # Don't backup log files
+              continue
+            if f.endswith('.tmpl.cache'): # These regenerate anyway
               continue
             # Check existence of previous versions
-            for index in xrange(MAXVERSIONS):
+            for index in xrange(1, MAXVERSIONS):
                 backup = '%s.%2.2d' % (destpath, index)
+                oldbackup = '%s.%2.2d' % (destpath, index-1)
                 abspath = os.path.abspath(filepath)
                 
-                if index > 0:
-                    # No need to backup if file and last version
-                    # are identical
-                    old_backup = '%s.%2.2d' % (destpath, index-1)
-                    if not os.path.exists(old_backup): break
-                    abspath = os.path.abspath(old_backup)
-                    
-                    try:
-                        if os.path.isfile(abspath) and filecmp.cmp(abspath, filepath, shallow=False):
-                            continue
-                    except OSError:
-                        pass
-                
                 try:
-                    if not os.path.exists(backup):
+                    if os.path.exists(backup):
+                        shutil.move(backup, oldbackup)
+                    else:
                         print 'Copying %s to %s...' % (filepath, backup)
                         shutil.copy(filepath, backup)
+                        break
                 except (OSError, IOError), e:
-                    pass
+                    print e
+            else:
+              print 'Copying %s to %s...' % (filepath, backup)
+              shutil.copy(filepath, backup)
