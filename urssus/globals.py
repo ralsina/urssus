@@ -59,8 +59,17 @@ if sys.platform=='win32':
   setLogger=dumb 
   DEBUG=dumb
 else:
-  from util.easylog import critical, error, warning, debug, info, setLogger, DEBUG
-  setLogger(name='urssus', level=DEBUG)
+  import util.easylog as easylog
+  easylog.setLogger(name='urssus', 
+                    level=easylog.DEBUG, 
+                    handlers=[easylog.DefaultConsole(), 
+                              easylog.RotatingFileHandler(filename=os.path.join(config.cfdir, 'urssus.log'), mode='a')
+                              ]
+                    )
+  critical=easylog.critical
+  error=easylog.error
+  info=easylog.info
+  warning=easylog.warning
 
 # Templates
 from util import tenjin

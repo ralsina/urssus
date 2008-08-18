@@ -62,6 +62,8 @@ def backup_files(tree_top, bakdir_name=BAKFOLDER):
             destpath = os.path.join(backup_dir, f)
             if not os.path.isfile(filepath): #Ignore sockets, folders, etc.
               continue
+            if filepath.startswith('urssus.log'): # Don't backup log files
+              continue
             # Check existence of previous versions
             for index in xrange(MAXVERSIONS):
                 backup = '%s.%2.2d' % (destpath, index)
