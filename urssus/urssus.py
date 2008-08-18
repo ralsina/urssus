@@ -1871,13 +1871,13 @@ def exportOPML(fname):
       return
     for feed in children:
       co=Outline()
-      co['text']=feed.text or ''
+      co['text']=escape(feed.text or '')
       if feed.xmlUrl:
         co['type']='rss'
-        co['xmlUrl']=escape(feed.xmlUrl) or ''
-        co['htmlUrl']=escape(feed.htmlUrl) or ''
-        co['title']=escape(feed.title) or ''
-        co['description']=escape(feed.description) or ''
+        co['xmlUrl']=escape(feed.xmlUrl or '')
+        co['htmlUrl']=escape(feed.htmlUrl or '')
+        co['title']=escape(feed.title or '')
+        co['description']=escape(feed.description or '')
       parent.add_child(co)
       
   opml=OPML()
@@ -1885,7 +1885,9 @@ def exportOPML(fname):
   for feed in root_feed.getChildren():
     exportSubTree(root, feed)
   opml.outlines=root._children
-  opml.output(codecs.open(fname, 'w', 'utf-8'))
+  # FIXME: error with unicode characters in feed elements :-(
+  opml.output(open(fname, 'w'))
+  
     
 def importOPML(fname, parent=None):
   global root_feed
