@@ -1972,7 +1972,7 @@ class UrssusServer(dbus.service.Object):
   @dbus.service.method("org.urssus.interface")
   def importOPML(self, fname):
     print fname
-    self.window.importOPML(fname)
+    importOPML(fname)
 
 
 def main():
