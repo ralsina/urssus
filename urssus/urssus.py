@@ -1963,7 +1963,18 @@ class UrssusServer(dbus.service.Object):
   @dbus.service.method("org.urssus.interface")
   def AddFeed(self, url):
       self.window.addFeed(url)
-    
+
+  @dbus.service.method("org.urssus.interface")
+  def show(self):
+    self.window.show()
+    self.window.raise_()
+
+  @dbus.service.method("org.urssus.interface")
+  def importOPML(self, fname):
+    print fname
+    self.window.importOPML(fname)
+
+
 def main():
   global root_feed
   

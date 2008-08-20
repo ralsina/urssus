@@ -46,7 +46,7 @@ options(
                             'miruku', 
                             'simplejson', 
                             'pyxml', 
-                            'dbus-python'],
+                            ],
         extras_require = {'Twitter':  ["twitter"] }, 
         description = 'A multiplatform GUI news agregator.', 
         license = 'GPLv2', 
