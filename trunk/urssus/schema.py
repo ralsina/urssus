@@ -32,8 +32,7 @@ class Post(elixir.Entity):
   deleted     = elixir.Field(elixir.Boolean, default=False)
   # Added in schema version 5
   fresh       = elixir.Field(elixir.Boolean, default=True)
-  # Added in schema version 10
-  tags        = elixir.ManyToMany('Tag')
+  tags        = elixir.Field(elixir.Text, default='')
   
   decoTitle    = ''
 
@@ -72,8 +71,7 @@ class Feed(elixir.Entity):
   etag           = elixir.Field(elixir.Text, default='')
   # Added in schema version 7
   lastModified   = elixir.Field(elixir.DateTime, colname="last-modified", default=datetime.datetime(1970,1,1))
-  # Added in schema version 10
-  tags        = elixir.ManyToMany('Tag')
+  tags        = elixir.Field(elixir.Text, default='')
 
 class MetaFeed(Feed):
   elixir.using_options (tablename='metafeeds', inheritance='multi')
@@ -82,12 +80,6 @@ class MetaFeed(Feed):
 class MetaFolder(Feed):
   elixir.using_options (tablename='metafolders', inheritance='multi')
   condition   = elixir.Field(elixir.Text)
-
-class Tag(MetaFeed):
-  elixir.using_options (tablename='tags')
-  name        = elixir.Field(elixir.Text,unique=True)
-  taggedfeeds = elixir.ManyToMany('Feed', inverse='tags')
-  taggedposts = elixir.ManyToMany('Post', inverse='tags')
 
 elixir.setup_all()
 metadata=elixir.metadata

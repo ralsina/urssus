@@ -15,10 +15,7 @@
   <b>Author:&nbsp;</b>#{post.author}<br>
 <?py #end ?>
 <?py if post.tags: ?>
-  <b>Tags:&nbsp;</b>
-<?py for tag in post.tags: ?>
-    #{tag.name}&nbsp;
-<?py #endfor ?><br>
+  <b>Tags:&nbsp;</b>#{post.tags}
 <?py #end ?>
 </div>
 <div style='margin-top: 1em;'>
