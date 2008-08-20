@@ -19,9 +19,26 @@
 
 import os, sys, socket
 from globals import *
+import dbus
 
 def main():
-  sys.exit(0)
-
+  try:
+    bus = dbus.SessionBus()
+    remote_object = bus.get_object("org.urssus.service", "/uRSSus")
+    iface = dbus.Interface(remote_object, "org.urssus.interface")
+    
+    # FIXME: implement real CLI parsing
+    
+    if len(sys.argv)==1: # No arguments
+      remote_object.show()
+    elif sys.argv[1].startswith('http:') or sys.argv[1].startswith('feed:'):
+      remote_object.AddFeed(sys.argv[1])
+    else:
+      remote_object.importOPML(sys.argv[1])
+  except dbus.exceptions.DBusException, e:
+    print e
+    if 'ServiceUnknown' in str(e):
+      os.execlp('urssus', *sys.argv)
 if __name__ == "__main__":
+  print "Args: ", sys.argv
   main()
