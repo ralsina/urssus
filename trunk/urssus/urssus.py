@@ -1644,10 +1644,13 @@ class MainWindow(QtGui.QMainWindow):
     config.setValue('ui', 'size', [size.width(), size.height()])
     config.setValue('ui', 'splitters', [self.ui.splitter.sizes(), self.ui.splitter_2.sizes()])
     self.savePostSectionSizes()
+    try:
+      Post.table.delete(sql.and_(Post.deleted==True, Post.fresh==False)).execute()
+      elixir.session.commit()
+    except:
+      error("Failed to commit deletion on quit")
+      elixir.session.rollback()
     QtGui.QApplication.instance().quit()
-    Post.table.delete(sql.and_(Post.deleted==True, Post.fresh==False)).execute()
-    # FIXME: bandaid!
-    elixir.session.flush()
 
   @RetryOnDBError
   def on_actionMark_Feed_as_Read_triggered(self, i=None):
@@ -1947,15 +1950,35 @@ def decode_htmlentities(string):
   entity_re = re.compile("&(#?)(\d{1,5}|\w{1,8});")
   return entity_re.subn(substitute_entity, string)[0]
 
+
+import dbus
+import dbus.service
+from dbus.mainloop import qt
+
+class UrssusServer(dbus.service.Object):
+  def __init__(self, window, bus_name, object_path="/uRSSus"):
+    dbus.service.Object.__init__(self, bus_name, object_path)
+    self.window=window
+    
+  @dbus.service.method("org.urssus.interface")
+  def AddFeed(self, url):
+      self.window.addFeed(url)
     
 def main():
   global root_feed
+  
   app=QtGui.QApplication(sys.argv)
   app.setQuitOnLastWindowClosed(False)
+
   # Not enabled yet, because I need to implement a web app to handle it
   if config.getValue('options','showDebugDialog', False):
     sys.excepthook = my_excepthook
   window=MainWindow()
+
+  mainloop = qt.DBusQtMainLoop(set_as_default=True)
+  session_bus = dbus.SessionBus()
+  name = dbus.service.BusName("org.urssus.service", bus=session_bus)
+  object = UrssusServer(window,name)
     
   if len(sys.argv)>1:
     if sys.argv[1].lower().startswith('http://'):
