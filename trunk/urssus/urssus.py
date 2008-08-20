@@ -1867,20 +1867,20 @@ class PostDelegate(QtGui.QItemDelegate):
   
 def exportOPML(fname):
   from util.OPML import Outline, OPML
-  from cgi import escape
+  import cgi
   def exportSubTree(parent, node):
     children=node.getChildren()
     if not children:
       return
     for feed in children:
       co=Outline()
-      co['text']=escape(feed.text or '')
+      co['text']=feed.text
       if feed.xmlUrl:
         co['type']='rss'
-        co['xmlUrl']=escape(feed.xmlUrl or '')
-        co['htmlUrl']=escape(feed.htmlUrl or '')
-        co['title']=escape(feed.title or '')
-        co['description']=escape(feed.description or '')
+        co['xmlUrl']=feed.xmlUrl
+        co['htmlUrl']=feed.htmlUrl or ''
+        co['title']=cgi.escape(feed.title or '')
+        co['description']=cgi.escape(feed.description or '')
       parent.add_child(co)
       
   opml=OPML()
@@ -1888,8 +1888,10 @@ def exportOPML(fname):
   for feed in root_feed.getChildren():
     exportSubTree(root, feed)
   opml.outlines=root._children
+  f=open(fname, 'wb')
+  f.write('<?xml version="1.0" encoding="ISO-8859-1"?>\n')
   # FIXME: error with unicode characters in feed elements :-(
-  opml.output(open(fname, 'w'))
+  opml.output(f)
   
     
 def importOPML(fname, parent=None):
