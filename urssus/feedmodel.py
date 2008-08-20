@@ -134,12 +134,11 @@ class FeedModel(QtGui.QStandardItemModel):
     # This all means, source should be now child of parentFeed, and be right 
     # before beforeFeed.
     # If beforeFeed==None, then it should be last
-    print "Dropped on ", beforeFeed, parentFeed
+    info("Dropped before: %s , parent: %s", beforeFeed, parentFeed)
     
     # Decoding the source data
-    print list(data.formats())
     idlist=[int(id) for id in str(data.text()).split(',')]
-    print "IDLIST:", idlist
+    info ("IDLIST: %s", str(idlist))
     try:
       for id in idlist:
         # Do feed housekeeping
@@ -176,7 +175,6 @@ class FeedModel(QtGui.QStandardItemModel):
       id=item.data(QtCore.Qt.UserRole).toInt()[0]
       data.append(str(id))
     v=QtGui.QStandardItemModel.mimeData(self, indexes)
-    print "DATAFORMATS1:", list(v.formats())
     v.setText(','.join(data) )
     return v
       
