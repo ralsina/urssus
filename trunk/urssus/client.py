@@ -36,9 +36,10 @@ def main():
     else:
       remote_object.importOPML(sys.argv[1])
   except dbus.exceptions.DBusException, e:
-    print e
     if 'ServiceUnknown' in str(e):
       os.execlp('urssus', *sys.argv)
+    else:
+      error(str(e))
+
 if __name__ == "__main__":
-  print "Args: ", sys.argv
   main()

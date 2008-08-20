@@ -56,7 +56,6 @@ def feedUpdater():
                             sql.func.strftime('%s', dbtables.Feed.lastUpdated, 'utc')+\
                                                     dbtables.Feed.updateInterval*60<now_stamp)).\
                             filter(dbtables.Feed.xmlUrl<>None):
-        print feed
         feed.update()
       # Feeds with default check period
       # Limit to 5 feeds so they get progressively out-of-sync and you don't have a glut of

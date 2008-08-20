@@ -25,7 +25,7 @@ def main():
   global root_feed
   
   # Backup the DB and config file
-  print "Backing up ", config.cfdir
+  info ("Backing up ", config.cfdir)
   backup_files(config.cfdir)
   import dbtables
   import feedupdater

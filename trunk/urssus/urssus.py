@@ -669,7 +669,7 @@ class MainWindow(QtGui.QMainWindow):
             xmlUrl=id[5:]
           else:
             # Don't know how to handle it
-            print sub
+            error(str(sub))
             continue
           # Treat the first category's label as a folder name.
           cats=sub['categories']
@@ -682,7 +682,7 @@ class MainWindow(QtGui.QMainWindow):
             if Feed.get_by(xmlUrl=xmlUrl):
               # Already subscribed
               # FIXME: implement progress reports
-              print "You are already subscribed to %s"%xmlUrl
+              error("You are already subscribed to %s", xmlUrl)
               continue
             f=Feed.get_by(xmlUrl=xmlUrl)
             if not f:
@@ -1184,7 +1184,7 @@ class MainWindow(QtGui.QMainWindow):
     except:
       # FIXME: handle errors better
       traceback.print_exc(10)
-      print "---------------------[FIX error handling in updateFeedStatus already!]"
+      error("FIX error handling in updateFeedStatus already!"
     self.feedStatusTimer.start(1000)
 
   def updateStatusBar(self):
@@ -1973,7 +1973,6 @@ class UrssusServer(dbus.service.Object):
 
   @dbus.service.method("org.urssus.interface")
   def importOPML(self, fname):
-    print fname
     importOPML(fname)
 
 
