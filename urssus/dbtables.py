@@ -110,8 +110,7 @@ class Post(elixir.Entity):
   deleted     = elixir.Field(elixir.Boolean, default=False)
   # Added in schema version 5
   fresh       = elixir.Field(elixir.Boolean, default=True)
-  # Added in schema version 10
-  tags        = elixir.ManyToMany('Tag')
+  tags        = elixir.Field(elixir.Text, default='')
   
   decoTitle    = ''
 
@@ -160,8 +159,7 @@ class Feed(elixir.Entity):
   etag           = elixir.Field(elixir.Text, default='')
   # Added in schema version 7
   lastModified   = elixir.Field(elixir.DateTime, colname="last-modified", default=datetime.datetime(1970,1,1))
-  # Added in schema version 10
-  tags        = elixir.ManyToMany('Tag')
+  tags        = elixir.Field(elixir.Text, default='')
 
 
   def __repr__(self):
@@ -422,14 +420,7 @@ class Feed(elixir.Entity):
       
   def updateFeedData(self, parsedFeed):
     # Fills blanks in feed data from parsedFeed
-    # assumes this feed has a xmlUrl, fetches any missing data from it
-    if not self.xmlUrl: # Nowhere to fetch data from
-      return
       
-    # See if we have all data:
-    if self.htmlUrl and self.title and self.subtitle and self.description:
-      return
-    
     d=parsedFeed
     
     if not self.htmlUrl:
@@ -439,11 +430,10 @@ class Feed(elixir.Entity):
         # This happens, for instance, on deleted blogger blogs (everyone's clever)
         self.htmlUrl=None
         
-    if not self.title:
-      if 'title_detail' in d['feed']: 
-        self.title=detailToTitle(d['feed']['title_detail'])
-      else:
-        self.title=d['feed']['title']
+    if 'title_detail' in d['feed']: 
+      self.title=detailToTitle(d['feed']['title_detail'])
+    elif 'title' in d['feed']:
+      self.title=d['feed']['title']
     else:
       # This happens, for instance, on deleted blogger blogs (everyone's clever)
       self.title=''
@@ -451,19 +441,18 @@ class Feed(elixir.Entity):
     if not self.text:
       self.text=self.title
 
-    if not self.subtitle:
-      if 'subtitle_detail' in d['feed']: 
-        self.subtitle=detailToTitle(d['feed']['subtitle_detail'])
-      elif 'subtitle' in d['feed']:
-        self.subtitle=d['feed']['subtitle']
-      else:
-        self.subtitle=''
+    if 'subtitle_detail' in d['feed']: 
+      self.subtitle=detailToTitle(d['feed']['subtitle_detail'])
+    elif 'subtitle' in d['feed']:
+      self.subtitle=d['feed']['subtitle']
+    else:
+      self.subtitle=''
 
-    if not self.description:
-      if 'info' in d['feed']:
-        self.description=d['feed']['info']
-      elif 'description' in d['feed']:
-        self.description=d['feed']['description']
+    if 'info' in d['feed']:
+      self.description=d['feed']['info']
+    elif 'description' in d['feed']:
+      self.description=d['feed']['description']
+
     if not self.icon and self.htmlUrl:
       try:
         iconUrl=urlparse.urljoin(self.htmlUrl,'/favicon.ico')
@@ -600,10 +589,9 @@ class Feed(elixir.Entity):
             if self.markRead:
               p.unread=False
             # Tag support
-#            if 'tags' in post:
-#                for t in post['tags']:
-#                  tag=Tag.get_by_or_init(name=t['term'], parent=tags_feed)
-#                  tag.taggedposts.append(p)
+            if 'tags' in post:
+              p.tags=','.join(post['tags'])
+                  
             posts.append(p)
           elixir.session.commit()
         except:
@@ -687,24 +675,9 @@ class MetaFolder(Feed):
     '''Makes no sense in this context'''
     return
 
-# Added in schema version 10
-class Tag(MetaFeed):
-  elixir.using_options (tablename='tags')
-  name        = elixir.Field(elixir.Text,unique=True)
-  taggedfeeds = elixir.ManyToMany('Feed', inverse='tags')
-  taggedposts = elixir.ManyToMany('Post', inverse='tags')
-
-  def __repr__ (self):
-    return '%s (%d posts)'%(self.name, len(self.taggedposts))  
-
-  def allPostsQuery(self):
-    #FIXME: there must be a nicer way
-    return Post.query.filter(Post.id.in_([p.id for p in self.taggedposts ]))
-    
 root_feed=None
 starred_feed=None
 unread_feed=None
-tags_feed=None
 
 def initDB():
   global root_feed, starred_feed, unread_feed, tags_feed
@@ -721,22 +694,19 @@ def initDB():
     elixir.session.rollback()
 
   try:
+    # Delete old metafolders
+    for mf in MetaFolder.query.all():
+      mf.delete()
+    for mf in MetaFeed.query.all():
+      mf.delete()
+    elixir.session.commit()
     # Add standard meta feeds
-    starred_feed=MetaFeed.get_by(parent=None, condition='Post.important==True') 
-    if not starred_feed:
-      starred_feed=MetaFeed(parent=None, 
-                            condition='Post.important==True',
-                            text='Important Articles', icon=':/star.svg')
-    unread_feed=MetaFeed.get_by(parent=None, condition='Post.unread==True') 
-    if not unread_feed:
-      unread_feed=MetaFeed(parent=None, 
-                             condition='Post.unread==True',
-                             text='Unread Articles')
-                             
-    tags_feed=MetaFolder.get_by_or_init(parent=None, 
-                                        text='Tags', 
-                                        condition='Tag.query.all()', 
-                                        icon=':/tag.svg')
+    starred_feed=MetaFeed(parent=None, 
+                          condition='Post.important==True',
+                          text='Important Articles', icon=':/star.svg')
+    unread_feed=MetaFeed(parent=None, 
+                           condition='Post.unread==True',
+                           text='Unread Articles')                             
     elixir.session.commit()
   except:
     elixir.session.rollback()
