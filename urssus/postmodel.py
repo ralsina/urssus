@@ -74,7 +74,8 @@ class PostModel(QtGui.QStandardItemModel):
     # Filter by text according to the contents of self.textFilter
     if self.textFilter:
       self.posts=self.posts.filter(sql.or_(Post.title.like('%%%s%%'%self.textFilter), 
-                                           Post.content.like('%%%s%%'%self.textFilter)))
+                                           Post.content.like('%%%s%%'%self.textFilter), 
+                                           Post.tags.like('%%%s%%'%self.textFilter)))
     if self.statusFilter:
       self.posts=self.posts.filter(self.statusFilter==True)
   
