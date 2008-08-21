@@ -41,6 +41,11 @@
          <string>Google News Feed</string>
         </property>
        </item>
+       <item>
+        <property name="text" >
+         <string>Bloglines Search</string>
+        </property>
+       </item>
       </widget>
      </item>
     </layout>
