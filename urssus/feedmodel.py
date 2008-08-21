@@ -37,8 +37,10 @@ class FeedModel(QtGui.QStandardItemModel):
     self.urssusicon=QtGui.QIcon(':/urssus.svg')
     self.foldericon=QtGui.QIcon(':/folder.svg')
     QtGui.QStandardItemModel.__init__(self, parent)
+    self.bfont=QtGui.QApplication.font()
+    self.bfont.setBold(True)
     self.initData()
-
+    
   def setData(self, index, value, role):
     if role==QtCore.Qt.EditRole:
       # Find the feed for this index
@@ -69,9 +71,9 @@ class FeedModel(QtGui.QStandardItemModel):
       else:
         item1.setFlags(folderflags|editable)
         
-      
-      item2=QtGui.QStandardItem(unicode(feed.unreadCount() or ''))
-      item2.setToolTip(unicode(feed.unreadCount()))
+      count=feed.unreadCount()
+      item2=QtGui.QStandardItem(unicode(count or ''))
+      item2.setToolTip(unicode(count))
       item2.setData(QtCore.QVariant(feed.id), QtCore.Qt.UserRole)
       item2.setTextAlignment(QtCore.Qt.AlignRight)
       if feed.xmlUrl:
@@ -79,6 +81,9 @@ class FeedModel(QtGui.QStandardItemModel):
       else:
         item2.setFlags(folderflags &~ QtCore.Qt.ItemIsDropEnabled)
       
+      if count:
+        item1.setFont(self.bfont)
+        item2.setFont(self.bfont)
       
       parentItem.appendRow([item1, item2])
 
@@ -99,15 +104,9 @@ class FeedModel(QtGui.QStandardItemModel):
     # First all metafeeds with no parents
     for mf in MetaFeed.query.filter(MetaFeed.parent==None):
       addSubTree(iroot, mf)
-    # Same for all metafolders
-    #for mf in MetaFolder.query.filter(MetaFolder.parent==None):
-    #  addSubTree(iroot, mf)
-    
-      
     # Now the feeds
     self.feedIndex[root_feed.id]=[self.indexFromItem(iroot), QtCore.QModelIndex()]
     addSubTree(iroot, root_feed)
-    self.reset()
 
   def removeRow(self, row, parent):
     # Remove the feed from the DB
