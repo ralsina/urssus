@@ -571,28 +571,34 @@ class Feed(elixir.Entity):
           # FIXME: if I use date to check here, I get duplicates on posts where I use
           # artificial date because it's not in the feed's entry.
           # If I don't I don't re-get updated posts.
-          p = Post.get_by(feed=self, title=title)
-          
-          # This is because of google news: the same news gets reposted over and over 
-          # with different post_id :-(
+          p = Post.get_by(feed=self, post_id=post[idkey])
           if p:
-            if p.post_id<>post[idkey]:
-              p.post_id=post[idkey]
             if p.content<>content:
               p.content=content
-              # FIXME: un updated flag? Mark unread again?
-              # FIXME: tags are not updated. Is that wrong?
+            if p.title<>title:
+              p.title=title          
           else:
-            p=Post(feed=self, date=date, title=title, 
-                   post_id=post[idkey], content=content, 
-                   author=author, link=link)
-            if self.markRead:
-              p.unread=False
-            # Tag support
-            if 'tags' in post:
-              p.tags=','.join(post['tags'])
-                  
-            posts.append(p)
+            # This is because of google news: the same news gets reposted over and over 
+            # with different post_id :-(
+            p = Post.get_by(feed=self, title=title)
+            if p:
+              if p.post_id<>post[idkey]:
+                p.post_id=post[idkey]
+              if p.content<>content:
+                p.content=content
+              if p.title<>title:
+                p.title=title          
+            else:
+              p=Post(feed=self, date=date, title=title, 
+                     post_id=post[idkey], content=content, 
+                     author=author, link=link)
+              if self.markRead:
+                p.unread=False
+              # Tag support
+              if 'tags' in post:
+                p.tags=','.join([t.term for t in post['tags']])
+                print post['tags'], p.tags
+              posts.append(p)
           elixir.session.commit()
         except:
           elixir.session.rollback()
