@@ -1184,7 +1184,7 @@ class MainWindow(QtGui.QMainWindow):
     except:
       # FIXME: handle errors better
       traceback.print_exc(10)
-      error("FIX error handling in updateFeedStatus already!"
+      error("FIX error handling in updateFeedStatus already!")
     self.feedStatusTimer.start(1000)
 
   def updateStatusBar(self):
@@ -1436,7 +1436,9 @@ class MainWindow(QtGui.QMainWindow):
         showFeedInPosts=False
       # Filter by text according to the contents of self.textFilter
       if self.textFilter:
-        self.posts=self.posts.filter(sql.or_(Post.title.like('%%%s%%'%self.textFilter), Post.content.like('%%%s%%'%self.textFilter)))
+        self.posts=self.posts.filter(sql.or_(Post.title.like('%%%s%%'%self.textFilter), 
+                                             Post.content.like('%%%s%%'%self.textFilter), 
+                                             Post.tags.like('%%%s%%'%self.textFilter)))
       if self.statusFilter:
         self.posts=self.posts.filter(self.statusFilter==True)
       # FIXME: find a way to add sorting to the UI for this (not very important)
