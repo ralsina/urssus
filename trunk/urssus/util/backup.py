@@ -76,7 +76,6 @@ def backup_files(tree_top, bakdir_name=BAKFOLDER):
                     if os.path.exists(backup):
                         shutil.move(backup, oldbackup)
                     else:
-                        print 'Copying %s to %s...' % (filepath, backup)
                         shutil.copy(filepath, backup)
                         break
                 except (OSError, IOError), e:

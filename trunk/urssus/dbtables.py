@@ -597,10 +597,10 @@ class Feed(elixir.Entity):
               # Tag support
               if 'tags' in post:
                 p.tags=','.join([t.term for t in post['tags']])
-                print post['tags'], p.tags
               posts.append(p)
           elixir.session.commit()
         except:
+          traceback.print_exc(1)
           elixir.session.rollback()
       except KeyError:
         debug( post )

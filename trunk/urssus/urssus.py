@@ -456,8 +456,10 @@ class MainWindow(QtGui.QMainWindow):
 
 
     # Fill with feed data
-    self.showOnlyUnread=False
     self.initTree()
+    if self.showOnlyUnread:
+      self.ui.actionShow_Only_Unread_Feeds.setChecked(self.showOnlyUnread)
+      self.on_actionShow_Only_Unread_Feeds_triggered(self.showOnlyUnread)
 
     # Timer to mark feeds as busy/updated/whatever
     self.feedStatusTimer=QtCore.QTimer()
@@ -549,9 +551,7 @@ class MainWindow(QtGui.QMainWindow):
     # This will trigger the right view mode as well
     self.on_actionShort_Feed_List_triggered(True)
 
-    v=config.getValue('ui', 'showOnlyUnreadFeeds', False)
-    self.ui.actionShow_Only_Unread_Feeds.setChecked(v)
-    self.on_actionShow_Only_Unread_Feeds_triggered(v)
+    self.showOnlyUnread=config.getValue('ui', 'showOnlyUnreadFeeds', False)
     
     pos=config.getValue('ui', 'position', None)
     if pos:
@@ -754,12 +754,13 @@ class MainWindow(QtGui.QMainWindow):
       self.updatePostItem(curPost)
       self.queueFeedUpdate(curPost.feed)
 
-  def queueFeedUpdate(self, feed):
+  def queueFeedUpdate(self, feed, parents=True):
     feedStatusQueue.put([1, feed.id])
-    p=feed.parent
-    while p:
-      feedStatusQueue.put([1, p.id])
-      p=p.parent
+    if parents:
+      p=feed.parent
+      while p:
+        feedStatusQueue.put([1, p.id])
+        p=p.parent
 
   def updatePostItem(self, post):
     self.ui.posts.model().updateItem(post)
@@ -1007,9 +1008,10 @@ class MainWindow(QtGui.QMainWindow):
     if checked==None: return
     info ("Show only unread: %d", checked)
     self.showOnlyUnread=checked
-    for feed in Feed.query().all():
-      self.queueFeedUpdate(feed)
     config.setValue('ui', 'showOnlyUnreadFeeds', checked)
+    for feed in Feed.query.filter(Feed.xmlUrl<>None):
+      if feed.unreadCount()==0:
+        self.queueFeedUpdate(feed)
   
   def on_actionFind_triggered(self, i=None):
     if i==None: return
@@ -1166,11 +1168,14 @@ class MainWindow(QtGui.QMainWindow):
         # We collapse all updates for a feed, and keep the last one
         else:
           self.pendingFeedUpdates[id]=data
-        
+      
       for id in self.pendingFeedUpdates:
         if not self.pendingFeedUpdates[id]: continue
         [action, id]=self.pendingFeedUpdates[id]
         feed=Feed.get_by(id=id)
+        if not feed: # Maybe it got deleted while queued
+          self.pendingFeedUpdates[id]=None
+          continue
         if action==0: # Mark as updating
           self.updateFeedItem(feed)
         else: # Mark as finished updating
@@ -1220,11 +1225,6 @@ class MainWindow(QtGui.QMainWindow):
     # Open all required folders
     for feed in Feed.query().filter_by(is_open=True):
       self.ui.feeds.expand(self.ui.feeds.model().indexFromFeed(feed))
-
-    # Update all the feeds that have unread posts
-    for feed in Feed.query():
-      if feed.unreadCount()>0:
-        self.updateFeedItem(feed)
     
     self.setEnabled(True)
     self.filterWidget.setEnabled(True)
@@ -1505,7 +1505,7 @@ class MainWindow(QtGui.QMainWindow):
     QtCore.QObject.connect(self.ui.posts.model(), QtCore.SIGNAL("modelReset()"), self.updateListedFeedItem)
 
   def updateFeedItem(self, feed):
-    info("Updating item for feed %d", feed.id)
+    info("Updating item for feed %d, %d", feed.id, self.showOnlyUnread)
     
     model=self.ui.feeds.model()
     
