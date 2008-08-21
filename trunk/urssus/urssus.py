@@ -97,6 +97,8 @@ class NewFeedDialog(QtGui.QDialog):
     
   help=['''Enter the URL of the site you want to add as a feed.''', 
         '''Enter keywords to create a customized Google News feed.<p> 
+        For example, <i>"premier league"</i> if you are interested in english football.''', 
+        '''Enter keywords to create a customized Bloglines Search.<p> 
         For example, <i>"premier league"</i> if you are interested in english football.'''
        ]
     
@@ -972,6 +974,8 @@ class MainWindow(QtGui.QMainWindow):
       data=unicode(dlg.ui.data.text())
       if idx==1: # Google News Feed
         data='http://news.google.com/news?q=%s&output=atom'%quote(data)
+      elif idx==2: # Ask.com Feed
+        data='http://ask.bloglines.com/search?q=%s&ql=&format=rss'%quote(data)
       self.addFeed(unicode(data))
 
   def on_actionNew_Folder_triggered(self, i=None):
