@@ -1,0 +1,28 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<head>
+<title>#{post.title}</title>
+</head>
+<body>
+<div class="headerbox">
+<h1>#{post.titleLink()}</h1>
+</div>
+<div class="headerbox">
+<?py if showFeed: ?>
+  <b>Feed:&nbsp;</b>#{post.feed.titleLink()}<br>
+<?py #end ?>
+<b>Date:&nbsp;</b>#{utc2local(post.date)}<br>
+<?py if post.author: ?>
+  <b>Author:&nbsp;</b>#{post.author}<br>
+<?py #end ?>
+<?py if post.tags: ?>
+  <b>Tags:&nbsp;</b>#{post.tags}
+<?py #end ?>
+</div>
+<div style='margin-top: 1em;'>
+#{post.content}
+<p>
+<?py if post.link: ?>
+  <a href="#{post.link}">Complete Story</a>
+<?py #end ?>
+</div>
+</body>

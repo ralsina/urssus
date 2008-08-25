@@ -1,0 +1,26 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<head>
+</head>
+<body>
+<div class="headerbox">
+<h1>#{feed.titleLink()}</h1>
+<h2>#{feed.subtitle}</h2>
+</div>
+<div class="headerbox">
+<b>Last update:</b> #{utc2local(feed.lastUpdated.date())} <br>
+<?py if feed.htmlUrl: ?>
+<b>URL: </b><a href="#{feed.htmlUrl}">#{feed.htmlUrl}</a><br>
+<?py #end ?>
+</div>
+<hr>
+<div>
+<?py if feed.description: ?>
+  #{feed.description}
+<?py #end ?>
+</div>
+<div>
+<p>
+<b>Articles:&nbsp;</b>#{len(feed.posts)}<br>
+<b>Unread:&nbsp;</b>#{feed.unreadCount()}<br>
+</div>
+</body>

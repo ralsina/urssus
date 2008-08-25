@@ -1,0 +1,85 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<head>
+<script type="text/javascript" charset="utf-8" src="file://#{mootools_core}" />
+<script type="text/javascript" charset="utf-8" src="file://#{mootools_more}" />
+<script type="text/javascript">
+</script>
+<style type="text/css">
+  .action {visibility: hidden; background-color: #C3D4FF; padding: 4px;};
+  .post-body {border: solid #000000; width: 100%; overflow: auto; margin: 12px;};
+  .post-title {width: 100%;};
+  .title {width: 100%; padding: 12px; margin: 12px; border: solid #000000; font-weight: bold;};
+</style>
+
+<script type="text/javascript">
+function showAction(action,id) {
+  $('URSSUS-'+action+'-'+id).style.visibility='visible';
+};
+function hideAction(action,id) {
+  $('URSSUS-'+action+'-'+id).style.visibility='hidden';
+};
+window.addEvent('domready', function() {	
+
+  var myScroll = new Fx.Scroll($(document.body));
+
+	var myAccordion = new Accordion($('accordion'), 'div.post-title', 'div.post-body', {
+		opacity: false,
+		onActive: function(toggler, element){
+			toggler.setStyle('background-color', '#C3D4FF');
+		},
+		onBackground: function(toggler, element){
+			toggler.setStyle('background-color', '#E6FFC3');
+		},
+    onComplete: function(toggler, element){
+      // Very buggy :-(
+      myScroll.toElement(toggler);
+    }
+	});
+});
+</script> 
+
+</head>
+<body>
+<?py for post in posts: ?>
+    <div>
+    <a id="URSSUS-#{post.id}"></a>
+    <div id="URSSUS-POST-#{post.id}">    
+    <div class="post-title"><div class="title">#{post.title}</div></div>
+    <div class="post-body">
+    <div id="URSSUS-ACTIONS-#{post.id}" style="margin-top: .5em;">
+    <span id="URSSUS-READ-#{post.id}" class='action' ><a href="urssus:/read/#{post.id}" onCLick="hideAction('READ',#{post.id});showAction('UNREAD',#{post.id});">Mark Read</a></span>&nbsp;&nbsp;
+    <span id="URSSUS-UNREAD-#{post.id}" class='action' ><a href="urssus:/unread/#{post.id}" onCLick="showAction('READ',#{post.id});hideAction('UNREAD',#{post.id});">Mark Unread</a></span>&nbsp;&nbsp;
+    <span id="URSSUS-IMPORTANT-#{post.id}" class='action' ><a href="urssus:/important/#{post.id}" onCLick="showAction('UNIMPORTANT',#{post.id});hideAction('IMPORTANT',#{post.id});">Mark Important</a></span>&nbsp;&nbsp;
+    <span id="URSSUS-UNIMPORTANT-#{post.id}" class='action' ><a href="urssus:/unimportant/#{post.id}" onCLick="showAction('IMPORTANT',#{post.id});hideAction('UNIMPORTANT',#{post.id});">Remove Important Mark</a></span>&nbsp;&nbsp;
+    </div>
+    <script type="text/javascript">
+    <?py if post.unread: ?>
+        showAction('READ',#{post.id});
+    <?py else: ?>
+        showAction('UNREAD',#{post.id});
+    <?py #end ?>
+    <?py if post.important: ?>
+        showAction('UNIMPORTANT',#{post.id});
+    <?py else: ?>
+        showAction('IMPORTANT',#{post.id});
+    <?py #end ?>
+    </script> 
+    <div id="URSSUS-DATA-#{post.id}" style="margin-top: .5em;">
+    <?py if showFeed: ?>
+      <b>Feed:&nbsp</b>#{post.feed.titleLink()}<br>
+    <?py #end ?>
+    <b>Date:&nbsp;</b>#{utc2local(post.date)}<br>
+    <?py if post.author: ?>
+        <b>Author:&nbsp;</b>#{post.author}<br>
+    <?py #end ?>
+    </div>
+    <div id="URSSUS-CONTENT-#{post.id}" style="margin-top: .5em;">
+    #{post.content}
+    </div>
+    <?py if post.link: ?>
+        <a href="#{post.link}">Complete Story</a>
+    <?py #end ?>
+    </div>
+    </div>
+<?py #endfor ?>
+</body>

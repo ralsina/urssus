@@ -1,0 +1,61 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<head>
+<script type="text/javascript" charset="utf-8" src="file://#{mootools_core}" />
+<script type="text/javascript" charset="utf-8" src="file://#{mootools_more}" />
+<script type="text/javascript">
+</script>
+<script type="text/javascript">
+function showAction(action,id) {
+  $('URSSUS-'+action+'-'+id).style.visibility='visible';
+}
+function hideAction(action,id) {
+  $('URSSUS-'+action+'-'+id).style.visibility='hidden';
+}
+</script> 
+
+</head>
+<body>
+<?py for post in posts: ?>
+    <div id="URSSUS-POST-#{post.id}" >
+    <a id="URSSUS-#{post.id}"></a>
+    <div class="headerbox"> 
+    <h2 class="post-title">#{post.titleLink()}</a></h2>
+    <div id="URSSUS-ACTIONS-#{post.id}" style='padding: .5em;'>
+      <span id="URSSUS-READ-#{post.id}" class='action' ><a href="urssus:/read/#{post.id}" onCLick="hideAction('READ',#{post.id});showAction('UNREAD',#{post.id});">Mark Read</a></span>&nbsp;&nbsp;
+      <span id="URSSUS-UNREAD-#{post.id}" class='action' ><a href="urssus:/unread/#{post.id}" onCLick="showAction('READ',#{post.id});hideAction('UNREAD',#{post.id});">Mark Unread</a></span>&nbsp;&nbsp;
+      <span id="URSSUS-IMPORTANT-#{post.id}" class='action' ><a href="urssus:/important/#{post.id}" onCLick="showAction('UNIMPORTANT',#{post.id});hideAction('IMPORTANT',#{post.id});">Mark Important</a></span>&nbsp;&nbsp;
+      <span id="URSSUS-UNIMPORTANT-#{post.id}" class='action' ><a href="urssus:/unimportant/#{post.id}" onCLick="showAction('IMPORTANT',#{post.id});hideAction('UNIMPORTANT',#{post.id});">Remove Important Mark</a></span>&nbsp;&nbsp;
+    </div>
+    <script type="text/javascript">
+    <?py if post.unread: ?>
+        showAction('READ',#{post.id});
+    <?py else: ?>
+        showAction('UNREAD',#{post.id});
+    <?py #end ?>
+    <?py if post.important: ?>
+        showAction('UNIMPORTANT',#{post.id});
+    <?py else: ?>
+        showAction('IMPORTANT',#{post.id});
+    <?py #end ?>
+    </script> 
+    </div>
+    <div class="headerbox" id="URSSUS-DATA-#{post.id}" style="margin-top: .5em;">
+    <?py if showFeed: ?>
+      <b>Feed:&nbsp</b>#{post.feed.titleLink()}<br>
+    <?py #end ?>
+    <b>Date:&nbsp;</b>#{utc2local(post.date)}<br>
+    <?py if post.author: ?>
+      <b>Author:&nbsp;</b>#{post.author}<br>
+    <?py #end ?>
+    <b>From:&nbsp;</b>#{post.feed.text}<br>   
+    </div>
+    <div id="URSSUS-CONTENT-#{post.id}" style="margin-top: .5em;">
+    #{post.content}
+    <?py if post.link: ?>
+      <a href="#{post.link}">Complete Story</a>
+    <?py #end ?>
+    </div>
+    </div>
+    </div>
+<?py #endfor ?>
+</body>

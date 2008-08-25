@@ -1,0 +1,40 @@
+<RCC>
+  <qresource prefix="/" >
+    <file>sync.svg</file>
+    <file>tag.svg</file>
+    <file>file_broken.svg</file>
+    <file>star2.svg</file>
+    <file>star.svg</file>
+    <file>configure.svg</file>
+    <file>bug.svg</file>
+    <file>editcopy.svg</file>
+    <file>menubar.svg</file>
+    <file>window_fullscreen.svg</file>
+    <file>urssus-unread.svg</file>
+    <file>twitter.svg</file>
+    <file>view_left_right.svg</file>
+    <file>view_top_bottom.svg</file>
+    <file>view_detailed.svg</file>
+    <file>mail_generic.svg</file>
+    <file>gear.svg</file>
+    <file>flag.svg</file>
+    <file>edit.svg</file>
+    <file>folder_new.svg</file>
+    <file>filenew.svg</file>
+    <file>find.svg</file>
+    <file>1rightarrow.svg</file>
+    <file>1leftarrow.svg</file>
+    <file>editdelete.svg</file>
+    <file>editclear.svg</file>
+    <file>viewmag+.svg</file>
+    <file>viewmag-.svg</file>
+    <file>folder.svg</file>
+    <file>urssus.svg</file>
+    <file>exit.svg</file>
+    <file>urssus.jpg</file>
+    <file>apply.svg</file>
+    <file>stop.svg</file>
+    <file>2downarrow.svg</file>
+    <file>1downarrow.svg</file>
+  </qresource>
+</RCC>
