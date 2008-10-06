@@ -56,7 +56,9 @@ def feedUpdater():
                             sql.func.strftime('%s', dbtables.Feed.lastUpdated, 'utc')+\
                                                     dbtables.Feed.updateInterval*60<now_stamp)).\
                             filter(dbtables.Feed.xmlUrl<>None):
-        feed.update()
+        try:
+          feed.update()
+        except: pass
       # Feeds with default check period
       # Limit to 5 feeds so they get progressively out-of-sync and you don't have a glut of
       # feeds updating all at the same time
@@ -64,7 +66,10 @@ def feedUpdater():
                                                       dbtables.Feed.lastUpdated < cutoff)).\
                                                       filter(dbtables.Feed.xmlUrl<>None).\
                                                       order_by(dbtables.Feed.lastUpdated).limit(5):
-        feed.update()
+        try:
+          feed.update()
+        except: pass
+        time.sleep(1)
       lastCheck=now
 
 def main():

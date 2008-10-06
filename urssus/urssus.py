@@ -430,7 +430,8 @@ class MainWindow(QtGui.QMainWindow):
     self.statusTimer=QtCore.QTimer()
     self.statusTimer.setSingleShot(True)
     QtCore.QObject.connect(self.statusTimer, QtCore.SIGNAL("timeout()"), self.updateStatusBar)
-    self.statusTimer.start(0)
+    self.statusTimer.start(1000)
+
     
     # Load user preferences
     self.loadPreferences()
@@ -465,7 +466,7 @@ class MainWindow(QtGui.QMainWindow):
     self.feedStatusTimer=QtCore.QTimer()
     self.feedStatusTimer.setSingleShot(True)
     QtCore.QObject.connect(self.feedStatusTimer, QtCore.SIGNAL("timeout()"), self.updateFeedStatus)
-    self.feedStatusTimer.start(1000)
+    self.feedStatusTimer.start(3000)
     # Start the background feedupdater
     feedUpdateQueue.put([1])
 
@@ -1143,6 +1144,7 @@ class MainWindow(QtGui.QMainWindow):
     AboutDialog(self).exec_()
     
   def updateFeedStatus(self):
+    info("updateFeedStatus %d", len(self.pendingFeedUpdates))
     try:
       while not feedStatusQueue.empty():
         # The idea: this function should never fail.
@@ -1194,7 +1196,7 @@ class MainWindow(QtGui.QMainWindow):
       # FIXME: handle errors better
       traceback.print_exc(10)
       error("FIX error handling in updateFeedStatus already!")
-    self.feedStatusTimer.start(1000)
+    self.feedStatusTimer.start(2000)
 
   def updateStatusBar(self):
     if not statusQueue.empty():
@@ -1392,12 +1394,7 @@ class MainWindow(QtGui.QMainWindow):
     if not feed: return
     
     unreadCount=feed.unreadCount()
-    
-    if unreadCount:
-      self.ui.actionMark_Feed_as_Read.setEnabled(True)
-    else:
-      self.ui.actionMark_Feed_as_Read.setEnabled(False)
-    
+        
     if feed.xmlUrl:
       self.showingFolder=False
     else:
@@ -1505,7 +1502,7 @@ class MainWindow(QtGui.QMainWindow):
     QtCore.QObject.connect(self.ui.posts.model(), QtCore.SIGNAL("modelReset()"), self.updateListedFeedItem)
 
   def updateFeedItem(self, feed):
-    info("Updating item for feed %d, %d", feed.id, self.showOnlyUnread)
+    info("Updating item for feed %d", feed.id)
     
     model=self.ui.feeds.model()
     
@@ -1520,11 +1517,6 @@ class MainWindow(QtGui.QMainWindow):
     # If we are updating the current feed, update the post list, too
     if self.ui.posts.model() and self.ui.posts.model().feed_id==feed.id:
       self.updatePostList()
-      # And enable/disable the "mark as read" action as needed
-      if unreadCount:
-        self.ui.actionMark_Feed_as_Read.setEnabled(True)
-      else:
-        self.ui.actionMark_Feed_as_Read.setEnabled(False)
 
     item=self.ui.feeds.model().itemFromIndex(index)
     item2=self.ui.feeds.model().itemFromIndex(self.ui.feeds.model().index(index.row(), 1, index.parent()))
