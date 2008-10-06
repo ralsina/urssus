@@ -416,6 +416,8 @@ class Feed(elixir.Entity):
       if self.curUnread==-1:
         info ("Forcing recount in %s", self.title)
         self.curUnread=Post.query.filter(Post.feed==self).filter(Post.deleted==False).filter(Post.unread==True).count()
+      else:
+        info ("Got cached recount")
     return self.curUnread
       
   def updateFeedData(self, parsedFeed):
@@ -461,15 +463,17 @@ class Feed(elixir.Entity):
         pass #I am not going to care about errors here :-D
         
   def update(self, forced=False):
+    u=self.unreadCount()
     try:
       self.real_update(forced)
     except: # FIXME: reraise
       pass
     # Add feed and parents to the update queue
-    p=self
-    while p:
-      feedStatusQueue.put([1, p.id])
-      p=p.parent
+    if self.unreadCount()<>u:
+      p=self
+      while p:
+        feedStatusQueue.put([1, p.id])
+        p=p.parent
     
   def real_update(self, forced=False):
     if not self.xmlUrl: # Not a real feed
@@ -499,7 +503,7 @@ class Feed(elixir.Entity):
       
     self.updating=True
     # Notify feed is updating
-    feedStatusQueue.put([0, self.id])
+#    feedStatusQueue.put([0, self.id])
     posts=[]
     for post in d['entries']:
       try:
