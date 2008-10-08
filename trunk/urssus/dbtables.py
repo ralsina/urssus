@@ -694,6 +694,7 @@ def initDB():
   # FIXME: show what we are doing on the UI
   os.system('urssus_upgrade_db')
   elixir.metadata.bind = database.dbUrl
+#  elixir.metadata.bind.echo = True
   elixir.setup_all()
   try:
     # Make sure we have a root feed
