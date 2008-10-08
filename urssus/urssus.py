@@ -1144,7 +1144,7 @@ class MainWindow(QtGui.QMainWindow):
     AboutDialog(self).exec_()
     
   def updateFeedStatus(self):
-    info("updateFeedStatus %d", len(self.pendingFeedUpdates))
+    info("updateFeedStatus queue %d", len(self.pendingFeedUpdates))
     try:
       while not feedStatusQueue.empty():
         # The idea: this function should never fail.
