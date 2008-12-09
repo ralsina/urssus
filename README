@@ -20,7 +20,7 @@ Installation
 
 Hopefully:
 
-  python setup.py installed
+  python setup.py install
   
 If that doesn't work, get paver and try:
 
