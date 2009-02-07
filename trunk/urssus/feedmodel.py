@@ -25,6 +25,10 @@ from PyQt4 import QtGui, QtCore
 draggable = QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsDragEnabled
 droppable = QtCore.Qt.ItemIsDropEnabled
 editable  = QtCore.Qt.ItemIsEditable
+# Roles used in the items
+feed_id=QtCore.Qt.UserRole
+display=QtCore.Qt.DisplayRole
+position=QtCore.Qt.UserRole+1
 
 folderflags=draggable|droppable
 feedflags=draggable
@@ -47,7 +51,7 @@ class FeedModel(QtGui.QStandardItemModel):
       item=self.itemFromIndex(index)
       if item:
         try:
-          feed=Feed.get_by(id=item.data(QtCore.Qt.UserRole).toInt()[0])
+          feed=Feed.get_by(id=item.data(feed_id).toInt()[0])
           feed.text=unicode(value.toString())
           elixir.session.commit()
         except:
@@ -65,7 +69,8 @@ class FeedModel(QtGui.QStandardItemModel):
     def addSubTree(parentItem, feed):
       item1=QtGui.QStandardItem(unicode(feed))
       item1.setToolTip(unicode(feed))
-      item1.setData(QtCore.QVariant(feed.id), QtCore.Qt.UserRole)
+      item1.setData(QtCore.QVariant(feed.id), feed_id)
+      item1.setData(QtCore.QVariant(feed.position), position)
       if feed.xmlUrl:
         item1.setFlags(feedflags|editable)
       else:
@@ -74,7 +79,8 @@ class FeedModel(QtGui.QStandardItemModel):
       count=feed.unreadCount()
       item2=QtGui.QStandardItem(unicode(count or ''))
       item2.setToolTip(unicode(count))
-      item2.setData(QtCore.QVariant(feed.id), QtCore.Qt.UserRole)
+      item2.setData(QtCore.QVariant(feed.id), feed_id)
+      item2.setData(QtCore.QVariant(feed.position), position)
       item2.setTextAlignment(QtCore.Qt.AlignRight)
       if feed.xmlUrl:
         item2.setFlags(feedflags &~ QtCore.Qt.ItemIsDropEnabled)
@@ -183,7 +189,7 @@ class FeedModel(QtGui.QStandardItemModel):
   def feedFromIndex(self, index):
     item=self.itemFromIndex(index)
     if item:
-      id=item.data(QtCore.Qt.UserRole).toInt()[0]
+      id=item.data(feed_id).toInt()[0]
       return Feed.get_by(id=id)
     return None
     
@@ -192,3 +198,15 @@ class FeedModel(QtGui.QStandardItemModel):
       return self.feedIndex[feed.id][0]      
     else:
       return QtCore.QModelIndex()
+
+  def sort(self, column, _order):
+    order = [1,-1][_order]
+    print "ORDER", order
+    if column==0:
+      for f in Feed.query.all():
+        f.children.sort(cmp=lambda x, y:order*cmp(x.text, y.text))
+    elif column==1:
+      for f in Feed.query.all():
+        f.children.sort(cmp=lambda x, y:order*cmp(x.unreadCount(), y.unreadCount()))
+
+    QtGui.QStandardItemModel.sort(self, column, _order)
