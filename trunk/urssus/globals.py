@@ -47,29 +47,49 @@ feedUpdateQueue=processing.Queue()
 import config
 
 # Logging
-if sys.platform=='win32':
-  # easylog and Processing on windows == broken
-  def dumb(*a, **kw):
-    pass
-  critical=dumb
-  error=dumb
-  warning=dumb
-  debug=dumb
-  info=dumb 
-  setLogger=dumb 
-  DEBUG=dumb
-else:
-  import util.easylog as easylog
-  easylog.setLogger(name='urssus', 
-                    level=easylog.DEBUG, 
-                    handlers=[easylog.DefaultConsole(), 
-                              easylog.RotatingFileHandler(filename=os.path.join(config.cfdir, 'urssus.log'), mode='a')
-                              ]
-                    )
-  critical=easylog.critical
-  error=easylog.error
-  info=easylog.info
-  warning=easylog.warning
+#if sys.platform=='win32':
+#  # easylog and Processing on windows == broken
+#  def dumb(*a, **kw):
+#    pass
+#  critical=dumb
+#  error=dumb
+#  warning=dumb
+#  debug=dumb
+#  info=dumb 
+#  setLogger=dumb 
+#  DEBUG=dumb
+#else:
+#  import util.easylog as easylog
+#  easylog.setLogger(name='urssus', 
+#                    level=easylog.DEBUG, 
+#                    handlers=[easylog.DefaultConsole(), 
+#                              easylog.RotatingFileHandler(filename=os.path.join(config.cfdir, 'urssus.log'), mode='a')
+#                              ]
+#                    )
+#  critical=easylog.critical
+#  error=easylog.error
+#  info=easylog.info
+#  warning=easylog.warning
+
+import logging
+logger=logging.getLogger('urssus')
+logger.setLevel(logging.DEBUG)
+if sys.platform<>'win32':
+  #create console handler and set level to debug
+  ch = logging.StreamHandler()
+  ch.setLevel(logging.DEBUG)
+  formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+  ch.setFormatter(formatter)
+  #add ch to logger
+  logger.addHandler(ch)
+
+critical=logger.critical
+error=logger.error
+warning=logger.warn
+info=logger.info
+debug=logger.debug
+
+logger.critical("Prueba")
 
 # Templates
 from util import tenjin

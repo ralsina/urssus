@@ -43,7 +43,6 @@ options(
         install_requires = ['SQLAlchemy>=0.5.0beta3', 
                             'Elixir>=0.6.0',
                             'processing', 
-                            'miruku', 
                             'simplejson', 
                             'pyxml', 
                             ],
