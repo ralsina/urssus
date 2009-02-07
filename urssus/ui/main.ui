@@ -80,7 +80,7 @@
         <enum>Qt::CustomContextMenu</enum>
        </property>
        <property name="frameShape" >
-        <enum>QFrame::Panel</enum>
+        <enum>QFrame::StyledPanel</enum>
        </property>
        <property name="frameShadow" >
         <enum>QFrame::Plain</enum>
@@ -109,6 +109,9 @@
        <property name="uniformRowHeights" >
         <bool>true</bool>
        </property>
+       <property name="sortingEnabled" >
+        <bool>false</bool>
+       </property>
        <property name="animated" >
         <bool>true</bool>
        </property>
@@ -131,7 +134,7 @@
          <enum>Qt::CustomContextMenu</enum>
         </property>
         <property name="frameShape" >
-         <enum>QFrame::Panel</enum>
+         <enum>QFrame::StyledPanel</enum>
         </property>
         <property name="frameShadow" >
          <enum>QFrame::Plain</enum>
@@ -166,7 +169,7 @@
        </widget>
        <widget class="QFrame" name="view_container" >
         <property name="frameShape" >
-         <enum>QFrame::Panel</enum>
+         <enum>QFrame::StyledPanel</enum>
         </property>
         <property name="frameShadow" >
          <enum>QFrame::Plain</enum>
@@ -225,7 +228,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>27</height>
+     <height>23</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFeed" >
