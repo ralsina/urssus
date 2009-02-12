@@ -1471,111 +1471,12 @@ class MainWindow(QtGui.QMainWindow):
       for action in actions:
         action.setEnabled(True)
 
-
-
-
-
-
-  def open_feed(self, index):
-    if not index.isValid():
-      return
-    feed=self.ui.feeds.model().feedFromIndex(index)
-    if not feed: return
-    
-    unreadCount=feed.unreadCount()
-        
-    if feed.xmlUrl:
-      self.showingFolder=False
-    else:
-      self.showingFolder=True
-    
-    self.ui.feeds.setCurrentIndex(index)
-    # Scroll the feeds view so this feed is visible
-    self.ui.feeds.scrollTo(index)
-
-    # Update window title
-    if feed.title:
-      self.setWindowTitle("%s - uRSSus"%feed.title)
-    elif feed.text:
-      self.setWindowTitle("%s - uRSSus"%feed.text)
-    else:
-      self.setWindowTitle("uRSSus")
-
-    actions=[ self.ui.actionNext_Article,
-              self.ui.actionNext_Unread_Article,  
-              self.ui.actionPrevious_Article,  
-              self.ui.actionPrevious_Unread_Article,  
-              self.ui.actionMark_as_Read,  
-              self.ui.actionMark_as_Unread,  
-              self.ui.actionMark_as_Important,  
-              self.ui.actionDelete_Article,  
-              self.ui.actionOpen_in_Browser,  
-              self.ui.actionRemove_Important_Mark,  
-             ]
-    
-    if self.combinedView: # CombinedView / FancyView
-      # Lose the model in self.ui.posts
-      self.ui.posts.setModel(None)
-      
-      info("Opening combined")
-      if feed.xmlUrl: # A regular feed
-        self.posts=Post.query.filter(Post.feed==feed)
-        showFeedInPosts=True
-      else: # A folder
-        self.posts=feed.allPostsQuery()
-        showFeedInPosts=False
-      # Filter by text according to the contents of self.textFilter
-      if self.textFilter:
-        self.posts=self.posts.filter(sql.or_(Post.title.like('%%%s%%'%self.textFilter), 
-                                             Post.content.like('%%%s%%'%self.textFilter), 
-                                             Post.tags.like('%%%s%%'%self.textFilter)))
-      if self.statusFilter:
-        self.posts=self.posts.filter(self.statusFilter==True)
-      # FIXME: find a way to add sorting to the UI for this (not very important)
-      self.posts=self.posts.order_by(sql.desc(Post.date)).all()
-      self.ui.view.setHtml(renderTemplate(self.combinedTemplate, posts=self.posts, showFeed=showFeedInPosts))
-
-      for action in actions:
-        action.setEnabled(False)
-
-    else: # StandardView / Widescreen View
-      info ("Opening in standard view")
-      # FIXME: There must be a better place to call this
-      self.savePostSectionSizes()
-      
-      model=self.ui.posts.model()
-
-      # Remember current post
-      if self.ui.posts.model():
-        post=self.ui.posts.model().postFromIndex(self.ui.posts.currentIndex())
-      else:
-        post=None
-
-      # The == are weird because sqlalchemy reimplementes the == operator for
-      # model.statusFilter
-      if model and model.feed_id==feed.id and \
-            str(model.textFilter)==str(self.textFilter) and \
-            str(model.statusFilter)==str(self.statusFilter):
-        self.ui.posts.model().initData(update=True)
-      else:
-        self.ui.posts.setModel(PostModel(self.ui.posts, feed, self.textFilter, self.statusFilter))
-        QtCore.QObject.connect(self.ui.posts.model(), QtCore.SIGNAL("modelReset()"), self.updateListedFeedItem)
-        QtCore.QObject.connect(self.ui.posts.model(), QtCore.SIGNAL("dropped(PyQt_PyObject)"), self.updateTree)
-        header=self.ui.posts.header()
-        # Don't show feed column yet
-        header.hideSection(3)
-      self.fixPostListUI()
-
-      # Try to scroll to the same post or to the top
-      
-      self.updatePostList()
-      
-      for action in actions:
-        action.setEnabled(True)
-
   def currentFeed(self):
-    '''The feed linked to the current index in self.ui.feeds'''
-    return self.ui.feeds.model().feedFromIndex(self.ui.feeds.currentIndex())
+    '''The feed linked to the current item in self.ui.feedTree'''
+    item=self.ui.feedTree.currentItem()
+    if item:
+      return item.feed
+    return None
 
   def updatePostList(self):
     # This may call updateFeedItem, so avoid loops
