@@ -508,11 +508,11 @@ class MainWindow(QtGui.QMainWindow):
 
   def fixFeedListUI(self):
     # Fixes for feed list UI
-    header=self.ui.feeds.header()
-    header.setStretchLastSection(False)
-    header.setResizeMode(0, QtGui.QHeaderView.Stretch)
-    header.setResizeMode(1, QtGui.QHeaderView.Fixed)
-    header.resizeSection(1, header.fontMetrics().width(' Unread ')+4)
+    for header in self.ui.feeds.header(), self.ui.feedTree.header():
+      header.setStretchLastSection(False)
+      header.setResizeMode(0, QtGui.QHeaderView.Stretch)
+      header.setResizeMode(1, QtGui.QHeaderView.Fixed)
+      header.resizeSection(1, header.fontMetrics().width(' Unread ')+4)
     
   def savePostColumns(self):
     config.setValue('ui', 'visiblePostColumns', [self.ui.actionShowStarredColumn.isChecked(), 
@@ -847,6 +847,32 @@ class MainWindow(QtGui.QMainWindow):
     menu.addAction(self.ui.actionDelete_Article)
     menu.exec_(QtGui.QCursor.pos())
 
+  def on_feedTree_customContextMenuRequested(self, pos=None):
+    if pos==None: return
+    
+    feed=self.ui.feedTree.itemAt(pos).feed
+    if feed:      
+      menu=QtGui.QMenu()
+      # Common actions
+      menu.addAction(self.ui.actionMark_Feed_as_Read)
+      menu.addSeparator()
+      menu.addAction(self.ui.actionFetch_Feed)
+      menu.addSeparator()
+      if feed.xmlUrl: # Regular Feed
+        menu.addAction(self.ui.actionOpen_Homepage)
+        menu.addSeparator()
+        menu.addAction(self.ui.actionEdit_Feed)
+        menu.addAction(self.ui.actionExpire_Feed)
+        menu.addAction(self.ui.actionDelete_Feed)
+      else: # Folder
+        menu.addAction(self.ui.actionAdd_Feed)
+        menu.addAction(self.ui.actionNew_Folder)
+        menu.addSeparator()
+        menu.addAction(self.ui.actionEdit_Feed)
+        menu.addAction(self.ui.actionDelete_Feed)
+      menu.exec_(QtGui.QCursor.pos())
+
+
   def on_feeds_customContextMenuRequested(self, pos=None):
     if pos==None: return
     
@@ -986,12 +1012,11 @@ class MainWindow(QtGui.QMainWindow):
     [name, ok]=QtGui.QInputDialog.getText(self, "Add Folder - uRSSus", "&Folder name:")
     if ok:
       newFolder=Feed(text=unicode(name))
-      # Figure out the insertion point
-      index=self.ui.feeds.currentIndex()
-      if index.isValid():         
-        curFeed=self.ui.feeds.model().feedFromIndex(index)
-      else:
-        curFeed=root_feed
+      # Figure out the insertion point      
+      item=self.ui.feedTree.currentItem()
+      if not item:
+        item=self.feedTree.root_item
+      curFeed=item.feed
       # if curFeed is a feed, add as sibling
       try:
         if curFeed.xmlUrl:
@@ -1003,7 +1028,7 @@ class MainWindow(QtGui.QMainWindow):
       except:
         elixir.session.rollback()
       self.initTree()
-      self.ui.feeds.setCurrentIndex(self.ui.feeds.model().indexFromFeed(newFolder))
+      #self.ui.feeds.setCurrentIndex(self.ui.feeds.model().indexFromFeed(newFolder))
 
   def on_actionShow_Only_Unread_Feeds_triggered(self, checked=None):
     if checked==None: return
@@ -1217,6 +1242,7 @@ class MainWindow(QtGui.QMainWindow):
 
   def initTree(self):
     self.setEnabled(False)
+    self.ui.feedTree.initTree()
     # Initialize the tree from the Feeds
     if not self.ui.feeds.model():
       self.ui.feeds.setModel(FeedModel(self))
@@ -1705,7 +1731,10 @@ class MainWindow(QtGui.QMainWindow):
         
   def on_actionOpen_Homepage_triggered(self, i=None):
     if i==None: return
-    feed=self.ui.feeds.model().feedFromIndex(self.ui.feeds.currentIndex())
+    feed=None
+    item=self.ui.feedTree.currentItem()
+    if item:
+      feed=item.feed
     if feed and feed.htmlUrl:
       info("Opening %s", feed.htmlUrl)
       QtGui.QDesktopServices.openUrl(QtCore.QUrl(feed.htmlUrl))
