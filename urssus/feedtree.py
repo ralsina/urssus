@@ -6,6 +6,7 @@ from pprint import pprint
 import dbtables as db
 import elixir
 from globals import *
+from norm import normalizar
 
 # constants
 draggable = QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsDragEnabled
@@ -54,9 +55,7 @@ class Node(QtGui.QTreeWidgetItem):
       if column==1:
         return self.feed.unreadCount()<other.feed.unreadCount()
       else:
-        return self.feed.text.lower()<other.feed.text.lower()
-        
-
+        return normalizar(self.feed.text.lower())<normalizar(other.feed.text.lower())
 
 class FeedTree(QtGui.QTreeWidget):
     def __init__(self,parent=None):
