@@ -894,7 +894,7 @@ class MainWindow(QtGui.QMainWindow):
     if not item: return
     curFeed=item.feed
     if not curFeed.xmlUrl:
-      self.ui.feedTree.edit(item)
+      self.ui.feedTree.editItem(item)
       return
     info ("Editing feed: %s", curFeed)
 
@@ -928,9 +928,9 @@ class MainWindow(QtGui.QMainWindow):
       except:
         elixir.session.rollback()
       self.initTree()
-      idx=self.ui.feeds.model().indexFromFeed(newFeed)
-      self.ui.feeds.setCurrentIndex(idx)
-      self.open_feed(idx)
+      item=self.ui.feedTree.itemFromFeed(newFeed)
+      self.ui.feedTree.setCurrentItem(item)
+      self.open_feed2(item)
       self.on_actionEdit_Feed_triggered(True)
     
   def realAddFeed(self, url, output):
