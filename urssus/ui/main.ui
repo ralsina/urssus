@@ -63,36 +63,24 @@
    <enum>Qt::ToolButtonIconOnly</enum>
   </property>
   <widget class="QWidget" name="centralWidget" >
-   <layout class="QVBoxLayout" name="verticalLayout_2" >
-    <property name="margin" >
-     <number>1</number>
-    </property>
+   <layout class="QHBoxLayout" name="horizontalLayout" >
     <item>
      <widget class="QSplitter" name="splitter_2" >
       <property name="orientation" >
        <enum>Qt::Horizontal</enum>
       </property>
-      <widget class="QTreeView" name="feeds" >
-       <property name="focusPolicy" >
-        <enum>Qt::NoFocus</enum>
-       </property>
+      <widget class="FeedTree" name="feedTree" >
        <property name="contextMenuPolicy" >
         <enum>Qt::CustomContextMenu</enum>
-       </property>
-       <property name="frameShape" >
-        <enum>QFrame::StyledPanel</enum>
-       </property>
-       <property name="frameShadow" >
-        <enum>QFrame::Plain</enum>
-       </property>
-       <property name="editTriggers" >
-        <set>QAbstractItemView::DoubleClicked</set>
        </property>
        <property name="dragEnabled" >
         <bool>true</bool>
        </property>
+       <property name="dragDropOverwriteMode" >
+        <bool>false</bool>
+       </property>
        <property name="dragDropMode" >
-        <enum>QAbstractItemView::DragDrop</enum>
+        <enum>QAbstractItemView::InternalMove</enum>
        </property>
        <property name="alternatingRowColors" >
         <bool>true</bool>
@@ -100,27 +88,28 @@
        <property name="textElideMode" >
         <enum>Qt::ElideRight</enum>
        </property>
-       <property name="indentation" >
-        <number>20</number>
-       </property>
-       <property name="rootIsDecorated" >
-        <bool>true</bool>
-       </property>
        <property name="uniformRowHeights" >
         <bool>true</bool>
        </property>
        <property name="sortingEnabled" >
         <bool>true</bool>
        </property>
-       <property name="animated" >
-        <bool>true</bool>
-       </property>
        <property name="allColumnsShowFocus" >
         <bool>true</bool>
        </property>
-       <property name="headerHidden" >
-        <bool>false</bool>
+       <property name="columnCount" >
+        <number>2</number>
        </property>
+       <column>
+        <property name="text" >
+         <string>Title</string>
+        </property>
+       </column>
+       <column>
+        <property name="text" >
+         <string>Unread</string>
+        </property>
+       </column>
       </widget>
       <widget class="QSplitter" name="splitter" >
        <property name="orientation" >
@@ -191,49 +180,8 @@
           </widget>
          </item>
         </layout>
+        <zorder>view</zorder>
        </widget>
-      </widget>
-      <widget class="FeedTree" name="feedTree" >
-       <property name="contextMenuPolicy" >
-        <enum>Qt::CustomContextMenu</enum>
-       </property>
-       <property name="dragEnabled" >
-        <bool>true</bool>
-       </property>
-       <property name="dragDropOverwriteMode" >
-        <bool>false</bool>
-       </property>
-       <property name="dragDropMode" >
-        <enum>QAbstractItemView::InternalMove</enum>
-       </property>
-       <property name="alternatingRowColors" >
-        <bool>true</bool>
-       </property>
-       <property name="textElideMode" >
-        <enum>Qt::ElideRight</enum>
-       </property>
-       <property name="uniformRowHeights" >
-        <bool>true</bool>
-       </property>
-       <property name="sortingEnabled" >
-        <bool>true</bool>
-       </property>
-       <property name="allColumnsShowFocus" >
-        <bool>true</bool>
-       </property>
-       <property name="columnCount" >
-        <number>2</number>
-       </property>
-       <column>
-        <property name="text" >
-         <string>Title</string>
-        </property>
-       </column>
-       <column>
-        <property name="text" >
-         <string>Unread</string>
-        </property>
-       </column>
       </widget>
      </widget>
     </item>

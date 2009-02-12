@@ -1274,7 +1274,7 @@ class MainWindow(QtGui.QMainWindow):
     if self.ui.actionShort_Feed_List.isChecked():
       self.ui.centralWidget.layout().addWidget(self.ui.splitter) 
       self.ui.centralWidget.layout().addWidget(self.ui.splitter_2) 
-      self.ui.splitter_2.insertWidget(0, self.ui.feeds)
+      self.ui.splitter_2.insertWidget(0, self.ui.feedTree)
       self.ui.splitter_2.insertWidget(1, self.ui.posts)
       self.ui.splitter.insertWidget(0, self.ui.splitter_2)
       self.ui.splitter.insertWidget(1, self.ui.view_container)
@@ -1285,7 +1285,7 @@ class MainWindow(QtGui.QMainWindow):
       self.ui.centralWidget.layout().addWidget(self.ui.splitter_2) 
       self.ui.splitter.insertWidget(0, self.ui.posts)
       self.ui.splitter.insertWidget(1, self.ui.view_container)
-      self.ui.splitter_2.insertWidget(0, self.ui.feeds)
+      self.ui.splitter_2.insertWidget(0, self.ui.feedTree)
       self.ui.splitter_2.insertWidget(1, self.ui.splitter)
       self.ui.splitter.show()
       self.ui.splitter_2.show()
@@ -1308,7 +1308,7 @@ class MainWindow(QtGui.QMainWindow):
     if self.ui.actionShort_Feed_List.isChecked():
       self.ui.centralWidget.layout().addWidget(self.ui.splitter) 
       self.ui.centralWidget.layout().addWidget(self.ui.splitter_2) 
-      self.ui.splitter.insertWidget(0, self.ui.feeds)
+      self.ui.splitter.insertWidget(0, self.ui.feedTree)
       self.ui.splitter.insertWidget(1, self.ui.posts)
       self.ui.splitter_2.insertWidget(0, self.ui.splitter)
       self.ui.splitter_2.insertWidget(1, self.ui.view_container)
@@ -1317,7 +1317,7 @@ class MainWindow(QtGui.QMainWindow):
     else:
       self.ui.centralWidget.layout().addWidget(self.ui.splitter) 
       self.ui.centralWidget.layout().addWidget(self.ui.splitter_2) 
-      self.ui.splitter_2.insertWidget(0, self.ui.feeds)
+      self.ui.splitter_2.insertWidget(0, self.ui.feedTree)
       self.ui.splitter_2.insertWidget(1, self.ui.posts)
       self.ui.splitter_2.insertWidget(2, self.ui.view_container)
       self.ui.splitter.hide()
@@ -1341,7 +1341,7 @@ class MainWindow(QtGui.QMainWindow):
     if self.ui.actionShort_Feed_List.isChecked():
       self.ui.centralWidget.layout().addWidget(self.ui.splitter) 
       self.ui.centralWidget.layout().addWidget(self.ui.splitter_2)
-      self.ui.splitter.insertWidget(0, self.ui.feeds)
+      self.ui.splitter.insertWidget(0, self.ui.feedTree)
       self.ui.splitter.insertWidget(1, self.ui.view_container)
       self.ui.splitter.show()
       self.ui.splitter_2.hide()
@@ -1388,7 +1388,7 @@ class MainWindow(QtGui.QMainWindow):
     self.queueFeedUpdate(feed)
 
   def open_feed2(self, item):
-    critical("OPENFEED2")
+    if not item: return
     feed=item.feed
     unreadCount=feed.unreadCount()
         
