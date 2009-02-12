@@ -508,11 +508,11 @@ class MainWindow(QtGui.QMainWindow):
 
   def fixFeedListUI(self):
     # Fixes for feed list UI
-    for header in self.ui.feeds.header(), self.ui.feedTree.header():
-      header.setStretchLastSection(False)
-      header.setResizeMode(0, QtGui.QHeaderView.Stretch)
-      header.setResizeMode(1, QtGui.QHeaderView.Fixed)
-      header.resizeSection(1, header.fontMetrics().width(' Unread ')+4)
+    header=self.ui.feedTree.header()
+    header.setStretchLastSection(False)
+    header.setResizeMode(0, QtGui.QHeaderView.Stretch)
+    header.setResizeMode(1, QtGui.QHeaderView.Fixed)
+    header.resizeSection(1, header.fontMetrics().width(' Unread ')+4)
     
   def savePostColumns(self):
     config.setValue('ui', 'visiblePostColumns', [self.ui.actionShowStarredColumn.isChecked(), 
@@ -1218,17 +1218,7 @@ class MainWindow(QtGui.QMainWindow):
   def initTree(self):
     self.setEnabled(False)
     self.ui.feedTree.initTree()
-    # Initialize the tree from the Feeds
-    if not self.ui.feeds.model():
-      self.ui.feeds.setModel(FeedModel(self))
-    else:
-      self.ui.feeds.model().initData()
     self.fixFeedListUI()
-
-    # Open all required folders
-    for feed in Feed.query().filter_by(is_open=True):
-      self.ui.feeds.expand(self.ui.feeds.model().indexFromFeed(feed))
-    
     self.setEnabled(True)
     self.filterWidget.setEnabled(True)
     self.searchWidget.setEnabled(True)
@@ -1753,18 +1743,18 @@ class MainWindow(QtGui.QMainWindow):
   def on_actionMark_Feed_as_Read_triggered(self, i=None):
     if i==None: return
 
-    idx=self.ui.feeds.currentIndex()
-    feed=self.ui.feeds.model().feedFromIndex(idx)
+    item=self.ui.feedTree.currentItem()
+    feed=item.feed
     # See if we are displaying the feed using the post list
     if self.ui.posts.model() and self.ui.posts.model().feed_id==feed.id:
       self.ui.posts.model().markRead()
       self.queueFeedUpdate(feed)
     else: # Mark as read a feed from the tree
-      idx=self.ui.feeds.currentIndex()
-      feed=self.ui.feeds.model().feedFromIndex(idx)
-      if feed:
+      item=self.ui.feedTree.currentItem()
+      if item:
+        feed=item.feed
         feed.markAsRead()
-        self.open_feed(idx) # To update all the actions/items
+        self.open_feed2(item) # To update all the actions/items
 
   @RetryOnDBError
   def on_actionDelete_Feed_triggered(self, i=None):
