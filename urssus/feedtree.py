@@ -10,6 +10,7 @@ import elixir
 draggable = QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsDragEnabled
 droppable = QtCore.Qt.ItemIsDropEnabled
 editable  = QtCore.Qt.ItemIsEditable
+enabled   = QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable 
 
 id_map={}
 
@@ -55,9 +56,11 @@ class FeedTree(QtGui.QTreeWidget):
           item.setExpanded(True)
 
     def initTree(self):
-        self.id_map={}
         self.clear()
-        self.addTopLevelItems([Node(mf) for mf in db.MetaFeed.query.all()])
+        for mf in db.MetaFeed.query.all():
+          item=Node(mf)
+          item.setFlags(enabled)
+          self.addTopLevelItem(item)
         self.root_item=Node(db.root_feed)
         self.addTopLevelItem(self.root_item)
         
@@ -90,6 +93,11 @@ class FeedTree(QtGui.QTreeWidget):
         # Do normal drop
         return QtGui.QTreeWidget.dropEvent(self, ev)
             
+            
+    def setCurrentFeed(self, feed):
+      item=id_map.get(feed.id, None)
+      if item:
+        self.setCurrentItem(item)
             
 def main():
     db.initDB()

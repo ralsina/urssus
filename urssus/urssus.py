@@ -872,32 +872,6 @@ class MainWindow(QtGui.QMainWindow):
         menu.addAction(self.ui.actionDelete_Feed)
       menu.exec_(QtGui.QCursor.pos())
 
-
-  def on_feeds_customContextMenuRequested(self, pos=None):
-    if pos==None: return
-    
-    feed=self.ui.feeds.model().feedFromIndex(self.ui.feeds.currentIndex())
-    if feed:      
-      menu=QtGui.QMenu()
-      # Common actions
-      menu.addAction(self.ui.actionMark_Feed_as_Read)
-      menu.addSeparator()
-      menu.addAction(self.ui.actionFetch_Feed)
-      menu.addSeparator()
-      if feed.xmlUrl: # Regular Feed
-        menu.addAction(self.ui.actionOpen_Homepage)
-        menu.addSeparator()
-        menu.addAction(self.ui.actionEdit_Feed)
-        menu.addAction(self.ui.actionExpire_Feed)
-        menu.addAction(self.ui.actionDelete_Feed)
-      else: # Folder
-        menu.addAction(self.ui.actionAdd_Feed)
-        menu.addAction(self.ui.actionNew_Folder)
-        menu.addSeparator()
-        menu.addAction(self.ui.actionEdit_Feed)
-        menu.addAction(self.ui.actionDelete_Feed)
-      menu.exec_(QtGui.QCursor.pos())
-
   def on_actionExpire_Feed_triggered(self, i=None):
     if i==None: return
     index=self.ui.feeds.currentIndex()
@@ -1028,7 +1002,6 @@ class MainWindow(QtGui.QMainWindow):
       except:
         elixir.session.rollback()
       self.initTree()
-      #self.ui.feeds.setCurrentIndex(self.ui.feeds.model().indexFromFeed(newFolder))
 
   def on_actionShow_Only_Unread_Feeds_triggered(self, checked=None):
     if checked==None: return
@@ -1275,15 +1248,23 @@ class MainWindow(QtGui.QMainWindow):
       elixir.session.commit()
     except:
       elixir.session.rollback()
-    
-  def on_feeds_clicked(self, index):
-    self.open_feed(index)
-    feed=self.ui.feeds.model().feedFromIndex(index)
-    if not feed: return
-    if self.combinedView:
-      self.open_feed(index)
-    else:
+
+  def on_feedTree_itemClicked(self, item, column=None):
+    if not item: return
+    feed=item.feed
+    self.open_feed2(item)
+    info("Opening Feed", feed)
+    if not self.combinedView:
       self.ui.view.setHtml(renderTemplate('feed.tmpl', feed=feed))
+
+#  def on_feeds_clicked(self, index):
+#    self.open_feed(index)
+#    feed=self.ui.feeds.model().feedFromIndex(index)
+#    if not feed: return
+#    if self.combinedView:
+#      self.open_feed(index)
+#    else:
+#      self.ui.view.setHtml(renderTemplate('feed.tmpl', feed=feed))
 
   def autoAdjustSplitters(self):
     # Surprising splitter size prevention
@@ -1412,6 +1393,105 @@ class MainWindow(QtGui.QMainWindow):
     
     feed=Feed.get_by(id=self.ui.posts.model().feed_id)
     self.queueFeedUpdate(feed)
+
+  def open_feed2(self, item):
+    critical("OPENFEED2")
+    feed=item.feed
+    unreadCount=feed.unreadCount()
+        
+    if feed.xmlUrl:
+      self.showingFolder=False
+    else:
+      self.showingFolder=True
+    
+    self.ui.feedTree.setCurrentFeed(feed)
+    # Scroll the feeds view so this feed is visible
+    self.ui.feedTree.scrollToItem(item)
+
+    # Update window title
+    if feed.title:
+      self.setWindowTitle("%s - uRSSus"%feed.title)
+    elif feed.text:
+      self.setWindowTitle("%s - uRSSus"%feed.text)
+    else:
+      self.setWindowTitle("uRSSus")
+
+    actions=[ self.ui.actionNext_Article,
+              self.ui.actionNext_Unread_Article,  
+              self.ui.actionPrevious_Article,  
+              self.ui.actionPrevious_Unread_Article,  
+              self.ui.actionMark_as_Read,  
+              self.ui.actionMark_as_Unread,  
+              self.ui.actionMark_as_Important,  
+              self.ui.actionDelete_Article,  
+              self.ui.actionOpen_in_Browser,  
+              self.ui.actionRemove_Important_Mark,  
+             ]
+    
+    if self.combinedView: # CombinedView / FancyView
+      # Lose the model in self.ui.posts
+      self.ui.posts.setModel(None)
+      
+      info("Opening combined")
+      if feed.xmlUrl: # A regular feed
+        self.posts=Post.query.filter(Post.feed==feed)
+        showFeedInPosts=True
+      else: # A folder
+        self.posts=feed.allPostsQuery()
+        showFeedInPosts=False
+      # Filter by text according to the contents of self.textFilter
+      if self.textFilter:
+        self.posts=self.posts.filter(sql.or_(Post.title.like('%%%s%%'%self.textFilter), 
+                                             Post.content.like('%%%s%%'%self.textFilter), 
+                                             Post.tags.like('%%%s%%'%self.textFilter)))
+      if self.statusFilter:
+        self.posts=self.posts.filter(self.statusFilter==True)
+      # FIXME: find a way to add sorting to the UI for this (not very important)
+      self.posts=self.posts.order_by(sql.desc(Post.date)).all()
+      self.ui.view.setHtml(renderTemplate(self.combinedTemplate, posts=self.posts, showFeed=showFeedInPosts))
+
+      for action in actions:
+        action.setEnabled(False)
+
+    else: # StandardView / Widescreen View
+      info ("Opening in standard view")
+      # FIXME: There must be a better place to call this
+      self.savePostSectionSizes()
+      
+      model=self.ui.posts.model()
+
+      # Remember current post
+      if self.ui.posts.model():
+        post=self.ui.posts.model().postFromIndex(self.ui.posts.currentIndex())
+      else:
+        post=None
+
+      # The == are weird because sqlalchemy reimplementes the == operator for
+      # model.statusFilter
+      if model and model.feed_id==feed.id and \
+            str(model.textFilter)==str(self.textFilter) and \
+            str(model.statusFilter)==str(self.statusFilter):
+        self.ui.posts.model().initData(update=True)
+      else:
+        self.ui.posts.setModel(PostModel(self.ui.posts, feed, self.textFilter, self.statusFilter))
+        QtCore.QObject.connect(self.ui.posts.model(), QtCore.SIGNAL("modelReset()"), self.updateListedFeedItem)
+        QtCore.QObject.connect(self.ui.posts.model(), QtCore.SIGNAL("dropped(PyQt_PyObject)"), self.updateTree)
+        header=self.ui.posts.header()
+        # Don't show feed column yet
+        header.hideSection(3)
+      self.fixPostListUI()
+
+      # Try to scroll to the same post or to the top
+      
+      self.updatePostList()
+      
+      for action in actions:
+        action.setEnabled(True)
+
+
+
+
+
 
   def open_feed(self, index):
     if not index.isValid():
