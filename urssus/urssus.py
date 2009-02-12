@@ -1059,7 +1059,7 @@ class MainWindow(QtGui.QMainWindow):
     elif status==2: # Important
       info ("Filtering by status: important")
       self.statusFilter=Post.important
-    self.open_feed(self.ui.feeds.currentIndex())
+    self.open_feed2(self.ui.feedTree.currentItem())
       
   def unFilterPosts(self):
     self.textFilter=''
