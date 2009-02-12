@@ -890,16 +890,17 @@ class MainWindow(QtGui.QMainWindow):
 
   def on_actionEdit_Feed_triggered(self, i=None):
     if i==None: return
-    index=self.ui.feeds.currentIndex()
-    curFeed=self.ui.feeds.model().feedFromIndex(index)
+    item=self.ui.feedTree.currentItem()
+    if not item: return
+    curFeed=item.feed
     if not curFeed.xmlUrl:
-      self.ui.feeds.edit(index)
+      self.ui.feedTree.edit(item)
       return
     info ("Editing feed: %s", curFeed)
 
     editDlg=FeedProperties(curFeed)
     editDlg.exec_()
-    self.open_feed(index)
+    self.open_feed2(item)
 
   def addFeed(self, url):
     # Use Mark pilgrim / Aaron Swartz's RSS finder module
