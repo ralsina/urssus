@@ -1211,9 +1211,9 @@ class MainWindow(QtGui.QMainWindow):
 
   def updateTree(self, feed):
     self.initTree()
-    idx=self.ui.feeds.model().indexFromFeed(feed)
-    self.ui.feeds.setCurrentIndex(idx)
-    self.open_feed(idx)
+    item=self.ui.feedTree.itemFromFeed(feed)
+    self.ui.feedTree.setCurrentItem(item)
+    self.open_feed2(item)
 
   def initTree(self):
     self.setEnabled(False)
