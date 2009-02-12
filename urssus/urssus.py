@@ -914,7 +914,7 @@ class MainWindow(QtGui.QMainWindow):
       # Figure out the insertion point
       item=self.ui.feedTree.currentItem()
       if item:         
-        curFeed=self.ui.feeds.model().feedFromIndex(index)
+        curFeed=item.feed
       else:
         curFeed=root_feed
       try:
