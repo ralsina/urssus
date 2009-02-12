@@ -912,8 +912,8 @@ class MainWindow(QtGui.QMainWindow):
       # Retrieve the feed
       newFeed=Feed.get_by(id=dlg.result)
       # Figure out the insertion point
-      index=self.ui.feeds.currentIndex()
-      if index.isValid():         
+      item=self.ui.feedTree.currentItem()
+      if item:         
         curFeed=self.ui.feeds.model().feedFromIndex(index)
       else:
         curFeed=root_feed
