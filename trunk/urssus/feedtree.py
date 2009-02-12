@@ -93,6 +93,8 @@ class FeedTree(QtGui.QTreeWidget):
         # Do normal drop
         return QtGui.QTreeWidget.dropEvent(self, ev)
             
+    def itemFromFeed(self, feed):
+        return id_map.get(feed.id, None)
             
     def setCurrentFeed(self, feed):
       item=id_map.get(feed.id, None)
