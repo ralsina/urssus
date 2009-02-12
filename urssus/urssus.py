@@ -1336,7 +1336,7 @@ class MainWindow(QtGui.QMainWindow):
     else:
       self.ui.centralWidget.layout().addWidget(self.ui.splitter) 
       self.ui.centralWidget.layout().addWidget(self.ui.splitter_2)
-      self.ui.splitter_2.insertWidget(0, self.ui.feeds)
+      self.ui.splitter_2.insertWidget(0, self.ui.feedTree)
       self.ui.splitter_2.insertWidget(1, self.ui.view_container)
       self.ui.splitter.hide()
       self.ui.splitter_2.show()
@@ -1609,7 +1609,7 @@ class MainWindow(QtGui.QMainWindow):
       importOPML(name, parent=t100)
       os.unlink(name)
       self.initTree()
-      self.ui.feeds.setCurrentIndex(self.ui.feeds.model().indexFromFeed(t100))
+      self.ui.feedTree.setCurrentItem(self.ui.feedTree.itemFromFeed(t100))
     
       
   def on_actionQuit_triggered(self, i=None):
