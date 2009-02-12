@@ -35,6 +35,13 @@ class Node(QtGui.QTreeWidgetItem):
                 return QtCore.QVariant(self.feed.text)
             elif column==1:
                 return QtCore.QVariant(self.feed.unreadCount())
+        elif role==QtCore.Qt.FontRole:
+          f=self.treeWidget().font()
+          if self.feed.unreadCount():
+            f.setBold(True)
+          else:
+            f.setBold(False)
+          return QtCore.QVariant(f)
         return QtGui.QTreeWidgetItem.data(self,column,role)
 
     def insertChild(self, index, child):
@@ -57,25 +64,27 @@ class FeedTree(QtGui.QTreeWidget):
         self.setColumnCount(2)
         self.setHeaderLabels(['Title','Unread'])
         self.draggedFeed=None
-        print self.sortByColumn, self.sortItems
-
+        
     def addTopLevelItem(self, item):
         QtGui.QTreeWidget.addTopLevelItem(self, item)
         if item.feed.is_open:
           item.setExpanded(True)
           
-    def sortByColumn(self, column, order):
-      critical("sortItems")
-      if order==QtCore.Qt.DescendingOrder: self.order_by='-'
+    def order_by(self):
+      critical("order_by")
+      header=self.header()
+      order=header.sortIndicatorOrder()
+      column=header.sortIndicatorSection()
+      
+      if order==QtCore.Qt.DescendingOrder: order_by='-'
       else:
-        self.order_by=''
+        order_by=''
       if column==0:
-        self.order_by+='text'
+        order_by+='text'
       else:
-        self.order_by+='unreadCount'
-        
-      critical("Ordering feeds by: %s"%self.order_by)
-      QtGui.QTreeWidget.sortItems(self, column, order)
+        order_by+='unreadCount'
+      return order_by
+      
 
     def initTree(self):
         self.clear()
