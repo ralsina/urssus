@@ -414,10 +414,10 @@ class Feed(elixir.Entity):
       self.curUnread=sum([ f.unreadCount() for f in self.getChildren()])
     else:
       if self.curUnread==-1:
-        info ("Forcing recount in %s", self.title)
+        debug ("Forcing recount in %s", self.title)
         self.curUnread=Post.query.filter(Post.feed==self).filter(Post.deleted==False).filter(Post.unread==True).count()
       else:
-        info ("Got cached recount")
+        debug ("Got cached recount")
     return self.curUnread
       
   def updateFeedData(self, parsedFeed):
@@ -644,7 +644,7 @@ class Feed(elixir.Entity):
     icon=None
     try:
       sicon=str(self.icon)
-      if sicon<>'None':
+      if sicon and sicon<>'None':
         if sicon.startswith(':/'): # A resource name
           icon=QtGui.QIcon(sicon)
         else:    
@@ -652,6 +652,12 @@ class Feed(elixir.Entity):
           pmap=QtGui.QPixmap()
           pmap.loadFromData(iconData)
           icon=QtGui.QIcon(pmap)
+      elif self.xmlUrl:
+        # No icon specified, but have xmlUrl:
+          icon=QtGui.QIcon(':/urssus.svg')
+      else:
+        # A folder
+          icon=QtGui.QIcon(':/folder.svg')
     except:
       pass # Te icon is not critical!
     return icon

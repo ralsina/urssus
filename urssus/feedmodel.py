@@ -38,8 +38,6 @@ class FeedModel(QtGui.QStandardItemModel):
     self.flags={}
     self.feedIndex={}
     self.feedCache={}
-    self.urssusicon=QtGui.QIcon(':/urssus.svg')
-    self.foldericon=QtGui.QIcon(':/folder.svg')
     QtGui.QStandardItemModel.__init__(self, parent)
     self.bfont=QtGui.QApplication.font()
     self.bfont.setBold(True)
@@ -94,14 +92,7 @@ class FeedModel(QtGui.QStandardItemModel):
       parentItem.appendRow([item1, item2])
 
       self.feedIndex[feed.id]=[self.indexFromItem(item1), self.indexFromItem(item2)]
-      icon=feed.getIcon()
-      if icon:
-        item1.setIcon(icon)
-      else:
-        if feed.xmlUrl:
-          item1.setIcon(self.urssusicon)
-        else:
-          item1.setIcon(self.foldericon)
+      item1.setIcon(feed.getIcon())
       if not feed.xmlUrl:
         for child in feed.getChildren():
           addSubTree(item1, child)
