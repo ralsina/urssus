@@ -1744,7 +1744,6 @@ class MainWindow(QtGui.QMainWindow):
   def on_actionNext_Article_triggered(self, i=None, do_open=True):
     if i==None: return
     info ("Next Article")
-    
     cp=self.getCurrentPost()
 
     # First ask the post list's model
@@ -1795,9 +1794,9 @@ class MainWindow(QtGui.QMainWindow):
     if i==None: return
     info("Next Feed")
     feed=self.currentFeed() or root_feed
-    nextFeed=feed.nextFeed()
+    nextFeed=feed.nextFeed(self.ui.feedTree.order_by)
     if nextFeed:
-      self.open_feed(self.ui.feeds.model().indexFromFeed(nextFeed))
+      self.open_feed2(self.ui.feedTree.itemFromFeed(nextFeed))
 
   @RetryOnDBError
   def on_actionPrevious_Feed_triggered(self, i=None):
@@ -1805,9 +1804,9 @@ class MainWindow(QtGui.QMainWindow):
     info("Previous Feed")
     f=self.currentFeed()
     if f:
-      prevFeed=f.previousFeed()
+      prevFeed=f.previousFeed(self.ui.feedTree.order_by)
       if prevFeed and prevFeed<>root_feed: # The root feed has no UI
-        self.open_feed(self.ui.feeds.model().indexFromFeed(prevFeed))
+        self.open_feed2(self.ui.feedTree.itemFromFeed(prevFeed))
     else:
       # No current feed, so what's the meaning of "previous feed"?
       pass
@@ -1817,9 +1816,9 @@ class MainWindow(QtGui.QMainWindow):
     if i==None: return
     info("Next unread feed")
     f=self.currentFeed() or root_feed
-    nextFeed=f.nextUnreadFeed()
+    nextFeed=f.nextUnreadFeed(self.ui.feedTree.order_by)
     if nextFeed:
-      self.open_feed(self.ui.feeds.model().indexFromFeed(nextFeed))
+      self.open_feed2(self.ui.feedTree.itemFromFeed(nextFeed))
 
   @RetryOnDBError
   def on_actionPrevious_Unread_Feed_triggered(self, i=None):
@@ -1827,9 +1826,9 @@ class MainWindow(QtGui.QMainWindow):
     info("Previous unread feed")
     f=self.currentFeed()
     if f:
-      prevFeed=f.previousUnreadFeed()
+      prevFeed=f.previousUnreadFeed(self.ui.feedTree.order_by)
       if prevFeed and prevFeed<>root_feed: # The root feed has no UI
-        self.open_feed(self.ui.feeds.model().indexFromFeed(prevFeed))
+        self.open_feed2(self.ui.feedTree.itemFromFeed(prevFeed))
     else:
       # No current feed, so what's the meaning of "previous unread feed"?
       pass
