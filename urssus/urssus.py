@@ -1223,18 +1223,16 @@ class MainWindow(QtGui.QMainWindow):
     self.filterWidget.setEnabled(True)
     self.searchWidget.setEnabled(True)
     
-  def on_feeds_expanded(self, index):
-    feed=self.ui.feeds.model().feedFromIndex(index)
-    if not feed: return
+  def on_feedTree_itemExpanded(self, item):
+    feed=item.feed
     try:
       feed.is_open=True
       elixir.session.commit()
     except:
       elixir.session.rollback()
     
-  def on_feeds_collapsed(self, index):
-    feed=self.ui.feeds.model().feedFromIndex(index)
-    if not feed: return
+  def on_feedTree_itemCollapsed(self, item):
+    feed=item.feed
     try:
       feed.is_open=False
       elixir.session.commit()
