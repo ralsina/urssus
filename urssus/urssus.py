@@ -1696,10 +1696,10 @@ class MainWindow(QtGui.QMainWindow):
   def on_actionFetch_Feed_triggered(self, i=None):
     if i==None: return
     # Start an immediate update for the current feed
-    idx=self.ui.feeds.currentIndex()
-    feed=self.ui.feeds.model().feedFromIndex(idx)
-    if feed:
-      feedUpdateQueue.put(feed)
+    item=self.ui.feedTree.currentItem()
+    if not item: return
+    feed=item.feed
+    feedUpdateQueue.put(feed)
       
   def on_actionFetch_All_Feeds_triggered(self, i=None):
     if i==None: return
