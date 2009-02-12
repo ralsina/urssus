@@ -167,12 +167,14 @@ class Feed(elixir.Entity):
 
   def getChildren(self, order_by='-text'):
     # Always should use this accesor, so metafolders work transparently
-    if order_by[0]=='-': mul=-1
+    if order_by[0]=='-': 
+      mul=-1
+      order_by=order_by[1:]
     else: mul=1
     
-    if order_by[1:]=='text':
+    if order_by=='text':
       _cmp=lambda x, y: mul* cmp(x.text, y.text)
-    elif order_by[1:]=='unreadCount':
+    elif order_by=='unreadCount':
       _cmp=lambda x, y: mul* cmp(x.unreadCount(), y.unreadCount())
     
     self.children.sort(cmp=_cmp)

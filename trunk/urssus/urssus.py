@@ -1494,51 +1494,40 @@ class MainWindow(QtGui.QMainWindow):
   def updateFeedItem(self, feed):
     info("Updating item for feed %d", feed.id)
     
-    model=self.ui.feeds.model()
+    item=self.ui.feedTree.itemFromFeed(feed)
     
-    if not model:
-      return
-      
-    index=model.indexFromFeed(feed)
-    
-    if not index.isValid():
+    if not item:
       return # Weird, but a feed was added behind our backs or something
     unreadCount=feed.unreadCount()
     # If we are updating the current feed, update the post list, too
     if self.ui.posts.model() and self.ui.posts.model().feed_id==feed.id:
       self.updatePostList()
-
-    item=self.ui.feeds.model().itemFromIndex(index)
-    item2=self.ui.feeds.model().itemFromIndex(self.ui.feeds.model().index(index.row(), 1, index.parent()))
   
     if self.showOnlyUnread:
       if unreadCount==0 and feed<>self.currentFeed() and feed.xmlUrl: 
         # Hide feeds with no unread items
-        self.ui.feeds.setRowHidden(item.row(), index.parent(), True)
+        item.setHidden(True)
       else:
-        self.ui.feeds.setRowHidden(item.row(), index.parent(), False)
+        item.setHidden(False)
     else:
-      if self.ui.feeds.isRowHidden(item.row(), index.parent()):
-        self.ui.feeds.setRowHidden(item.row(), index.parent(), False)
+      if item.parent() and item.parent().isHidden():
+        item.parent().setHidden(False)
     if feed.updating:
-      item.setForeground(QtGui.QColor("darkgrey"))
-      item2.setForeground(QtGui.QColor("darkgrey"))
+      item.setForeground(0, QtGui.QColor("darkgrey"))
+      item.setForeground(1, QtGui.QColor("darkgrey"))
     else:
-      item.setForeground(QtGui.QColor("black"))
-      item2.setForeground(QtGui.QColor("black"))
-    item.setText(unicode(feed))
-    item2.setText(unicode(unreadCount or ''))
-    item.setToolTip(unicode(feed))
-    item2.setToolTip(unicode(feed))
+      item.setForeground(0, QtGui.QColor("black"))
+      item.setForeground(1, QtGui.QColor("black"))
+    self.ui.feedTree.update(self.ui.feedTree.indexFromItem(item))
     
-    f=item.font()
-    if unreadCount:
-      f.setBold(True)
-    else:
-      f.setBold(False)
-    item.setFont(f)
-    item2.setFont(f)
-    
+#    f=item.font(0)
+#    if unreadCount:
+#      f.setBold(True)
+#    else:
+#      f.setBold(False)
+#    item.setFont(0, f)
+#    item.setFont(1, f)
+
     # And set the systray tooltip to the unread count on root_feed
     self.tray.updateIcon()
     self.setWindowIcon(self.tray.icon())
@@ -1794,7 +1783,7 @@ class MainWindow(QtGui.QMainWindow):
     if i==None: return
     info("Next Feed")
     feed=self.currentFeed() or root_feed
-    nextFeed=feed.nextFeed(self.ui.feedTree.order_by)
+    nextFeed=feed.nextFeed(self.ui.feedTree.order_by())
     if nextFeed:
       self.open_feed2(self.ui.feedTree.itemFromFeed(nextFeed))
 
@@ -1804,7 +1793,7 @@ class MainWindow(QtGui.QMainWindow):
     info("Previous Feed")
     f=self.currentFeed()
     if f:
-      prevFeed=f.previousFeed(self.ui.feedTree.order_by)
+      prevFeed=f.previousFeed(self.ui.feedTree.order_by())
       if prevFeed and prevFeed<>root_feed: # The root feed has no UI
         self.open_feed2(self.ui.feedTree.itemFromFeed(prevFeed))
     else:
@@ -1816,7 +1805,7 @@ class MainWindow(QtGui.QMainWindow):
     if i==None: return
     info("Next unread feed")
     f=self.currentFeed() or root_feed
-    nextFeed=f.nextUnreadFeed(self.ui.feedTree.order_by)
+    nextFeed=f.nextUnreadFeed(self.ui.feedTree.order_by())
     if nextFeed:
       self.open_feed2(self.ui.feedTree.itemFromFeed(nextFeed))
 
@@ -1826,7 +1815,7 @@ class MainWindow(QtGui.QMainWindow):
     info("Previous unread feed")
     f=self.currentFeed()
     if f:
-      prevFeed=f.previousUnreadFeed(self.ui.feedTree.order_by)
+      prevFeed=f.previousUnreadFeed(self.ui.feedTree.order_by())
       if prevFeed and prevFeed<>root_feed: # The root feed has no UI
         self.open_feed2(self.ui.feedTree.itemFromFeed(prevFeed))
     else:
