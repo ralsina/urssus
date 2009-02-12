@@ -1650,9 +1650,9 @@ class MainWindow(QtGui.QMainWindow):
   @RetryOnDBError
   def on_actionDelete_Feed_triggered(self, i=None):
     if i==None: return
-    index=self.ui.feeds.currentIndex()
-    item=self.ui.feeds.model().itemFromIndex(index)
-    feed=self.ui.feeds.model().feedFromIndex(index)
+    item=self.ui.feedTree.currentItem()
+    if not item: return
+    feed=item.feed
     # FIXME: generalize 'don't delete'
     # Don't delete root_feed
     if feed == root_feed:
@@ -1679,8 +1679,8 @@ class MainWindow(QtGui.QMainWindow):
         except:
           elixir.session.rollback()
         # No feed current
-        self.ui.feeds.setCurrentIndex(QtCore.QModelIndex())
-        self.ui.feeds.model().removeRow(index.row(), index.parent())
+        self.ui.feedTree.setCurrentItem(None)
+        item.parent().removeChild(item)
         self.queueFeedUpdate(parent)
         
   def on_actionOpen_Homepage_triggered(self, i=None):
