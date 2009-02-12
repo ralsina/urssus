@@ -530,7 +530,7 @@ class MainWindow(QtGui.QMainWindow):
     
   def notificationClicked(self):
     if self.notifiedFeed:
-      self.open_feed(self.ui.feeds.model().indexFromFeed(self.notifiedFeed))
+      self.open_feed2(self.ui.feedTree.itemFromFeed(self.notifiedFeed))
       self.activateWindow()
       self.raise_()
 
