@@ -180,7 +180,6 @@
           </widget>
          </item>
         </layout>
-        <zorder>view</zorder>
        </widget>
       </widget>
      </widget>
@@ -944,7 +943,7 @@
   <customwidget>
    <class>FeedTree</class>
    <extends>QTreeWidget</extends>
-   <header location="global" >feedtree.h</header>
+   <header location="global" >urssus/feedtree.h</header>
   </customwidget>
  </customwidgets>
  <resources>
