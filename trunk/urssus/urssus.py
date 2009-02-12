@@ -1518,7 +1518,8 @@ class MainWindow(QtGui.QMainWindow):
     else:
       item.setForeground(0, QtGui.QColor("black"))
       item.setForeground(1, QtGui.QColor("black"))
-    self.ui.feedTree.update(self.ui.feedTree.indexFromItem(item))
+    self.ui.feedTree.update(self.ui.feedTree.indexFromItem(item, 0))
+    self.ui.feedTree.update(self.ui.feedTree.indexFromItem(item, 1))
     
 #    f=item.font(0)
 #    if unreadCount:
