@@ -1066,7 +1066,7 @@ class MainWindow(QtGui.QMainWindow):
     self.filterWidget.ui.filter.setText('')
     self.filterWidget.ui.statusCombo.setCurrentIndex(0)
     info("Text filter removed")
-    self.open_feed(self.ui.feeds.currentIndex())
+    self.open_feed2(self.ui.feedTree.currentItem())
     self.ui.view.setFocus(QtCore.Qt.TabFocusReason)
 
   def updateFilterHistory(self, text):
@@ -1082,7 +1082,7 @@ class MainWindow(QtGui.QMainWindow):
     self.textFilter=unicode(self.filterWidget.ui.filter.text())
     self.updateFilterHistory(self.textFilter)
     info("Text filter set to: %s", self.textFilter)
-    self.open_feed(self.ui.feeds.currentIndex())
+    self.open_feed2(self.ui.feedTree.currentItem())
     self.ui.view.setFocus(QtCore.Qt.TabFocusReason)
 
   def linkHovered(self, link, title, content):
