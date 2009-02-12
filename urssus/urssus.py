@@ -1259,15 +1259,6 @@ class MainWindow(QtGui.QMainWindow):
     if not self.combinedView:
       self.ui.view.setHtml(renderTemplate('feed.tmpl', feed=feed))
 
-#  def on_feeds_clicked(self, index):
-#    self.open_feed(index)
-#    feed=self.ui.feeds.model().feedFromIndex(index)
-#    if not feed: return
-#    if self.combinedView:
-#      self.open_feed(index)
-#    else:
-#      self.ui.view.setHtml(renderTemplate('feed.tmpl', feed=feed))
-
   def autoAdjustSplitters(self):
     # Surprising splitter size prevention
     h=self.height()
@@ -1304,7 +1295,7 @@ class MainWindow(QtGui.QMainWindow):
     self.ui.actionCombined_View.setEnabled(True)
     self.ui.actionFancy_View.setEnabled(True)
     self.ui.actionWidescreen_View.setEnabled(True)
-    self.open_feed(self.ui.feeds.currentIndex())
+    self.open_feed2(self.ui.feedTree.currentItem())
     config.setValue('ui', 'viewMode', 'normal')
 
     self.autoAdjustSplitters()
@@ -1337,7 +1328,7 @@ class MainWindow(QtGui.QMainWindow):
     self.ui.actionCombined_View.setEnabled(True)
     self.ui.actionFancy_View.setEnabled(True)
     self.ui.actionWidescreen_View.setEnabled(False)
-    self.open_feed(self.ui.feeds.currentIndex())
+    self.open_feed2(self.ui.feedTree.currentItem())
     config.setValue('ui', 'viewMode', 'wide')
 
     self.autoAdjustSplitters()
@@ -1367,7 +1358,7 @@ class MainWindow(QtGui.QMainWindow):
     self.ui.actionCombined_View.setEnabled(False)
     self.ui.actionFancy_View.setEnabled(True)
     self.ui.actionWidescreen_View.setEnabled(True)
-    self.open_feed(self.ui.feeds.currentIndex())
+    self.open_feed2(self.ui.feedTree.currentItem())
     config.setValue('ui', 'viewMode', 'combined')
 
   def on_actionFancy_View_triggered(self, i=None):
