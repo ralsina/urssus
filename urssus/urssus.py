@@ -724,6 +724,7 @@ class MainWindow(QtGui.QMainWindow):
 
   def on_actionDelete_Article_triggered(self, i=None):
     # FIXME: handle selections
+    # FIXME: the article doesn't disappear (not a regression because of feedTree)
     if i==None: return
     curPost=self.getCurrentPost()
     if not curPost: return
@@ -737,7 +738,7 @@ class MainWindow(QtGui.QMainWindow):
         elixir.session.commit()
       except:
         elixir.session.rollback()
-      self.open_feed(self.ui.feeds.currentIndex())
+      self.open_feed2(self.ui.feedTree.currentItem())
 
   def on_actionMark_as_Read_triggered(self, i=None):
     # FIXME: handle selections
