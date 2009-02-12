@@ -875,9 +875,9 @@ class MainWindow(QtGui.QMainWindow):
 
   def on_actionExpire_Feed_triggered(self, i=None):
     if i==None: return
-    index=self.ui.feeds.currentIndex()
-    if index.isValid():         
-      curFeed=self.ui.feeds.model().feedFromIndex(index)
+    item=self.ui.feedTree.currentItem()
+    if not item: return
+    curFeed=item.feed
     info ("Expiring feed: %s", curFeed)
     curFeed.expire(expunge=True)
     # Update feed display (number of unreads may have changed)
@@ -885,7 +885,7 @@ class MainWindow(QtGui.QMainWindow):
     # the user actively expired it, we force a new postmodel
     # and reopen the feed
     self.ui.posts.setModel(None)
-    self.open_feed(index)
+    self.open_feed2(item)
     self.queueFeedUpdate(curFeed)
 
   def on_actionEdit_Feed_triggered(self, i=None):
