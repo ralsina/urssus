@@ -5,6 +5,7 @@ variant=QtCore.QVariant
 from pprint import pprint
 import dbtables as db
 import elixir
+from globals import *
 
 # constants
 draggable = QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsDragEnabled
@@ -37,10 +38,17 @@ class Node(QtGui.QTreeWidgetItem):
         return QtGui.QTreeWidgetItem.data(self,column,role)
 
     def insertChild(self, index, child):
-        print "INSERTCHILD"
         QtGui.QTreeWidgetItem.insertChild(self, index, child)
         if child.feed.is_open:
           child.setExpanded(True)
+          
+    def __lt__(self, other):
+      column=self.treeWidget().sortColumn()
+      if column==1:
+        return self.feed.unreadCount()<other.feed.unreadCount()
+      else:
+        return self.feed.text.lower()<other.feed.text.lower()
+        
 
 
 class FeedTree(QtGui.QTreeWidget):
@@ -49,11 +57,25 @@ class FeedTree(QtGui.QTreeWidget):
         self.setColumnCount(2)
         self.setHeaderLabels(['Title','Unread'])
         self.draggedFeed=None
+        print self.sortByColumn, self.sortItems
 
     def addTopLevelItem(self, item):
         QtGui.QTreeWidget.addTopLevelItem(self, item)
         if item.feed.is_open:
           item.setExpanded(True)
+          
+    def sortByColumn(self, column, order):
+      critical("sortItems")
+      if order==QtCore.Qt.DescendingOrder: self.order_by='-'
+      else:
+        self.order_by=''
+      if column==0:
+        self.order_by+='text'
+      else:
+        self.order_by+='unreadCount'
+        
+      critical("Ordering feeds by: %s"%self.order_by)
+      QtGui.QTreeWidget.sortItems(self, column, order)
 
     def initTree(self):
         self.clear()

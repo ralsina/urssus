@@ -131,7 +131,7 @@ class Feed(elixir.Entity):
   title          = elixir.Field(elixir.Text)
   text           = elixir.Field(elixir.Text, default='')
   description    = elixir.Field(elixir.Text)
-  children       = elixir.OneToMany('Feed', inverse='parent', order_by='position', cascade="delete")
+  children       = elixir.OneToMany('Feed', inverse='parent', order_by='text', cascade="delete")
   parent         = elixir.ManyToOne('Feed')
   posts          = elixir.OneToMany('Post', order_by="-date", inverse='feed', cascade="delete,delete-orphan")
   lastUpdated    = elixir.Field(elixir.DateTime, default=datetime.datetime(1970,1,1))
@@ -165,8 +165,17 @@ class Feed(elixir.Entity):
   def __repr__(self):
     return self.text
 
-  def getChildren(self):
+  def getChildren(self, order_by='-text'):
     # Always should use this accesor, so metafolders work transparently
+    if order_by[0]=='-': mul=-1
+    else: mul=1
+    
+    if order_by[1:]=='text':
+      _cmp=lambda x, y: mul* cmp(x.text, y.text)
+    elif order_by[1:]=='unreadCount':
+      _cmp=lambda x, y: mul* cmp(x.unreadCount(), y.unreadCount())
+    
+    self.children.sort(cmp=_cmp)
     return self.children
     
   def removeChild(self, feed):
@@ -289,34 +298,34 @@ class Feed(elixir.Entity):
       posts.extend(child.posts)
     return posts
     
-  def previousSibling(self):
+  def previousSibling(self, order_by='-text'):
     if not self.parent: return None
-    sibs=self.parent.getChildren()
+    sibs=self.parent.getChildren(order_by=order_by)
     ind=sibs.index(self)
     if ind==0: return None
     else:
       return sibs[ind-1]
 
-  def nextSibling(self):
+  def nextSibling(self, order_by='-text'):
     if not self.parent: return None
-    sibs=self.parent.getChildren()
+    sibs=self.parent.getChildren(order_by=order_by)
     ind=sibs.index(self)+1
     if ind >= len(sibs):
       return None
     return sibs[ind]
 
-  def lastChild(self):
+  def lastChild(self, order_by='-text'):
     '''Goes to the last possible child of this feed (the last child of the last child ....)'''
-    if not self.getChildren():
+    if not self.getChildren(order_by=order_by):
       return self
     else:
-      return self.getChildren()[-1].lastChild()
+      return self.getChildren()[-1].lastChild(order_by=order_by)
 
-  def previousFeed(self):
+  def previousFeed(self, order_by='-text'):
     # Search for a sibling above this one, then dig
-    sib=self.previousSibling()
+    sib=self.previousSibling(order_by=order_by)
     if sib:
-      return sib.lastChild()
+      return sib.lastChild(order_by=order_by)
     else:
       # Go to parent
       if self.parent:
@@ -324,32 +333,32 @@ class Feed(elixir.Entity):
     # We are probably at the root
     return None
 
-  def nextFeed(self):
+  def nextFeed(self, order_by='-text'):
     # First see if we have children
-    if len(self.getChildren()):
-      return self.getChildren()[0]
+    if len(self.getChildren(order_by=order_by)):
+      return self.getChildren(order_by=order_by)[0]
     # Then search for a sibling below this one
-    sib=self.nextSibling()
+    sib=self.nextSibling(order_by=order_by)
     if sib:
       return sib
     else:
       # Go to next uncle/greatuncle/whatever
       parent=self.parent
       while parent:
-        nextSib=parent.nextSibling()
-        if nextSib: return nextSib.nextFeed()
+        nextSib=parent.nextSibling(order_by=order_by)
+        if nextSib: return nextSib.nextFeed(order_by=order_by)
         parent=parent.parent
     return None
 
-  def previousUnreadFeed(self):
+  def previousUnreadFeed(self, order_by='-text'):
     # If there are no unread articles, there is no point
     if root_feed.unreadCount()==0:
       return
       
     # First see if there is any sibling with unread items above this one
     if not self.parent: # At root feed
-      return self.lastChild().previousUnreadFeed()
-    sibs=self.parent.getChildren()
+      return self.lastChild(order_by=order_by).previousUnreadFeed(order_by=order_by)
+    sibs=self.parent.getChildren(order_by=order_by)
     sibs=sibs[:sibs.index(self)]
     sibs.reverse()
     for sib in sibs:
@@ -357,32 +366,32 @@ class Feed(elixir.Entity):
         if sib.xmlUrl:
           return sib
         else:
-          return sib.lastChild().previousUnreadFeed()
+          return sib.lastChild(order_by=order_by).previousUnreadFeed(order_by=order_by)
     # Then see if our parent is the answer
     if self.parent and self.parent.unreadCount():
       if self.parent.xmlUrl:
         return self.parent
       else:
-        return self.parent.lastChild().previousUnreadFeed()
+        return self.parent.lastChild(order_by=order_by).previousUnreadFeed(order_by=order_by)
     elif self.parent:
       # Not him, pass the ball to uncle/gramps/whatever
-      return self.parent.previousUnreadFeed()
+      return self.parent.previousUnreadFeed(order_by=order_by)
     # Maybe should go to the *last* feed with unread articles, but it's
     # a corner case
     return None
 
-  def nextUnreadFeed(self):
+  def nextUnreadFeed(self, order_by='-text'):
     # If there are no unread articles, there is no point
     if root_feed.unreadCount()==0:
       return
     # First see if we have children with unread articles
-    if len(self.getChildren()):
-      for child in self.getChildren():
+    if len(self.getChildren(order_by=order_by)):
+      for child in self.getChildren(order_by=order_by):
         if child.unreadCount():
           if child.xmlUrl:
             return child
           else: # Skip folders
-            return child.nextUnreadFeed()
+            return child.nextUnreadFeed(order_by=order_by)
             
     if not self.parent: 
       # We are the root feed, and have no children unread: there's no unread
@@ -390,24 +399,24 @@ class Feed(elixir.Entity):
 
     # Then search for a sibling with unread items below this one
     
-    sib=self.nextSibling()
+    sib=self.nextSibling(order_by=order_by)
     while sib:
       if sib.unreadCount():
         if sib.xmlUrl:
           return sib
         else:
-          return sib.nextUnreadFeed()
-      sib=sib.nextSibling()
+          return sib.nextUnreadFeed(order_by=order_by)
+      sib=sib.nextSibling(order_by=order_by)
 
     # Go to next uncle/greatuncle/whatever
     parent=self.parent
     while parent:
-      nextSib=parent.nextSibling()
+      nextSib=parent.nextSibling(order_by=order_by)
       # Parent is surely a folder
-      if nextSib: return nextSib.nextUnreadFeed()
+      if nextSib: return nextSib.nextUnreadFeed(order_by=order_by)
       parent=parent.parent
     # There is nothing below, so go to the top and try again
-    return root_feed.nextUnreadFeed()
+    return root_feed.nextUnreadFeed(order_by=order_by)
 
   def unreadCount(self):
     if self.getChildren():
