@@ -55,6 +55,8 @@ class Node(QtGui.QTreeWidgetItem):
       if column==1:
         return self.feed.unreadCount()<other.feed.unreadCount()
       else:
+#        if not self.feed.xmlUrl and other.feed.xmlUrl:
+#          return True
         return normalizar(self.feed.text.lower())<normalizar(other.feed.text.lower())
 
 class FeedTree(QtGui.QTreeWidget):
@@ -93,6 +95,9 @@ class FeedTree(QtGui.QTreeWidget):
           self.addTopLevelItem(item)
         self.root_item=Node(db.root_feed)
         self.addTopLevelItem(self.root_item)
+        self.setSortingEnabled(True)
+        self.sortItems(0, QtCore.Qt.AscendingOrder)
+        self.sortByColumn(0, QtCore.Qt.AscendingOrder)
         
     def mimeData(self, items):
         print "mimeData"
