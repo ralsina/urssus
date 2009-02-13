@@ -24,6 +24,7 @@ import sys, time, datetime, random
 import elixir
 import sqlalchemy as sql
 from dbtables import *
+import Queue
   
 def updateOne(feed):
   feed.update(forced=True)
@@ -36,39 +37,50 @@ def feedUpdater():
   import dbtables
   lastCheck=datetime.datetime(1970, 1, 1)
   # Wait blocked until the main thread tells us we can go
-  f=feedUpdateQueue.get(block=True)
+  try:
+    f=feedUpdateQueue.get(block=True, timeout=10)
+  except Queue.Empty:
+    pass
   while True:
-    debug("updater loop")
+    info("updater loop")
     # See if we have any feed update requests
     try:
       f=feedUpdateQueue.get(block=True, timeout=10)
       info("updating feed %d"%f.id)
       f.update()
+    except Queue.Empty:
+      info("No feeds in queue, going to schedule")
+      pass
 
-      now=datetime.datetime.now()
-      period=config.getValue('options', 'defaultRefresh', 1800)
-      cutoff=now-datetime.timedelta(0, 0, period+random.randint(-60, 60))
-      if (now-lastCheck).seconds>30: # Time to see if a feed needs updating
-        # Feeds with custom check periods
-        now_stamp=time.mktime(now.timetuple())
-        for feed in dbtables.Feed.query.filter(sql.and_(dbtables.Feed.updateInterval<>-1, 
-                              sql.func.strftime('%s', dbtables.Feed.lastUpdated, 'utc')+\
-                                                      dbtables.Feed.updateInterval*60<now_stamp)).\
-                              filter(dbtables.Feed.xmlUrl<>None):
-          info("updating feed %d"%f.id)
-          feed.update()
-        # Feeds with default check period
-        # Limit to 5 feeds so they get progressively out-of-sync and you don't have a glut of
-        # feeds updating all at the same time
-        for feed in dbtables.Feed.query.filter(sql.and_(dbtables.Feed.updateInterval==-1, 
-                                                        dbtables.Feed.lastUpdated < cutoff)).\
-                                                        filter(dbtables.Feed.xmlUrl<>None).\
-                                                        order_by(dbtables.Feed.lastUpdated).limit(5):
-          info("updating feed %d"%f.id)
-          feed.update()
-        lastCheck=now
-    except: pass
-
+    now=datetime.datetime.now()
+    period=config.getValue('options', 'defaultRefresh', 1800)
+    cutoff=now-datetime.timedelta(0, 0, period+random.randint(-60, 60))
+    if (now-lastCheck).seconds>30: # Time to see if a feed needs updating
+      # Feeds with custom check periods
+      info("Checking feeds with custom update times")
+      now_stamp=time.mktime(now.timetuple())
+      flist=dbtables.Feed.query.filter(sql.and_(dbtables.Feed.updateInterval<>-1, 
+                            sql.func.strftime('%s', dbtables.Feed.lastUpdated, 'utc')+\
+                                                    dbtables.Feed.updateInterval*60<now_stamp)).\
+                            filter(dbtables.Feed.xmlUrl<>None)
+      info("%d feeds are due for checking"%flist.count())
+      for feed in flist:
+        info("updating feed %d"%f.id)
+        feed.update()
+      # Feeds with default check period
+      # Limit to 5 feeds so they get progressively out-of-sync and you don't have a glut of
+      # feeds updating all at the same time
+      info("Checking feeds with default update times. Cutoff is %s"%str(cutoff))
+      flist=dbtables.Feed.query.filter(sql.and_(dbtables.Feed.updateInterval==-1, 
+                                                      dbtables.Feed.lastUpdated < cutoff)).\
+                                                      filter(dbtables.Feed.xmlUrl<>None).\
+                                                      order_by(dbtables.Feed.lastUpdated)
+      info("%d feeds due for checking"%flist.count())
+      if flist.count()<5: lastCheck=now
+      for f in flist.limit(5):
+        info("updating feed %d"%f.id)
+        f.update()
+        
 def main():
   initDB()
 #  elixir.metadata.bind.echo = True
