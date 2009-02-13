@@ -100,7 +100,6 @@ class FeedTree(QtGui.QTreeWidget):
         self.sortByColumn(0, QtCore.Qt.AscendingOrder)
         
     def mimeData(self, items):
-        print "mimeData"
         # Add feed-ids in the mimeData, so I know what feeds are dragged
         m=QtGui.QTreeWidget.mimeData(self, items)
         m.setText(",".join([str(i.feed.id) for i in items]))
@@ -121,7 +120,6 @@ class FeedTree(QtGui.QTreeWidget):
           for id in ids:
             child=db.Feed.get_by(id=id)
             child.parent=parent
-            print "making %s child of %s"%(child, parent)
           elixir.session.commit()
         except:
           elixir.session.rollback()
