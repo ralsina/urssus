@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE Project SYSTEM "Project-4.6.dtd">
 <!-- eric4 project file for project urssus -->
-<!-- Saved: 2009-02-12, 18:26:10 -->
+<!-- Saved: 2009-02-12, 23:42:55 -->
 <!-- Copyright (C) 2009 Roberto Alsina, ralsina@netmanagers.com.ar -->
 <Project version="4.6">
   <Language>en</Language>
@@ -28,7 +28,6 @@
     <Source>urssus/dbtables.py</Source>
     <Source>urssus/globals.py</Source>
     <Source>urssus/postmodel.py</Source>
-    <Source>urssus/feedmodel.py</Source>
     <Source>urssus/main.py</Source>
     <Source>urssus/feedupdater.py</Source>
     <Source>urssus/client.py</Source>
