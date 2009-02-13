@@ -42,7 +42,7 @@ def feedUpdater():
     # See if we have any feed update requests
     try:
       f=feedUpdateQueue.get(block=True, timeout=10)
-      info("updating feed %d", f.id)
+      info("updating feed %d"%f.id)
       f.update()
 
       now=datetime.datetime.now()
@@ -55,7 +55,7 @@ def feedUpdater():
                               sql.func.strftime('%s', dbtables.Feed.lastUpdated, 'utc')+\
                                                       dbtables.Feed.updateInterval*60<now_stamp)).\
                               filter(dbtables.Feed.xmlUrl<>None):
-          info("updating feed %d", f.id)
+          info("updating feed %d"%f.id)
           feed.update()
         # Feeds with default check period
         # Limit to 5 feeds so they get progressively out-of-sync and you don't have a glut of
@@ -64,7 +64,7 @@ def feedUpdater():
                                                         dbtables.Feed.lastUpdated < cutoff)).\
                                                         filter(dbtables.Feed.xmlUrl<>None).\
                                                         order_by(dbtables.Feed.lastUpdated).limit(5):
-          info("updating feed %d", f.id)
+          info("updating feed %d"%f.id)
           feed.update()
         lastCheck=now
     except: pass
