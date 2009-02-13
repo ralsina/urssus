@@ -64,7 +64,6 @@ from ui.Ui_newfeed import Ui_Dialog as UI_NewFeedDialog
 from processdialog import ProcessDialog
 
 from postmodel import *
-from feedmodel import * 
 
 class FilterWidget(QtGui.QWidget):
   def __init__(self):
