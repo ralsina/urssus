@@ -1519,14 +1519,6 @@ class MainWindow(QtGui.QMainWindow):
     self.ui.feedTree.update(self.ui.feedTree.indexFromItem(item, 0))
     self.ui.feedTree.update(self.ui.feedTree.indexFromItem(item, 1))
     
-#    f=item.font(0)
-#    if unreadCount:
-#      f.setBold(True)
-#    else:
-#      f.setBold(False)
-#    item.setFont(0, f)
-#    item.setFont(1, f)
-
     # And set the systray tooltip to the unread count on root_feed
     self.tray.updateIcon()
     self.setWindowIcon(self.tray.icon())
