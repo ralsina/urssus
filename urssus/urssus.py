@@ -386,6 +386,8 @@ class MainWindow(QtGui.QMainWindow):
     QtCore.QObject.connect(self.filterWidget.ui.statusCombo, QtCore.SIGNAL("currentIndexChanged(int)"), self.filterPostsByStatus)
     self.statusFilter=None
     self.textFilter=''
+    # Make status filter persistent
+    self.filterWidget.ui.statusCombo.setCurrentIndex(config.getValue('ui', 'statusFilter', 0))
         
     # Search widget
     self.ui.searchBar.hide()
@@ -1060,6 +1062,7 @@ class MainWindow(QtGui.QMainWindow):
       info ("Filtering by status: important")
       self.statusFilter=Post.important
     self.open_feed2(self.ui.feedTree.currentItem())
+    config.setValue('ui', 'statusFilter', status)
       
   def unFilterPosts(self):
     self.textFilter=''
