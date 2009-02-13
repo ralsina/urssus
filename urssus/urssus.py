@@ -1833,16 +1833,6 @@ class MainWindow(QtGui.QMainWindow):
   def on_actionZoom_Reset_triggered(self, i=None):
     if i==None: return
     self.ui.view.setTextSizeMultiplier(1)
-
-class FeedDelegate(QtGui.QItemDelegate):
-  def __init__(self, parent=None):
-    info("Creating FeedDelegate")
-    QtGui.QItemDelegate.__init__(self, parent)
-    
-class PostDelegate(QtGui.QItemDelegate):
-  def __init__(self, parent=None):
-    info("Creating PostDelegate")
-    QtGui.QItemDelegate.__init__(self, parent)
   
 def exportOPML(fname):
   from util.OPML import Outline, OPML
@@ -1932,7 +1922,7 @@ def decode_htmlentities(string):
   return entity_re.subn(substitute_entity, string)[0]
 
 
-import dbus
+import dbus 
 import dbus.service
 from dbus.mainloop import qt
 
