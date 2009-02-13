@@ -37,6 +37,8 @@ def main():
       remote_object.importOPML(sys.argv[1])
   except dbus.exceptions.DBusException, e:
     if 'ServiceUnknown' in str(e):
+      warning(str(e))
+      warning("Starting urssus")
       os.execlp('urssus', *sys.argv)
     else:
       error(str(e))
