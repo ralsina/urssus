@@ -24,6 +24,7 @@ import database
 import os, sys, time
 from globals import *
 import urlparse
+from norm import normalizar
 
 # Not sure about this
 from PyQt4 import QtCore, QtGui
@@ -173,7 +174,7 @@ class Feed(elixir.Entity):
     else: mul=1
     
     if order_by=='text':
-      _cmp=lambda x, y: mul* cmp(x.text, y.text)
+      _cmp=lambda x, y: mul* cmp(normalizar(x.text.lower()), normalizar(y.text.lower()))
     elif order_by=='unreadCount':
       _cmp=lambda x, y: mul* cmp(x.unreadCount(), y.unreadCount())
     

@@ -70,6 +70,9 @@
        <enum>Qt::Horizontal</enum>
       </property>
       <widget class="FeedTree" name="feedTree" >
+       <property name="focusPolicy" >
+        <enum>Qt::NoFocus</enum>
+       </property>
        <property name="contextMenuPolicy" >
         <enum>Qt::CustomContextMenu</enum>
        </property>
