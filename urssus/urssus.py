@@ -30,7 +30,7 @@ __session__=session
 import sys, os, time, urlparse, tempfile, codecs, traceback
 from urllib import urlopen, quote
 from datetime import datetime, timedelta
-from dbtables import Post, Feed, initDB
+from dbtables import Post, Feed, initDB, unread_feed, starred_feed
 import elixir
 import sqlalchemy as sql
 
@@ -1522,6 +1522,13 @@ class MainWindow(QtGui.QMainWindow):
     # And set the systray tooltip to the unread count on root_feed
     self.tray.updateIcon()
     self.setWindowIcon(self.tray.icon())
+    
+    # And set the unread count in the "unread items" item
+    mf_unread_item=self.ui.feedTree.itemFromFeed(unread_feed)
+    unread_feed.curUnread=-1
+    self.ui.feedTree.update(self.ui.feedTree.indexFromItem(mf_unread_item, 0))
+    self.ui.feedTree.update(self.ui.feedTree.indexFromItem(mf_unread_item, 1))
+    
 
   def on_posts_clicked(self, index):
     post=self.ui.posts.model().postFromIndex(index)
