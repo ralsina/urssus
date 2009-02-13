@@ -21,6 +21,7 @@ from globals import *
 from dbtables import *
 from PyQt4 import QtGui, QtCore
 import operator
+from util import extime
 
 # Roles used in the items
 sorting=QtCore.Qt.UserRole
@@ -95,23 +96,29 @@ class PostModel(QtGui.QStandardItemModel):
         self.updateItem(post)
       else:
         # New post, add
+        
+        # Date
+        d=utc2local(post.date)
+        ed=extime.Time.fromDatetime(d)
+        dh=ed.asHumanly()
+
         data=[post.id, unicode(post).lower(), post.date,
               unicode(post.feed).lower(), None, None]
         self.post_data.append(data)
         self.post_ids.append(post.id)
         item0=QtGui.QStandardItem()
         item1=QtGui.QStandardItem()
-        item1.setToolTip('%s - Posted at %s'%(unicode(post), unicode(post.date)))
+        item1.setToolTip('%s - Posted at %s'%(unicode(post), dh))
         item1.setData(QtCore.QVariant(unicode(post)), display)
         item1.setData(QtCore.QVariant(unicode(post).lower()), sorting)
         item1.setData(QtCore.QVariant(post.id), post_id)
         
         item2=QtGui.QStandardItem()
-        item2.setToolTip('%s - Posted at %s'%(unicode(post), unicode(post.date)))
-        item2.setData(QtCore.QVariant(unicode(utc2local(post.date))), display)
-        d=utc2local(post.date)
+        item2.setToolTip('%s - Posted at %s'%(unicode(post), dh))
+        item2.setData(QtCore.QVariant(dh), display)
+        item2.setTextAlignment(QtCore.Qt.AlignRight)
         # AOL Fanhouse posts items with a time differential of milliseconds, so they sorted
-        # differently on python and Qt. If someone makesit to microseconds, this solution
+        # differently on python and Qt. If someone makes it to microseconds, this solution
         # is borked
         qd=QtCore.QVariant(QtCore.QDateTime(QtCore.QDate(d.year, d.month, d.day), 
                                             QtCore.QTime(d.hour, d.minute, d.second, d.microsecond/1000)))
