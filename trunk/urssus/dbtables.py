@@ -688,8 +688,8 @@ class MetaFeed(Feed):
 
   def unreadCount(self):
     if self.curUnread==-1:
-      info ("Forcing recount in %s"%self.title)
-      self.curUnread=Post.query.filter(Post.feed==self).filter(Post.deleted==False).filter(Post.unread==True).count()
+      info ("Forcing recount in %s"%self.text)
+      self.curUnread=Post.query.filter(eval(self.condition)).filter(Post.deleted==False).filter(Post.unread==True).count()
     return self.curUnread
 
 class MetaFolder(Feed):
