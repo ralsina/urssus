@@ -293,7 +293,7 @@ class Feed(elixir.Entity):
     '''
     if self.xmlUrl: #I'm not a folder
       return []
-    info("allposts for feed: %s", self)
+    debug("allposts for feed: %s"%self)
     
     # Get posts for all children
     posts=[]
@@ -688,7 +688,7 @@ class MetaFeed(Feed):
 
   def unreadCount(self):
     if self.curUnread==-1:
-      info ("Forcing recount in %s", self.title)
+      info ("Forcing recount in %s"%self.title)
       self.curUnread=Post.query.filter(Post.feed==self).filter(Post.deleted==False).filter(Post.unread==True).count()
     return self.curUnread
 

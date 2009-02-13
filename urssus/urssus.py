@@ -730,7 +730,7 @@ class MainWindow(QtGui.QMainWindow):
     if i==None: return
     curPost=self.getCurrentPost()
     if not curPost: return
-    info ("Deleting post: %s", curPost)
+    info ("Deleting post: %s"%curPost)
     if QtGui.QMessageBox.question(None, "Delete Article - uRSSus", 
         'Are you sure you want to delete "%s"'%curPost, 
         QtGui.QMessageBox.Yes | QtGui.QMessageBox.No, QtGui.QMessageBox.No ) == QtGui.QMessageBox.Yes:
@@ -748,7 +748,7 @@ class MainWindow(QtGui.QMainWindow):
     curPost=self.getCurrentPost()
     if not curPost: return
     if curPost.unread:
-      info ("Marking as read post: %s", curPost)
+      debug ("Marking as read post: %s"%curPost)
       try:
         curPost.unread=False
         curPost.feed.curUnread-=1 
@@ -798,7 +798,7 @@ class MainWindow(QtGui.QMainWindow):
     if i==None: return
     curPost=self.getCurrentPost()
     if not curPost: return
-    info ("Marking as important post: %s", curPost)
+    debug ("Marking as important post: %s"%curPost)
     if not curPost.important:
       try:
         curPost.important=True
@@ -812,7 +812,7 @@ class MainWindow(QtGui.QMainWindow):
     if i==None: return
     curPost=self.getCurrentPost()
     if not curPost: return
-    info ("Marking as not important post: %s", curPost)
+    debug ("Marking as not important post: %s"%curPost)
     if curPost.important:
       try:
         curPost.important=False
@@ -880,7 +880,7 @@ class MainWindow(QtGui.QMainWindow):
     item=self.ui.feedTree.currentItem()
     if not item: return
     curFeed=item.feed
-    info ("Expiring feed: %s", curFeed)
+    debug("Expiring feed: %s"%curFeed)
     curFeed.expire(expunge=True)
     # Update feed display (number of unreads may have changed)
     # This would trigger a merge with the post list, but since
@@ -898,7 +898,7 @@ class MainWindow(QtGui.QMainWindow):
     if not curFeed.xmlUrl:
       self.ui.feedTree.editItem(item)
       return
-    info ("Editing feed: %s", curFeed)
+    debug("Editing feed: %s"%curFeed)
 
     editDlg=FeedProperties(curFeed)
     editDlg.exec_()
@@ -1009,7 +1009,6 @@ class MainWindow(QtGui.QMainWindow):
 
   def on_actionShow_Only_Unread_Feeds_triggered(self, checked=None):
     if checked==None: return
-    info ("Show only unread: %d", checked)
     self.showOnlyUnread=checked
     config.setValue('ui', 'showOnlyUnreadFeeds', checked)
     for feed in Feed.query.filter(Feed.xmlUrl<>None):
@@ -1053,13 +1052,13 @@ class MainWindow(QtGui.QMainWindow):
     if status==None: return
     
     if status==0: # All articles
-      info ("No filtering by status")
+      debug("No filtering by status")
       self.statusFilter=None
     elif status==1: # Unread
-      info ("Filtering by status: unread")
+      debug("Filtering by status: unread")
       self.statusFilter=Post.unread
     elif status==2: # Important
-      info ("Filtering by status: important")
+      debug("Filtering by status: important")
       self.statusFilter=Post.important
     self.open_feed2(self.ui.feedTree.currentItem())
     config.setValue('ui', 'statusFilter', status)
@@ -1084,7 +1083,7 @@ class MainWindow(QtGui.QMainWindow):
   def filterPosts(self):
     self.textFilter=unicode(self.filterWidget.ui.filter.text())
     self.updateFilterHistory(self.textFilter)
-    info("Text filter set to: %s", self.textFilter)
+    debug("Text filter set to: %s"%self.textFilter)
     self.open_feed2(self.ui.feedTree.currentItem())
     self.ui.view.setFocus(QtCore.Qt.TabFocusReason)
 
@@ -1147,7 +1146,7 @@ class MainWindow(QtGui.QMainWindow):
     AboutDialog(self).exec_()
     
   def updateFeedStatus(self):
-    info("updateFeedStatus queue %d", len(self.pendingFeedUpdates))
+    info("updateFeedStatus queue length: %d"%len(self.pendingFeedUpdates))
     try:
       while not feedStatusQueue.empty():
         # The idea: this function should never fail.
@@ -1155,7 +1154,7 @@ class MainWindow(QtGui.QMainWindow):
         # memory, and we'll restart it the next try.
         data=feedStatusQueue.get()
         [action, id] = data[:2]
-        info("updateFeedStatus: %d %d", action, id)
+        debug("updateFeedStatus: %d %d"%(action, id))
         
         # FIXME: make this more elegant
         # These are not really feed updates
@@ -1169,7 +1168,7 @@ class MainWindow(QtGui.QMainWindow):
             self.show()
             self.raise_()
           else:
-            error( "id %s not in the tree", id)
+            error( "id %s not in the tree"%id)
         # We collapse all updates for a feed, and keep the last one
         else:
           self.pendingFeedUpdates[id]=data
@@ -1246,7 +1245,6 @@ class MainWindow(QtGui.QMainWindow):
     if not item: return
     feed=item.feed
     self.open_feed2(item)
-    info("Opening Feed", feed)
     if not self.combinedView:
       self.ui.view.setHtml(renderTemplate('feed.tmpl', feed=feed))
 
@@ -1493,7 +1491,7 @@ class MainWindow(QtGui.QMainWindow):
     QtCore.QObject.connect(self.ui.posts.model(), QtCore.SIGNAL("modelReset()"), self.updateListedFeedItem)
 
   def updateFeedItem(self, feed):
-    info("Updating item for feed %d", feed.id)
+    info("Updating item for feed %d"%feed.id)
     
     item=self.ui.feedTree.itemFromFeed(feed)
     
@@ -1574,7 +1572,7 @@ class MainWindow(QtGui.QMainWindow):
     if item:
       post=self.ui.posts.model().postFromIndex(index)
       if post and post.link:
-        info("Opening %s", post.link)
+        debug("Opening %s"%post.link)
         QtGui.QDesktopServices.openUrl(QtCore.QUrl(post.link))
     
   def on_actionExport_Feeds_triggered(self, i=None):

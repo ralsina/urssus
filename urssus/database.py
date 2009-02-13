@@ -45,14 +45,14 @@ def initDB():
       # If we got this far, it is managed by miruku, 
       # so upgrade and be done with it
       cmd='miruku upgrade %s urssus.schema.metadata urssus'%dbUrl
-      info ("Running: %s", cmd)
+      info ("Running: %s"%cmd)
       os.system(cmd)
       return
     except:
       pass
   # Either it doesn't exist, or it's not managed by miruku.
   cmd='miruku create %s urssus.schema.metadata urssus'%dbUrl
-  info ("Running: %s", cmd)
+  info ("Running: %s"%cmd)
   os.system(cmd)
  
 def main():

@@ -38,7 +38,7 @@ def feedUpdater():
   # Wait blocked until the main thread tells us we can go
   f=feedUpdateQueue.get(block=True)
   while True:
-    info("updater loop")
+    debug("updater loop")
     # See if we have any feed update requests
     try:
       f=feedUpdateQueue.get(block=True, timeout=10)
