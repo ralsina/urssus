@@ -710,7 +710,7 @@ unread_feed=None
 def initDB():
   global root_feed, starred_feed, unread_feed, tags_feed
   # FIXME: show what we are doing on the UI
-  os.system('urssus_upgrade_db')
+#  os.system('urssus_upgrade_db')
   elixir.metadata.bind = database.dbUrl
 #  elixir.metadata.bind.echo = True
   elixir.setup_all()
