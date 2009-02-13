@@ -1934,7 +1934,7 @@ def decode_htmlentities(string):
 
 import dbus
 import dbus.service
-#from dbus.mainloop import qt
+from dbus.mainloop import qt
 
 class UrssusServer(dbus.service.Object):
   def __init__(self, window, bus_name, object_path="/uRSSus"):
@@ -1966,10 +1966,10 @@ def main():
     sys.excepthook = my_excepthook
   window=MainWindow()
 
-  #mainloop = qt.DBusQtMainLoop(set_as_default=True)
-  #session_bus = dbus.SessionBus()
-  #name = dbus.service.BusName("org.urssus.service", bus=session_bus)
-  #object = UrssusServer(window,name)
+  mainloop = qt.DBusQtMainLoop(set_as_default=True)
+  session_bus = dbus.SessionBus()
+  name = dbus.service.BusName("org.urssus.service", bus=session_bus)
+  object = UrssusServer(window,name)
     
   if len(sys.argv)>1:
     if sys.argv[1].lower().startswith('http://'):
