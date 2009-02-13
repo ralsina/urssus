@@ -25,7 +25,7 @@ def main():
   global root_feed
   
   # Backup the DB and config file
-  info ("Backing up ", config.cfdir)
+  info ("Backing up %s"%config.cfdir)
   backup_files(config.cfdir)
   import dbtables
   import feedupdater
@@ -34,7 +34,7 @@ def main():
   p = processing.Process(target=feedupdater.feedUpdater)
   p.setDaemon(True)
   p.start()
-  info("Updater PID: %d",p.getPid())
+  info("Updater PID: %d"%p.getPid())
   import urssus
   urssus.main()
 
