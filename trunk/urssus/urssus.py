@@ -398,7 +398,6 @@ class MainWindow(QtGui.QMainWindow):
     QtCore.QObject.connect(self.searchWidget.ui.close, QtCore.SIGNAL("clicked()"), self.ui.searchBar.hide)
     QtCore.QObject.connect(self.searchWidget.ui.close, QtCore.SIGNAL("clicked()"), self.ui.view.setFocus)
     # Completion with history
-    # FIXME: make persistent? Not sure
     self.searchHistory=[]
     self.filterHistory=[]
 
