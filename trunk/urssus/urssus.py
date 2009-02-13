@@ -1517,18 +1517,16 @@ class MainWindow(QtGui.QMainWindow):
       item.setForeground(1, QtGui.QColor("black"))
     self.ui.feedTree.update(self.ui.feedTree.indexFromItem(item, 0))
     self.ui.feedTree.update(self.ui.feedTree.indexFromItem(item, 1))
-    
-    # And set the systray tooltip to the unread count on root_feed
-    self.tray.updateIcon()
-    self.setWindowIcon(self.tray.icon())
-    
-    # And set the unread count in the "unread items" item
-    mf_unread_item=self.ui.feedTree.itemFromFeed(unread_feed)
-    unread_feed.curUnread=-1
-    self.ui.feedTree.update(self.ui.feedTree.indexFromItem(mf_unread_item, 0))
-    self.ui.feedTree.update(self.ui.feedTree.indexFromItem(mf_unread_item, 1))
-    
-
+        
+    if feed==root_feed:
+      # And set the unread count in the "unread items" item
+      unread_feed.curUnread=-1
+      self.updateFeedItem(unread_feed)
+      # And set the systray tooltip to the unread count on root_feed
+      self.tray.updateIcon()
+      self.setWindowIcon(self.tray.icon())
+#    self.updateFeedItem(starred_feed)
+  
   def on_posts_clicked(self, index):
     post=self.ui.posts.model().postFromIndex(index)
     if post: #post may go away if you changed feeds very quickly

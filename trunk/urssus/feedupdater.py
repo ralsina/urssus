@@ -20,7 +20,7 @@ from globals import *
 
 __session__=session
 
-import sys, time, datetime, random
+import sys, time, datetime, random, traceback
 import elixir
 import sqlalchemy as sql
 from dbtables import *
@@ -64,9 +64,10 @@ def feedUpdater():
                               sql.func.strftime('%s', dbtables.Feed.lastUpdated, 'utc')+\
                                                       dbtables.Feed.updateInterval*60<now_stamp)).\
                               filter(dbtables.Feed.xmlUrl<>None)
-        info("%d feeds are due for checking"%flist.count())
+        info("%d feeds are due for custom checking"%flist.count())
+        info("Due: %s"%(','.join(f.text for f in flist)))
         for feed in flist:
-          info("updating feed %d"%f.id)
+          info("updating feed %d"%feed.id)
           feed.update()
         # Feeds with default check period
         # Limit to 5 feeds so they get progressively out-of-sync and you don't have a glut of
@@ -76,13 +77,14 @@ def feedUpdater():
                                                         dbtables.Feed.lastUpdated < cutoff)).\
                                                         filter(dbtables.Feed.xmlUrl<>None).\
                                                         order_by(dbtables.Feed.lastUpdated)
-        info("%d feeds due for checking"%flist.count())
+        info("%d feeds due for default checking"%flist.count())
         if flist.count()<5: lastCheck=now
         for f in flist.limit(5):
           info("updating feed %d"%f.id)
           f.update()
     except:
-      pass
+      info ("crash in feedupdater, recovering")
+      traceback.print_exc(file=sys.stderr)
         
 def main():
   initDB()
