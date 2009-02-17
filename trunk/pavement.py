@@ -64,7 +64,7 @@ ralsina at netmanagers dot com dot ar.
 )
 
 @task
-@needs(['compile_resource','compile_ui','generate_setup', 'minilib', 'setuptools.command.sdist'])
+@needs(['compile_ui','generate_setup', 'minilib', 'setuptools.command.sdist'])
 def sdist():
   """Overrides sdist to make sure that our setup.py is generated."""
   pass
@@ -85,8 +85,11 @@ def compile_ui():
     if f.endswith('.ui'):
       print "Compiling ", f
       os.system ('pyuic4 %s -o %s'%(os.path.join(uidir, f), os.path.join(uidir, 'Ui_%s.py'%f[:-3])))
-      
-@task
-def compile_resource():
   '''Compile the icons/images resource file'''
   os.system ('pyrcc4 %s -o %s'%(os.path.join('urssus','images', 'icons.qrc'), os.path.join(uidir, 'icons_rc.py')))
+
+@task
+def install_xdg():
+  '''On xdg-compliant systems, install desktop file and icon'''
+  os.system('xdg-desktop-menu install --novendor  uRSSus.desktop')
+  os.system('sudo xdg-icon-resource install --size 128 --novendor %s'% os.path.join('urssus','images','urssus.png'))

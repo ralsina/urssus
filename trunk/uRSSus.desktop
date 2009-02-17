@@ -1,0 +1,20 @@
+[Desktop Entry]
+Comment[en_US]=
+Comment=
+Exec=urssus
+GenericName[en_US]=News Aggregator
+GenericName=A news aggregator
+Icon=urssus
+MimeType=text/x-opml+xml;application/rss+xml;
+Name[en_US]=uRSSus
+Name=uRSSus
+Path=
+StartupNotify=true
+Terminal=false
+TerminalOptions=
+Type=Application
+X-DBUS-ServiceName=
+X-DBUS-StartupType=unique
+X-KDE-SubstituteUID=false
+X-KDE-Username=
+Categories=Qt;Network;
