@@ -709,11 +709,15 @@ unread_feed=None
 
 def initDB():
   global root_feed, starred_feed, unread_feed, tags_feed
-  # FIXME: show what we are doing on the UI
-#  os.system('urssus_upgrade_db')
   elixir.metadata.bind = database.dbUrl
+  # FIXME: show what we are doing on the UI
+  if not os.path.exists(os.path.join(config.cfdir, 'urssus.sqlite')):
+    elixir.setup_all()
+    elixir.create_all()
+  else:
+    os.system('urssus_upgrade_db')
 #  elixir.metadata.bind.echo = True
-  elixir.setup_all()
+    elixir.setup_all()
   try:
     # Make sure we have a root feed
     root_feed=Feed.get_by_or_init(parent=None)

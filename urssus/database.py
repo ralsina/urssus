@@ -31,6 +31,7 @@ def initDB():
   # See if the DB exists, or create
   info ("Initializing DB")
 #  if os.path.exists(dbfile):
+#      pass
 #    con = sqlite.connect(dbfile)
 #    # If the migrate_version table exists, kill it
 #    try:
