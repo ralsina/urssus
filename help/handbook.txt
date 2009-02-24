@@ -1,0 +1,67 @@
+===================
+The uRSSus handbook
+===================
+
+.. |date| date::
+
+.. role:: keyword
+
+:Author: Roberto Alsina <ralsina@netmanagers.com.ar>
+:Version: 0.2.14
+:Date: |date|
+
+
+Introduction
+------------
+
+What is uRSSus?
+~~~~~~~~~~~~~~~
+
+uRSSus is an application for reading online news and blogs.
+
+Usually, online news sites and blogs will offer what is called a :keyword:`feed` 
+of their contents. What uRSSus does is fetch those feeds, and tell you if there is
+something you haven't seen yet, saving you the work of checking your collection 
+of favourite sites.
+
+uRSSus supports all the commonly used Internet standards about feeds. For example, 
+it supports Atom and RSS feeds. The goal is that you shouldn't need to care what 
+those are: as long as the site has some sort of feed, uRSSus should handle it.
+
+How do you know if a site has a feed?
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+It probably has a feed icon somewhere.
+
+.. figure:: feedicon.png
+
+   The "feed icon"
+
+In most modern browsers, you should see a feed icon in the location bar 
+next to the URL:
+
+.. figure:: feedicon1.png
+
+   A site with an available feed in the location bar.
+
+There is a chance you will see it in the web page itself, too:
+    
+.. figure:: feedicon2.png
+
+   A site with an available feed in the web page itself.
+    
+
+Credits
+-------
+
+* The organization of this manual and some texts are partly copied 
+  or modified from `The Akregator Handbook`_
+
+* Feed icon from `Wikimedia Commons`_
+
+.. _Wikimedia Commons: http://commons.wikimedia.org/wiki/File:Feed-icon.svg
+
+.. _The akregator handbook: http://docs.kde.org/stable/en/kdepim/akregator/index.html
+ 
+
+
