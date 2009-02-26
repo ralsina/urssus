@@ -30,7 +30,7 @@ __session__=session
 import sys, os, time, urlparse, tempfile, codecs, traceback
 from urllib import urlopen, quote
 from datetime import datetime, timedelta
-from dbtables import Post, Feed, initDB, unread_feed, starred_feed
+from dbtables import Post, Feed, MetaFeed, initDB, unread_feed, starred_feed
 import elixir
 import sqlalchemy as sql
 
@@ -857,20 +857,23 @@ class MainWindow(QtGui.QMainWindow):
       # Common actions
       menu.addAction(self.ui.actionMark_Feed_as_Read)
       menu.addSeparator()
-      menu.addAction(self.ui.actionFetch_Feed)
-      menu.addSeparator()
-      if feed.xmlUrl: # Regular Feed
-        menu.addAction(self.ui.actionOpen_Homepage)
+      if isinstance(feed, MetaFeed):
+        pass
+      else:
+        menu.addAction(self.ui.actionFetch_Feed)
         menu.addSeparator()
-        menu.addAction(self.ui.actionEdit_Feed)
-        menu.addAction(self.ui.actionExpire_Feed)
-        menu.addAction(self.ui.actionDelete_Feed)
-      else: # Folder
-        menu.addAction(self.ui.actionAdd_Feed)
-        menu.addAction(self.ui.actionNew_Folder)
-        menu.addSeparator()
-        menu.addAction(self.ui.actionEdit_Feed)
-        menu.addAction(self.ui.actionDelete_Feed)
+        if feed.xmlUrl: # Regular Feed
+          menu.addAction(self.ui.actionOpen_Homepage)
+          menu.addSeparator()
+          menu.addAction(self.ui.actionEdit_Feed)
+          menu.addAction(self.ui.actionExpire_Feed)
+          menu.addAction(self.ui.actionDelete_Feed)
+        else: # Folder
+          menu.addAction(self.ui.actionAdd_Feed)
+          menu.addAction(self.ui.actionNew_Folder)
+          menu.addSeparator()
+          menu.addAction(self.ui.actionEdit_Feed)
+          menu.addAction(self.ui.actionDelete_Feed)
       menu.exec_(QtGui.QCursor.pos())
 
   def on_actionExpire_Feed_triggered(self, i=None):
