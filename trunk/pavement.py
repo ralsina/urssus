@@ -29,7 +29,7 @@ options(
           'urssus.util.GoogleReader.web.resolvUrl', 
           'urssus.templates', 
           ],
-        version="0.2.12",
+        version="0.2.13",
         author="Roberto Alsina",
         author_email='ralsina@netmanagers.com.ar',  
         package_data = {'urssus.templates': ['*.tmpl', '*.css', '*.js'],
