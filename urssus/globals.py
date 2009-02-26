@@ -18,7 +18,7 @@
 
 import os, sys, codecs, datetime, time
 
-VERSION='0.2.10'
+VERSION='0.2.13'
 
 import processing
 
