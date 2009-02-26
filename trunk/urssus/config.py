@@ -22,7 +22,11 @@ import ConfigParser
 import os
 from simplejson import dumps, loads
 
-cfdir=os.path.join(os.path.expanduser('~'),'.urssus')
+if os.environ.get('URSSUSDIR', None):
+  cfdir=os.environ['URSSUSDIR']
+else:
+  cfdir=os.path.join(os.path.expanduser('~'),'.urssus')
+  
 cfname=os.path.join(cfdir,'config')
 
 def getValue(section,key,default=None):
