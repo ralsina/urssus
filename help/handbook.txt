@@ -28,6 +28,9 @@ uRSSus supports all the commonly used Internet standards about feeds. For exampl
 it supports Atom and RSS feeds. The goal is that you shouldn't need to care what 
 those are: as long as the site has some sort of feed, uRSSus should handle it.
 
+Feeds
+-----
+
 How do you know if a site has a feed?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -60,6 +63,54 @@ of the feed icons, and then it will show up in uRSSus.
 
    Clicking on the RSS icon adds the feed to uRSSus
    
+When you add a feed, you are shown its `feed properties dialog`_ where you can 
+adjust things like how often it should be checked and more.
+
+Feel free now to add as many feeds as you want. Urssus won't let you subscribe 
+to the same feed twice.
+
+Removing a Feed
+~~~~~~~~~~~~~~~
+
+To remove a feed from uRSSus, right-click on the feed and select "Delete Feed".
+
+Feed Properties Dialog
+~~~~~~~~~~~~~~~~~~~~~~
+
+Folders
+-------
+
+Organizing Your Feeds
+~~~~~~~~~~~~~~~~~~~~~
+
+Once your feed collection grows a bit, having it all in the "All Feeds" folder 
+starts becoming impractical. When that happens, you can create your own folders
+and organize your feeds.
+
+To create a new folder, right-click on where you want it, and select "Add Folder"
+from the context menu.
+
+Keep in mind that only folders can contain other folders, and regular feeds can not.
+
+So, if you select "Add Folder" in a feed's context menu, it will be added as a 
+"sibling" of that feed.
+
+In future versions, uRSSus will support "tags" and alternative ways to organize
+your feeds.
+
+To change the folder of a feed, just drag it to the folder where you want it.
+
+Super Feeds!
+~~~~~~~~~~~~
+
+Another thing a folder does is work as a sort of "super feed", which is a 
+grouping of all the feeds and subfolders it contains.
+
+That way, if you put all your sport related feeds in a "Sports" folder, you only
+need to click on that folder to read them all at once!
+
+
+
 
 Credits
 -------
