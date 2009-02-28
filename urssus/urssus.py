@@ -921,8 +921,10 @@ class MainWindow(QtGui.QMainWindow):
       else:
         curFeed=root_feed
       try:
-        # if curFeed is a feed, add as sibling
-        if curFeed.xmlUrl:
+        # if curFeed is a metafeed, add as child of "All Feeds"
+        if isinstance(curFeed, MetaFeed):
+          newFeed.parent=root_feed
+        elif curFeed.xmlUrl: # A regular feed, add as sibling
           newFeed.parent=curFeed.parent
         # if curFeed is a folder, add as child
         else:
@@ -931,7 +933,11 @@ class MainWindow(QtGui.QMainWindow):
       except:
         elixir.session.rollback()
       self.initTree()
-      item=self.ui.feedTree.itemFromFeed(newFeed)
+      item=self.ui.feedTree.i
+      
+      
+      
+      temFromFeed(newFeed)
       self.ui.feedTree.setCurrentItem(item)
       self.open_feed2(item)
       self.on_actionEdit_Feed_triggered(True)
