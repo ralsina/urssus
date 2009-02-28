@@ -33,23 +33,33 @@ How do you know if a site has a feed?
 
 It probably has a feed icon somewhere.
 
-.. figure:: feedicon.png
+.. figure:: h_feedicon.png
 
    The "feed icon"
 
 In most modern browsers, you should see a feed icon in the location bar 
 next to the URL:
 
-.. figure:: feedicon1.png
+.. figure:: h_feedicon1.png
 
    A site with an available feed in the location bar.
 
 There is a chance you will see it in the web page itself, too:
     
-.. figure:: feedicon2.png
+.. figure:: h_feedicon2.png
 
    A site with an available feed in the web page itself.
-    
+
+Adding a Site's Feed to uRSSus
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+In most web browsers (Firefox, Konqueror), you simply need to click on one 
+of the feed icons, and then it will show up in uRSSus.
+
+.. figure:: h_addfeed.png
+
+   Clicking on the RSS icon adds the feed to uRSSus
+   
 
 Credits
 -------

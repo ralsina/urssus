@@ -50,6 +50,11 @@ h3 {
 .figure {
 	margin: 0 auto;
 	text-align: center;
+	width: 90%;
+}
+
+.figure > img {
+	max-width: 100%;
 }
 
 .caption {
