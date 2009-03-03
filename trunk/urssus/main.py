@@ -17,7 +17,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 import os, sys, socket
-from processing import connection
+from multiprocessing import connection
 from globals import *
 from util.backup import backup_files
 
@@ -31,10 +31,10 @@ def main():
   import feedupdater
   dbtables.initDB()
   # Start background updater
-  p = processing.Process(target=feedupdater.feedUpdater)
-  p.setDaemon(True)
+  p = multiprocessing.Process(target=feedupdater.feedUpdater)
+  p.Daemon=True
   p.start()
-  info("Updater PID: %d"%p.getPid())
+  info("Updater PID: %d"%p.pid)
   import urssus
   urssus.main()
 

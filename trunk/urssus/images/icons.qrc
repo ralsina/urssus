@@ -1,5 +1,6 @@
 <RCC>
   <qresource prefix="/" >
+    <file>help.svg</file>
     <file>sync.svg</file>
     <file>tag.svg</file>
     <file>file_broken.svg</file>

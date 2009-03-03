@@ -20,11 +20,11 @@ import os, sys, codecs, datetime, time
 
 VERSION='0.2.13'
 
-import processing
+import multiprocessing
 
 # A queue where subprocesses can put status messages, so 
 # they appear in the window's statusbar. For example "updating NiceFeed".
-statusQueue=processing.Queue()
+statusQueue=multiprocessing.Queue()
 
 # A queue with a list of queues to be refreshed in the feed tree
 # for example when it's updated by a subprocess
@@ -37,11 +37,11 @@ statusQueue=processing.Queue()
 # [4,url] means "add feed with this url"
 # [5,fname] means "import fname which is a opml file"
 
-feedStatusQueue=processing.Queue()
+feedStatusQueue=multiprocessing.Queue()
 
 # A queue where you put the feeds that you want fetched.
 # To fetch "All feeds" just pass the root feed.
-feedUpdateQueue=processing.Queue()
+feedUpdateQueue=multiprocessing.Queue()
 
 # Configuration
 import config
@@ -92,7 +92,7 @@ def renderTemplate(tname, **context):
   return templateEngine.render(os.path.join(tmplDir,tname), context)
 
 # References to background processes
-import processing
+import multiprocessing
 processes=[]
 
 

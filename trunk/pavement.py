@@ -16,7 +16,16 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-import os
+import os, sys
+
+install_requires= ['SQLAlchemy>=0.5.2', 
+                   'Elixir>=0.6.1',
+                   'simplejson', 
+                   'pyxml', 
+                  ]
+
+if sys.version<"2.6":
+  install_requires.append("multiprocessing")
 
 options(
     setup=Bunch(
@@ -40,12 +49,7 @@ options(
                                             'urssus_client = urssus.client:main', 
                                             ], 
                         }, 
-        install_requires = ['SQLAlchemy>=0.5.2', 
-                            'Elixir>=0.6.1',
-                            'processing', 
-                            'simplejson', 
-                            'pyxml', 
-                            ],
+        install_requires = install_requires,
         extras_require = {'Twitter':  ["twitter"] }, 
         description = 'A multiplatform GUI news agregator.', 
         license = 'GPLv2', 

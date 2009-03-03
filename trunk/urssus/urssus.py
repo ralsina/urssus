@@ -27,7 +27,7 @@ __session__=session
 #except ImportError:
 #  pass
 
-import sys, os, time, urlparse, tempfile, codecs, traceback
+import sys, os, time, urlparse, tempfile, codecs, traceback, subprocess
 from urllib import urlopen, quote
 from datetime import datetime, timedelta
 from dbtables import Post, Feed, MetaFeed, initDB, unread_feed, starred_feed
@@ -469,6 +469,8 @@ class MainWindow(QtGui.QMainWindow):
     self.feedStatusTimer.start(3000)
     # Start the background feedupdater
     feedUpdateQueue.put([1])
+    
+    self.assistant=None
 
   def fixPostListUI(self):
     # Fixes for post list UI
@@ -585,6 +587,17 @@ class MainWindow(QtGui.QMainWindow):
     if not index.isValid() or not self.ui.posts.model():
       return None
     return self.ui.posts.model().postFromIndex(index)
+
+  def on_action_Handbook_triggered(self, i=None):
+    if i==None: return
+    
+    if not self.assistant or not self.assistant.poll()==None:
+      helpcoll=os.path.join(os.path.abspath(os.path.dirname(__file__)), 'help', 'out', 'collection.qhc')
+      cmd="assistant -enableRemoteControl -collectionFile %s"%helpcoll
+      info(cmd)
+      self.assistant=subprocess.Popen(cmd, 
+                                      shell=True, stdin=subprocess.PIPE)
+    self.assistant.stdin.write("SetSource qthelp://urssus/doc/handbook.html\n")
 
   def on_actionSync_Bookmarks_To_Web_triggered(self, i=None):
     if i==None: return
