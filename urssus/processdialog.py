@@ -17,7 +17,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 from PyQt4 import QtGui, QtCore
-import processing
+import multiprocessing
 
 from ui.Ui_runprocess import Ui_Dialog as UI_ProcessDialog
 
@@ -27,7 +27,7 @@ class ProcessDialog(QtGui.QDialog):
     # Set up the UI from designer
     self.ui=UI_ProcessDialog()
     self.ui.setupUi(self)
-    self.output=processing.Queue()
+    self.output=multiprocessing.Queue()
     self.callable=callable
     self.args=args+[self.output]
     self.timer=QtCore.QTimer(self)
@@ -41,7 +41,7 @@ class ProcessDialog(QtGui.QDialog):
     return QtGui.QDialog.exec_(self)
 
   def start(self):
-    self.proc=processing.Process(target=self.callable, args=self.args)
+    self.proc=multiprocessing.Process(target=self.callable, args=self.args)
     self.proc.start()
     self.showOutput()
     
