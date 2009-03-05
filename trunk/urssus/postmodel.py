@@ -83,6 +83,7 @@ class PostModel(QtGui.QStandardItemModel):
     maxposts=config.getValue('options', 'maxPostsDisplayed', 1000)
     posts=self.posts.order_by(sql.desc('date')).limit(maxposts)
     i=0
+    addFeed=config.getValue('ui','feedOnTitle', False)
     for post in posts:
       i+=1
       if i%10==0:
@@ -108,11 +109,14 @@ class PostModel(QtGui.QStandardItemModel):
         self.post_ids.append(post.id)
         item0=QtGui.QStandardItem()
         item1=QtGui.QStandardItem()
-        item1.setToolTip('%s - Posted at %s'%(unicode(post), dh))
-        item1.setData(QtCore.QVariant(unicode(post)), display)
-        item1.setData(QtCore.QVariant(unicode(post).lower()), sorting)
+        item1.setToolTip('%s - Posted at %s'%(unicode(post), dh))        
+        if addFeed:
+          t='%s: %s'%(unicode(post.feed), unicode(post))
+        else:
+          t=unicode(post)
+        item1.setData(QtCore.QVariant(t), display)
+        item1.setData(QtCore.QVariant(t.lower()), sorting)
         item1.setData(QtCore.QVariant(post.id), post_id)
-        
         item2=QtGui.QStandardItem()
         item2.setToolTip('%s - Posted at %s'%(unicode(post), dh))
         item2.setData(QtCore.QVariant(dh), display)

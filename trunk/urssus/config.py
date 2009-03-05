@@ -108,6 +108,7 @@ options = (
       ('alwaysShowFeed',  ('bool', False, "Always show a link to the post's feed when displaying a post")), 
       ('hideOnTrayClick', ('bool', True, "Hide the main window when clicking on the tray icon")), 
       ('startOnTray', ('bool', False, "Don't show the main window on startup")), 
+      ('feedOnTitle', ('bool', False, "Add the feed name to the item title (Example: 'My Blog: what I ate this morning'")), 
     )
   ), 
   ('options', 
