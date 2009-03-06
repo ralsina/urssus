@@ -32,7 +32,7 @@ def main():
   dbtables.initDB()
   # Start background updater
   p = multiprocessing.Process(target=feedupdater.feedUpdater)
-  p.Daemon=True
+  p.daemon=True
   p.start()
   info("Updater PID: %d"%p.pid)
   import urssus
