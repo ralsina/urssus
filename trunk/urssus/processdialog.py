@@ -46,7 +46,7 @@ class ProcessDialog(QtGui.QDialog):
     self.showOutput()
     
   def reject(self):
-    if self.proc and self.proc.isAlive():
+    if self.proc and self.proc.is_alive():
       self.proc.terminate()
     return QtGui.QDialog.reject(self)
     
@@ -64,6 +64,6 @@ class ProcessDialog(QtGui.QDialog):
         self.result=data
         self.accept()
 
-    if self.proc.isAlive():
+    if self.proc.is_alive():
       self.timer.setInterval(500)
       self.timer.start()
