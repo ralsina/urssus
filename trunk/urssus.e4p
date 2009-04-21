@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE Project SYSTEM "Project-4.6.dtd">
 <!-- eric4 project file for project urssus -->
-<!-- Saved: 2009-02-13, 18:45:02 -->
+<!-- Saved: 2009-04-21, 10:30:09 -->
 <!-- Copyright (C) 2009 Roberto Alsina, ralsina@netmanagers.com.ar -->
 <Project version="4.6">
   <Language>en</Language>
@@ -68,6 +68,7 @@
     <Source>urssus/feedtree.py</Source>
     <Source>urssus/norm.py</Source>
     <Source>urssus/util/extime.py</Source>
+    <Source>urssus/updater.py</Source>
   </Sources>
   <Forms>
     <Form>urssus/ui/about.ui</Form>
