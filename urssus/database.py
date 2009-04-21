@@ -56,7 +56,7 @@ def initDB():
             else:
                 # Maybe it was old miruku
                 info("Running: %s"%cmd)
-                con.execute('drop miruku_track')
+                con.execute('drop table miruku_track')
                 con.commit()
         except:
             pass
