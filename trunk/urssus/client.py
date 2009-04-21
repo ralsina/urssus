@@ -15,33 +15,37 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+# MA  02110-1301, USA.
 
-import os, sys, socket
+import os
+import sys
 from globals import *
 import dbus
 
+
 def main():
-  try:
-    bus = dbus.SessionBus()
-    remote_object = bus.get_object("org.urssus.service", "/uRSSus")
-    iface = dbus.Interface(remote_object, "org.urssus.interface")
-    
-    # FIXME: implement real CLI parsing
-    
-    if len(sys.argv)==1: # No arguments
-      remote_object.show()
-    elif sys.argv[1].startswith('http:') or sys.argv[1].startswith('feed:'):
-      remote_object.AddFeed(sys.argv[1])
-    else:
-      remote_object.importOPML(sys.argv[1])
-  except dbus.exceptions.DBusException, e:
-    if 'ServiceUnknown' in str(e):
-      warning(str(e))
-      warning("Starting urssus")
-      os.execlp('urssus', *sys.argv)
-    else:
-      error(str(e))
+    try:
+        bus = dbus.SessionBus()
+        remote_object = bus.get_object("org.urssus.service", "/uRSSus")
+        iface = dbus.Interface(remote_object, "org.urssus.interface")
+
+        # FIXME: implement real CLI parsing
+
+        if len(sys.argv)==1: # No arguments
+            remote_object.show()
+        elif sys.argv[1].startswith('http:') or \
+             sys.argv[1].startswith('feed:'):
+            remote_object.AddFeed(sys.argv[1])
+        else:
+            remote_object.importOPML(sys.argv[1])
+    except dbus.exceptions.DBusException, e:
+        if 'ServiceUnknown' in str(e):
+            warning(str(e))
+            warning("Starting urssus")
+            os.execlp('urssus', *sys.argv)
+        else:
+            error(str(e))
 
 if __name__ == "__main__":
-  main()
+    main()
