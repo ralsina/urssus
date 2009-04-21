@@ -30,33 +30,31 @@ def initDB():
      upgrades to latest schema if needed'''
   # See if the DB exists, or create
   info ("Initializing DB")
-#  if os.path.exists(dbfile):
-#      pass
-#    con = sqlite.connect(dbfile)
-#    # If the migrate_version table exists, kill it
-#    try:
-#      con.execute('drop table migrate_version')
-#      con.commit()
-#    except:
-#      pass
-#    # Check if the miruku table exists
-#    try:
-#      con.execute('select 1 from miruku_track')
-#      con.commit()
-#      # If we got this far, it is managed by miruku, 
-#      # so upgrade and be done with it
-#      cmd='miruku upgrade %s urssus.schema.metadata urssus'%dbUrl
-#      info ("Running: %s"%cmd)
-#      # Miruku is broken for the versions of sqlalchemy I use right now
-#      #os.system(cmd)
-#      return
-#    except:
-#      pass
-#  # Either it doesn't exist, or it's not managed by miruku.
-#  cmd='miruku create %s urssus.schema.metadata urssus'%dbUrl
-#  info ("Running: %s"%cmd)
-#  # Miruku is broken for the versions of sqlalchemy I use right now
-#  #os.system(cmd)
+  if os.path.exists(dbfile):
+      pass
+    con = sqlite.connect(dbfile)
+    # If the migrate_version table exists, kill it
+    try:
+      con.execute('drop table migrate_version')
+      con.commit()
+    except:
+      pass
+    # Check if the miruku table exists
+    try:
+      con.execute('select 1 from miruku_track')
+      con.commit()
+      # If we got this far, it is managed by miruku, 
+      # so upgrade and be done with it
+      cmd='miruku upgrade %s urssus.schema.metadata urssus'%dbUrl
+      info ("Running: %s"%cmd)
+      os.system(cmd)
+      return
+    except:
+      pass
+  # Either it doesn't exist, or it's not managed by miruku.
+  cmd='miruku create %s urssus.schema.metadata urssus'%dbUrl
+  info ("Running: %s"%cmd)
+  os.system(cmd)
   
 def main():
   initDB()
