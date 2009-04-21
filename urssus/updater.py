@@ -1,4 +1,4 @@
-from urssus.dbtables import *
+from dbtables import *
 initDB()
 for f in Feed.query.all():
     try:
