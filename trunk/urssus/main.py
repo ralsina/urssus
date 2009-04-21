@@ -26,7 +26,8 @@ def main():
   
   # Backup the DB and config file
   info ("Backing up %s"%config.cfdir)
-  backup_files(config.cfdir)
+  # Temporarily disabled
+  #backup_files(config.cfdir)
   import dbtables
   import feedupdater
   dbtables.initDB()
