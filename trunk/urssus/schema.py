@@ -18,6 +18,14 @@
 
 import elixir,datetime
 
+class Enclosure(elixir.Entity):
+    elixir.using_options(tablename='enclosures')
+    post        = elixir.ManyToOne('Post')
+    href        = elixir.Field(elixir.Text)
+    filename    = elixir.Field(elixir.Text)
+    length      = elixir.Field(elixir.Integer, default=0)
+    filetype    = elixir.Field(elixir.Text)
+
 class Post(elixir.Entity):
   elixir.using_options (tablename='posts')
   feed        = elixir.ManyToOne('Feed')
