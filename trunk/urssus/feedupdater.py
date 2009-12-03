@@ -47,7 +47,10 @@ def feedUpdater():
       # See if we have any feed update requests
       try:
         f=feedUpdateQueue.get(block=True, timeout=10)
-        info("updating feed %d"%f.id)
+        if isinstance(f,list):
+            info("updating feeds [%s]"%(fe.id for fe in f ))
+        else:
+            info("updating feed %d"%f.id)
         f.update()
       except Queue.Empty:
         debug("No feeds in queue, going to schedule")
