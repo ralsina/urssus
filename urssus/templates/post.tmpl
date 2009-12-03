@@ -21,6 +21,9 @@
 <div style='margin-top: 1em;'>
 #{post.content}
 <p>
+<?py for enclosure in  post.enclosures: ?>
+  <audio autobuffer="Yes" controls="controls" src=#{enclosure.href}></audio><br>
+<?py #end ?>
 <?py if post.link: ?>
   <a href="#{post.link}">Complete Story</a>
 <?py #end ?>

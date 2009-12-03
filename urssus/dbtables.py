@@ -114,6 +114,9 @@ class Post(elixir.Entity):
     # Added in schema version 5
     fresh       = elixir.Field(elixir.Boolean, default=True)
     tags        = elixir.Field(elixir.Text, default='')
+    enclosures  = elixir.OneToMany('Enclosure',
+                                   inverse='post',
+                                   cascade="delete,delete-orphan")
 
     decoTitle   = ''
 
@@ -127,6 +130,16 @@ class Post(elixir.Entity):
             return '<a href="%s">%s</a>'%(self.link, unicode(self))
         return self.title
 
+class Enclosure(elixir.Entity):
+    elixir.using_options(tablename='enclosures')
+    post        = elixir.ManyToOne('Post')
+    href        = elixir.Field(elixir.Text)
+    filename    = elixir.Field(elixir.Text)
+    length      = elixir.Field(elixir.Integer, default=0)
+    filetype    = elixir.Field(elixir.Text)
+
+    def __repr__(self):
+        return self.href
 
 class Feed(elixir.Entity):
     elixir.using_options(tablename='feeds', inheritance='multi')
@@ -613,7 +626,13 @@ class Feed(elixir.Entity):
                     title=detailToTitle(post['title_detail'])
                 else:
                     title=post['title']
-
+                    
+                # Search for enclosures
+                if 'enclosures' in post:
+                    enclosures=post['enclosures']
+                else:
+                    enclosures=None
+                    
                 try:
                     # FIXME: if I use date to check here, I get duplicates on
                     # posts where I use artificial date because it's not in the
@@ -646,6 +665,14 @@ class Feed(elixir.Entity):
                             if 'tags' in post:
                                 p.tags=','.join([t.term for t in post['tags']])
                             posts.append(p)
+                            
+                            # Create enclosures
+                            for e in enclosures:
+                                enc=Enclosure(post=p, 
+                                              href=e.href, 
+                                              filetype=e.type, 
+                                              length=e.length, 
+                                              filename=None)
                     elixir.session.commit()
                 except:
                     traceback.print_exc(1)
@@ -738,6 +765,7 @@ class MetaFolder(Feed):
     def removeChild(self, feed):
         '''Makes no sense in this context'''
         return
+
 
 root_feed=None
 starred_feed=None
