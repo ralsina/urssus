@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """feedfinder: Find the Web feed for a Web page
 http://www.aaronsw.com/2002/feedfinder/
 
@@ -306,16 +307,6 @@ def feeds(uri, all=False, querySyndic8=False, _recurs=None):
     if hasattr(__builtins__, 'set') or __builtins__.has_key('set'):
         outfeeds = list(set(outfeeds))
     return outfeeds
-
-getFeeds = feeds # backwards-compatibility
-
-def feed(uri):
-    #todo: give preference to certain feed formats
-    feedlist = feeds(uri)
-    if feedlist:
-        return feedlist[0]
-    else:
-        return None
 
 ##### test harness ######
 
