@@ -1171,7 +1171,7 @@ class MainWindow(QtGui.QMainWindow):
     AboutDialog(self).exec_()
     
   def updateFeedStatus(self):
-    if self.p is None:
+    if self.p is None or not self.p.is_alive():
         # Start background updater
         self.p = multiprocessing.Process(target=feedupdater.feedUpdater)
         self.p.daemon=True
