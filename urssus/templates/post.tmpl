@@ -22,7 +22,13 @@
 #{post.content}
 <p>
 <?py for enclosure in  post.enclosures: ?>
-  <audio autobuffer="Yes" controls="controls" src="#{enclosure.href}"></audio><br>
+  <? if enclosure.filetype.startswith('audio'): ?>
+    <audio autobuffer="Yes" controls="controls" src="#{enclosure.href}"></audio><br>
+  <? elif enclosure.filetype.startswith('video'): ?>
+    <video autobuffer="Yes" controls="controls" src="#{enclosure.href}"></video><br>
+  <? else: ?>
+    <a href="#{enclosure.href}">Attachment</a><br>
+  <?py #endif ?>
 <?py #end ?>
 <?py if post.link: ?>
   <a href="#{post.link}">Complete Story</a>
