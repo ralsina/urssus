@@ -33,6 +33,7 @@ from datetime import datetime, timedelta
 from dbtables import Post, Feed, MetaFeed, initDB, unread_feed, starred_feed
 import elixir
 import sqlalchemy as sql
+import feedupdater
 
 from htmlentitydefs import name2codepoint as n2cp
 import re
@@ -363,6 +364,9 @@ class FeedProperties(QtGui.QDialog):
 class MainWindow(QtGui.QMainWindow):
   def __init__(self):
     QtGui.QMainWindow.__init__(self)
+    
+    # No feed updater yet
+    self.p = None
 
     # Internal indexes
     self.combinedView=False
@@ -471,7 +475,7 @@ class MainWindow(QtGui.QMainWindow):
     # Start the background feedupdater
     feedUpdateQueue.put([1])
     
-    self.assistant=None
+    self.assistant=None    
 
   def fixPostListUI(self):
     # Fixes for post list UI
@@ -1167,6 +1171,13 @@ class MainWindow(QtGui.QMainWindow):
     AboutDialog(self).exec_()
     
   def updateFeedStatus(self):
+    if self.p is None:
+        # Start background updater
+        self.p = multiprocessing.Process(target=feedupdater.feedUpdater)
+        self.p.daemon=True
+        self.p.start()
+        info("Updater PID: %d"%self.p.pid)
+      
     info("updateFeedStatus queue length: %d"%len(self.pendingFeedUpdates))
     try:
       while not feedStatusQueue.empty():
@@ -1979,14 +1990,7 @@ def main():
       import dbtables
       dbtables.initDB()
       name = dbus.service.BusName("org.urssus.service", bus=session_bus)
-      
-      import feedupdater
-      # Start background updater
-      p = multiprocessing.Process(target=feedupdater.feedUpdater)
-      p.daemon=True
-      p.start()
-      info("Updater PID: %d"%p.pid)
-            
+                  
       # Not enabled yet, because I need to implement a web app to handle it
       if config.getValue('options','showDebugDialog', False):
         sys.excepthook = my_excepthook
