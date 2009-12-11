@@ -28,14 +28,6 @@ def main():
   info ("Backing up %s"%config.cfdir)
   # Temporarily disabled
   #backup_files(config.cfdir)
-  import dbtables
-  import feedupdater
-  dbtables.initDB()
-  # Start background updater
-  p = multiprocessing.Process(target=feedupdater.feedUpdater)
-  p.daemon=True
-  p.start()
-  info("Updater PID: %d"%p.pid)
   import urssus
   urssus.main()
 
