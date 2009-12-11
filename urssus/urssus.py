@@ -807,6 +807,13 @@ class MainWindow(QtGui.QMainWindow):
     curPost=self.getCurrentPost()
     if not curPost: return
     QtGui.QDesktopServices.openUrl(QtCore.QUrl(curPost.link))
+    
+  def on_actionCopy_Article_URL_triggered(self, i=None):
+    # FIXME: handle selections
+    if i==None: return
+    curPost=self.getCurrentPost()
+    if not curPost: return
+    QtGui.QApplication.clipboard().setText(curPost.link)
 
 
   def on_actionMark_as_Important_triggered(self, i=None):
@@ -852,6 +859,7 @@ class MainWindow(QtGui.QMainWindow):
     if not curPost: return
     menu=QtGui.QMenu()
     menu.addAction(self.ui.actionOpen_in_Browser)
+    menu.addAction(self.ui.actionCopy_Article_URL)
     menu.addSeparator()
     if curPost.important:
       menu.addAction(self.ui.actionRemove_Important_Mark)
@@ -1438,7 +1446,8 @@ class MainWindow(QtGui.QMainWindow):
               self.ui.actionMark_as_Unread,  
               self.ui.actionMark_as_Important,  
               self.ui.actionDelete_Article,  
-              self.ui.actionOpen_in_Browser,  
+              self.ui.actionOpen_in_Browser, 
+              self.ui.actionCopy_Article_URL, 
               self.ui.actionRemove_Important_Mark,  
              ]
     
