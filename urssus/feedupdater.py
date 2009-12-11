@@ -33,9 +33,26 @@ def updateOne(feed):
   
 def updateOneNice(feed):
   feed.update()
+
+def checkGui():
+    try:
+        session_bus = dbus.SessionBus()
+        session_bus.get_object("org.urssus.service", "/uRSSus")
+        info ('Gui is there') 
+        return True
+    except dbus.DBusException, msg:
+        if msg.get_dbus_name()=='org.freedesktop.DBus.Error.ServiceUnknown':
+            info ('Gui is missing')
+            return False
+        else:
+            return True
+    
   
 # The feed updater (runs out-of-process)
-def feedUpdater():
+def feedUpdater(needGui=True):
+  # if needGui we check for the GUI DBUS name
+  if needGui and not checkGui(): return
+  
   import dbtables
   lastCheck=datetime.datetime(1970, 1, 1)
   # Wait blocked until the main thread tells us we can go
@@ -44,6 +61,10 @@ def feedUpdater():
   except Queue.Empty:
     pass
   while True:
+    
+    # Also check on the loop, so we exit when urssus quits  
+    # if needGui we check for the GUI DBUS name
+    if needGui and not checkGui: return
     try:
       debug("updater loop")
       # See if we have any feed update requests
@@ -73,6 +94,9 @@ def feedUpdater():
         info("Due: %s"%(','.join(f.text for f in flist)))
         for feed in flist:
           info("updating feed %d"%feed.id)
+          # Also check on the loop, so we exit when urssus quits  
+          # if needGui we check for the GUI DBUS name
+          if needGui and not checkGui(): return
           feed.update()
         # Feeds with default check period
         # Limit to 5 feeds so they get progressively out-of-sync and you don't have a glut of
@@ -91,8 +115,9 @@ def feedUpdater():
       info ("crash in feedupdater, recovering")
       traceback.print_exc(file=sys.stderr)
         
-def main():
+def main(needGui=True):
   # Don't run more than once
+  from pudb import set_trace; set_trace()
   session_bus = dbus.SessionBus()
   try:
       session_bus.get_object("org.urssus.updater", "/feedUpdater")
@@ -100,8 +125,8 @@ def main():
       name = dbus.service.BusName("org.urssus.updater", bus=session_bus)
       initDB()
       #elixir.metadata.bind.echo = True
-      feedUpdater()
+      feedUpdater(needGui)
   
 
 if __name__ == "__main__":
-  main()
+  main(needGui=False)

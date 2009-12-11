@@ -271,12 +271,13 @@ class TrayIcon(QtGui.QSystemTrayIcon):
   def __init__(self):
     QtGui.QSystemTrayIcon.__init__ (self,QtGui.QIcon(":/urssus.svg"))
   def updateIcon(self):
-    uc=root_feed.unreadCount()
-    self.setToolTip('%d unread posts'%uc)
-    if uc:
-      self.setIcon(QtGui.QIcon(':/urssus-unread.svg'))
-    else:
-      self.setIcon(QtGui.QIcon(':/urssus.svg'))
+    if root_feed:
+        uc=root_feed.unreadCount()
+        self.setToolTip('%d unread posts'%uc)
+        if uc:
+          self.setIcon(QtGui.QIcon(':/urssus-unread.svg'))
+        else:
+          self.setIcon(QtGui.QIcon(':/urssus.svg'))
 
 
 class FeedProperties(QtGui.QDialog):
@@ -1975,7 +1976,17 @@ def main():
       # This is the second copy, make the first one show instead
       # TODO: implement
   except dbus.DBusException: # No other copy running
+      import dbtables
+      dbtables.initDB()
       name = dbus.service.BusName("org.urssus.service", bus=session_bus)
+      
+      import feedupdater
+      # Start background updater
+      p = multiprocessing.Process(target=feedupdater.feedUpdater)
+      p.daemon=True
+      p.start()
+      info("Updater PID: %d"%p.pid)
+            
       # Not enabled yet, because I need to implement a web app to handle it
       if config.getValue('options','showDebugDialog', False):
         sys.excepthook = my_excepthook
@@ -1991,5 +2002,9 @@ def main():
       
       if not config.getValue('ui', 'startOnTray', False):
         window.show()
+
+
+        
+        
       sys.exit(app.exec_())
   sys.exit(0)
