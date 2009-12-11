@@ -1941,10 +1941,12 @@ def decode_htmlentities(string):
 
 import dbus 
 import dbus.service
+session_bus = None
 from dbus.mainloop import qt
 
 class UrssusServer(dbus.service.Object):
-  def __init__(self, window, bus_name, object_path="/uRSSus"):
+  def __init__(self, window, bus_name, object_path="/uRSSus"):      
+    remote_object = session_bus.get_object("org.urssus.service", "/uRSSus")
     dbus.service.Object.__init__(self, bus_name, object_path)
     self.window=window
     
@@ -1963,29 +1965,31 @@ class UrssusServer(dbus.service.Object):
 
 
 def main():
-  global root_feed
-  
+  global root_feed, session_bus
   app=QtGui.QApplication(sys.argv)
   app.setQuitOnLastWindowClosed(False)
-
-  # Not enabled yet, because I need to implement a web app to handle it
-  if config.getValue('options','showDebugDialog', False):
-    sys.excepthook = my_excepthook
-  window=MainWindow()
-
   mainloop = qt.DBusQtMainLoop(set_as_default=True)
   session_bus = dbus.SessionBus()
-  name = dbus.service.BusName("org.urssus.service", bus=session_bus)
-  object = UrssusServer(window,name)
-    
-  if len(sys.argv)>1:
-    if sys.argv[1].lower().startswith('http://'):
-      window.addFeed(sys.argv[1])
-    elif sys.argv[1].lower().endswith('.opml'):
-      # Import a OPML file into the DB so we have some data to work with
-      importOPML(sys.argv[1], root_feed)
-  
-  if not config.getValue('ui', 'startOnTray', False):
-    window.show()
-  sys.exit(app.exec_())
-  
+  try:
+      session_bus.get_object("org.urssus.service", "/uRSSus")
+      # This is the second copy, make the first one show instead
+      # TODO: implement
+  except dbus.DBusException: # No other copy running
+      name = dbus.service.BusName("org.urssus.service", bus=session_bus)
+      # Not enabled yet, because I need to implement a web app to handle it
+      if config.getValue('options','showDebugDialog', False):
+        sys.excepthook = my_excepthook
+      window=MainWindow()
+      object = UrssusServer(window,name)
+        
+      if len(sys.argv)>1:
+        if sys.argv[1].lower().startswith('http://'):
+          window.addFeed(sys.argv[1])
+        elif sys.argv[1].lower().endswith('.opml'):
+          # Import a OPML file into the DB so we have some data to work with
+          importOPML(sys.argv[1], root_feed)
+      
+      if not config.getValue('ui', 'startOnTray', False):
+        window.show()
+      sys.exit(app.exec_())
+  sys.exit(0)
