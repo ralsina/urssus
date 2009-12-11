@@ -49,7 +49,7 @@ from util.tiny import tiny
 from feedupdater import feedUpdater
 
 # UI Classes
-from PyQt4 import QtGui, QtCore, QtWebKit
+from PyQt4 import QtGui, QtCore, QtWebKit, QtNetwork
 from ui.Ui_main import Ui_MainWindow
 from ui.Ui_about import Ui_Dialog as UI_AboutDialog
 from ui.Ui_filterwidget import Ui_Form as UI_FilterWidget
@@ -61,11 +61,58 @@ from ui.Ui_greaderimport import Ui_Dialog as UI_GReaderDialog
 from ui.Ui_bugdialog import Ui_Dialog as UI_BugDialog
 from ui.Ui_configdialog import Ui_Dialog as UI_ConfigDialog
 from ui.Ui_newfeed import Ui_Dialog as UI_NewFeedDialog
+from ui.Ui_feedpreview import Ui_Dialog as UI_FeedPreviewDialog
 
 from processdialog import ProcessDialog
 
 from postmodel import *
+from util.feed2html import run_template
 
+
+class FeedPreview(QtGui.QDialog):
+    def __init__(self, feeds, insertPoint):
+        QtGui.QDialog.__init__(self)
+        self.ui=UI_FeedPreviewDialog()
+        self.ui.setupUi(self)
+        self.feeds=feeds
+        self.insertPoint=insertPoint
+        self.addedFeed=None
+        
+        for feed, data in self.feeds:
+            self.ui.feeds.addItem(feed)
+            
+        self.net=QtNetwork.QNetworkAccessManager(self)
+        self.net.finished.connect(self.gotFeed)
+            
+    def gotFeed(self, reply):
+        redir=reply.attribute(QtNetwork.QNetworkRequest.RedirectionTargetAttribute)
+        if redir.isValid():
+            self.net.get(QtNetwork.QNetworkRequest(redir.toUrl()))
+        else:            
+            self.ui.preview.setHtml(run_template(i=str(reply.readAll())))
+            
+    def on_feeds_currentIndexChanged(self, item=None):
+        if item is None or isinstance(item, int): return
+        item=str(item)
+        self.curFeed=item
+        if Feed.get_by(xmlUrl=item):
+            self.ui.preview.setHtml('<h1>You are already subscribed to this feed</h1>')
+        else:
+            self.ui.preview.setHtml('<h1>Fetching feed for preview</h1>')
+            self.net.get(QtNetwork.QNetworkRequest(QtCore.QUrl(item)))
+        
+    def on_addFeed_clicked(self,i=None):
+        if i is None: return
+        try:
+            newFeed=Feed(xmlUrl=self.curFeed)
+            newFeed.parent=self.insertPoint
+            elixir.session.commit()
+            newFeed.update()
+            self.addedFeed=newFeed
+        except:
+            elixir.session.rollback()
+        self.ui.preview.setHtml('<h1>Feed added</h1>')
+        
 class FilterWidget(QtGui.QWidget):
   def __init__(self):
     QtGui.QWidget.__init__(self)
@@ -938,35 +985,29 @@ class MainWindow(QtGui.QMainWindow):
     # So, start a background process, show a dialog, and make the user wait
     dlg=ProcessDialog(self, callable=self.realAddFeed, args=[url, ])
     if dlg.exec_():
-      # Retrieve the feed
-      newFeed=Feed.get_by(id=dlg.result)
       # Figure out the insertion point
       item=self.ui.feedTree.currentItem()
       if item:         
         curFeed=item.feed
       else:
         curFeed=root_feed
-      try:
-        # if curFeed is a metafeed, add as child of "All Feeds"
-        if isinstance(curFeed, MetaFeed):
-          newFeed.parent=root_feed
-        elif curFeed.xmlUrl: # A regular feed, add as sibling
-          newFeed.parent=curFeed.parent
-        # if curFeed is a folder, add as child
-        else:
-          newFeed.parent=curFeed
-        elixir.session.commit()
-      except:
-        elixir.session.rollback()
-      self.initTree()
-      item=self.ui.feedTree.i
-      
-      
-      
-      temFromFeed(newFeed)
-      self.ui.feedTree.setCurrentItem(item)
-      self.open_feed2(item)
-      self.on_actionEdit_Feed_triggered(True)
+      # if curFeed is a metafeed, add as child of "All Feeds"
+      if isinstance(curFeed, MetaFeed):
+        curFeed=root_feed
+      elif curFeed.xmlUrl: # A regular feed, add as sibling
+        curFeed=curFeed.parent
+
+      # Open feed preview dialog
+      preview=FeedPreview(dlg.result, curFeed)
+      preview.exec_()
+
+      newFeed = preview.addedFeed
+      if newFeed:
+          self.initTree()
+          item=self.ui.feedTree.itemFromFeed(newFeed)
+          self.ui.feedTree.setCurrentItem(item)
+          self.open_feed2(item)
+          #self.on_actionEdit_Feed_triggered(True)      
     
   def realAddFeed(self, url, output):
     _info   = lambda(msg): output.put([0, msg])
@@ -975,35 +1016,23 @@ class MainWindow(QtGui.QMainWindow):
       
     import util.feedfinder as feedfinder
     try:
-      _info('Searching for a feed in %s'%url)
-      feed=feedfinder.feed(url)
+      _info('Searching for feeds in %s'%url)
+      feeds=feedfinder.feeds(url)
     except feedfinder.TimeoutError, e:
       _error('Timeout downloading %s'%url )      
       return
-    if not feed:
+    if not feeds:
       _error("Can't find a feed wit URL: %s"%url)
       return
-    _info ("Found feed: %s"%feed)
-    _info ("Checking if you are subscribed")
-    f=Feed.get_by(xmlUrl=feed)
-    if f:
-      # Already subscribed
-      ff=unicode(f) or f.xmlUrl 
-      _error('You are already subscribed to "%s"'%f)
-      return
-    _info ('Creating feed in the database')
-    try:
-      newFeed=Feed(xmlUrl=feed)
-      elixir.session.commit()
-    except:
-      elixir.session.rollback()
-    _info ('Fetching feed information')
-    # To show it on the tree
-    newFeed.update()
-    _info ('done')
-    _return (newFeed.id)
+    _info ("Found %d feeds"%len(feeds))
+    result=[]
+    for feed in feeds:
+        _info ("Fetching %s"%feed)
+        result.append([feed,''])
     
-
+    _return (result)
+    return
+    
   def on_actionAdd_Feed_triggered(self, i=None):
     if i==None: return
     # Ask for feed URL
@@ -1992,9 +2021,11 @@ def main():
   mainloop = qt.DBusQtMainLoop(set_as_default=True)
   session_bus = dbus.SessionBus()
   try:
-      session_bus.get_object("org.urssus.service", "/uRSSus")
+      remote_object=session_bus.get_object("org.urssus.service", "/uRSSus")
       # This is the second copy, make the first one show instead
-      # TODO: implement
+      iface = dbus.Interface(remote_object, "org.urssus.interface")
+      remote_object.show()
+      # FIXME: parse arguments, deprecate urssus_client
   except dbus.DBusException: # No other copy running
       import dbtables
       dbtables.initDB()
