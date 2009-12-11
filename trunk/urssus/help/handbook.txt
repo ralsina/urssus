@@ -7,7 +7,7 @@ The uRSSus handbook
 .. role:: keyword
 
 :Author: Roberto Alsina <ralsina@netmanagers.com.ar>
-:Version: 0.2.14
+:Version: 0.3.0
 :Date: |date|
 
 
