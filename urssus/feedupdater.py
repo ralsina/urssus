@@ -25,6 +25,8 @@ import elixir
 import sqlalchemy as sql
 from dbtables import *
 import Queue
+import dbus
+import dbus.service
   
 def updateOne(feed):
   feed.update(forced=True)
@@ -90,9 +92,15 @@ def feedUpdater():
       traceback.print_exc(file=sys.stderr)
         
 def main():
-  initDB()
-#  elixir.metadata.bind.echo = True
-  feedUpdater()
+  # Don't run more than once
+  session_bus = dbus.SessionBus()
+  try:
+      session_bus.get_object("org.urssus.updater", "/feedUpdater")
+  except:
+      name = dbus.service.BusName("org.urssus.updater", bus=session_bus)
+      initDB()
+      #elixir.metadata.bind.echo = True
+      feedUpdater()
   
 
 if __name__ == "__main__":
