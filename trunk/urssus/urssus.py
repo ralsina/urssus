@@ -2018,7 +2018,6 @@ class UrssusServer(dbus.service.Object):
 
 
 def main():
-  from pudb import set_trace; set_trace()
   global root_feed, session_bus
   app=QtGui.QApplication(sys.argv)
   app.setQuitOnLastWindowClosed(False)
