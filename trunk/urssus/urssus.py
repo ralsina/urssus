@@ -2018,7 +2018,7 @@ class UrssusServer(dbus.service.Object):
 
 
 def main():
-  global root_feed, session_bus
+  global root_feed, unread_feed, starred_feed, session_bus
   app=QtGui.QApplication(sys.argv)
   app.setQuitOnLastWindowClosed(False)
   mainloop = qt.DBusQtMainLoop(set_as_default=True)
@@ -2033,6 +2033,8 @@ def main():
       import dbtables
       dbtables.initDB()
       root_feed=dbtables.root_feed
+      unread_feed=dbtables.unread_feed
+      starred_feed=dbtables.starred_feed
       name = dbus.service.BusName("org.urssus.service", bus=session_bus)
                   
       # Not enabled yet, because I need to implement a web app to handle it
