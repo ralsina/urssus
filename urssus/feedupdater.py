@@ -117,7 +117,6 @@ def feedUpdater(needGui=True):
         
 def main(needGui=True):
   # Don't run more than once
-  from pudb import set_trace; set_trace()
   session_bus = dbus.SessionBus()
   try:
       session_bus.get_object("org.urssus.updater", "/feedUpdater")

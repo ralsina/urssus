@@ -315,9 +315,12 @@ class FancyAuthDialog(QtGui.QDialog):
     self.ui.label.setText('Please enter your %s username and password'%service_name)
     self.ui.icon.setPixmap(icon or QtGui.QPixmap(':/urssus.svg'))
 
+
 class TrayIcon(QtGui.QSystemTrayIcon):
+    
   def __init__(self):
     QtGui.QSystemTrayIcon.__init__ (self,QtGui.QIcon(":/urssus.svg"))
+    
   def updateIcon(self):
     if root_feed:
         uc=root_feed.unreadCount()
@@ -2015,6 +2018,7 @@ class UrssusServer(dbus.service.Object):
 
 
 def main():
+  from pudb import set_trace; set_trace()
   global root_feed, session_bus
   app=QtGui.QApplication(sys.argv)
   app.setQuitOnLastWindowClosed(False)
@@ -2029,6 +2033,7 @@ def main():
   except dbus.DBusException: # No other copy running
       import dbtables
       dbtables.initDB()
+      root_feed=dbtables.root_feed
       name = dbus.service.BusName("org.urssus.service", bus=session_bus)
                   
       # Not enabled yet, because I need to implement a web app to handle it
