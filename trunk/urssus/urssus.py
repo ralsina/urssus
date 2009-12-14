@@ -60,7 +60,6 @@ from ui.Ui_fancyauth import Ui_Dialog as UI_FancyAuthDialog
 from ui.Ui_greaderimport import Ui_Dialog as UI_GReaderDialog
 from ui.Ui_bugdialog import Ui_Dialog as UI_BugDialog
 from ui.Ui_configdialog import Ui_Dialog as UI_ConfigDialog
-from ui.Ui_newfeed import Ui_Dialog as UI_NewFeedDialog
 from ui.Ui_feedpreview import Ui_Dialog as UI_FeedPreviewDialog
 
 from processdialog import ProcessDialog
@@ -70,7 +69,86 @@ from util.feed2html import run_template
 
 
 class FeedPreview(QtGui.QDialog):
-    def __init__(self, feeds, insertPoint):
+    def __init__(self, parent):
+        QtGui.QDialog.__init__(self, parent)
+        self.ui=UI_FeedPreviewDialog()
+        self.ui.setupUi(self)
+        self.on_feedType_activated(0)
+        self.feeds=[]
+        
+    help=['''Enter the URL of the site you want to add as a feed.''', 
+          '''Enter keywords to create a customized Google News feed.<p> 
+          For example, <i>"premier league"</i> if you are interested in english football.''', 
+          '''Enter keywords to create a customized Bloglines Search.<p> 
+          For example, <i>"premier league"</i> if you are interested in english football.'''
+         ]
+
+    def on_feedType_activated(self, index=None):
+        if index==None: return
+        if type(index) is not int: return
+        self.ui.preview.setHtml('<h1>%s</h1>'%self.help[index])
+        self.net=QtNetwork.QNetworkAccessManager(self)
+
+    def on_go_clicked(self, i=None):
+        if i is None: return
+        data=unicode(self.ui.data.text())        
+        idx=self.ui.feedType.currentIndex()
+        if idx==1: # Google News Feed
+            data='http://news.google.com/news?q=%s&output=atom'%quote(data)
+        elif idx==2: # Ask.com Feed
+            data='http://ask.bloglines.com/search?q=%s&ql=&format=rss'%quote(data)
+            
+        self.ui.preview.setHtml('<h1>%s</h1>'%'Fetching page and searching for feeds. This may take a few seconds')
+        self.output=multiprocessing.Queue()                    
+        self.proc=multiprocessing.Process(target=self.feedFinder, args=[data,self.output])
+        self.proc.start()
+        while self.proc.is_alive():
+            
+            while not self.output.empty():
+              html=self.ui.preview.page().currentFrame().toHtml()
+              [code, data]=self.output.get()
+              if code==0: # Regular output
+                self.ui.preview.setHtml(html+data+'<br>')
+              elif code==2: # Really bad
+                QtGui.QMessageBox.critical(self, 'Error - uRSSus', data )
+              elif code==100: # The result data
+                self.feeds=data
+                break
+                        
+            QtGui.QApplication.instance().processEvents(QtCore.QEventLoop.ExcludeUserInputEvents, 1000)
+
+        for feed in self.feeds:
+            self.ui.feeds.addItem(feed)
+
+    def feedFinder(self, url, output):
+        _info   = lambda(msg): output.put([0, msg])
+        _error  = lambda(msg): output.put([2, msg])
+        _return = lambda(msg): output.put([100, msg])
+          
+        import util.feedfinder as feedfinder
+        try:
+          _info('Searching for feeds in %s'%url)
+          feeds=feedfinder.feeds(url)
+        except feedfinder.TimeoutError, e:
+          _error('Timeout downloading %s'%url )      
+          return
+        if not feeds:
+          _error("Can't find a feed wit URL: %s"%url)
+          return
+        _info ("Found %d feeds"%len(feeds))
+        _return (feeds)
+        return
+
+        
+    def fetchUrl(self, reply):
+        redir=reply.attribute(QtNetwork.QNetworkRequest.RedirectionTargetAttribute)
+        if redir.isValid():
+            self.net.get(QtNetwork.QNetworkRequest(redir.toUrl()))
+        else:            
+            self.ui.preview.setHtml(run_template(i=str(reply.readAll())))
+
+    
+    def ___init__(self, feeds, insertPoint):
         QtGui.QDialog.__init__(self)
         self.ui=UI_FeedPreviewDialog()
         self.ui.setupUi(self)
@@ -78,18 +156,8 @@ class FeedPreview(QtGui.QDialog):
         self.insertPoint=insertPoint
         self.addedFeed=None
         
-        for feed, data in self.feeds:
-            self.ui.feeds.addItem(feed)
             
-        self.net=QtNetwork.QNetworkAccessManager(self)
-        self.net.finished.connect(self.gotFeed)
             
-    def gotFeed(self, reply):
-        redir=reply.attribute(QtNetwork.QNetworkRequest.RedirectionTargetAttribute)
-        if redir.isValid():
-            self.net.get(QtNetwork.QNetworkRequest(redir.toUrl()))
-        else:            
-            self.ui.preview.setHtml(run_template(i=str(reply.readAll())))
             
     def on_feeds_currentIndexChanged(self, item=None):
         if item is None or isinstance(item, int): return
@@ -133,26 +201,6 @@ class GReaderDialog(QtGui.QDialog):
     # Set up the UI from designer
     self.ui=UI_GReaderDialog()
     self.ui.setupUi(self)
-
-class NewFeedDialog(QtGui.QDialog):
-  def __init__(self, parent):
-    QtGui.QDialog.__init__(self, parent)
-    # Set up the UI from designer
-    self.ui=UI_NewFeedDialog()
-    self.ui.setupUi(self)
-    self.ui.label.setText(self.help[0])
-    
-  help=['''Enter the URL of the site you want to add as a feed.''', 
-        '''Enter keywords to create a customized Google News feed.<p> 
-        For example, <i>"premier league"</i> if you are interested in english football.''', 
-        '''Enter keywords to create a customized Bloglines Search.<p> 
-        For example, <i>"premier league"</i> if you are interested in english football.'''
-       ]
-    
-  def on_feedType_activated(self, index=None):
-    if index==None: return
-    if type(index) is not int: return
-    self.ui.label.setText(self.help[index])
 
 class BugDialog(QtGui.QDialog):
   def __init__(self):
@@ -986,6 +1034,7 @@ class MainWindow(QtGui.QMainWindow):
     
     # This takes a few seconds, because we need to fetch the feed and parse it
     # So, start a background process, show a dialog, and make the user wait
+    #preview=FeedPreview()
     dlg=ProcessDialog(self, callable=self.realAddFeed, args=[url, ])
     if dlg.exec_():
       # Figure out the insertion point
@@ -1012,43 +1061,12 @@ class MainWindow(QtGui.QMainWindow):
           self.open_feed2(item)
           #self.on_actionEdit_Feed_triggered(True)      
     
-  def realAddFeed(self, url, output):
-    _info   = lambda(msg): output.put([0, msg])
-    _error  = lambda(msg): output.put([2, msg])
-    _return = lambda(msg): output.put([100, msg])
-      
-    import util.feedfinder as feedfinder
-    try:
-      _info('Searching for feeds in %s'%url)
-      feeds=feedfinder.feeds(url)
-    except feedfinder.TimeoutError, e:
-      _error('Timeout downloading %s'%url )      
-      return
-    if not feeds:
-      _error("Can't find a feed wit URL: %s"%url)
-      return
-    _info ("Found %d feeds"%len(feeds))
-    result=[]
-    for feed in feeds:
-        _info ("Fetching %s"%feed)
-        result.append([feed,''])
-    
-    _return (result)
-    return
     
   def on_actionAdd_Feed_triggered(self, i=None):
     if i==None: return
-    # Ask for feed URL
-    dlg=NewFeedDialog(self)
-    if dlg.exec_():
-      idx=dlg.ui.feedType.currentIndex()
-      data=unicode(dlg.ui.data.text())
-      if idx==1: # Google News Feed
-        data='http://news.google.com/news?q=%s&output=atom'%quote(data)
-      elif idx==2: # Ask.com Feed
-        data='http://ask.bloglines.com/search?q=%s&ql=&format=rss'%quote(data)
-      self.addFeed(unicode(data))
-
+    dlg=FeedPreview(self)
+    dlg.exec_()
+    
   def on_actionNew_Folder_triggered(self, i=None):
     if i==None: return
     # Ask for folder name
